@@ -36,7 +36,6 @@
 		2A76552A2C073E4900D8A098 /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7655292C073E4900D8A098 /* KakaoSDKUser */; };
 		2A76552C2C073F2F00D8A098 /* SignInWithKakao.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */; };
 		2A76552E2C07407500D8A098 /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 2A76552D2C07407500D8A098 /* KakaoSDKCommon */; };
-		2A7655302C077F3B00D8A098 /* wanderboard-66ab5-firebase-adminsdk-hf4br-31d203970f.json in Resources */ = {isa = PBXBuildFile; fileRef = 2A76552F2C077F3B00D8A098 /* wanderboard-66ab5-firebase-adminsdk-hf4br-31d203970f.json */; };
 		4D9D8B502C05B1BD0043E7DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9D8B4F2C05B1BD0043E7DF /* AppDelegate.swift */; };
 		4D9D8B522C05B1BD0043E7DF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9D8B512C05B1BD0043E7DF /* SceneDelegate.swift */; };
 		4D9D8B542C05B1BD0043E7DF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9D8B532C05B1BD0043E7DF /* ViewController.swift */; };
@@ -63,7 +62,6 @@
 		2A7655202C070B0400D8A098 /* Formatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatter.swift; sourceTree = "<group>"; };
 		2A7655222C070B1700D8A098 /* Numeric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Numeric.swift; sourceTree = "<group>"; };
 		2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithKakao.swift; sourceTree = "<group>"; };
-		2A76552F2C077F3B00D8A098 /* wanderboard-66ab5-firebase-adminsdk-hf4br-31d203970f.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "wanderboard-66ab5-firebase-adminsdk-hf4br-31d203970f.json"; sourceTree = "<group>"; };
 		4D9D8B4C2C05B1BD0043E7DF /* WanderBoard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WanderBoard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D9D8B4F2C05B1BD0043E7DF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4D9D8B512C05B1BD0043E7DF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -172,7 +170,6 @@
 				4D9D8B602C05B1BE0043E7DF /* Info.plist */,
 				2A7654E12C06097400D8A098 /* GoogleService-Info.plist */,
 				4D9D8B582C05B1BD0043E7DF /* WanderBoard.xcdatamodeld */,
-				2A76552F2C077F3B00D8A098 /* wanderboard-66ab5-firebase-adminsdk-hf4br-31d203970f.json */,
 			);
 			path = WanderBoard;
 			sourceTree = "<group>";
@@ -295,7 +292,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A7655302C077F3B00D8A098 /* wanderboard-66ab5-firebase-adminsdk-hf4br-31d203970f.json in Resources */,
 				4D9D8B5C2C05B1BE0043E7DF /* Assets.xcassets in Resources */,
 				2A7654E22C06097400D8A098 /* GoogleService-Info.plist in Resources */,
 				4D9D8B5F2C05B1BE0043E7DF /* Base in Resources */,

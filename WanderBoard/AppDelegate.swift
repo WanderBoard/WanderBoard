@@ -8,6 +8,8 @@
 import UIKit
 import CoreData
 import FirebaseCore
+import KakaoSDKCommon
+import KakaoSDKAuth
 
 
 @UIApplicationMain
@@ -24,6 +26,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return false
         }
         
+        KakaoSDK.initSDK(appKey: "fdaab28c4efeacf52167771728104865")
+        
         window = UIWindow(frame: UIScreen.main.bounds)
         
         let initialViewController: UIViewController
@@ -36,6 +40,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
         
         return true
+    }
+    
+    func application(
+        _ app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+    ) -> Bool {
+        if AuthApi.isKakaoTalkLoginUrl(url) {
+            return AuthController.handleOpenUrl(url: url)
+        }
+        return false
     }
 
     // MARK: - Core Data stack

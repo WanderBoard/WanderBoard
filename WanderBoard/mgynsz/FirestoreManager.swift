@@ -15,8 +15,8 @@ final class FirestoreManager {
     private init() { }
     
     private let db = Firestore.firestore()
-    private let storage = Storage.storage()
-    private var uploadTasks: [String: StorageUploadTask] = [:]
+//    private let storage = Storage.storage()
+//    private var uploadTasks: [String: StorageUploadTask] = [:]
     
     func saveUser(uid: String, email: String, displayName: String?, photoURL: String?, socialMediaLink: String?, authProvider: String) async throws {
         let userRef = db.collection("users").document(uid)
@@ -35,10 +35,10 @@ final class FirestoreManager {
         if let socialMediaLink = socialMediaLink {
             dataToSave["socialMediaLink"] = socialMediaLink
         }
-        
+        print("Saving user data to Firestore: \(dataToSave)")
         try await userRef.setData(dataToSave, merge: true)
     }
-
+    
     func saveOrUpdateUser(user: UserEntity) async throws {
         let userRef = db.collection("users").document(user.uid ?? "")
         
@@ -95,8 +95,7 @@ final class FirestoreManager {
             }
         }
     }
-
-    
+}
 //    // 참가자 불러오는 메서드
 //    func fetchAttendee(for wordbookId: String) async throws -> [String] {
 //        let snapshot = try await db.collection("wordbooks").document(wordbookId).getDocument()
@@ -123,5 +122,3 @@ final class FirestoreManager {
 //            throw error
 //        }
 //    }
-}
-

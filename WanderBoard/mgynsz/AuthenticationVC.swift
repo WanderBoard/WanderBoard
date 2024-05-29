@@ -9,6 +9,7 @@ import UIKit
 import GoogleSignIn
 import AuthenticationServices
 import SnapKit
+import KakaoSDKUser
 
 class AuthenticationVC: UIViewController {
     
@@ -35,7 +36,7 @@ class AuthenticationVC: UIViewController {
     private let logoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = UIImage(named: "Logo")
+        imageView.image = UIImage(named: "logo")
         return imageView
     }()
     
@@ -49,7 +50,7 @@ class AuthenticationVC: UIViewController {
         configuration.baseForegroundColor = .black
 
         let button = UIButton(configuration: configuration, primaryAction: nil)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         button.layer.cornerRadius = 10
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
@@ -84,7 +85,7 @@ class AuthenticationVC: UIViewController {
         configuration.baseForegroundColor = .black
 
         let button = UIButton(configuration: configuration, primaryAction: nil)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         button.layer.cornerRadius = 10
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
@@ -115,11 +116,11 @@ class AuthenticationVC: UIViewController {
         configuration.image = UIImage(named: "appleLogo")?.withRenderingMode(.alwaysOriginal)
         configuration.imagePadding = 8
         configuration.imagePlacement = .all
-        configuration.baseBackgroundColor = UIColor(named: "ButtonColor")
-        configuration.baseForegroundColor = .white
+        configuration.baseBackgroundColor = UIColor(named: "buttonColor")
+        configuration.baseForegroundColor = UIColor(named: "textColor")
 
         let button = UIButton(configuration: configuration, primaryAction: nil)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         button.layer.cornerRadius = 10
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
@@ -149,8 +150,8 @@ class AuthenticationVC: UIViewController {
         label.textColor = .gray
         let text = "By clicking continue, you agree to our \nTerms of Service and Privacy Policy"
         let attributedText = NSMutableAttributedString(string: text)
-        attributedText.addAttribute(.foregroundColor, value: UIColor.black, range: (text as NSString).range(of: "Terms of Service"))
-        attributedText.addAttribute(.foregroundColor, value: UIColor.black, range: (text as NSString).range(of: "Privacy Policy"))
+        attributedText.addAttribute(.foregroundColor, value: UIColor(named: "textColorSub") ?? .red, range: (text as NSString).range(of: "Terms of Service"))
+        attributedText.addAttribute(.foregroundColor, value: UIColor(named: "textColorSub") ?? .red, range: (text as NSString).range(of: "Privacy Policy"))
         label.attributedText = attributedText
         label.font = UIFont.systemFont(ofSize: 12, weight: .regular)
         
@@ -162,7 +163,7 @@ class AuthenticationVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor(named: "BackgroundColor")
+        view.backgroundColor = UIColor(named: "backgroundColor")
         setupViews()
     }
     
@@ -217,9 +218,34 @@ class AuthenticationVC: UIViewController {
     }
     
     @objc private func signInKakaoTapped() {
-        // Kakao 로그인 로직 구현
+        Task {
+            do {
+                let helper = SignInWithKakaoHelper()
+                let result = try await helper.signIn()
+                if let email = result.email {
+                    // 이미 존재하는 계정인지 확인하고, 없다면 새로 생성
+                    do {
+                        let authDataResult = try await signInWithEmailAndPassword(email: email, password: "임시비밀번호") // 임시비밀번호는 사용자에게 별도로 안내
+                        // 로그인 성공 처리
+                        // 사용자 정보를 Firestore에 저장
+                        try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: email, displayName: result.nickname, photoURL: result.profileImageUrl?.absoluteString, socialMediaLink: nil, authProvider: AuthProviderOption.kakao.rawValue)
+                    } catch {
+                        let authDataResult = try await createUserWithEmailAndPassword(email: email, password: "임시비밀번호")
+                        // 회원가입 성공 처리
+                        // 사용자 정보를 Firestore에 저장
+                        try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: email, displayName: result.nickname, photoURL: result.profileImageUrl?.absoluteString, socialMediaLink: nil, authProvider: AuthProviderOption.kakao.rawValue)
+                    }
+                } else {
+                    // 이메일 정보가 없는 경우 처리
+                    print("이메일 정보가 없습니다.")
+                }
+                switchRootView(to: SignInViewController())
+            } catch {
+                print("카카오 로그인 실패: \(error)")
+            }
+        }
     }
-    
+
     @objc private func signInGoogleTapped() {
         Task {
             do {
@@ -232,7 +258,7 @@ class AuthenticationVC: UIViewController {
                 UserDefaults.standard.set(true, forKey: "isLoggedIn")
                 switchRootView(to: SignInViewController())
             } catch {
-                print("Failed to sign in with Google: \(error)")
+                print("구글 로그인 실패: \(error)")
             }
         }
     }

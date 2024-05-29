@@ -11,6 +11,9 @@ import CoreData
 import UIKit
 import FirebaseFirestore
 import GoogleSignIn
+import KakaoSDKAuth
+import KakaoSDKUser
+
 
 // FireBase 데이터 저장 변수, 인증 로그인 후 받아오는 정보
 struct AuthDataResultModel {
@@ -35,12 +38,48 @@ struct AuthDataResultModel {
 enum AuthProviderOption: String, Codable {
     case google = "google.com"
     case apple = "apple.com"
+    case kakao = "kakao.com"
+    case email = "email"
 }
 
 final class AuthenticationManager {
     
     static let shared = AuthenticationManager()
     private init() {}
+    
+    func getAuthenticatedUser() throws -> AuthDataResultModel {
+        guard let user = Auth.auth().currentUser else {
+            throw URLError(.badServerResponse)
+        }
+        // authProvider를 포함하여 초기화
+        let providerData = user.providerData
+        var authProvider: AuthProviderOption = .email // 기본값 설정
+        for provider in providerData {
+            if let providerType = AuthProviderOption(rawValue: provider.providerID) {
+                authProvider = providerType
+                break
+            }
+        }
+        return AuthDataResultModel(user: user, authProvider: authProvider)
+    }
+
+    // 변경된 이메일 중복 확인 메서드
+    func checkEmailExists(email: String) async -> Bool {
+        do {
+            _ = try await Auth.auth().createUser(withEmail: email, password: "temporaryPassword")
+            // 임시 사용자가 생성되면 삭제
+            let user = Auth.auth().currentUser
+            try await user?.delete()
+            return false
+        } catch let error as NSError {
+            if let errorCode = AuthErrorCode.Code(rawValue: error.code), errorCode == .emailAlreadyInUse {
+                return true
+            } else {
+                // 다른 에러 발생 시 false 반환
+                return false
+            }
+        }
+    }
     
     // 현재 사용자 가져오기
     func getCurrentUser() -> AuthDataResultModel? {
@@ -74,6 +113,54 @@ final class AuthenticationManager {
         
         return userEntity
     }
+    
+    func signInWithKakao(tokens: KakaoSignInResult) async throws -> AuthDataResultModel {
+        do {
+            let customToken = try await getCustomTokenFromServer(uid: tokens.token)
+            let credential = OAuthProvider.credential(withProviderID: "oidc.kakao", idToken: customToken, accessToken: tokens.token)
+            let authDataResult = try await signIn(credential: credential)
+            
+            await MainActor.run {
+                do {
+                    _ = try self.saveUserToCoreData(uid: authDataResult.uid, email: tokens.email ?? "", displayName: tokens.nickname, photoURL: tokens.profileImageUrl?.absoluteString, socialMediaLink: nil, authProvider: .kakao)
+                } catch {
+                    ErrorUtility.shared.presentErrorAlertAndTerminate(with: "사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
+                }
+            }
+            
+            do {
+                try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: tokens.email ?? "", displayName: tokens.nickname, photoURL: tokens.profileImageUrl?.absoluteString, socialMediaLink: nil, authProvider: AuthProviderOption.kakao.rawValue)
+            } catch {
+                print("Firestore save error: \(error)")
+                await ErrorUtility.shared.presentErrorAlert(with: "서버에 사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
+                throw error
+            }
+            
+            try await updateUserProfileFromFirestore()
+            return authDataResult
+        } catch {
+            await ErrorUtility.shared.presentErrorAlert(with: "Kakao 로그인 중 문제가 발생했습니다. 다시 시도해주세요.")
+            throw error
+        }
+    }
+    
+    private func getCustomTokenFromServer(uid: String) async throws -> String {
+        let url = URL(string: "https://YOUR_CLOUD_FUNCTIONS_URL/createCustomToken")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONSerialization.data(withJSONObject: ["uid": uid])
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw NSError(domain: "FirebaseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to get custom token from server"])
+        }
+        
+        let json = try JSONSerialization.jsonObject(with: data) as! [String: Any]
+        return json["token"] as! String
+    }
+
     
     // 구글 로그인 결과 처리 및 코어데이터 저장
     func signInWithGoogle(tokens: GoogleSignInResult) async throws -> AuthDataResultModel {

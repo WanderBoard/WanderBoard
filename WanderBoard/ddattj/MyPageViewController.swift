@@ -79,11 +79,11 @@ class MyPageViewController: BaseViewController {
         
         myName.text = "내이름"
         myName.font = UIFont.boldSystemFont(ofSize: 22)
-        myID.textColor = .font
+        myID.textColor = .tintColor
         
         myID.text = "@아이디 적는곳\(0)"
         myID.font = UIFont.systemFont(ofSize: 13)
-        myID.textColor = .font
+        myID.textColor = .tintColor
         
         //다크모드 색상까지 같이 지정
         statusB.backgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor.darkgray : UIColor.customblack

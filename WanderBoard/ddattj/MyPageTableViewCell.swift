@@ -34,17 +34,17 @@ class MyPageTableViewCell: UITableViewCell {
         switch index {
         case 0:
             icon.image = UIImage(systemName: "pin.circle.fill")
-            icon.tintColor = .font
+            icon.tintColor = .tintColor
             label.text = "핀 목록"
             label.font = UIFont.systemFont(ofSize: 15)
-            label.textColor = .font
+            label.textColor = .tintColor
             
         case 1:
             icon.image = UIImage(systemName: "gearshape.fill")
-            icon.tintColor = .font
+            icon.tintColor = .tintColor
             label.text = "환경설정"
             label.font = UIFont.systemFont(ofSize: 15)
-            label.textColor = .font
+            label.textColor = .tintColor
             
         case 2:
             icon.image = UIImage(systemName: "creditcard.fill")
@@ -54,16 +54,16 @@ class MyPageTableViewCell: UITableViewCell {
                 $0.height.equalTo(14.74)
                 $0.left.equalTo(background).offset(17)
             }
-            icon.tintColor = .font
+            icon.tintColor = .tintColor
             label.text = "계좌연결"
             label.font = UIFont.systemFont(ofSize: 15)
-            label.textColor = .font
+            label.textColor = .tintColor
             
         case 3:
             icon.image = UIImage(systemName: "info.circle.fill")
-            icon.tintColor = .font
+            icon.tintColor = .tintColor
             label.font = UIFont.systemFont(ofSize: 15)
-            label.textColor = .font
+            label.textColor = .tintColor
             label.text = "개인정보처리방침"
 
         case 4:
@@ -74,9 +74,9 @@ class MyPageTableViewCell: UITableViewCell {
                 $0.height.equalTo(22.59)
                 $0.left.equalTo(background).offset(19)
             }
-            icon.tintColor = .font
+            icon.tintColor = .tintColor
             label.font = UIFont.systemFont(ofSize: 15)
-            label.textColor = .font
+            label.textColor = .tintColor
             label.text = "로그아웃"
             
         default:

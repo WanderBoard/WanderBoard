@@ -37,6 +37,10 @@
 		2A76552C2C073F2F00D8A098 /* SignInWithKakao.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */; };
 		2A76552E2C07407500D8A098 /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 2A76552D2C07407500D8A098 /* KakaoSDKCommon */; };
 		2A9BED2A2C08A4330032C403 /* PageControlButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED292C08A4330032C403 /* PageControlButton.swift */; };
+		2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED2B2C08B6C60032C403 /* PinLog.swift */; };
+		2A9BED2E2C08B71D0032C403 /* Invitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED2D2C08B71D0032C403 /* Invitation.swift */; };
+		2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED2F2C08DB200032C403 /* InvitationManager.swift */; };
+		2A9BED322C08E2A40032C403 /* PinLogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED312C08E2A40032C403 /* PinLogManager.swift */; };
 		4D9D8B502C05B1BD0043E7DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9D8B4F2C05B1BD0043E7DF /* AppDelegate.swift */; };
 		4D9D8B522C05B1BD0043E7DF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9D8B512C05B1BD0043E7DF /* SceneDelegate.swift */; };
 		4D9D8B542C05B1BD0043E7DF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9D8B532C05B1BD0043E7DF /* ViewController.swift */; };
@@ -74,6 +78,10 @@
 		2A7655222C070B1700D8A098 /* Numeric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Numeric.swift; sourceTree = "<group>"; };
 		2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithKakao.swift; sourceTree = "<group>"; };
 		2A9BED292C08A4330032C403 /* PageControlButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageControlButton.swift; sourceTree = "<group>"; };
+		2A9BED2B2C08B6C60032C403 /* PinLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PinLog.swift; path = WanderBoard/PinLog.swift; sourceTree = SOURCE_ROOT; };
+		2A9BED2D2C08B71D0032C403 /* Invitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Invitation.swift; path = WanderBoard/Invitation.swift; sourceTree = SOURCE_ROOT; };
+		2A9BED2F2C08DB200032C403 /* InvitationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationManager.swift; sourceTree = "<group>"; };
+		2A9BED312C08E2A40032C403 /* PinLogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLogManager.swift; sourceTree = "<group>"; };
 		4D9D8B4C2C05B1BD0043E7DF /* WanderBoard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WanderBoard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D9D8B4F2C05B1BD0043E7DF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4D9D8B512C05B1BD0043E7DF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -226,6 +234,8 @@
 		4D9D8B682C05B2B20043E7DF /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				2A9BED2B2C08B6C60032C403 /* PinLog.swift */,
+				2A9BED2D2C08B71D0032C403 /* Invitation.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -234,6 +244,8 @@
 			isa = PBXGroup;
 			children = (
 				4D9D8B6A2C05B2D90043E7DF /* NetworkManager.swift */,
+				2A9BED2F2C08DB200032C403 /* InvitationManager.swift */,
+				2A9BED312C08E2A40032C403 /* PinLogManager.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -368,10 +380,14 @@
 				2A7655172C06316300D8A098 /* UIApplication+Extensions.swift in Sources */,
 				956ED7952C0852B90001BAC6 /* PinListViewController.swift in Sources */,
 				2A7655232C070B1700D8A098 /* Numeric.swift in Sources */,
+				2A9BED2E2C08B71D0032C403 /* Invitation.swift in Sources */,
 				2A76550F2C061D7D00D8A098 /* SignInViewController.swift in Sources */,
+				2A9BED322C08E2A40032C403 /* PinLogManager.swift in Sources */,
 				2A9BED2A2C08A4330032C403 /* PageControlButton.swift in Sources */,
 				4D9D8B542C05B1BD0043E7DF /* ViewController.swift in Sources */,
 				956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */,
+				2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */,
+				2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */,
 				956ED7912C0852B90001BAC6 /* BillingAccountViewController.swift in Sources */,
 				4D9D8B5A2C05B1BD0043E7DF /* WanderBoard.xcdatamodeld in Sources */,
 				2A76550B2C06175B00D8A098 /* AuthenticationManager.swift in Sources */,

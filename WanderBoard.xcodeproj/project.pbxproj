@@ -49,6 +49,14 @@
 		4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37622C077122001B03F8 /* DetailViewController.swift */; };
 		4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */; };
 		4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */; };
+		956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED7872C0852B90001BAC6 /* BaseViewController.swift */; };
+		956ED7912C0852B90001BAC6 /* BillingAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED7882C0852B90001BAC6 /* BillingAccountViewController.swift */; };
+		956ED7922C0852B90001BAC6 /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED7892C0852B90001BAC6 /* EditViewController.swift */; };
+		956ED7932C0852B90001BAC6 /* MyPageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78A2C0852B90001BAC6 /* MyPageTableViewCell.swift */; };
+		956ED7942C0852B90001BAC6 /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78B2C0852B90001BAC6 /* MyPageViewController.swift */; };
+		956ED7952C0852B90001BAC6 /* PinListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78C2C0852B90001BAC6 /* PinListViewController.swift */; };
+		956ED7962C0852B90001BAC6 /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */; };
+		956ED7972C0852B90001BAC6 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78E2C0852B90001BAC6 /* SettingViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -77,6 +85,14 @@
 		4DFA37622C077122001B03F8 /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryCollectionViewCell.swift; sourceTree = "<group>"; };
 		4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendCollectionViewCell.swift; sourceTree = "<group>"; };
+		956ED7872C0852B90001BAC6 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		956ED7882C0852B90001BAC6 /* BillingAccountViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BillingAccountViewController.swift; sourceTree = "<group>"; };
+		956ED7892C0852B90001BAC6 /* EditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditViewController.swift; sourceTree = "<group>"; };
+		956ED78A2C0852B90001BAC6 /* MyPageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPageTableViewCell.swift; sourceTree = "<group>"; };
+		956ED78B2C0852B90001BAC6 /* MyPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
+		956ED78C2C0852B90001BAC6 /* PinListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinListViewController.swift; sourceTree = "<group>"; };
+		956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyViewController.swift; sourceTree = "<group>"; };
+		956ED78E2C0852B90001BAC6 /* SettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,6 +177,7 @@
 		4D9D8B4E2C05B1BD0043E7DF /* WanderBoard */ = {
 			isa = PBXGroup;
 			children = (
+				956ED78F2C0852B90001BAC6 /* ddattj */,
 				2A7655092C0614D800D8A098 /* WanderBoard.entitlements */,
 				4DFA37612C07710B001B03F8 /* SijongKim93 */,
 				2A7654E02C0605E300D8A098 /* mgynsz */,
@@ -219,6 +236,22 @@
 				4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */,
 			);
 			path = SijongKim93;
+			sourceTree = "<group>";
+		};
+		956ED78F2C0852B90001BAC6 /* ddattj */ = {
+			isa = PBXGroup;
+			children = (
+				956ED7872C0852B90001BAC6 /* BaseViewController.swift */,
+				956ED7882C0852B90001BAC6 /* BillingAccountViewController.swift */,
+				956ED7892C0852B90001BAC6 /* EditViewController.swift */,
+				956ED78A2C0852B90001BAC6 /* MyPageTableViewCell.swift */,
+				956ED78B2C0852B90001BAC6 /* MyPageViewController.swift */,
+				956ED78C2C0852B90001BAC6 /* PinListViewController.swift */,
+				956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */,
+				956ED78E2C0852B90001BAC6 /* SettingViewController.swift */,
+			);
+			name = ddattj;
+			path = "../../../WanderBoard copy/WanderBoard/ddattj";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -322,20 +355,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				956ED7942C0852B90001BAC6 /* MyPageViewController.swift in Sources */,
 				2A7655172C06316300D8A098 /* UIApplication+Extensions.swift in Sources */,
+				956ED7952C0852B90001BAC6 /* PinListViewController.swift in Sources */,
 				2A7655232C070B1700D8A098 /* Numeric.swift in Sources */,
 				2A76550F2C061D7D00D8A098 /* SignInViewController.swift in Sources */,
 				4D9D8B6B2C05B2D90043E7DF /* NetworkManager.swift in Sources */,
 				4D9D8B542C05B1BD0043E7DF /* ViewController.swift in Sources */,
+				956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */,
+				956ED7912C0852B90001BAC6 /* BillingAccountViewController.swift in Sources */,
 				4D9D8B5A2C05B1BD0043E7DF /* WanderBoard.xcdatamodeld in Sources */,
 				2A76550B2C06175B00D8A098 /* AuthenticationManager.swift in Sources */,
 				2A7654FD2C060FB500D8A098 /* SignInWithGoogle.swift in Sources */,
+				956ED7932C0852B90001BAC6 /* MyPageTableViewCell.swift in Sources */,
 				2A7655112C0622C000D8A098 /* FirestoreManager.swift in Sources */,
 				4D9D8B502C05B1BD0043E7DF /* AppDelegate.swift in Sources */,
+				956ED7962C0852B90001BAC6 /* PrivacyPolicyViewController.swift in Sources */,
 				2A76551D2C06EE1000D8A098 /* ErrorUtility.swift in Sources */,
 				2A76552C2C073F2F00D8A098 /* SignInWithKakao.swift in Sources */,
 				2A7655212C070B0400D8A098 /* Formatter.swift in Sources */,
+				956ED7972C0852B90001BAC6 /* SettingViewController.swift in Sources */,
 				2A7655042C0610BA00D8A098 /* SignInWithApple.swift in Sources */,
+				956ED7922C0852B90001BAC6 /* EditViewController.swift in Sources */,
 				4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */,
 				4D9D8B6B2C05B2D90043E7DF /* NetworkManager.swift in Sources */,
 				4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */,

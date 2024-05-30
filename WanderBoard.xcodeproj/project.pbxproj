@@ -36,6 +36,7 @@
 		2A76552A2C073E4900D8A098 /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7655292C073E4900D8A098 /* KakaoSDKUser */; };
 		2A76552C2C073F2F00D8A098 /* SignInWithKakao.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */; };
 		2A76552E2C07407500D8A098 /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 2A76552D2C07407500D8A098 /* KakaoSDKCommon */; };
+		2A9BED2A2C08A4330032C403 /* PageControlButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED292C08A4330032C403 /* PageControlButton.swift */; };
 		4D9D8B502C05B1BD0043E7DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9D8B4F2C05B1BD0043E7DF /* AppDelegate.swift */; };
 		4D9D8B522C05B1BD0043E7DF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9D8B512C05B1BD0043E7DF /* SceneDelegate.swift */; };
 		4D9D8B542C05B1BD0043E7DF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9D8B532C05B1BD0043E7DF /* ViewController.swift */; };
@@ -72,6 +73,7 @@
 		2A7655202C070B0400D8A098 /* Formatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatter.swift; sourceTree = "<group>"; };
 		2A7655222C070B1700D8A098 /* Numeric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Numeric.swift; sourceTree = "<group>"; };
 		2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithKakao.swift; sourceTree = "<group>"; };
+		2A9BED292C08A4330032C403 /* PageControlButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageControlButton.swift; sourceTree = "<group>"; };
 		4D9D8B4C2C05B1BD0043E7DF /* WanderBoard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WanderBoard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D9D8B4F2C05B1BD0043E7DF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4D9D8B512C05B1BD0043E7DF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -157,6 +159,14 @@
 			path = Extension;
 			sourceTree = "<group>";
 		};
+		2A9BED282C08A4070032C403 /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				2A9BED292C08A4330032C403 /* PageControlButton.swift */,
+			);
+			path = Component;
+			sourceTree = "<group>";
+		};
 		4D9D8B432C05B1BD0043E7DF = {
 			isa = PBXGroup;
 			children = (
@@ -184,6 +194,7 @@
 				4D9D8B682C05B2B20043E7DF /* Models */,
 				4D9D8B672C05B2B00043E7DF /* Views */,
 				4D9D8B662C05B2AE0043E7DF /* Controllers */,
+				2A9BED282C08A4070032C403 /* Component */,
 				2A76551E2C070A7A00D8A098 /* Utility */,
 				2A76551F2C070ACC00D8A098 /* Extension */,
 				4D9D8B4F2C05B1BD0043E7DF /* AppDelegate.swift */,
@@ -358,6 +369,7 @@
 				956ED7952C0852B90001BAC6 /* PinListViewController.swift in Sources */,
 				2A7655232C070B1700D8A098 /* Numeric.swift in Sources */,
 				2A76550F2C061D7D00D8A098 /* SignInViewController.swift in Sources */,
+				2A9BED2A2C08A4330032C403 /* PageControlButton.swift in Sources */,
 				4D9D8B542C05B1BD0043E7DF /* ViewController.swift in Sources */,
 				956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */,
 				956ED7912C0852B90001BAC6 /* BillingAccountViewController.swift in Sources */,

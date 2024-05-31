@@ -50,6 +50,7 @@
 		4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */; };
 		4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */; };
 		4DFA376B2C09AA49001B03F8 /* MapDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */; };
+		4DFA376F2C0A03F6001B03F8 /* CustomFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA376E2C0A03F6001B03F8 /* CustomFlowLayout.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -79,6 +80,7 @@
 		4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryCollectionViewCell.swift; sourceTree = "<group>"; };
 		4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendCollectionViewCell.swift; sourceTree = "<group>"; };
 		4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapDetailViewController.swift; sourceTree = "<group>"; };
+		4DFA376E2C0A03F6001B03F8 /* CustomFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomFlowLayout.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -217,6 +219,7 @@
 			isa = PBXGroup;
 			children = (
 				4DFA37622C077122001B03F8 /* DetailViewController.swift */,
+				4DFA376E2C0A03F6001B03F8 /* CustomFlowLayout.swift */,
 				4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */,
 				4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */,
 				4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */,
@@ -329,6 +332,7 @@
 				2A7655232C070B1700D8A098 /* Numeric.swift in Sources */,
 				2A76550F2C061D7D00D8A098 /* SignInViewController.swift in Sources */,
 				4D9D8B6B2C05B2D90043E7DF /* NetworkManager.swift in Sources */,
+				4DFA376F2C0A03F6001B03F8 /* CustomFlowLayout.swift in Sources */,
 				4D9D8B542C05B1BD0043E7DF /* ViewController.swift in Sources */,
 				4D9D8B5A2C05B1BD0043E7DF /* WanderBoard.xcdatamodeld in Sources */,
 				2A76550B2C06175B00D8A098 /* AuthenticationManager.swift in Sources */,

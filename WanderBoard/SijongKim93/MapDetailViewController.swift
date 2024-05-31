@@ -70,7 +70,7 @@ extension MapDetailViewController: UISearchBarDelegate {
         let search = MKLocalSearch(request: request)
         search.start { response, error in
             guard let response = response else {
-                if let error = error {
+                if error != nil {
                     print( "Search error" )
                 }
                 return

@@ -1,3 +1,4 @@
+
 //
 //  ViewController.swift
 //  WanderBoardSijong
@@ -14,7 +15,7 @@ import Then
 class DetailViewController: UIViewController {
     
     var selectedImages: [UIImage] = []
-    var selectedFriends: [String] = []
+    var selectedFriends: [UIImage] = []
     
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
@@ -165,27 +166,37 @@ class DetailViewController: UIViewController {
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
+    let addConsumptionButton = UIButton(type: .system).then {
+        $0.setTitle("+", for: .normal)
+        $0.setTitleColor(.black, for: .normal)
+        $0.titleLabel?.font = UIFont.systemFont(ofSize: 32)
+        $0.isHidden = false
+    }
+    
+    let consumptionHeaderStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.distribution = .equalSpacing
+        $0.spacing = 10
+    }
+    
     let moneyCountTitle = UILabel().then {
         $0.text = "00₩"
         $0.font = UIFont.systemFont(ofSize: 40)
         $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
     }
     
-    let addConsumptionButton = UIButton(type: .system).then {
-        $0.setTitle("내역 추가 →", for: .normal)
-        $0.setTitleColor(.systemBlue, for: .normal)
-        $0.isHidden = false
-    }
-    
     let consumptionStackView = UIStackView().then {
-        $0.axis = .horizontal
+        $0.axis = .vertical
         $0.alignment = .leading
+        $0.distribution = .fillEqually
+        $0.spacing = 0
     }
     
     let noConsumptionLabel = UILabel().then {
         $0.text = "들어온 소비 내역이 없습니다."
         $0.font = UIFont.systemFont(ofSize: 13)
-        $0.textColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
         $0.isHidden = false
     }
     
@@ -194,13 +205,18 @@ class DetailViewController: UIViewController {
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
+    let bottomLogo = UIImageView().then {
+        $0.image = UIImage(named: "logoBlack")
+    }
+    
     lazy var galleryCollectionView: UICollectionView = {
-        let layout = createCollectionViewFlowLayout(for: .vertical)
+        let layout = CustomFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .white
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(GalleryCollectionViewCell.self, forCellWithReuseIdentifier: GalleryCollectionViewCell.identifier)
+        collectionView.isScrollEnabled = false
         return collectionView
     }()
     
@@ -211,10 +227,9 @@ class DetailViewController: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(FriendCollectionViewCell.self, forCellWithReuseIdentifier: FriendCollectionViewCell.identifier)
+        collectionView.isScrollEnabled = false
         return collectionView
     }()
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -226,7 +241,6 @@ class DetailViewController: UIViewController {
         
         view.backgroundColor = .white
     }
-    
     
     func setupUI() {
         view.addSubview(backgroundImageView)
@@ -241,8 +255,11 @@ class DetailViewController: UIViewController {
         dayStackView.addArrangedSubview(dateDaysLabel)
         dayStackView.addArrangedSubview(selectDateButton)
         
+        consumptionHeaderStackView.addArrangedSubview(consumptionTitle)
+        consumptionHeaderStackView.addArrangedSubview(addConsumptionButton)
+        
+        consumptionStackView.addArrangedSubview(consumptionHeaderStackView)
         consumptionStackView.addArrangedSubview(moneyCountTitle)
-        consumptionStackView.addArrangedSubview(addConsumptionButton)
         
         publicStackView.addArrangedSubview(publicLabel)
         publicStackView.addArrangedSubview(publicSwitch)
@@ -262,11 +279,11 @@ class DetailViewController: UIViewController {
         contentView.addSubview(mapContainerView)
         contentView.addSubview(galleryTitle)
         contentView.addSubview(galleryCollectionView)
-        contentView.addSubview(consumptionTitle)
         contentView.addSubview(consumptionStackView)
         contentView.addSubview(noConsumptionLabel)
         contentView.addSubview(friendTitle)
         contentView.addSubview(friendCollectionView)
+        contentView.addSubview(bottomLogo)
         
         scrollView.delegate = self
         
@@ -301,13 +318,14 @@ class DetailViewController: UIViewController {
         
         scrollView.snp.makeConstraints {
             $0.top.equalTo(backgroundImageView.snp.bottom).offset(-40)
-            $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
         
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.height.equalTo(1500)
+            $0.bottom.equalTo(bottomLogo.snp.bottom).offset(70)
         }
         
         publicStackView.snp.makeConstraints {
@@ -353,31 +371,21 @@ class DetailViewController: UIViewController {
             $0.height.equalTo(400)
         }
         
-        consumptionTitle.snp.makeConstraints {
+        consumptionHeaderStackView.snp.makeConstraints {
+            $0.top.equalTo(consumptionStackView.snp.top)
+            $0.leading.trailing.equalTo(contentView).inset(16)
+        }
+        
+        consumptionStackView.snp.makeConstraints {
             $0.top.equalTo(galleryCollectionView.snp.bottom).offset(32)
             $0.leading.equalTo(contentView).inset(16)
         }
         
-        consumptionStackView.snp.makeConstraints {
-            $0.top.equalTo(consumptionTitle.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(contentView).inset(16)
-        }
-        
         noConsumptionLabel.snp.makeConstraints {
-            $0.top.equalTo(consumptionStackView.snp.bottom).offset(10)
+            $0.top.equalTo(moneyCountTitle.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView).inset(16)
         }
         
-        moneyCountTitle.snp.makeConstraints {
-            $0.leading.equalTo(consumptionStackView.snp.leading)
-            $0.width.equalTo(250)
-            $0.centerY.equalToSuperview()
-        }
-        
-        addConsumptionButton.snp.makeConstraints {
-            $0.trailing.equalTo(consumptionStackView.snp.trailing)
-            $0.centerY.equalToSuperview()
-        }
         
         friendTitle.snp.makeConstraints {
             $0.top.equalTo(noConsumptionLabel.snp.bottom).offset(32)
@@ -387,6 +395,14 @@ class DetailViewController: UIViewController {
         friendCollectionView.snp.makeConstraints {
             $0.top.equalTo(friendTitle.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(contentView).inset(17)
+            $0.height.equalTo(90)
+        }
+        
+        bottomLogo.snp.makeConstraints {
+            $0.top.equalTo(friendCollectionView.snp.bottom).offset(100)
+            $0.width.equalTo(135)
+            $0.height.equalTo(18)
+            $0.centerX.equalToSuperview()
         }
     }
     
@@ -407,7 +423,7 @@ class DetailViewController: UIViewController {
     }
     
     func createCollectionViewFlowLayout(for scrollDirection: UICollectionView.ScrollDirection) -> UICollectionViewFlowLayout {
-        let layout = UICollectionViewFlowLayout()
+        let layout = CustomFlowLayout()
         layout.scrollDirection = scrollDirection
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 5
@@ -417,7 +433,7 @@ class DetailViewController: UIViewController {
     
     func updateCollectionViewHeight() {
         let numberOfImages = selectedImages.count
-        let newHeight: CGFloat = numberOfImages >= 3 ? 480 : 120
+        let newHeight: CGFloat = numberOfImages >= 3 ? 410 : 120
         galleryCollectionView.snp.updateConstraints {
             $0.height.equalTo(newHeight)
         }
@@ -433,7 +449,7 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
         if collectionView == galleryCollectionView {
             return max(selectedImages.count, 1)
         } else {
-            return selectedFriends.count
+            return max(selectedFriends.count, 1)
         }
     }
     
@@ -450,12 +466,10 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return cell
         } else {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as? FriendCollectionViewCell else { fatalError("컬렉션 뷰 오류")}
-            let label = UILabel()
-            label.text = selectedFriends[indexPath.row]
-            label.textAlignment = .center
-            cell.contentView.addSubview(label)
-            label.snp.makeConstraints {
-                $0.edges.equalToSuperview()
+            if selectedFriends.isEmpty {
+                cell.configure(with: nil)
+            } else {
+                cell.configure(with: selectedFriends[indexPath.row])
             }
             return cell
         }

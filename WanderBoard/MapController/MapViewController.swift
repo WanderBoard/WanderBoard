@@ -8,7 +8,7 @@
 import SwiftUI
 import MapKit
 
-struct ContentView: View {
+struct MapViewController: View {
     @StateObject private var locationManager = LocationManager()
     @State private var searchQuery = ""
     @State private var timer: Timer?
@@ -131,9 +131,9 @@ struct ContentView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct MapViewController_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        MapViewController()
     }
 }
 

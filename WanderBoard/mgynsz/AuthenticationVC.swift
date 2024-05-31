@@ -116,7 +116,7 @@ class AuthenticationVC: UIViewController {
         configuration.image = UIImage(named: "appleLogo")?.withRenderingMode(.alwaysOriginal)
         configuration.imagePadding = 8
         configuration.imagePlacement = .all
-        configuration.baseBackgroundColor = UIColor(named: "buttonColor")
+        configuration.baseBackgroundColor = UIColor(named: "ButtonColor")
         configuration.baseForegroundColor = UIColor(named: "textColor")
 
         let button = UIButton(configuration: configuration, primaryAction: nil)
@@ -163,7 +163,7 @@ class AuthenticationVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor(named: "backgroundColor")
+        view.backgroundColor = .systemBackground
         setupViews()
     }
     

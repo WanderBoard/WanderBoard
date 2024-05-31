@@ -16,6 +16,9 @@ class DetailViewController: UIViewController {
     var selectedImages: [UIImage] = []
     var selectedFriends: [String] = []
     
+    let subTextFieldMinHeight: CGFloat = 90
+    var subTextFieldHeightConstraint: Constraint?
+    
     let backgroundImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
@@ -26,27 +29,36 @@ class DetailViewController: UIViewController {
         $0.backgroundColor = .clear
     }
     
-    let weatherButton = UIButton(type: .system).then {
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 37, weight: .light)
-        let image = UIImage(systemName: "sun.min", withConfiguration: imageConfig)
-        $0.setImage(image, for: .normal)
-        $0.tintColor = .white
-        $0.contentHorizontalAlignment = .center
-        $0.contentVerticalAlignment = .center
+    let introLocation = UILabel().then {
+        $0.text = "지도에서 지역을 선택하세요!"
+        $0.font = UIFont.systemFont(ofSize: 14)
+        $0.textColor = #colorLiteral(red: 0.2989681959, green: 0.2989682257, blue: 0.2989681959, alpha: 1)
     }
     
-    let locationLabel = UILabel().then {
-        $0.text = "----"
-        $0.font = UIFont.systemFont(ofSize: 50)
+    var locationLabel = UILabel().then {
+        $0.text = "---"
+        $0.font = UIFont.systemFont(ofSize: 40)
         $0.textColor = .white
     }
     
-    let selectDateButton = UIButton(type: .system).then {
-        $0.setTitle("Select Dates", for: .normal)
-        $0.tintColor = .white
+    var dateDaysLabel = UILabel().then {
+        $0.text = "0 Days"
+        $0.font = UIFont.systemFont(ofSize: 16)
+        $0.textColor = .white
     }
     
-    let weatherStackView = UIStackView().then {
+    var selectDateButton = UIButton(type: .system).then {
+        $0.setTitle("날짜를 선택해주세요", for: .normal)
+        $0.tintColor = #colorLiteral(red: 0.2989681959, green: 0.2989682257, blue: 0.2989681959, alpha: 1)
+    }
+    
+    let dayStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.distribution = .fill
+        $0.spacing = 10
+    }
+    
+    let locationStackView = UIStackView().then {
         $0.axis = .vertical
         $0.alignment = .leading
         $0.spacing = 10
@@ -61,58 +73,102 @@ class DetailViewController: UIViewController {
     
     let contentView = UIView().then {
         $0.backgroundColor = .white
-
+        
     }
     
-    let mainTextField = UITextField().then {
-        $0.placeholder = "여행 제목을 입력해주세요."
-        $0.borderStyle = .none
-        $0.backgroundColor = .white
-        $0.layer.cornerRadius = 8
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
-        $0.setLeftPaddingPoints(10)
-        $0.setPlaceholderAlignment(to: .left, .center)
-    }
-    
-    let subTextField = UITextField().then {
-        $0.placeholder = "기록을 담아 주세요."
-        $0.borderStyle = .none
-        $0.backgroundColor = .white
-        $0.layer.cornerRadius = 8
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
-        $0.setLeftPaddingPoints(10)
-        $0.setTopPaddingPoints(10)
-        $0.setPlaceholderAlignment(to: .left, .top)
-    }
-    
-    let mapTitle = UILabel().then {
-        $0.text = "이동거리"
+    let publicLabel = UILabel().then {
+        $0.text = "공개 여부"
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
-    let noMapTitle = UILabel().then {
-        $0.text = "저장된 사진 정보로\n맵 정보가 업데이트됩니다."
+    let publicSwitch = UISwitch().then {
+        $0.isOn = true
+        $0.onTintColor = .black
+    }
+    
+    let publicStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.distribution = .equalSpacing
+        $0.spacing = 10
+    }
+    
+    let mainTextField = UITextView().then {
+        $0.text = "여행 제목을 입력해주세요."
+        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+        $0.backgroundColor = .white
+        $0.layer.cornerRadius = 8
+        $0.layer.borderWidth = 1
+        $0.layer.borderColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+        $0.textContainerInset = UIEdgeInsets(top: 9, left: 10, bottom: 10, right: 10)
         $0.font = UIFont.systemFont(ofSize: 16)
+        $0.isScrollEnabled = false
+    }
+    
+    let subTextField = UITextView().then {
+        $0.text = "기록을 담아 주세요."
+        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+        $0.backgroundColor = .white
+        $0.layer.cornerRadius = 8
+        $0.layer.borderWidth = 1
+        $0.layer.borderColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+        $0.textContainerInset = UIEdgeInsets(top: 9, left: 10, bottom: 10, right: 10)
+        $0.font = UIFont.systemFont(ofSize: 16)
+        $0.isScrollEnabled = false
+    }
+    
+    let mapTitle = UILabel().then {
+        $0.text = "지도"
+        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+    }
+    
+    let mapContainerView = UIView().then {
+        $0.backgroundColor = .white
+        $0.layer.borderWidth = 1
+        $0.layer.borderColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+        $0.isUserInteractionEnabled = true
+    }
+    
+    let mapIconImageView = UIImageView().then {
+        $0.image = UIImage(systemName: "map")
+        $0.tintColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+        $0.contentMode = .scaleAspectFit
+    }
+    
+    let mapTitleLabel = UILabel().then {
+        $0.text = "여행 맵 정보를 추가해주세요"
+        $0.font = UIFont.systemFont(ofSize: 16)
+        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
         $0.textAlignment = .center
-        $0.numberOfLines = 0
+    }
+    
+    let mapSubtitleLabel = UILabel().then {
+        $0.text = "* 사진을 추가하면 위치를 인식합니다"
+        $0.font = UIFont.systemFont(ofSize: 12)
+        $0.textAlignment = .center
+        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+    }
+    
+    let mapStackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.alignment = .center
+        $0.spacing = 10
     }
     
     let galleryTitle = UILabel().then {
-        $0.text = "나의 갤러리"
+        $0.text = "앨범"
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
     let consumptionTitle = UILabel().then {
-        $0.text = "소비 내역"
+        $0.text = "지출"
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
     let moneyCountTitle = UILabel().then {
         $0.text = "00₩"
         $0.font = UIFont.systemFont(ofSize: 40)
-        $0.textColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
     }
     
     let addConsumptionButton = UIButton(type: .system).then {
@@ -134,10 +190,9 @@ class DetailViewController: UIViewController {
     }
     
     let friendTitle = UILabel().then {
-        $0.text = "같이 간 친구"
+        $0.text = "메이트"
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
-    
     
     lazy var galleryCollectionView: UICollectionView = {
         let layout = createCollectionViewFlowLayout(for: .vertical)
@@ -167,6 +222,7 @@ class DetailViewController: UIViewController {
         setupUI()
         setupConstraints()
         setupCollectionView()
+        setupTextView()
         
         view.backgroundColor = .white
     }
@@ -175,21 +231,35 @@ class DetailViewController: UIViewController {
     func setupUI() {
         view.addSubview(backgroundImageView)
         backgroundImageView.addSubview(topContentView)
-        topContentView.addSubview(weatherStackView)
+        topContentView.addSubview(introLocation)
+        topContentView.addSubview(locationStackView)
+        topContentView.addSubview(dayStackView)
         
-        weatherStackView.addArrangedSubview(weatherButton)
-        weatherStackView.addArrangedSubview(locationLabel)
-        weatherStackView.addArrangedSubview(selectDateButton)
+        locationStackView.addArrangedSubview(locationLabel)
+        locationStackView.addArrangedSubview(dayStackView)
+        
+        dayStackView.addArrangedSubview(dateDaysLabel)
+        dayStackView.addArrangedSubview(selectDateButton)
         
         consumptionStackView.addArrangedSubview(moneyCountTitle)
         consumptionStackView.addArrangedSubview(addConsumptionButton)
         
+        publicStackView.addArrangedSubview(publicLabel)
+        publicStackView.addArrangedSubview(publicSwitch)
+        
+        mapStackView.addArrangedSubview(mapIconImageView)
+        mapStackView.addArrangedSubview(mapTitleLabel)
+        mapStackView.addArrangedSubview(mapSubtitleLabel)
+        
+        mapContainerView.addSubview(mapStackView)
+        
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+        contentView.addSubview(publicStackView)
         contentView.addSubview(mainTextField)
         contentView.addSubview(subTextField)
         contentView.addSubview(mapTitle)
-        contentView.addSubview(noMapTitle)
+        contentView.addSubview(mapContainerView)
         contentView.addSubview(galleryTitle)
         contentView.addSubview(galleryCollectionView)
         contentView.addSubview(consumptionTitle)
@@ -199,6 +269,9 @@ class DetailViewController: UIViewController {
         contentView.addSubview(friendCollectionView)
         
         scrollView.delegate = self
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(mapContainerViewTapped))
+        mapContainerView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     func setupConstraints() {
@@ -212,14 +285,18 @@ class DetailViewController: UIViewController {
             $0.top.leading.trailing.bottom.equalToSuperview()
         }
         
-        weatherStackView.snp.makeConstraints {
+        introLocation.snp.makeConstraints {
             $0.top.equalTo(150)
-            $0.leading.trailing.equalTo(topContentView).inset(37)
-            
+            $0.leading.equalTo(topContentView).inset(38)
         }
         
-        weatherButton.snp.makeConstraints {
-            $0.width.height.equalTo(37)
+        locationStackView.snp.makeConstraints {
+            $0.top.equalTo(introLocation).offset(20)
+            $0.leading.equalTo(topContentView).inset(38)
+        }
+        
+        selectDateButton.snp.makeConstraints {
+            $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(20)
         }
         
         scrollView.snp.makeConstraints {
@@ -233,52 +310,62 @@ class DetailViewController: UIViewController {
             $0.height.equalTo(1500)
         }
         
+        publicStackView.snp.makeConstraints {
+            $0.top.equalTo(contentView).offset(32)
+            $0.leading.trailing.equalTo(contentView).inset(16)
+        }
+        
         mainTextField.snp.makeConstraints {
-            $0.top.equalTo(contentView).offset(30)
-            $0.leading.trailing.equalTo(contentView).inset(17)
+            $0.top.equalTo(publicStackView.snp.bottom).offset(32)
+            $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(37)
         }
         
         subTextField.snp.makeConstraints {
             $0.top.equalTo(mainTextField.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(contentView).inset(17)
-            $0.height.equalTo(87)
+            $0.leading.trailing.equalTo(contentView).inset(16)
+            self.subTextFieldHeightConstraint = $0.height.greaterThanOrEqualTo(subTextFieldMinHeight).constraint
         }
         
         mapTitle.snp.makeConstraints {
-            $0.top.equalTo(subTextField.snp.bottom).offset(30)
+            $0.top.equalTo(subTextField.snp.bottom).offset(32)
             $0.leading.equalTo(17)
         }
         
-        noMapTitle.snp.makeConstraints {
+        mapContainerView.snp.makeConstraints {
             $0.top.equalTo(mapTitle.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(contentView).inset(17)
+            $0.leading.trailing.equalTo(contentView)
+            $0.height.equalTo(250)
+        }
+        
+        mapStackView.snp.makeConstraints {
+            $0.centerY.centerX.equalToSuperview()
         }
         
         galleryTitle.snp.makeConstraints {
-            $0.top.equalTo(noMapTitle.snp.bottom).offset(30)
-            $0.leading.equalTo(contentView).inset(17)
+            $0.top.equalTo(mapContainerView.snp.bottom).offset(32)
+            $0.leading.equalTo(contentView).inset(16)
         }
         
         galleryCollectionView.snp.makeConstraints {
             $0.top.equalTo(galleryTitle.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(contentView).inset(17)
+            $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(400)
         }
         
         consumptionTitle.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(30)
-            $0.leading.equalTo(contentView).inset(17)
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(32)
+            $0.leading.equalTo(contentView).inset(16)
         }
         
         consumptionStackView.snp.makeConstraints {
             $0.top.equalTo(consumptionTitle.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(contentView).inset(17)
+            $0.leading.trailing.equalTo(contentView).inset(16)
         }
         
         noConsumptionLabel.snp.makeConstraints {
             $0.top.equalTo(consumptionStackView.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(contentView).inset(17)
+            $0.leading.trailing.equalTo(contentView).inset(16)
         }
         
         moneyCountTitle.snp.makeConstraints {
@@ -293,7 +380,7 @@ class DetailViewController: UIViewController {
         }
         
         friendTitle.snp.makeConstraints {
-            $0.top.equalTo(noConsumptionLabel.snp.bottom).offset(30)
+            $0.top.equalTo(noConsumptionLabel.snp.bottom).offset(32)
             $0.leading.equalTo(contentView).offset(17)
         }
         
@@ -301,6 +388,12 @@ class DetailViewController: UIViewController {
             $0.top.equalTo(friendTitle.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(contentView).inset(17)
         }
+    }
+    
+    func setupTextView() {
+        mainTextField.delegate = self
+        subTextField.delegate = self
+        
     }
     
     func setupCollectionView() {
@@ -404,7 +497,7 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
         overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.1)
         backgroundImageView.addSubview(overlayView)
         
-        view.bringSubviewToFront(weatherStackView)
+        view.bringSubviewToFront(locationStackView)
         self.view.layoutIfNeeded()
     }
     
@@ -431,17 +524,20 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let offset = scrollView.contentOffset.y
         if offset > 0 {
             UIView.animate(withDuration: 0.3) {
-                self.weatherStackView.axis = .horizontal
-                self.weatherStackView.spacing = 10
-                self.weatherStackView.alignment = .center
-                self.weatherStackView.snp.remakeConstraints {
+                self.locationStackView.axis = .horizontal
+                self.locationStackView.spacing = 10
+                self.locationStackView.alignment = .center
+                self.locationLabel.font = UIFont.systemFont(ofSize: 20)
+                self.selectDateButton.isHidden = true
+                self.introLocation.isHidden = true
+                self.locationStackView.snp.remakeConstraints {
                     $0.top.equalTo(self.view.safeAreaLayoutGuide).offset(20)
                     $0.centerX.equalToSuperview()
                 }
                 self.scrollView.layer.cornerRadius = 40
                 self.view.clipsToBounds = true
                 self.scrollView.snp.remakeConstraints {
-                    $0.top.equalTo(self.weatherStackView.snp.bottom).offset(10)
+                    $0.top.equalTo(self.locationStackView.snp.bottom).offset(10)
                     $0.leading.trailing.bottom.equalTo(self.view.safeAreaLayoutGuide)
                 }
                 self.contentView.snp.remakeConstraints {
@@ -450,66 +546,89 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
                     $0.height.equalTo(1500)
                 }
                 self.backgroundImageView.snp.updateConstraints {
-                    $0.height.equalTo(200) // 줄어든 높이
+                    $0.height.equalTo(200)
                 }
                 
                 self.view.layoutIfNeeded()
             }
         } else {
             UIView.animate(withDuration: 0.3) {
-                self.weatherStackView.axis = .vertical
-                self.weatherStackView.spacing = 10
-                self.weatherStackView.alignment = .leading
-                self.weatherStackView.snp.remakeConstraints {
-                    $0.top.equalTo(150)
-                    $0.leading.trailing.equalTo(self.topContentView).inset(37)
+                self.locationStackView.axis = .vertical
+                self.locationStackView.spacing = 10
+                self.locationStackView.alignment = .leading
+                self.locationLabel.font = UIFont.systemFont(ofSize: 40)
+                self.selectDateButton.isHidden = false
+                self.introLocation.isHidden = false
+                self.locationStackView.snp.remakeConstraints {
+                    $0.top.equalTo(self.introLocation.snp.bottom).offset(20)
+                    $0.leading.trailing.equalTo(self.topContentView).inset(38)
                 }
                 self.scrollView.snp.remakeConstraints {
                     $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-40)
                     $0.leading.trailing.bottom.equalTo(self.view.safeAreaLayoutGuide)
                 }
                 self.contentView.snp.remakeConstraints {
-                    
                     $0.edges.equalTo(self.scrollView.contentLayoutGuide)
                     $0.width.equalTo(self.scrollView.frameLayoutGuide)
                     $0.height.equalTo(1500)
                 }
                 self.backgroundImageView.snp.updateConstraints {
-                    $0.height.equalTo(350) // 원래 높이로 복원
+                    $0.height.equalTo(350)
                 }
                 self.view.layoutIfNeeded()
             }
         }
     }
+    
+    @objc func mapContainerViewTapped() {
+        let mapDetailVC = MapDetailViewController()
+        let navigationController = UINavigationController(rootViewController: mapDetailVC)
+        navigationController.modalPresentationStyle = .fullScreen
+        present(navigationController, animated: true, completion: nil)
+    }
 }
 
 
-extension UITextField {
-    func setLeftPaddingPoints(_ amount:CGFloat) {
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.height))
-        self.leftView = paddingView
-        self.leftViewMode = .always
+extension UITextView {
+    func setLeftPaddingPoints(_ amount: CGFloat) {
+        self.textContainerInset.left = amount
     }
     
     func setTopPaddingPoints(_ amount: CGFloat) {
-        let paddingView = UIView(frame: CGRect(x: 0, y: 10, width: self.frame.width, height: amount))
-        self.addSubview(paddingView)
-        self.contentVerticalAlignment = .top
-        self.setNeedsDisplay()
-    }
-    
-    func setPlaceholderAlignment(to horizontal: NSTextAlignment, _ vertical: UIControl.ContentVerticalAlignment) {
-        self.textAlignment = horizontal
-        self.contentVerticalAlignment = vertical
+        self.textContainerInset.top = amount
     }
 }
 
-//extension DetailViewController: UIScrollViewDelegate {
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        let offset = scrollView.contentOffset.y
-//        let maxOffset = scrollView.contentSize.height - scrollView.frame.size.height
-//        let percentage = offset / maxOffset
-//
-//        backgroundImageView.alpha = 1 - percentage
-//    }
-//}
+
+extension DetailViewController: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1) {
+            textView.text = nil
+            textView.textColor = .black
+        }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            if textView == mainTextField {
+                textView.text = "여행 제목을 입력해주세요."
+            } else if textView == subTextField {
+                textView.text = "기록을 담아 주세요."
+            }
+            textView.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+        }
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        let size = textView.bounds.size
+        let newSize = textView.sizeThatFits(CGSize(width: size.width, height: CGFloat.greatestFiniteMagnitude))
+        if size.height != newSize.height {
+            UIView.setAnimationsEnabled(false)
+            textView.isScrollEnabled = false
+            self.subTextFieldHeightConstraint?.update(offset: max(newSize.height, subTextFieldMinHeight))
+            UIView.setAnimationsEnabled(true)
+            textView.layoutIfNeeded()
+        }
+    }
+}
+

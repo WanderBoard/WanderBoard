@@ -49,6 +49,7 @@
 		4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37622C077122001B03F8 /* DetailViewController.swift */; };
 		4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */; };
 		4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */; };
+		4DFA376B2C09AA49001B03F8 /* MapDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -77,6 +78,7 @@
 		4DFA37622C077122001B03F8 /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryCollectionViewCell.swift; sourceTree = "<group>"; };
 		4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendCollectionViewCell.swift; sourceTree = "<group>"; };
+		4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapDetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -217,6 +219,7 @@
 				4DFA37622C077122001B03F8 /* DetailViewController.swift */,
 				4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */,
 				4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */,
+				4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */,
 			);
 			path = SijongKim93;
 			sourceTree = "<group>";
@@ -333,6 +336,7 @@
 				2A7655112C0622C000D8A098 /* FirestoreManager.swift in Sources */,
 				4D9D8B502C05B1BD0043E7DF /* AppDelegate.swift in Sources */,
 				2A76551D2C06EE1000D8A098 /* ErrorUtility.swift in Sources */,
+				4DFA376B2C09AA49001B03F8 /* MapDetailViewController.swift in Sources */,
 				2A76552C2C073F2F00D8A098 /* SignInWithKakao.swift in Sources */,
 				2A7655212C070B0400D8A098 /* Formatter.swift in Sources */,
 				2A7655042C0610BA00D8A098 /* SignInWithApple.swift in Sources */,

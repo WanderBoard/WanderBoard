@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A5D471D2C0A2742005C0F76 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D471C2C0A2742005C0F76 /* MapViewModel.swift */; };
+		2A5D471F2C0A2771005C0F76 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D471E2C0A2771005C0F76 /* LocationManager.swift */; };
+		2A5D47212C0A27B5005C0F76 /* LocationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D47202C0A27B5005C0F76 /* LocationListView.swift */; };
+		2A5D47232C0A27EF005C0F76 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D47222C0A27EF005C0F76 /* MapViewController.swift */; };
 		2A7654E22C06097400D8A098 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2A7654E12C06097400D8A098 /* GoogleService-Info.plist */; };
 		2A7654E52C060A3500D8A098 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7654E42C060A3500D8A098 /* FirebaseAnalytics */; };
 		2A7654E72C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7654E62C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion */; };
@@ -64,6 +68,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2A5D471C2C0A2742005C0F76 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
+		2A5D471E2C0A2771005C0F76 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		2A5D47202C0A27B5005C0F76 /* LocationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationListView.swift; sourceTree = "<group>"; };
+		2A5D47222C0A27EF005C0F76 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		2A7654E12C06097400D8A098 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2A7654FC2C060FB500D8A098 /* SignInWithGoogle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithGoogle.swift; sourceTree = "<group>"; };
 		2A7655032C0610BA00D8A098 /* SignInWithApple.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithApple.swift; sourceTree = "<group>"; };
@@ -135,6 +143,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2A5D471B2C0A26D7005C0F76 /* MapController */ = {
+			isa = PBXGroup;
+			children = (
+				2A5D471C2C0A2742005C0F76 /* MapViewModel.swift */,
+				2A5D471E2C0A2771005C0F76 /* LocationManager.swift */,
+				2A5D47202C0A27B5005C0F76 /* LocationListView.swift */,
+				2A5D47222C0A27EF005C0F76 /* MapViewController.swift */,
+			);
+			path = MapController;
+			sourceTree = "<group>";
+		};
 		2A7654E02C0605E300D8A098 /* mgynsz */ = {
 			isa = PBXGroup;
 			children = (
@@ -202,6 +221,7 @@
 				4D9D8B682C05B2B20043E7DF /* Models */,
 				4D9D8B672C05B2B00043E7DF /* Views */,
 				4D9D8B662C05B2AE0043E7DF /* Controllers */,
+				2A5D471B2C0A26D7005C0F76 /* MapController */,
 				2A9BED282C08A4070032C403 /* Component */,
 				2A76551E2C070A7A00D8A098 /* Utility */,
 				2A76551F2C070ACC00D8A098 /* Extension */,
@@ -389,7 +409,10 @@
 				2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */,
 				2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */,
 				956ED7912C0852B90001BAC6 /* BillingAccountViewController.swift in Sources */,
+				2A5D47232C0A27EF005C0F76 /* MapViewController.swift in Sources */,
+				2A5D47212C0A27B5005C0F76 /* LocationListView.swift in Sources */,
 				4D9D8B5A2C05B1BD0043E7DF /* WanderBoard.xcdatamodeld in Sources */,
+				2A5D471F2C0A2771005C0F76 /* LocationManager.swift in Sources */,
 				2A76550B2C06175B00D8A098 /* AuthenticationManager.swift in Sources */,
 				2A7654FD2C060FB500D8A098 /* SignInWithGoogle.swift in Sources */,
 				956ED7932C0852B90001BAC6 /* MyPageTableViewCell.swift in Sources */,
@@ -399,6 +422,7 @@
 				2A76551D2C06EE1000D8A098 /* ErrorUtility.swift in Sources */,
 				2A76552C2C073F2F00D8A098 /* SignInWithKakao.swift in Sources */,
 				2A7655212C070B0400D8A098 /* Formatter.swift in Sources */,
+				2A5D471D2C0A2742005C0F76 /* MapViewModel.swift in Sources */,
 				956ED7972C0852B90001BAC6 /* SettingViewController.swift in Sources */,
 				2A7655042C0610BA00D8A098 /* SignInWithApple.swift in Sources */,
 				956ED7922C0852B90001BAC6 /* EditViewController.swift in Sources */,

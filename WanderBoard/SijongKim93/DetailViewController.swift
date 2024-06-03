@@ -16,14 +16,18 @@ class DetailViewController: UIViewController {
     
     var selectedImages: [UIImage] = []
     var selectedFriends: [UIImage] = []
+    var isExpanded: Bool = false
     
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
+    
+    
     
     let backgroundImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.backgroundColor = .black
+        $0.isUserInteractionEnabled = true
     }
     
     let topContentView = UIView().then {
@@ -51,12 +55,6 @@ class DetailViewController: UIViewController {
     var selectDateButton = UIButton(type: .system).then {
         $0.setTitle("날짜를 선택해주세요", for: .normal)
         $0.tintColor = #colorLiteral(red: 0.2989681959, green: 0.2989682257, blue: 0.2989681959, alpha: 1)
-    }
-    
-    let dayStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.distribution = .fill
-        $0.spacing = 10
     }
     
     let locationStackView = UIStackView().then {
@@ -238,6 +236,7 @@ class DetailViewController: UIViewController {
         setupConstraints()
         setupCollectionView()
         setupTextView()
+        actionButton()
         
         view.backgroundColor = .white
     }
@@ -247,13 +246,11 @@ class DetailViewController: UIViewController {
         backgroundImageView.addSubview(topContentView)
         topContentView.addSubview(introLocation)
         topContentView.addSubview(locationStackView)
-        topContentView.addSubview(dayStackView)
+        topContentView.addSubview(selectDateButton)
         
         locationStackView.addArrangedSubview(locationLabel)
-        locationStackView.addArrangedSubview(dayStackView)
+        locationStackView.addArrangedSubview(dateDaysLabel)
         
-        dayStackView.addArrangedSubview(dateDaysLabel)
-        dayStackView.addArrangedSubview(selectDateButton)
         
         consumptionHeaderStackView.addArrangedSubview(consumptionTitle)
         consumptionHeaderStackView.addArrangedSubview(addConsumptionButton)
@@ -312,8 +309,13 @@ class DetailViewController: UIViewController {
             $0.leading.equalTo(topContentView).inset(38)
         }
         
+        dateDaysLabel.snp.makeConstraints {
+            $0.leading.equalTo(locationStackView)
+        }
+        
         selectDateButton.snp.makeConstraints {
             $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(20)
+            $0.bottom.equalTo(locationStackView.snp.bottom).inset(-6)
         }
         
         scrollView.snp.makeConstraints {
@@ -368,7 +370,7 @@ class DetailViewController: UIViewController {
         galleryCollectionView.snp.makeConstraints {
             $0.top.equalTo(galleryTitle.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(contentView).inset(16)
-            $0.height.equalTo(400)
+            $0.height.equalTo(120)
         }
         
         consumptionHeaderStackView.snp.makeConstraints {
@@ -377,7 +379,7 @@ class DetailViewController: UIViewController {
         }
         
         consumptionStackView.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(32)
+            $0.top.equalTo(galleryCollectionView.snp.bottom)
             $0.leading.equalTo(contentView).inset(16)
         }
         
@@ -422,6 +424,18 @@ class DetailViewController: UIViewController {
         updateCollectionViewHeight()
     }
     
+    func actionButton() {
+        selectDateButton.addTarget(self, action: #selector(selectDateButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc func selectDateButtonTapped() {
+        print("버튼눌림")
+        let dateVC = DateViewController()
+        dateVC.modalPresentationStyle = .custom
+        dateVC.transitioningDelegate = self
+        present(dateVC, animated: true, completion: nil)
+    }
+    
     func createCollectionViewFlowLayout(for scrollDirection: UICollectionView.ScrollDirection) -> UICollectionViewFlowLayout {
         let layout = CustomFlowLayout()
         layout.scrollDirection = scrollDirection
@@ -430,24 +444,22 @@ class DetailViewController: UIViewController {
         layout.estimatedItemSize = .zero
         return layout
     }
-    
-    func updateCollectionViewHeight() {
-        let numberOfImages = selectedImages.count
-        let newHeight: CGFloat = numberOfImages >= 3 ? 410 : 120
-        galleryCollectionView.snp.updateConstraints {
-            $0.height.equalTo(newHeight)
-        }
-        view.layoutIfNeeded()
-    }
 }
 
 
 extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSource, PHPickerViewControllerDelegate, UICollectionViewDelegateFlowLayout {
     
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == galleryCollectionView {
-            return max(selectedImages.count, 1)
+            if selectedImages.isEmpty {
+                return 1
+            } else {
+                if isExpanded {
+                    return selectedImages.count
+                } else {
+                    return min(selectedImages.count, 4)
+                }
+            }
         } else {
             return max(selectedFriends.count, 1)
         }
@@ -455,17 +467,25 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == galleryCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GalleryCollectionViewCell.identifier, for: indexPath) as? GalleryCollectionViewCell else { fatalError("컬렉션 뷰 오류")}
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GalleryCollectionViewCell.identifier, for: indexPath) as? GalleryCollectionViewCell else { fatalError("컬렉션 뷰 오류") }
             if selectedImages.isEmpty {
                 cell.configure(with: nil)
             } else {
-                cell.configure(with: selectedImages[indexPath.row])
-                cell.imageView.layer.cornerRadius = 16
-                cell.imageView.clipsToBounds = true
+                if indexPath.row < 3 {
+                    cell.configure(with: selectedImages[indexPath.row])
+                } else if indexPath.row == 3 {
+                    if selectedImages.count > 4 && !isExpanded {
+                        cell.configure(with: selectedImages[indexPath.row], moreCount: selectedImages.count - 4)
+                    } else {
+                        cell.configure(with: selectedImages[indexPath.row])
+                    }
+                } else {
+                    cell.configure(with: selectedImages[indexPath.row])
+                }
             }
             return cell
         } else {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as? FriendCollectionViewCell else { fatalError("컬렉션 뷰 오류")}
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as? FriendCollectionViewCell else { fatalError("컬렉션 뷰 오류") }
             if selectedFriends.isEmpty {
                 cell.configure(with: nil)
             } else {
@@ -476,13 +496,21 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView == galleryCollectionView && selectedImages.isEmpty {
-            var configuration = PHPickerConfiguration()
-            configuration.selectionLimit = 0
-            configuration.filter = .images
-            let picker = PHPickerViewController(configuration: configuration)
-            picker.delegate = self
-            present(picker, animated: true, completion: nil)
+        if collectionView == galleryCollectionView {
+            if selectedImages.isEmpty || indexPath.row == 3 {
+                if selectedImages.count > 4 && !isExpanded {
+                    isExpanded = true
+                    collectionView.reloadData()
+                    updateCollectionViewHeight()
+                } else {
+                    var configuration = PHPickerConfiguration()
+                    configuration.selectionLimit = 0
+                    configuration.filter = .images
+                    let picker = PHPickerViewController(configuration: configuration)
+                    picker.delegate = self
+                    present(picker, animated: true, completion: nil)
+                }
+            }
         }
     }
     
@@ -507,35 +535,66 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func applyDarkOverlayToBackgroundImage() {
+        backgroundImageView.subviews.forEach { subview in
+            if subview.tag == 999 {
+                subview.removeFromSuperview()
+            }
+        }
+        
         let overlayView = UIView(frame: backgroundImageView.bounds)
         overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+        overlayView.tag = 999
         backgroundImageView.addSubview(overlayView)
         
-        view.bringSubviewToFront(locationStackView)
+        backgroundImageView.bringSubviewToFront(topContentView)
         self.view.layoutIfNeeded()
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == galleryCollectionView {
-            if selectedImages.isEmpty {
-                return CGSize(width: 173, height: 115)
-            } else {
-                switch indexPath.row {
-                case 0, 3:
-                    return CGSize(width: 173, height: 115)
-                case 1, 2:
-                    return CGSize(width: 173, height: 223)
-                default:
-                    return CGSize(width: 173, height: 115)
-                }
-            }
+            let height = heightForItem(at: indexPath.row)
+            return CGSize(width: (collectionView.frame.width - 10) / 2, height: height)
         } else {
             return CGSize(width: 73, height: 73)
         }
     }
     
+    func heightForItem(at index: Int) -> CGFloat {
+        if index % 4 == 0 || index % 4 == 3 {
+            return 115
+        } else {
+            return 223
+        }
+    }
+    
+    func updateCollectionViewHeight() {
+        // Reload layout to ensure contentSize is updated
+        galleryCollectionView.layoutIfNeeded()
+        
+        var contentHeight = galleryCollectionView.contentSize.height
+        let minimumHeight: CGFloat = 120
+        
+        // If there are more than 2 items, subtract 90 from the content height
+        if selectedImages.count > 2 {
+            contentHeight -= 90
+        }
+        
+        let newHeight = max(contentHeight, minimumHeight)
+        
+        galleryCollectionView.snp.updateConstraints {
+            $0.height.equalTo(newHeight)
+        }
+        view.layoutIfNeeded()
+    }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offset = scrollView.contentOffset.y
+        
+        // 디밍뷰의 크기 업데이트
+        if let overlayView = backgroundImageView.viewWithTag(999) {
+            overlayView.frame = backgroundImageView.bounds
+        }
+        
         if offset > 0 {
             UIView.animate(withDuration: 0.3) {
                 self.locationStackView.axis = .horizontal
@@ -544,21 +603,27 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
                 self.locationLabel.font = UIFont.systemFont(ofSize: 20)
                 self.selectDateButton.isHidden = true
                 self.introLocation.isHidden = true
+                
                 self.locationStackView.snp.remakeConstraints {
                     $0.top.equalTo(self.view.safeAreaLayoutGuide).offset(20)
                     $0.centerX.equalToSuperview()
                 }
+                
                 self.scrollView.layer.cornerRadius = 40
                 self.view.clipsToBounds = true
+                
                 self.scrollView.snp.remakeConstraints {
-                    $0.top.equalTo(self.locationStackView.snp.bottom).offset(10)
-                    $0.leading.trailing.bottom.equalTo(self.view.safeAreaLayoutGuide)
+                    $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-40)
+                    $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
+                    $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
                 }
+                
                 self.contentView.snp.remakeConstraints {
                     $0.edges.equalTo(self.scrollView.contentLayoutGuide)
                     $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                    $0.height.equalTo(1500)
+                    $0.bottom.equalTo(self.bottomLogo.snp.bottom).offset(40)
                 }
+                
                 self.backgroundImageView.snp.updateConstraints {
                     $0.height.equalTo(200)
                 }
@@ -573,22 +638,28 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
                 self.locationLabel.font = UIFont.systemFont(ofSize: 40)
                 self.selectDateButton.isHidden = false
                 self.introLocation.isHidden = false
+                
                 self.locationStackView.snp.remakeConstraints {
                     $0.top.equalTo(self.introLocation.snp.bottom).offset(20)
-                    $0.leading.trailing.equalTo(self.topContentView).inset(38)
+                    $0.leading.equalTo(self.topContentView).inset(38)
                 }
+                
                 self.scrollView.snp.remakeConstraints {
                     $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-40)
-                    $0.leading.trailing.bottom.equalTo(self.view.safeAreaLayoutGuide)
+                    $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
+                    $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
                 }
+                
                 self.contentView.snp.remakeConstraints {
                     $0.edges.equalTo(self.scrollView.contentLayoutGuide)
                     $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                    $0.height.equalTo(1500)
+                    $0.bottom.equalTo(self.bottomLogo.snp.bottom).offset(40)
                 }
+                
                 self.backgroundImageView.snp.updateConstraints {
                     $0.height.equalTo(350)
                 }
+                
                 self.view.layoutIfNeeded()
             }
         }
@@ -646,3 +717,13 @@ extension DetailViewController: UITextViewDelegate {
     }
 }
 
+
+extension DetailViewController: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        if let dateVC = presented as? DateViewController {
+            return DatePresentationController(presentedViewController: dateVC, presenting: presenting)
+        } else {
+            return nil
+        }
+    }
+}

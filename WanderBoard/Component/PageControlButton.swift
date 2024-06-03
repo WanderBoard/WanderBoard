@@ -20,27 +20,28 @@ struct PageControlButton: View {
                 ZStack {
                     if selectedIndex == index {
                         RoundedRectangle(cornerRadius: 30)
-                            .fill(Color.white)
+                            .fill(Color("PageCtrlSelectedBG"))
                             .opacity(0.9)
                             .frame(height: 32)
                             .padding(EdgeInsets(top: -4, leading: 4, bottom: -4, trailing: 4))
                         
                         HStack {
                             Image(systemName: iconName(for: index))
-                                .foregroundColor(.black)
+                                .foregroundColor(Color("PageCtrlSelectedText"))
                                 .font(.system(size: 14))
                             Text(title(for: index))
-                                .foregroundColor(.black)
+                                .foregroundColor(Color("PageCtrlSelectedText"))
                                 .font(.system(size: 8.5))
                         }
                         .padding(.horizontal)
                     } else {
                         Image(systemName: iconName(for: index))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color("PageCtrlUnselectedText"))
                     }
                 }
                 .frame(maxWidth: selectedIndex == index ? 90 : 45, maxHeight: 40)
-                .background(Color.black)
+                .background(Color("PageCtrlUnselectedBG"))
+                
                 .clipShape(Capsule())
                 .onTapGesture {
                     withAnimation(.interactiveSpring) {
@@ -50,8 +51,9 @@ struct PageControlButton: View {
                 }
             }
         }
-        .background(Color.black)
+        .background(Color("BackgroundColor"))
         .clipShape(Capsule())
+        .shadow(color: .pageCtrlShadow, radius: 8, x: 0, y: 4)
         .padding()
         .gesture(
             DragGesture().updating($dragOffset, body: { value, state, _ in
@@ -70,8 +72,8 @@ struct PageControlButton: View {
     
     private func iconName(for index: Int) -> String {
         switch index {
-            case 0: return "globe"
-            case 1: return "person"
+            case 0: return "globe.americas"
+            case 1: return "square.on.square"
             case 2: return "gearshape"
             default: return ""
         }

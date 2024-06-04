@@ -33,31 +33,22 @@ class StorageManager {
         if let location = location {
             metadata.customMetadata = [
                 "latitude": "\(location.coordinate.latitude)",
-                "longitude": "\(location.coordinate.longitude)",
-                "dateTaken": "\(Date())" // 실제 날짜로 대체
+                "longitude": "\(location.coordinate.longitude)"
             ]
+        }
+        
+        // 이미지 촬영 날짜 메타데이터 추출
+        if let dateTaken = extractDateFromImage(image: image) {
+            metadata.customMetadata?["dateTaken"] = "\(dateTaken)"
         }
         
         let uploadTask = try await storageRef.putDataAsync(imageData, metadata: metadata)
         
         let downloadURL = try await storageRef.downloadURL()
         
-        let media = Media(url: downloadURL.absoluteString, latitude: location?.coordinate.latitude, longitude: location?.coordinate.longitude, dateTaken: Date())
+        let media = Media(url: downloadURL.absoluteString, latitude: location?.coordinate.latitude, longitude: location?.coordinate.longitude, dateTaken: extractDateFromImage(image: image))
         
         return media
-    }
-    
-    // 메타데이터 저장 메서드
-    func saveMediaMetadata(media: Media, userId: String, pinLogId: String) async throws {
-        let documentRef = db.collection("users").document(userId).collection("pinLogs").document(pinLogId)
-        var mediaDict: [String: Any] = ["url": media.url, "dateTaken": Timestamp(date: media.dateTaken ?? Date())]
-        
-        if let latitude = media.latitude, let longitude = media.longitude {
-            mediaDict["latitude"] = latitude
-            mediaDict["longitude"] = longitude
-        }
-        
-        try await documentRef.updateData(["media": FieldValue.arrayUnion([mediaDict])])
     }
     
     // 이미지에서 위치 메타데이터를 추출하는 메서드
@@ -74,5 +65,22 @@ class StorageManager {
         }
 
         return CLLocation(latitude: latitude, longitude: longitude)
+    }
+    
+    // 이미지에서 촬영 날짜 메타데이터를 추출하는 메서드
+    private func extractDateFromImage(image: UIImage) -> Date? {
+        guard let cgImage = image.cgImage,
+              let data = cgImage.dataProvider?.data,
+              let cfData = CFDataCreate(kCFAllocatorDefault, CFDataGetBytePtr(data), CFDataGetLength(data)),
+              let source = CGImageSourceCreateWithData(cfData, nil),
+              let metadata = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any],
+              let exifData = metadata["{Exif}"] as? [String: Any],
+              let dateString = exifData["DateTimeOriginal"] as? String else {
+            return nil
+        }
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
+        return formatter.date(from: dateString)
     }
 }

@@ -72,7 +72,6 @@ class DetailViewController: UIViewController {
     
     let contentView = UIView().then {
         $0.backgroundColor = .white
-        
     }
     
     let publicLabel = UILabel().then {
@@ -307,10 +306,6 @@ class DetailViewController: UIViewController {
         locationStackView.snp.makeConstraints {
             $0.top.equalTo(introLocation).offset(20)
             $0.leading.equalTo(topContentView).inset(38)
-        }
-        
-        dateDaysLabel.snp.makeConstraints {
-            $0.leading.equalTo(locationStackView)
         }
         
         selectDateButton.snp.makeConstraints {
@@ -568,13 +563,11 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func updateCollectionViewHeight() {
-        // Reload layout to ensure contentSize is updated
         galleryCollectionView.layoutIfNeeded()
         
         var contentHeight = galleryCollectionView.contentSize.height
         let minimumHeight: CGFloat = 120
         
-        // If there are more than 2 items, subtract 90 from the content height
         if selectedImages.count > 2 {
             contentHeight -= 90
         }
@@ -625,7 +618,7 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
                 }
                 
                 self.backgroundImageView.snp.updateConstraints {
-                    $0.height.equalTo(200)
+                    $0.height.equalTo(150)
                 }
                 
                 self.view.layoutIfNeeded()

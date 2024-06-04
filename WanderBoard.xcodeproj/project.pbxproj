@@ -48,6 +48,9 @@
 		2A9BED2E2C08B71D0032C403 /* Invitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED2D2C08B71D0032C403 /* Invitation.swift */; };
 		2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED2F2C08DB200032C403 /* InvitationManager.swift */; };
 		2A9BED322C08E2A40032C403 /* PinLogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED312C08E2A40032C403 /* PinLogManager.swift */; };
+		4D8947312C0F33C30057F083 /* DetailInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947302C0F33C30057F083 /* DetailInputViewController.swift */; };
+		4D8947332C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */; };
+		4D8947352C0F357C0057F083 /* FriendInputCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */; };
 		4D9B6C8E2C0DB6CA00A8AD7A /* DatePresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9B6C8D2C0DB6CA00A8AD7A /* DatePresentationController.swift */; };
 		4D9B6C902C0DB6D100A8AD7A /* DateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9B6C8F2C0DB6D100A8AD7A /* DateViewController.swift */; };
 		4D9D8B502C05B1BD0043E7DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9D8B4F2C05B1BD0043E7DF /* AppDelegate.swift */; };
@@ -102,6 +105,9 @@
 		2A9BED2D2C08B71D0032C403 /* Invitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Invitation.swift; path = WanderBoard/Models/Invitation.swift; sourceTree = SOURCE_ROOT; };
 		2A9BED2F2C08DB200032C403 /* InvitationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationManager.swift; sourceTree = "<group>"; };
 		2A9BED312C08E2A40032C403 /* PinLogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLogManager.swift; sourceTree = "<group>"; };
+		4D8947302C0F33C30057F083 /* DetailInputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailInputViewController.swift; sourceTree = "<group>"; };
+		4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GallaryInPutCollectionViewCell.swift; sourceTree = "<group>"; };
+		4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendInputCollectionViewCell.swift; sourceTree = "<group>"; };
 		4D9B6C8D2C0DB6CA00A8AD7A /* DatePresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePresentationController.swift; sourceTree = "<group>"; };
 		4D9B6C8F2C0DB6D100A8AD7A /* DateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateViewController.swift; sourceTree = "<group>"; };
 		4D9D8B4C2C05B1BD0043E7DF /* WanderBoard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WanderBoard.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -288,11 +294,14 @@
 			isa = PBXGroup;
 			children = (
 				4DFA37622C077122001B03F8 /* DetailViewController.swift */,
+				4D8947302C0F33C30057F083 /* DetailInputViewController.swift */,
 				4D9B6C8F2C0DB6D100A8AD7A /* DateViewController.swift */,
 				4DFA376E2C0A03F6001B03F8 /* CustomFlowLayout.swift */,
 				4D9B6C8D2C0DB6CA00A8AD7A /* DatePresentationController.swift */,
 				4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */,
+				4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */,
 				4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */,
+				4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */,
 				4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */,
 			);
 			path = SijongKim93;
@@ -423,8 +432,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D8947352C0F357C0057F083 /* FriendInputCollectionViewCell.swift in Sources */,
 				956ED7942C0852B90001BAC6 /* MyPageViewController.swift in Sources */,
 				FB58D0152C09620300746E05 /* PracticeViewController.swift in Sources */,
+				4D8947332C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift in Sources */,
 				2A7655172C06316300D8A098 /* UIApplication+Extensions.swift in Sources */,
 				2A7655232C070B1700D8A098 /* Numeric.swift in Sources */,
 				2A9BED2E2C08B71D0032C403 /* Invitation.swift in Sources */,
@@ -439,6 +450,7 @@
 				4D9B6C902C0DB6D100A8AD7A /* DateViewController.swift in Sources */,
 				956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */,
 				2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */,
+				4D8947312C0F33C30057F083 /* DetailInputViewController.swift in Sources */,
 				FB58D0162C09620300746E05 /* MainViewController.swift in Sources */,
 				2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */,
 				2A5D47232C0A27EF005C0F76 /* MapViewController.swift in Sources */,

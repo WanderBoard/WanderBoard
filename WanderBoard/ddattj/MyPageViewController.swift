@@ -8,85 +8,83 @@
 import UIKit
 import SnapKit
 import Then
-import SwiftUI
-
-//미리보기 화면
-extension UIViewController {
-    private struct Preview: UIViewControllerRepresentable {
-        let viewController: UIViewController
-        
-        func makeUIViewController(context: Context) -> UIViewController {
-            return viewController
-        }
-        
-        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        }
-    }
-    
-    func toPreview() -> some View {
-        Preview(viewController: self)
-    }
-}
-struct MyViewController_PreViews: PreviewProvider {
-    static var previews: some View {
-        MyPageViewController().toPreview() //원하는 VC를 여기다 입력하면 된다.
-    }
-}
+import CoreData
+import FirebaseAuth
 
 class MyPageViewController: BaseViewController {
     
-    let btn = backButton()
-    let btn2 = actionButton()
-    let profile = UIImageView()
-    let myName = UILabel()
-    let myID = UILabel()
+    let editButton = UIButton()
+    var profile = UIImageView()
+    var myName = UILabel()
+    var myID = UILabel()
     let statusB = UIView()
-    let myWrite = UILabel()
-    let myPin = UILabel()
-    let myExpend = UILabel()
+    var myWrite = UILabel()
+    var myPin = UILabel()
+    var myExpend = UILabel()
     let status1 = UILabel()
     let status2 = UILabel()
     let status3 = UILabel()
     let tableView = UITableView().then(){
-        $0.backgroundColor = .blue
+        $0.backgroundColor = .clear
     }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        configureUI()
-        constraintLayout()
         tableView.register(MyPageTableViewCell.self, forCellReuseIdentifier: MyPageTableViewCell.identifier)
         tableView.delegate = self
         tableView.dataSource = self
+        
+        fetchUserData()
+    }
+    //내가 원하는 데이터 당겨와 특정 값에 할당하기 위한 작업
+    func fetchUserData(){
+        //AppDelegate 가져오기 -> 여태까지 기록된 저장된 모든 데이터 그 자체를 가져오는 역할
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else{
+            return
+        }
+        //가져온 데이터를 분석하고 그 중 코어데이터에서 저장한 entity 불러오기 -> 특정 정보를 특별관리 하겠다 빼뒀는데 그게 User Entity: 거기 정보를 불러오겠다 요청
+        let context = appDelegate.persistentContainer.viewContext
+        let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
+        
+        //혹시 정보를 가져오기 실패할 경우를 생각해 do-catch문 사용
+        //entity에서 내가 설정한 이름의 entity(예를 들어 a라고 지칭)를 가져올건데 a가 여러개라면 제일 첫번째 a를 가져올것
+        //a의 정보 중 특정 정보를 내가 설정한 값에 연결해주는 작업
+        do {
+            
+            let users = try context.fetch(fetchRequest)
+            if let user = users.first {
+                myName.text = user.displayName
+                myID.text = user.email
+            }
+        } catch {
+            print("유저의 정보를 가져오는데에 실패했습니다")
+        }
     }
     
     override func configureUI() {
         super.configureUI()
-        btn.label.text = "My trips"
-        btn2.icon.image = UIImage(systemName: "pencil.circle")
-        btn2.icon.snp.makeConstraints(){
-            $0.width.height.equalTo(25)
-            $0.right.equalTo(view).offset(-25)
+        editButton.setImage(UIImage(systemName: "pencil.circle"), for: .normal)
+        editButton.tintColor = .font
+        editButton.imageView?.snp.makeConstraints(){
+            $0.width.height.equalTo(26)
         }
-//        btn2.addTarget(self, action: #selector(editMode), for: .touchUpInside)
+        editButton.addTarget(self, action: #selector(edit), for: .touchUpInside)
+        let barButtonItem = UIBarButtonItem(customView: editButton)
+        self.navigationItem.rightBarButtonItem = barButtonItem
         
-        myTitle.text = "마이페이지"
-        
-        profile.backgroundColor = UIColor(red: 217/255, green: 217/255, blue: 217/255, alpha: 1)
         profile.clipsToBounds = true
         profile.layer.cornerRadius = profile.frame.size.width / 2
+        profile.backgroundColor = UIColor(red: 217/255, green: 217/255, blue: 217/255, alpha: 1)
         
-        myName.text = "내이름"
         myName.font = UIFont.boldSystemFont(ofSize: 22)
-        myID.textColor = .tintColor
+        myName.textColor = .font
         
-        myID.text = "@아이디 적는곳\(0)"
         myID.font = UIFont.systemFont(ofSize: 13)
-        myID.textColor = .tintColor
+        myID.textColor = .font
         
-        //다크모드 색상까지 같이 지정
-        statusB.backgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor.darkgray : UIColor.customblack
+        statusB.backgroundColor = .customblack
         statusB.layer.shadowOffset = CGSize(width: 0, height: 4)
         statusB.layer.cornerRadius = 10
         statusB.layer.shadowRadius = 4
@@ -112,34 +110,35 @@ class MyPageViewController: BaseViewController {
         status3.font = UIFont.systemFont(ofSize: 13)
         status3.textColor = .white
         
+        tableView.backgroundColor = .clear
         tableView.separatorStyle = .none //테이블뷰 구분선 없앨때 사용
-        
-        
     }
+    
+    //    //다크모드 색상까지 같이 지정
+    //    override func updateColor() {
+    //        statusB.backgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "customblack")
+    //    }
     
     override func constraintLayout() {
         super.constraintLayout()
-        [btn, btn2, profile, myName, myID, statusB, myWrite, myPin, myExpend, status1, status2, status3, tableView].forEach(){
+        [editButton, profile, myName, myID, statusB, myWrite, myPin, myExpend, status1, status2, status3, tableView].forEach(){
             view.addSubview($0)
         }
-        btn.snp.makeConstraints {
-            $0.top.equalTo(view).offset(65)
-            $0.left.equalTo(view).offset(15)
-            $0.width.equalTo(99)
-            $0.height.equalTo(44)
-        }
-        btn2.snp.makeConstraints(){
-            $0.top.equalTo(65)
-            $0.right.equalTo(view).offset(-15)
+        
+        editButton.snp.makeConstraints(){
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
+            $0.right.equalTo(view).offset(-16)
             $0.width.height.equalTo(44)
         }
         logo.snp.makeConstraints(){
             $0.centerX.equalTo(view)
-            $0.bottom.equalTo(view).offset(-48)
+            $0.width.equalTo(143)
+            $0.height.equalTo(18.24)
+            $0.bottom.equalTo(view).offset(-55)
         }
         profile.snp.makeConstraints(){
             $0.centerX.equalTo(view)
-            $0.top.equalTo(myTitle.snp.bottom).offset(29)
+            $0.top.equalTo(view).offset(112)
             $0.width.height.equalTo(view.snp.height).multipliedBy(1.0/8.0)
         }
         myName.snp.makeConstraints(){
@@ -181,23 +180,23 @@ class MyPageViewController: BaseViewController {
             $0.right.equalTo(statusB.snp.right).offset(-31)
         }
         tableView.snp.makeConstraints(){
-            $0.top.equalTo(statusB.snp.bottom).offset(29)
+            $0.top.equalTo(statusB.snp.bottom).offset(49)
             $0.width.equalTo(318)
             $0.centerX.equalTo(view)
-            $0.bottom.equalTo(logo.snp.top).offset(-23)
+            $0.bottom.equalTo(logo.snp.top).offset(-67)
         }
     }
     
-    @objc func editMode(){
-        let editStart = EditViewController()
-        navigationController?.pushViewController(editStart, animated: true)
+    @objc func edit(){
+        let editVC = EditViewController()
+        navigationController?.pushViewController(editVC, animated: true)
+        editVC.previousName = myName.text ?? "noName"
     }
-    
 }
 
 extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return 3
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -205,6 +204,8 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         cell.configureContent(for: indexPath.row)
+        cell.background.backgroundColor = (traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray"))!
+        cell.selectionStyle = .none
         return cell
     }
     
@@ -214,24 +215,45 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
     
     //각 셀마다 이동할 화면 지정
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        //버튼과 같은 느낌을 주기 위해 튀어오르는 효과 애니메이션 추가
+        //다음엔 그렇게 많지 않다면 버튼으로 하자..
+        //우선 '셀'은 테이블뷰의 셀이라고 알려주기
+        guard let cell = tableView.cellForRow(at: indexPath) else { return }
+        //눌렀을때 셀의 사이즈를 확대했다가 다시 원상태로 돌아가는 효과 넣기
+        UIView.animate(withDuration: 0.1,
+                       animations: {
+            cell.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
+        },
+                       completion: { _ in
+            UIView.animate(withDuration: 0.1) {
+                cell.transform = CGAffineTransform.identity
+            }
+        })
+        
         switch indexPath.row {
         case 0:
-            let pinListVC = PinListViewController()
-            navigationController?.pushViewController(pinListVC, animated: true)
-        case 1:
             let settingVC = SettingViewController()
             navigationController?.pushViewController(settingVC, animated: true)
-        case 2:
-            let billingVC = BillingAccountViewController()
-            navigationController?.pushViewController(billingVC, animated: true)
-        case 3:
+            settingVC.navigationItem.title = "환경설정"
+        case 1:
             let policyVC = PrivacyPolicyViewController()
             navigationController?.pushViewController(policyVC, animated: true)
-        case 4:
-            func setAlert(){
-                print("로그아웃")
+            policyVC.navigationItem.title = "개인정보처리방침"
+        case 2:
+            let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
+            let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                let logOutVC = AuthenticationVC()
+                if let transition = self.transition {
+                                       self.navigationController?.view.layer.add(transition, forKey: kCATransition)
+                                   }
+                self.navigationController?.pushViewController(logOutVC, animated: false)
             }
+            let close = UIAlertAction(title: "취소", style: .destructive, handler: nil)
             
+            alert.addAction(close)
+            alert.addAction(confirm)
+            present(alert, animated: true, completion: nil)
         default:
             print("Wrong Way!")
         }

@@ -64,12 +64,11 @@
 		4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */; };
 		4DFA376B2C09AA49001B03F8 /* MapDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */; };
 		4DFA376F2C0A03F6001B03F8 /* CustomFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA376E2C0A03F6001B03F8 /* CustomFlowLayout.swift */; };
+		9530E4A42C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */; };
 		956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED7872C0852B90001BAC6 /* BaseViewController.swift */; };
-		956ED7912C0852B90001BAC6 /* BillingAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED7882C0852B90001BAC6 /* BillingAccountViewController.swift */; };
 		956ED7922C0852B90001BAC6 /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED7892C0852B90001BAC6 /* EditViewController.swift */; };
 		956ED7932C0852B90001BAC6 /* MyPageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78A2C0852B90001BAC6 /* MyPageTableViewCell.swift */; };
 		956ED7942C0852B90001BAC6 /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78B2C0852B90001BAC6 /* MyPageViewController.swift */; };
-		956ED7952C0852B90001BAC6 /* PinListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78C2C0852B90001BAC6 /* PinListViewController.swift */; };
 		956ED7962C0852B90001BAC6 /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */; };
 		956ED7972C0852B90001BAC6 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78E2C0852B90001BAC6 /* SettingViewController.swift */; };
 		FB58D0152C09620300746E05 /* PracticeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB58D0122C09620300746E05 /* PracticeViewController.swift */; };
@@ -119,12 +118,11 @@
 		4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendCollectionViewCell.swift; sourceTree = "<group>"; };
 		4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapDetailViewController.swift; sourceTree = "<group>"; };
 		4DFA376E2C0A03F6001B03F8 /* CustomFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomFlowLayout.swift; sourceTree = "<group>"; };
+		9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyCollectionViewCell.swift; sourceTree = "<group>"; };
 		956ED7872C0852B90001BAC6 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
-		956ED7882C0852B90001BAC6 /* BillingAccountViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BillingAccountViewController.swift; sourceTree = "<group>"; };
 		956ED7892C0852B90001BAC6 /* EditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditViewController.swift; sourceTree = "<group>"; };
 		956ED78A2C0852B90001BAC6 /* MyPageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPageTableViewCell.swift; sourceTree = "<group>"; };
 		956ED78B2C0852B90001BAC6 /* MyPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
-		956ED78C2C0852B90001BAC6 /* PinListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinListViewController.swift; sourceTree = "<group>"; };
 		956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyViewController.swift; sourceTree = "<group>"; };
 		956ED78E2C0852B90001BAC6 /* SettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		FB58D0122C09620300746E05 /* PracticeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PracticeViewController.swift; sourceTree = "<group>"; };
@@ -239,7 +237,6 @@
 				2A7654E02C0605E300D8A098 /* mgynsz */,
 				4D9D8B692C05B2B40043E7DF /* Network */,
 				4D9D8B682C05B2B20043E7DF /* Models */,
-				4D9D8B672C05B2B00043E7DF /* Views */,
 				4D9D8B662C05B2AE0043E7DF /* Controllers */,
 				2A5D471B2C0A26D7005C0F76 /* MapController */,
 				2A9BED282C08A4070032C403 /* Component */,
@@ -262,13 +259,6 @@
 				4D9D8B532C05B1BD0043E7DF /* ViewController.swift */,
 			);
 			path = Controllers;
-			sourceTree = "<group>";
-		};
-		4D9D8B672C05B2B00043E7DF /* Views */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Views;
 			sourceTree = "<group>";
 		};
 		4D9D8B682C05B2B20043E7DF /* Models */ = {
@@ -312,11 +302,10 @@
 			isa = PBXGroup;
 			children = (
 				956ED7872C0852B90001BAC6 /* BaseViewController.swift */,
-				956ED7882C0852B90001BAC6 /* BillingAccountViewController.swift */,
 				956ED7892C0852B90001BAC6 /* EditViewController.swift */,
 				956ED78A2C0852B90001BAC6 /* MyPageTableViewCell.swift */,
 				956ED78B2C0852B90001BAC6 /* MyPageViewController.swift */,
-				956ED78C2C0852B90001BAC6 /* PinListViewController.swift */,
+				9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */,
 				956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */,
 				956ED78E2C0852B90001BAC6 /* SettingViewController.swift */,
 			);
@@ -437,12 +426,10 @@
 				956ED7942C0852B90001BAC6 /* MyPageViewController.swift in Sources */,
 				FB58D0152C09620300746E05 /* PracticeViewController.swift in Sources */,
 				2A7655172C06316300D8A098 /* UIApplication+Extensions.swift in Sources */,
-				956ED7952C0852B90001BAC6 /* PinListViewController.swift in Sources */,
 				2A7655232C070B1700D8A098 /* Numeric.swift in Sources */,
 				2A9BED2E2C08B71D0032C403 /* Invitation.swift in Sources */,
 				2A76550F2C061D7D00D8A098 /* SignInViewController.swift in Sources */,
 				2A5F47C42C0E0AFF00D289AA /* MapView.swift in Sources */,
-
 				4DFA376F2C0A03F6001B03F8 /* CustomFlowLayout.swift in Sources */,
 				2A9BED322C08E2A40032C403 /* PinLogManager.swift in Sources */,
 				2A9BED2A2C08A4330032C403 /* PageControlButton.swift in Sources */,
@@ -454,7 +441,6 @@
 				2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */,
 				FB58D0162C09620300746E05 /* MainViewController.swift in Sources */,
 				2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */,
-				956ED7912C0852B90001BAC6 /* BillingAccountViewController.swift in Sources */,
 				2A5D47232C0A27EF005C0F76 /* MapViewController.swift in Sources */,
 				2A5D47212C0A27B5005C0F76 /* LocationListView.swift in Sources */,
 				4D9D8B5A2C05B1BD0043E7DF /* WanderBoard.xcdatamodeld in Sources */,
@@ -462,6 +448,7 @@
 				2A76550B2C06175B00D8A098 /* AuthenticationManager.swift in Sources */,
 				4D9B6C8E2C0DB6CA00A8AD7A /* DatePresentationController.swift in Sources */,
 				2A7654FD2C060FB500D8A098 /* SignInWithGoogle.swift in Sources */,
+				9530E4A42C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift in Sources */,
 				956ED7932C0852B90001BAC6 /* MyPageTableViewCell.swift in Sources */,
 				2A7655112C0622C000D8A098 /* FirestoreManager.swift in Sources */,
 				4D9D8B502C05B1BD0043E7DF /* AppDelegate.swift in Sources */,

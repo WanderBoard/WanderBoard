@@ -11,6 +11,9 @@
 		2A5D471F2C0A2771005C0F76 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D471E2C0A2771005C0F76 /* LocationManager.swift */; };
 		2A5D47212C0A27B5005C0F76 /* LocationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D47202C0A27B5005C0F76 /* LocationListView.swift */; };
 		2A5D47232C0A27EF005C0F76 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D47222C0A27EF005C0F76 /* MapViewController.swift */; };
+		2A5F47C42C0E0AFF00D289AA /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F47C32C0E0AFF00D289AA /* MapView.swift */; };
+		2A5F47C62C0E276500D289AA /* ImageUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F47C52C0E276500D289AA /* ImageUploader.swift */; };
+		2A5F47C82C0E3A0C00D289AA /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F47C72C0E3A0C00D289AA /* StorageManager.swift */; };
 		2A7654E22C06097400D8A098 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2A7654E12C06097400D8A098 /* GoogleService-Info.plist */; };
 		2A7654E52C060A3500D8A098 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7654E42C060A3500D8A098 /* FirebaseAnalytics */; };
 		2A7654E72C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7654E62C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion */; };
@@ -57,10 +60,8 @@
 		4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37622C077122001B03F8 /* DetailViewController.swift */; };
 		4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */; };
 		4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */; };
-
 		4DFA376B2C09AA49001B03F8 /* MapDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */; };
 		4DFA376F2C0A03F6001B03F8 /* CustomFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA376E2C0A03F6001B03F8 /* CustomFlowLayout.swift */; };
-
 		956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED7872C0852B90001BAC6 /* BaseViewController.swift */; };
 		956ED7912C0852B90001BAC6 /* BillingAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED7882C0852B90001BAC6 /* BillingAccountViewController.swift */; };
 		956ED7922C0852B90001BAC6 /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED7892C0852B90001BAC6 /* EditViewController.swift */; };
@@ -72,7 +73,6 @@
 		FB58D0152C09620300746E05 /* PracticeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB58D0122C09620300746E05 /* PracticeViewController.swift */; };
 		FB58D0162C09620300746E05 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB58D0132C09620300746E05 /* MainViewController.swift */; };
 		FB58D0172C09620300746E05 /* MyTripsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB58D0142C09620300746E05 /* MyTripsCollectionViewCell.swift */; };
-
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,6 +80,9 @@
 		2A5D471E2C0A2771005C0F76 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		2A5D47202C0A27B5005C0F76 /* LocationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationListView.swift; sourceTree = "<group>"; };
 		2A5D47222C0A27EF005C0F76 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		2A5F47C32C0E0AFF00D289AA /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		2A5F47C52C0E276500D289AA /* ImageUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUploader.swift; sourceTree = "<group>"; };
+		2A5F47C72C0E3A0C00D289AA /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		2A7654E12C06097400D8A098 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2A7654FC2C060FB500D8A098 /* SignInWithGoogle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithGoogle.swift; sourceTree = "<group>"; };
 		2A7655032C0610BA00D8A098 /* SignInWithApple.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithApple.swift; sourceTree = "<group>"; };
@@ -94,8 +97,8 @@
 		2A7655222C070B1700D8A098 /* Numeric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Numeric.swift; sourceTree = "<group>"; };
 		2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithKakao.swift; sourceTree = "<group>"; };
 		2A9BED292C08A4330032C403 /* PageControlButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageControlButton.swift; sourceTree = "<group>"; };
-		2A9BED2B2C08B6C60032C403 /* PinLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PinLog.swift; path = WanderBoard/PinLog.swift; sourceTree = SOURCE_ROOT; };
-		2A9BED2D2C08B71D0032C403 /* Invitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Invitation.swift; path = WanderBoard/Invitation.swift; sourceTree = SOURCE_ROOT; };
+		2A9BED2B2C08B6C60032C403 /* PinLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PinLog.swift; path = WanderBoard/Models/PinLog.swift; sourceTree = SOURCE_ROOT; };
+		2A9BED2D2C08B71D0032C403 /* Invitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Invitation.swift; path = WanderBoard/Models/Invitation.swift; sourceTree = SOURCE_ROOT; };
 		2A9BED2F2C08DB200032C403 /* InvitationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationManager.swift; sourceTree = "<group>"; };
 		2A9BED312C08E2A40032C403 /* PinLogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLogManager.swift; sourceTree = "<group>"; };
 		4D9D8B4C2C05B1BD0043E7DF /* WanderBoard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WanderBoard.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -110,10 +113,8 @@
 		4DFA37622C077122001B03F8 /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryCollectionViewCell.swift; sourceTree = "<group>"; };
 		4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendCollectionViewCell.swift; sourceTree = "<group>"; };
-
 		4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapDetailViewController.swift; sourceTree = "<group>"; };
 		4DFA376E2C0A03F6001B03F8 /* CustomFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomFlowLayout.swift; sourceTree = "<group>"; };
-
 		956ED7872C0852B90001BAC6 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		956ED7882C0852B90001BAC6 /* BillingAccountViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BillingAccountViewController.swift; sourceTree = "<group>"; };
 		956ED7892C0852B90001BAC6 /* EditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditViewController.swift; sourceTree = "<group>"; };
@@ -125,7 +126,6 @@
 		FB58D0122C09620300746E05 /* PracticeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PracticeViewController.swift; sourceTree = "<group>"; };
 		FB58D0132C09620300746E05 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		FB58D0142C09620300746E05 /* MyTripsCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTripsCollectionViewCell.swift; sourceTree = "<group>"; };
-
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +163,7 @@
 			isa = PBXGroup;
 			children = (
 				2A5D471C2C0A2742005C0F76 /* MapViewModel.swift */,
+				2A5F47C32C0E0AFF00D289AA /* MapView.swift */,
 				2A5D471E2C0A2771005C0F76 /* LocationManager.swift */,
 				2A5D47202C0A27B5005C0F76 /* LocationListView.swift */,
 				2A5D47222C0A27EF005C0F76 /* MapViewController.swift */,
@@ -173,9 +174,7 @@
 		2A7654E02C0605E300D8A098 /* mgynsz */ = {
 			isa = PBXGroup;
 			children = (
-				2A76550A2C06175B00D8A098 /* AuthenticationManager.swift */,
 				2A7655182C063A0100D8A098 /* AuthenticationVC.swift */,
-				2A7655102C0622C000D8A098 /* FirestoreManager.swift */,
 				2A7655032C0610BA00D8A098 /* SignInWithApple.swift */,
 				2A7654FC2C060FB500D8A098 /* SignInWithGoogle.swift */,
 				2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */,
@@ -283,6 +282,10 @@
 				4D9D8B6A2C05B2D90043E7DF /* NetworkManager.swift */,
 				2A9BED2F2C08DB200032C403 /* InvitationManager.swift */,
 				2A9BED312C08E2A40032C403 /* PinLogManager.swift */,
+				2A5F47C72C0E3A0C00D289AA /* StorageManager.swift */,
+				2A5F47C52C0E276500D289AA /* ImageUploader.swift */,
+				2A7655102C0622C000D8A098 /* FirestoreManager.swift */,
+				2A76550A2C06175B00D8A098 /* AuthenticationManager.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -432,14 +435,12 @@
 				2A7655232C070B1700D8A098 /* Numeric.swift in Sources */,
 				2A9BED2E2C08B71D0032C403 /* Invitation.swift in Sources */,
 				2A76550F2C061D7D00D8A098 /* SignInViewController.swift in Sources */,
-
-				4D9D8B6B2C05B2D90043E7DF /* NetworkManager.swift in Sources */,
+				2A5F47C42C0E0AFF00D289AA /* MapView.swift in Sources */,
 				4DFA376F2C0A03F6001B03F8 /* CustomFlowLayout.swift in Sources */,
-
 				2A9BED322C08E2A40032C403 /* PinLogManager.swift in Sources */,
 				2A9BED2A2C08A4330032C403 /* PageControlButton.swift in Sources */,
 				FB58D0172C09620300746E05 /* MyTripsCollectionViewCell.swift in Sources */,
-
+				2A5F47C62C0E276500D289AA /* ImageUploader.swift in Sources */,
 				4D9D8B542C05B1BD0043E7DF /* ViewController.swift in Sources */,
 				956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */,
 				2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */,
@@ -462,6 +463,7 @@
 				2A7655212C070B0400D8A098 /* Formatter.swift in Sources */,
 				2A5D471D2C0A2742005C0F76 /* MapViewModel.swift in Sources */,
 				956ED7972C0852B90001BAC6 /* SettingViewController.swift in Sources */,
+				2A5F47C82C0E3A0C00D289AA /* StorageManager.swift in Sources */,
 				2A7655042C0610BA00D8A098 /* SignInWithApple.swift in Sources */,
 				956ED7922C0852B90001BAC6 /* EditViewController.swift in Sources */,
 				4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */,

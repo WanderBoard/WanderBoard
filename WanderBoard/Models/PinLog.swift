@@ -8,6 +8,25 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import CoreLocation
+
+struct Media: Codable {
+    var url: String
+    var latitude: Double?
+    var longitude: Double?
+    var dateTaken: Date?
+
+    var location: CLLocation? {
+        get {
+            guard let latitude = latitude, let longitude = longitude else { return nil }
+            return CLLocation(latitude: latitude, longitude: longitude)
+        }
+        set {
+            latitude = newValue?.coordinate.latitude
+            longitude = newValue?.coordinate.longitude
+        }
+    }
+}
 
 struct PinLog: Identifiable, Codable {
     @DocumentID var id: String?
@@ -17,12 +36,12 @@ struct PinLog: Identifiable, Codable {
     var duration: Int
     var title: String
     var content: String
-    var mediaURL: [String]
+    var media: [Media]
     var authorId: String
     var attendeeIds: [String]
     var isPublic: Bool
     
-    init(id: String? = nil, location: String, startDate: Date, endDate: Date, title: String, content: String, mediaURL: [String], authorId: String, attendeeIds: [String], isPublic: Bool) {
+    init(id: String? = nil, location: String, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool) {
         self.id = id
         self.location = location
         self.startDate = startDate
@@ -30,7 +49,7 @@ struct PinLog: Identifiable, Codable {
         self.duration = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0
         self.title = title
         self.content = content
-        self.mediaURL = mediaURL
+        self.media = media
         self.authorId = authorId
         self.attendeeIds = attendeeIds
         self.isPublic = isPublic

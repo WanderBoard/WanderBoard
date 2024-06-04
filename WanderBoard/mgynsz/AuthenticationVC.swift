@@ -6,7 +6,7 @@
 //
 
 
-//242번 연결 컨트롤러 바꿈
+//246번 연결 컨트롤러 바꿈
 
 import UIKit
 import GoogleSignIn

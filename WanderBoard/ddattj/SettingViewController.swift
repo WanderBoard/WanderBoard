@@ -67,8 +67,17 @@ class SettingViewController: BaseViewController {
         subTitle1.textColor = .font
         
         connectButton.setImage(UIImage(named: "instagramLogo"), for: .normal)
+        if let imageView = connectButton.imageView {
+                   imageView.snp.makeConstraints {
+                       $0.width.height.equalTo(24) // 이미지 크기를 24x24로 설정
+                   }
+               }
         connectButton.setTitle("인스타그램 계정 연결하기", for: .normal)
+        connectButton.titleLabel?.font = UIFont.systemFont(ofSize: 13)
         connectButton.setTitleColor(.font, for: .normal)
+//        connectButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 10)
+//        connectButton.connectButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: -10)
+       
         
         scriptBackground2.backgroundColor = .babygray
         scriptBackground2.layer.cornerRadius = 10

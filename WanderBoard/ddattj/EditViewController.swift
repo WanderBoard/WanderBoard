@@ -13,10 +13,12 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
     let doneButton = UIButton()
     var profile = UIImageView()
     var myName = UITextField().then(){
-        $0.borderStyle = .roundedRect
         $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 13)
-        $0.backgroundColor = .babygray
+        $0.layer.borderWidth = 1
+        $0.layer.borderColor = UIColor.font.cgColor
+        $0.layer.cornerRadius = 10
+        $0.backgroundColor = .clear
         $0.textAlignment = .center
         $0.clearButtonMode = .whileEditing
         $0.keyboardType = .default
@@ -52,6 +54,8 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
         profile.clipsToBounds = true
         profile.layer.cornerRadius = profile.frame.size.width / 2
         profile.backgroundColor = UIColor(red: 217/255, green: 217/255, blue: 217/255, alpha: 1)
+        profile.layer.shadowRadius = 15
+        profile.layer.shadowOpacity = 0.25
         
         
         myName.placeholder = "\(previousName)"
@@ -65,6 +69,8 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
         IDIcon.backgroundColor = .blue
         
         myID.text = "내 아이디\(0)"
+        myID.font = UIFont.systemFont(ofSize: 13)
+        myID.textColor = .font
         
         subTitleBackground.backgroundColor = .babygray
         subTitleBackground.layer.cornerRadius = 10
@@ -127,7 +133,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
             $0.width.height.equalTo(view.snp.height).multipliedBy(1.0/8.0)
         }
         myName.snp.makeConstraints(){
-            $0.top.equalTo(profile.snp.bottom).offset(17)
+            $0.top.equalTo(profile.snp.bottom).offset(27)
             $0.horizontalEdges.equalTo(view).inset(95)
             $0.height.equalTo(44)
             $0.centerX.equalTo(view)

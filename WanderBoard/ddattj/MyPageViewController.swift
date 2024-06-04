@@ -52,6 +52,8 @@ class MyPageViewController: BaseViewController {
         profile.clipsToBounds = true
         profile.layer.cornerRadius = profile.frame.size.width / 2
         profile.backgroundColor = UIColor(red: 217/255, green: 217/255, blue: 217/255, alpha: 1)
+        profile.layer.shadowRadius = 15
+        profile.layer.shadowOpacity = 0.25
         
         myName.font = UIFont.boldSystemFont(ofSize: 22)
         myName.textColor = .font
@@ -223,6 +225,7 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                                        self.navigationController?.view.layer.add(transition, forKey: kCATransition)
                                    }
                 self.navigationController?.pushViewController(logOutVC, animated: false)
+                self.navigationController?.navigationBar.isHidden = true
             }
             let close = UIAlertAction(title: "취소", style: .destructive, handler: nil)
             

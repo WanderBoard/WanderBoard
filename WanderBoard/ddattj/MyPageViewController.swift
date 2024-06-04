@@ -35,33 +35,8 @@ class MyPageViewController: BaseViewController {
         tableView.register(MyPageTableViewCell.self, forCellReuseIdentifier: MyPageTableViewCell.identifier)
         tableView.delegate = self
         tableView.dataSource = self
-        
-        fetchUserData()
     }
-    //내가 원하는 데이터 당겨와 특정 값에 할당하기 위한 작업
-    func fetchUserData(){
-        //AppDelegate 가져오기 -> 여태까지 기록된 저장된 모든 데이터 그 자체를 가져오는 역할
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else{
-            return
-        }
-        //가져온 데이터를 분석하고 그 중 코어데이터에서 저장한 entity 불러오기 -> 특정 정보를 특별관리 하겠다 빼뒀는데 그게 User Entity: 거기 정보를 불러오겠다 요청
-        let context = appDelegate.persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-        
-        //혹시 정보를 가져오기 실패할 경우를 생각해 do-catch문 사용
-        //entity에서 내가 설정한 이름의 entity(예를 들어 a라고 지칭)를 가져올건데 a가 여러개라면 제일 첫번째 a를 가져올것
-        //a의 정보 중 특정 정보를 내가 설정한 값에 연결해주는 작업
-        do {
-            
-            let users = try context.fetch(fetchRequest)
-            if let user = users.first {
-                myName.text = user.displayName
-                myID.text = user.email
-            }
-        } catch {
-            print("유저의 정보를 가져오는데에 실패했습니다")
-        }
-    }
+   
     
     override func configureUI() {
         super.configureUI()

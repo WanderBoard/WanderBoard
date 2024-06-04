@@ -5,6 +5,9 @@
 //  Created by David Jang on 5/29/24.
 //
 
+
+//242번 연결 컨트롤러 바꿈
+
 import UIKit
 import GoogleSignIn
 import AuthenticationServices
@@ -239,7 +242,8 @@ class AuthenticationVC: UIViewController {
                     // 이메일 정보가 없는 경우 처리
                     print("이메일 정보가 없습니다.")
                 }
-                switchRootView(to: SignInViewController())
+                //switchRootView(to: SignInViewController())
+                switchRootView(to: MyPageViewController())
             } catch {
                 print("카카오 로그인 실패: \(error)")
             }
@@ -296,7 +300,10 @@ class AuthenticationVC: UIViewController {
                 .compactMap({ $0 as? UIWindowScene })
                 .flatMap({ $0.windows })
                 .first(where: { $0.isKeyWindow }) else { return }
-        window.rootViewController = viewController
+        // 네비게이션 컨트롤러 생성
+        let navigationController = UINavigationController(rootViewController: viewController)
+        navigationController.navigationBar.tintColor = .font
+        window.rootViewController = navigationController
         window.makeKeyAndVisible()
     }
 }

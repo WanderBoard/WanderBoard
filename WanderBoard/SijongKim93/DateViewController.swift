@@ -96,7 +96,7 @@ class DateViewController: UIViewController {
         }
         
         endDateLabel.snp.makeConstraints {
-            $0.top.equalTo(startDatePicker.snp.bottom).offset(30)
+            $0.top.equalTo(startDatePicker.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(view).inset(20)
         }
         

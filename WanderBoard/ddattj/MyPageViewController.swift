@@ -11,7 +11,9 @@ import Then
 import CoreData
 import FirebaseAuth
 
-class MyPageViewController: BaseViewController {
+class MyPageViewController: BaseViewController, PageIndexed {
+    //페이지 이동하려고 추가했습니다 ! - 한빛
+    var pageIndex: Int?
     
     let editButton = UIButton()
     var profile = UIImageView()

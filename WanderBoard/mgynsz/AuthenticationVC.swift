@@ -243,7 +243,8 @@ class AuthenticationVC: UIViewController {
                     print("이메일 정보가 없습니다.")
                 }
                 //switchRootView(to: SignInViewController())
-                switchRootView(to: MyPageViewController())
+                //switchRootView(to: MyPageViewController())
+                switchRootView(to: PageViewController())
             } catch {
                 print("카카오 로그인 실패: \(error)")
             }
@@ -260,7 +261,8 @@ class AuthenticationVC: UIViewController {
                 let tokens = try await helper.signIn()
                 let _ = try await AuthenticationManager.shared.signInWithGoogle(tokens: tokens)
                 UserDefaults.standard.set(true, forKey: "isLoggedIn")
-                switchRootView(to: SignInViewController())
+                //switchRootView(to: SignInViewController())
+                switchRootView(to: PageViewController())
             } catch {
                 print("구글 로그인 실패: \(error)")
             }
@@ -274,7 +276,8 @@ class AuthenticationVC: UIViewController {
                 let result = try await helper.startSignInWithAppleFlow()
                 let _ = try await AuthenticationManager.shared.signInWithApple(tokens: result)
                 UserDefaults.standard.set(true, forKey: "isLoggedIn")
-                switchRootView(to: SignInViewController())
+                //switchRootView(to: SignInViewController())
+                switchRootView(to: PageViewController())
             } catch {
                 print("Apple 로그인 실패: \(error)")
             }

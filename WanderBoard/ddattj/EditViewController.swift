@@ -61,9 +61,9 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         profile.clipsToBounds = true
         profile.contentMode = .scaleAspectFill
         profile.layer.cornerRadius = 53
-        profile.backgroundColor = .babygray
+        profile.backgroundColor = .lightgray
+        profile.layer.shadowOffset = CGSize(width: 0, height: 4)
         profile.layer.shadowRadius = 15
-        profile.layer.shadowOpacity = 0.25
         
         myName.placeholder = previousName
         myName.clearButtonMode = .never // x 버튼 비활성화
@@ -73,7 +73,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         nameAlert.text = "* 닉네임은 3글자 이상, 16글자 이하여야 합니다"
         nameAlert.font = UIFont.systemFont(ofSize: 12)
-        nameAlert.textColor = .lightgray
+        nameAlert.textColor = .darkgray
         
         myID.text = ID
         myID.font = UIFont.systemFont(ofSize: 13)
@@ -233,10 +233,13 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let scriptBackgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
         subTitleBackground.backgroundColor = scriptBackgroundColor
         
-        let myNameColor = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
-        self.myName.layer.borderColor = myNameColor
+        let nameAlertColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
+        nameAlert.textColor = nameAlertColor
         
-        let profileColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "babygray")
-        self.profile.backgroundColor = profileColor
+        let myNameColor = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
+        myName.layer.borderColor = myNameColor
+        
+        let profileColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        profile.backgroundColor = profileColor
     }
 }

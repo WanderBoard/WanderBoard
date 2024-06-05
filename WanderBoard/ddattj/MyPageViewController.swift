@@ -88,9 +88,9 @@ class MyPageViewController: BaseViewController, PageIndexed {
         
         profile.layer.cornerRadius = 53
         profile.clipsToBounds = true
-        profile.backgroundColor = UIColor(red: 217/255, green: 217/255, blue: 217/255, alpha: 1)
+        profile.backgroundColor = .lightgray
+        profile.layer.shadowOffset = CGSize(width: 0, height: 4)
         profile.layer.shadowRadius = 15
-        profile.layer.shadowOpacity = 0.25
         
         myName.text = userData.displayName ?? "No Name"
         myName.font = UIFont.boldSystemFont(ofSize: 22)
@@ -205,6 +205,11 @@ class MyPageViewController: BaseViewController, PageIndexed {
         editVC.userData = self.userData //여기서 쓰인 userData, editVC의 userData로 넘겨주기
         navigationController?.pushViewController(editVC, animated: true)
     }
+    override func updateColor(){
+        let profileColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        profile.backgroundColor = profileColor
+    }
+    
 }
 
 extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
@@ -217,7 +222,6 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         cell.configureContent(for: indexPath.row)
-        cell.background.backgroundColor = (traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray"))!
         cell.selectionStyle = .none
         return cell
     }
@@ -272,12 +276,4 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             print("Wrong Way!")
         }
     }
-    
-//    override func updateColor(){
-//        super.updateColor()
-//        let statusBColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
-//        statusB.backgroundColor = statusBColor
-//        
-//        
-//    }
 }

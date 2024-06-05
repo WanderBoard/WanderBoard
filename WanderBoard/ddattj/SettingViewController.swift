@@ -6,30 +6,6 @@
 //
 
 import UIKit
-import SwiftUI
-
-//미리보기 화면
-extension UIViewController {
-    private struct Preview: UIViewControllerRepresentable {
-        let viewController: UIViewController
-        
-        func makeUIViewController(context: Context) -> UIViewController {
-            return viewController
-        }
-        
-        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        }
-    }
-    
-    func toPreview() -> some View {
-        Preview(viewController: self)
-    }
-}
-struct MyViewController_PreViews: PreviewProvider {
-    static var previews: some View {
-        SettingViewController().toPreview() //원하는 VC를 여기다 입력하면 된다.
-    }
-}
 
 class SettingViewController: BaseViewController {
     
@@ -39,18 +15,50 @@ class SettingViewController: BaseViewController {
     let connectButton = UIButton()
     let scriptBackground2 = UIView()
     let scriptTitle2 = UILabel()
-    let lightMode = UIButton()
+    let lightMode = UIView()
+    let phoneImageL = UIImageView()
+    let titleL = UILabel()
+    let iconL = UIImageView()
     let darkMode = UIButton()
+    let phoneImageD = UIImageView()
+    let titleD = UILabel()
+    let iconD = UIImageView()
     let line = UIImageView()
     let subTitle2 = UILabel()
     let toggle = UISwitch()
     
+    @objc func viewTappedL(tapGestureRecognizer: UITapGestureRecognizer){
+        UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            self.overrideUserInterfaceStyle = .light
+        }, completion: nil)
+    }
 
+    @objc func viewTappedD(tapGestureRecognizer: UITapGestureRecognizer){
+        UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            self.overrideUserInterfaceStyle = .dark
+        }, completion: nil)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         configureUI()
         constraintLayout()
+        
+        //토글로 모드 자동전환 실행
+        toggle.addTarget(self, action: #selector(modeChangedWithToggle), for: .valueChanged)
+        
+        let tapRecognizerL = UITapGestureRecognizer(target: self, action: #selector(viewTappedL(tapGestureRecognizer:)))
+        // UIView가 상호작용할 수 있게 설정
+        lightMode.isUserInteractionEnabled = true
+        // 제스처 인식기 연결
+        lightMode.addGestureRecognizer(tapRecognizerL)
+        // lightMode의 배경색을 서서히 변경하는 애니메이션
+        
+        let tapRecognizerD
+        = UITapGestureRecognizer(target: self, action: #selector(viewTappedD(tapGestureRecognizer:)))
+        darkMode.isUserInteractionEnabled = true
+        darkMode.addGestureRecognizer(tapRecognizerD)
     }
     
     override func configureUI() {
@@ -66,18 +74,21 @@ class SettingViewController: BaseViewController {
         subTitle1.font = UIFont.boldSystemFont(ofSize: 13)
         subTitle1.textColor = .font
         
+        connectButton.layer.borderWidth = 1
+        connectButton.layer.cornerRadius = 10
+        connectButton.layer.borderColor = CGColor(gray: 0, alpha: 1)
+        connectButton.setTitle("인스타그램 계정 연결하기", for: .normal)
+        connectButton.titleLabel?.font = UIFont.systemFont(ofSize: 13)
+        connectButton.setTitleColor(.font, for: .normal)
         connectButton.setImage(UIImage(named: "instagramLogo"), for: .normal)
         if let imageView = connectButton.imageView {
                    imageView.snp.makeConstraints {
                        $0.width.height.equalTo(24) // 이미지 크기를 24x24로 설정
+                       $0.centerY.equalToSuperview()
+                       let label = connectButton.titleLabel
+                       $0.right.equalTo(label!.snp.left).offset(-8)
                    }
                }
-        connectButton.setTitle("인스타그램 계정 연결하기", for: .normal)
-        connectButton.titleLabel?.font = UIFont.systemFont(ofSize: 13)
-        connectButton.setTitleColor(.font, for: .normal)
-//        connectButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 10)
-//        connectButton.connectButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: -10)
-       
         
         scriptBackground2.backgroundColor = .babygray
         scriptBackground2.layer.cornerRadius = 10
@@ -86,10 +97,28 @@ class SettingViewController: BaseViewController {
         scriptTitle2.font = UIFont.boldSystemFont(ofSize: 15)
         scriptTitle2.textColor = .font
         
+        phoneImageL.image = UIImage(named: "lightModePhone")
+        phoneImageL.contentMode = .scaleAspectFit
+        titleL.text = "라이트모드"
+        titleL.textColor = .font
+        titleL.font = UIFont.boldSystemFont(ofSize: 15)
+        iconL.image = UIImage(systemName: "circle")
+        iconL.tintColor = .font
+        
+        phoneImageD.image = UIImage(named: "darkModePhone")
+        phoneImageD.contentMode = .scaleAspectFit
+        titleD.text = "다크모드"
+        titleD.textColor = .font
+        titleD.font = UIFont.boldSystemFont(ofSize: 15)
+        iconD.image = UIImage(systemName: "circle")
+        iconD.tintColor = .font
+        
         subTitle2.text = "자동"
-        subTitle2.font = UIFont.boldSystemFont(ofSize: 13)
+        subTitle2.font = UIFont.boldSystemFont(ofSize: 16)
         subTitle2.textColor = .font
         
+        toggle.thumbTintColor = UIColor(named: "textColor")
+        toggle.onTintColor = .font
     }
     
     override func constraintLayout() {
@@ -107,12 +136,15 @@ class SettingViewController: BaseViewController {
             $0.left.equalTo(scriptBackground1.snp.left).offset(29)
         }
         subTitle1.snp.makeConstraints(){
-            $0.top.equalTo(scriptBackground1.snp.bottom).offset(23)
+            $0.top.equalTo(scriptBackground1.snp.bottom).offset(26)
             $0.left.equalTo(scriptBackground1.snp.left).offset(16)
         }
         connectButton.snp.makeConstraints(){
             $0.top.equalTo(scriptBackground1.snp.bottom).offset(17)
+            $0.left.equalTo(subTitle1.snp.right).offset(88)
             $0.right.equalTo(view).offset(-16)
+            $0.height.equalTo(44)
+            
         }
         scriptBackground2.snp.makeConstraints(){
             $0.horizontalEdges.equalTo(view).inset(16)
@@ -129,12 +161,49 @@ class SettingViewController: BaseViewController {
             $0.width.equalTo(92)
             $0.height.equalTo(200)
         }
+        
+        [phoneImageL, titleL, iconL].forEach(){
+            lightMode.addSubview($0)
+        }
+        phoneImageL.snp.makeConstraints(){
+            $0.centerX.equalToSuperview()
+            $0.top.equalToSuperview().offset(5)
+            $0.height.equalTo(150)
+        }
+        titleL.snp.makeConstraints(){
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(phoneImageL.snp.bottom).offset(5)
+        }
+        iconL.snp.makeConstraints(){
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(titleL.snp.bottom).offset(8)
+        }
+        
         darkMode.snp.makeConstraints(){
             $0.top.equalTo(scriptBackground2.snp.bottom).offset(21)
             $0.right.equalTo(view).offset(-81)
             $0.width.equalTo(92)
             $0.height.equalTo(200)
         }
+        
+        [phoneImageD, titleD, iconD].forEach(){
+            darkMode.addSubview($0)
+        }
+        
+        phoneImageD.snp.makeConstraints(){
+            $0.centerX.equalToSuperview()
+            $0.top.equalToSuperview().offset(5)
+            $0.height.equalTo(150)
+        }
+        titleD.snp.makeConstraints(){
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(phoneImageD.snp.bottom).offset(5)
+        }
+        iconD.snp.makeConstraints(){
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(titleD.snp.bottom).offset(8)
+        }
+        
         line.snp.makeConstraints(){
             $0.centerX.equalTo(view)
             $0.top.equalTo(darkMode.snp.bottom).offset(16)
@@ -157,6 +226,31 @@ class SettingViewController: BaseViewController {
             $0.height.equalTo(18.24)
             $0.bottom.equalTo(view).offset(-55)
         }
+    }
+    
+    @objc func modeChangedWithToggle(_ sender: UISwitch){
+        UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            if sender.isOn {
+                let hour = Calendar.current.component(.hour, from: Date())
+                if hour >= 18 || hour < 6
+                {
+                    //저녁 6시부터 다음 날 아침 6시까진 다크모드
+                    self.overrideUserInterfaceStyle = .dark
+                } else {
+                    self.overrideUserInterfaceStyle = .light
+                }
+            }
+        }, completion: nil)
+    }
+    
+    override func updateColor(){
+        super.updateColor()
+        let scriptBackgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+        scriptBackground1.backgroundColor = scriptBackgroundColor
+        scriptBackground2.backgroundColor = scriptBackgroundColor
+        
+        let connectButtonColor = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
+        connectButton.layer.borderColor = connectButtonColor
     }
 
 }

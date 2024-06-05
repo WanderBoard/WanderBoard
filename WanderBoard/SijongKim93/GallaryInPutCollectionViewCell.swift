@@ -48,6 +48,7 @@ class GallaryInPutCollectionViewCell: UICollectionViewCell {
         addButton.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+        
     }
     
     func configure(with image: UIImage?) {

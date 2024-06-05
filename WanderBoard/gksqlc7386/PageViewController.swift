@@ -64,6 +64,7 @@ class PageViewController: UIViewController {
         
         let navigationController = UINavigationController(rootViewController: contentViewController)
         navigationController.navigationBar.prefersLargeTitles = true
+        navigationController.navigationBar.tintColor = .font
         
         navigationController.navigationBar.largeTitleTextAttributes = [
             NSAttributedString.Key.font: UIFont.systemFont(ofSize: 34, weight: .bold)

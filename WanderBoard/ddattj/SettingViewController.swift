@@ -27,18 +27,6 @@ class SettingViewController: BaseViewController {
     let subTitle2 = UILabel()
     let toggle = UISwitch()
     
-    @objc func viewTappedL(tapGestureRecognizer: UITapGestureRecognizer){
-        UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            self.overrideUserInterfaceStyle = .light
-        }, completion: nil)
-    }
-
-    @objc func viewTappedD(tapGestureRecognizer: UITapGestureRecognizer){
-        UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            self.overrideUserInterfaceStyle = .dark
-        }, completion: nil)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -228,8 +216,26 @@ class SettingViewController: BaseViewController {
         }
     }
     
+    @objc func viewTappedL(tapGestureRecognizer: UITapGestureRecognizer){
+        UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            self.overrideUserInterfaceStyle = .light
+            self.iconL.image = UIImage(systemName: "checkmark.circle.fill")
+            self.iconD.image = UIImage(systemName: "circle")
+        }, completion: nil)
+    }
+
+    @objc func viewTappedD(tapGestureRecognizer: UITapGestureRecognizer){
+        UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            self.overrideUserInterfaceStyle = .dark
+            self.iconD.image = UIImage(systemName: "checkmark.circle.fill")
+            self.iconL.image = UIImage(systemName: "circle")
+        }, completion: nil)
+    }
+    
     @objc func modeChangedWithToggle(_ sender: UISwitch){
         UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            self.iconL.image = UIImage(systemName: "circle")
+            self.iconD.image = UIImage(systemName: "circle")
             if sender.isOn {
                 let hour = Calendar.current.component(.hour, from: Date())
                 if hour >= 18 || hour < 6

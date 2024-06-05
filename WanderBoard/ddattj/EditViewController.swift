@@ -6,17 +6,19 @@
 //
 
 import UIKit
+import PhotosUI
 
 
-class EditViewController: BaseViewController, UITextFieldDelegate {
+class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewControllerDelegate {
     
     let doneButton = UIButton()
-    var profile = UIImageView()
+    let addImage = UIImageView()
+    let profile = UIImageView()
     var myName = UITextField().then(){
         $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 13)
         $0.layer.borderWidth = 1
-        $0.layer.borderColor = UIColor.font.cgColor
+        $0.layer.borderColor = CGColor(gray: 0, alpha: 1)
         $0.layer.cornerRadius = 10
         $0.backgroundColor = .clear
         $0.textAlignment = .center
@@ -39,6 +41,10 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
         super.viewDidLoad()
         setIcon()
         view.backgroundColor = .systemBackground
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(tapGestureRecognizer:)))
+        profile.isUserInteractionEnabled = true
+        profile.addGestureRecognizer(tapGestureRecognizer)
     }
     
     override func configureUI(){
@@ -49,16 +55,21 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
         let barButtonItem = UIBarButtonItem(customView: doneButton)
         self.navigationItem.rightBarButtonItem = barButtonItem
         
+        addImage.image = UIImage(systemName: "plus")
+        addImage.tintColor = UIColor(named: "textColorSub")
+        
         profile.clipsToBounds = true
-        profile.layer.cornerRadius = profile.frame.size.width / 2
-        profile.backgroundColor = UIColor(red: 217/255, green: 217/255, blue: 217/255, alpha: 1)
+        profile.contentMode = .scaleAspectFill
+        profile.layer.cornerRadius = 53
+        profile.backgroundColor = .babygray
         profile.layer.shadowRadius = 15
         profile.layer.shadowOpacity = 0.25
-        
         
         myName.placeholder = previousName
         myName.clearButtonMode = .never // x 버튼 비활성화
         myName.delegate = self
+        
+        IDIcon.contentMode = .scaleAspectFit
         
         nameAlert.text = "* 닉네임은 3글자 이상, 16글자 이하여야 합니다"
         nameAlert.font = UIFont.systemFont(ofSize: 12)
@@ -95,41 +106,9 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
         }
     }
     
-    @objc func moveToMyPage(){
-        let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
-        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-            let myPageVC = MyPageViewController()
-            self.navigationController?.pushViewController(myPageVC, animated: false)
-        }
-        alert.addAction(confirm)
-        present(alert, animated: true, completion: nil)
-    }
-    
-//    @objc func selectProfileImage() {
-//            let picker = UIImagePickerController()
-//            picker.delegate = self
-//            picker.sourceType = .photoLibrary
-//            picker.allowsEditing = true
-//            present(picker, animated: true, completion: nil)
-//        }
-//    
-//    // UIImagePickerControllerDelegate 메서드
-//       func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-//           if let editedImage = info[.editedImage] as? UIImage {
-//               profile.image = editedImage
-//           } else if let originalImage = info[.originalImage] as? UIImage {
-//               profile.image = originalImage
-//           }
-//           dismiss(animated: true, completion: nil)
-//       }
-//       
-//       func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-//           dismiss(animated: true, completion: nil)
-//       }
-    
     override func constraintLayout() {
         super.constraintLayout() //부모뷰의 설정을 가져온다
-        [profile, myName, nameAlert, IDArea, subTitleBackground, subTitle, withdrawalB].forEach(){
+        [profile, addImage, myName, nameAlert, IDArea, subTitleBackground, subTitle, withdrawalB].forEach(){
             view.addSubview($0)
         }
         logo.snp.makeConstraints(){
@@ -138,11 +117,20 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
             $0.height.equalTo(18.24)
             $0.bottom.equalTo(view).offset(-55)
         }
+        
         profile.snp.makeConstraints(){
             $0.centerX.equalTo(view)
             $0.top.equalTo(view).offset(112)
             $0.width.height.equalTo(106)
         }
+        
+        profile.addSubview(addImage)
+        addImage.snp.makeConstraints(){
+            $0.centerX.equalToSuperview()
+            $0.width.height.equalTo(21)
+            $0.centerY.equalToSuperview()
+        }
+        
         myName.snp.makeConstraints(){
             $0.top.equalTo(profile.snp.bottom).offset(27)
             $0.horizontalEdges.equalTo(view).inset(95)
@@ -185,6 +173,16 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
         }
     }
     
+    @objc func moveToMyPage(){
+        let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
+        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+            let myPageVC = MyPageViewController()
+            self.navigationController?.pushViewController(myPageVC, animated: false)
+        }
+        alert.addAction(confirm)
+        present(alert, animated: true, completion: nil)
+    }
+    
     //텍스트필드 글자수제한에 관한 코드
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentText = textField.text ?? ""
@@ -202,5 +200,43 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
         }
         return true
     }
+    
+    @objc func imageViewTapped(tapGestureRecognizer: UITapGestureRecognizer){
+        var configuration = PHPickerConfiguration()
+        configuration.filter = .images
+        configuration.selectionLimit = 1
+        
+        let picker = PHPickerViewController(configuration: configuration)
+        picker.delegate = self
+        present(picker, animated: true, completion: nil)
+    }
+    
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true, completion: nil)
+        
+        guard let provider = results.first?.itemProvider else { return }
+        
+        if provider.canLoadObject(ofClass: UIImage.self) {
+            provider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
+                DispatchQueue.main.async {
+                    if let selectedImage = image as? UIImage {
+                        self?.profile.image = selectedImage
+                        self?.addImage.tintColor = UIColor.clear
+                    }
+                }
+            }
+        }
+    }
+    
+    override func updateColor() {
+        super.updateColor()
+        let scriptBackgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+        subTitleBackground.backgroundColor = scriptBackgroundColor
+        
+        let myNameColor = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
+        self.myName.layer.borderColor = myNameColor
+        
+        let profileColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "babygray")
+        self.profile.backgroundColor = profileColor
+    }
 }
-

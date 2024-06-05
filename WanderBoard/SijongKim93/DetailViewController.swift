@@ -34,12 +34,6 @@ class DetailViewController: UIViewController {
         $0.backgroundColor = .clear
     }
     
-    let introLocation = UILabel().then {
-        $0.text = "지도에서 지역을 선택하세요!"
-        $0.font = UIFont.systemFont(ofSize: 14)
-        $0.textColor = #colorLiteral(red: 0.2989681959, green: 0.2989682257, blue: 0.2989681959, alpha: 1)
-    }
-    
     var locationLabel = UILabel().then {
         $0.text = "---"
         $0.font = UIFont.systemFont(ofSize: 40)
@@ -52,15 +46,33 @@ class DetailViewController: UIViewController {
         $0.textColor = .white
     }
     
-    var selectDateButton = UIButton(type: .system).then {
-        $0.setTitle("날짜를 선택해주세요", for: .normal)
-        $0.tintColor = #colorLiteral(red: 0.2989681959, green: 0.2989682257, blue: 0.2989681959, alpha: 1)
-    }
-    
     let locationStackView = UIStackView().then {
         $0.axis = .vertical
         $0.alignment = .leading
         $0.spacing = 10
+    }
+    
+    var dateStartLabel = UILabel().then {
+        $0.text = "2024.08.13"
+        $0.font = UIFont.systemFont(ofSize: 16)
+        $0.textColor = .white
+    }
+    
+    let dateLineLabel = UILabel().then {
+        $0.text = "-"
+        $0.textColor = .white
+    }
+    
+    var dateEndLabel = UILabel().then {
+        $0.text = "2024.08.15"
+        $0.font = UIFont.systemFont(ofSize: 16)
+        $0.textColor = .white
+    }
+    
+    let dateStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .leading
+        $0.spacing = 5
     }
     
     let scrollView = UIScrollView().then {
@@ -74,127 +86,113 @@ class DetailViewController: UIViewController {
         $0.backgroundColor = .white
     }
     
-    let publicLabel = UILabel().then {
-        $0.text = "공개 여부"
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+    let shareButton = UIButton().then {
+        $0.setImage(UIImage(systemName: "square.and.arrow.up"), for: .normal)
+        $0.tintColor = .black
     }
     
-    let publicSwitch = UISwitch().then {
-        $0.isOn = true
-        $0.onTintColor = .black
+    var mainTitleLabel = UILabel().then {
+        $0.text = "부산에 다녀왔다"
+        $0.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
     }
     
-    let publicStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.alignment = .center
-        $0.distribution = .equalSpacing
-        $0.spacing = 10
+    var subTextLabel = UILabel().then {
+        $0.text = "여기에는 이전 인풋VC 텍스트필드에서 작성된 내용이 들어옵니다. 이 텍스트는 더미 텍스트입니다."
+        $0.font = UIFont.systemFont(ofSize: 15)
+        $0.numberOfLines = 0
     }
     
-    let mainTextField = UITextView().then {
-        $0.text = "여행 제목을 입력해주세요."
-        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+    let mapView = MKMapView().then {
+        $0.isUserInteractionEnabled = false
+    }
+    
+    let segmentControl: UISegmentedControl = {
+        let items = ["Map", "Album"]
+        let segment = UISegmentedControl(items: items)
+        segment.selectedSegmentIndex = 0
+
+        segment.backgroundColor = UIColor(white: 1, alpha: 0.5)
+        segment.layer.cornerRadius = 16
+        segment.layer.masksToBounds = true
+//        segment.layer.shadowColor = UIColor.black.cgColor
+//        segment.layer.shadowOffset = CGSize(width: 0, height: 2)
+//        segment.layer.shadowRadius = 10
+//        segment.layer.shadowOpacity = 0.1
+        
+        segment.setTitleTextAttributes([.foregroundColor: UIColor.white, .backgroundColor: UIColor.black], for: .selected)
+        segment.setTitleTextAttributes([.foregroundColor: UIColor.black], for: .normal)
+        segment.selectedSegmentTintColor = .black
+        segment.layer.borderWidth = 0
+        
+        segment.isUserInteractionEnabled = true
+        return segment
+    }()
+    
+    let albumImageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+        $0.layer.cornerRadius = 10
+        $0.isHidden = true
+        $0.isUserInteractionEnabled = false
+    }
+    
+    lazy var galleryCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = 5
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
+        layout.itemSize = CGSize(width: 85, height: 85)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .white
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.isScrollEnabled = true
+        return collectionView
+    }()
+    
+    let mapAllButton = UIButton().then {
+        $0.setTitle("전체 지도 보기", for: .normal)
+        $0.setTitleColor(#colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1), for: .normal)
+        $0.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         $0.backgroundColor = .white
-        $0.layer.cornerRadius = 8
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
-        $0.textContainerInset = UIEdgeInsets(top: 9, left: 10, bottom: 10, right: 10)
-        $0.font = UIFont.systemFont(ofSize: 16)
-        $0.isScrollEnabled = false
+        $0.isHidden = false
     }
     
-    let subTextField = UITextView().then {
-        $0.text = "기록을 담아 주세요."
-        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+    let albumAllButton = UIButton().then {
+        $0.setTitle("전체 앨범 보기", for: .normal)
+        $0.setTitleColor(#colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1), for: .normal)
+        $0.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         $0.backgroundColor = .white
-        $0.layer.cornerRadius = 8
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
-        $0.textContainerInset = UIEdgeInsets(top: 9, left: 10, bottom: 10, right: 10)
-        $0.font = UIFont.systemFont(ofSize: 16)
-        $0.isScrollEnabled = false
+        $0.isHidden = true
     }
     
-    let mapTitle = UILabel().then {
-        $0.text = "지도"
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-    }
     
-    let mapContainerView = UIView().then {
-        $0.backgroundColor = .white
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
-        $0.isUserInteractionEnabled = true
-    }
-    
-    let mapIconImageView = UIImageView().then {
-        $0.image = UIImage(systemName: "map")
-        $0.tintColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
-        $0.contentMode = .scaleAspectFit
-    }
-    
-    let mapTitleLabel = UILabel().then {
-        $0.text = "여행 맵 정보를 추가해주세요"
-        $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
-        $0.textAlignment = .center
-    }
-    
-    let mapSubtitleLabel = UILabel().then {
-        $0.text = "* 사진을 추가하면 위치를 인식합니다"
-        $0.font = UIFont.systemFont(ofSize: 12)
-        $0.textAlignment = .center
-        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
-    }
-    
-    let mapStackView = UIStackView().then {
-        $0.axis = .vertical
-        $0.alignment = .center
-        $0.spacing = 10
-    }
-    
-    let galleryTitle = UILabel().then {
-        $0.text = "앨범"
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-    }
-    
-    let consumptionTitle = UILabel().then {
+    let moneyTitle = UILabel().then {
         $0.text = "지출"
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
-    let addConsumptionButton = UIButton(type: .system).then {
-        $0.setTitle("+", for: .normal)
-        $0.setTitleColor(.black, for: .normal)
-        $0.titleLabel?.font = UIFont.systemFont(ofSize: 32)
-        $0.isHidden = false
-    }
-    
-    let consumptionHeaderStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.alignment = .center
-        $0.distribution = .equalSpacing
-        $0.spacing = 10
-    }
-    
-    let moneyCountTitle = UILabel().then {
-        $0.text = "00₩"
+    var moneyCountTitle = UILabel().then {
+        $0.text = "0000000"
         $0.font = UIFont.systemFont(ofSize: 40)
-        $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
+        $0.textColor = .black
     }
     
-    let consumptionStackView = UIStackView().then {
-        $0.axis = .vertical
-        $0.alignment = .leading
-        $0.distribution = .fillEqually
-        $0.spacing = 0
+    let moneyCountSubTitle = UILabel().then {
+        $0.text = "₩"
+        $0.font = UIFont.systemFont(ofSize: 30 ,weight: .semibold)
+        $0.textColor = #colorLiteral(red: 0.5070941448, green: 0.5070941448, blue: 0.5070941448, alpha: 1)
     }
     
-    let noConsumptionLabel = UILabel().then {
-        $0.text = "들어온 소비 내역이 없습니다."
+    var maxConsumptionLabel = UILabel().then {
+        $0.text = "최고금액 지출 : GS25 부산해운대점"
         $0.font = UIFont.systemFont(ofSize: 13)
-        $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
-        $0.isHidden = false
+        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+    }
+    
+    let consumStackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.spacing = 0
+        $0.alignment = .leading
     }
     
     let friendTitle = UILabel().then {
@@ -202,31 +200,24 @@ class DetailViewController: UIViewController {
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
+    lazy var friendCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = 5
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
+        layout.itemSize = CGSize(width: 85, height: 85)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .white
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.isScrollEnabled = true
+        return collectionView
+    }()
+    
     let bottomLogo = UIImageView().then {
         $0.image = UIImage(named: "logoBlack")
     }
     
-    lazy var galleryCollectionView: UICollectionView = {
-        let layout = CustomFlowLayout()
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .white
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.register(GalleryCollectionViewCell.self, forCellWithReuseIdentifier: GalleryCollectionViewCell.identifier)
-        collectionView.isScrollEnabled = false
-        return collectionView
-    }()
-    
-    lazy var friendCollectionView: UICollectionView = {
-        let layout = createCollectionViewFlowLayout(for: .horizontal)
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .white
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.register(FriendCollectionViewCell.self, forCellWithReuseIdentifier: FriendCollectionViewCell.identifier)
-        collectionView.isScrollEnabled = false
-        return collectionView
-    }()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -234,89 +225,82 @@ class DetailViewController: UIViewController {
         setupUI()
         setupConstraints()
         setupCollectionView()
-        setupTextView()
-        actionButton()
+        setupSegmentControl()
         
         view.backgroundColor = .white
+        
+//        if let dummyImage = UIImage(systemName: "photo") {
+//            selectedImages = Array(repeating: dummyImage, count: 5)
+//        }
+//
+//        if let dummyImage = UIImage(systemName: "photo") {
+//            selectedFriends = Array(repeating: dummyImage, count: 5)
+//        }
     }
     
     func setupUI() {
         view.addSubview(backgroundImageView)
         backgroundImageView.addSubview(topContentView)
-        topContentView.addSubview(introLocation)
         topContentView.addSubview(locationStackView)
-        topContentView.addSubview(selectDateButton)
-        
-        locationStackView.addArrangedSubview(locationLabel)
-        locationStackView.addArrangedSubview(dateDaysLabel)
-        
-        
-        consumptionHeaderStackView.addArrangedSubview(consumptionTitle)
-        consumptionHeaderStackView.addArrangedSubview(addConsumptionButton)
-        
-        consumptionStackView.addArrangedSubview(consumptionHeaderStackView)
-        consumptionStackView.addArrangedSubview(moneyCountTitle)
-        
-        publicStackView.addArrangedSubview(publicLabel)
-        publicStackView.addArrangedSubview(publicSwitch)
-        
-        mapStackView.addArrangedSubview(mapIconImageView)
-        mapStackView.addArrangedSubview(mapTitleLabel)
-        mapStackView.addArrangedSubview(mapSubtitleLabel)
-        
-        mapContainerView.addSubview(mapStackView)
+        topContentView.addSubview(dateStackView)
         
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-        contentView.addSubview(publicStackView)
-        contentView.addSubview(mainTextField)
-        contentView.addSubview(subTextField)
-        contentView.addSubview(mapTitle)
-        contentView.addSubview(mapContainerView)
-        contentView.addSubview(galleryTitle)
+        contentView.addSubview(shareButton)
+        contentView.addSubview(mainTitleLabel)
+        contentView.addSubview(subTextLabel)
+        contentView.addSubview(mapView)
+        contentView.addSubview(segmentControl)
         contentView.addSubview(galleryCollectionView)
-        contentView.addSubview(consumptionStackView)
-        contentView.addSubview(noConsumptionLabel)
+        contentView.addSubview(albumImageView)
+        contentView.addSubview(mapAllButton)
+        contentView.addSubview(albumAllButton)
+        contentView.addSubview(moneyCountSubTitle)
+        contentView.addSubview(consumStackView)
         contentView.addSubview(friendTitle)
         contentView.addSubview(friendCollectionView)
         contentView.addSubview(bottomLogo)
         
+        locationStackView.addArrangedSubview(locationLabel)
+        locationStackView.addArrangedSubview(dateDaysLabel)
+        
+        dateStackView.addArrangedSubview(dateStartLabel)
+        dateStackView.addArrangedSubview(dateLineLabel)
+        dateStackView.addArrangedSubview(dateEndLabel)
+        
+        consumStackView.addArrangedSubview(moneyTitle)
+        consumStackView.addArrangedSubview(moneyCountTitle)
+        consumStackView.addArrangedSubview(maxConsumptionLabel)
+        
         scrollView.delegate = self
         
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(mapContainerViewTapped))
-        mapContainerView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     func setupConstraints() {
         backgroundImageView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.height.equalTo(350)
+            $0.height.equalTo(457)
         }
         
         topContentView.snp.makeConstraints {
             $0.top.leading.trailing.bottom.equalToSuperview()
         }
         
-        introLocation.snp.makeConstraints {
-            $0.top.equalTo(150)
-            $0.leading.equalTo(topContentView).inset(38)
-        }
-        
         locationStackView.snp.makeConstraints {
-            $0.top.equalTo(introLocation).offset(20)
+            $0.bottom.equalTo(scrollView.snp.top).offset(-32)
             $0.leading.equalTo(topContentView).inset(38)
         }
         
-        selectDateButton.snp.makeConstraints {
-            $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(20)
-            $0.bottom.equalTo(locationStackView.snp.bottom).inset(-6)
+        dateStackView.snp.makeConstraints {
+            $0.bottom.equalTo(locationStackView)
+            $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(32)
         }
         
         scrollView.snp.makeConstraints {
             $0.top.equalTo(backgroundImageView.snp.bottom).offset(-40)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(40)
         }
         
         contentView.snp.makeConstraints {
@@ -325,73 +309,81 @@ class DetailViewController: UIViewController {
             $0.bottom.equalTo(bottomLogo.snp.bottom).offset(70)
         }
         
-        publicStackView.snp.makeConstraints {
-            $0.top.equalTo(contentView).offset(32)
+        shareButton.snp.makeConstraints {
+            $0.top.trailing.equalTo(contentView).inset(24)
+            $0.width.height.equalTo(24)
+        }
+        
+        mainTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(contentView).offset(50)
             $0.leading.trailing.equalTo(contentView).inset(16)
         }
         
-        mainTextField.snp.makeConstraints {
-            $0.top.equalTo(publicStackView.snp.bottom).offset(32)
+        subTextLabel.snp.makeConstraints {
+            $0.top.equalTo(mainTitleLabel.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView).inset(16)
-            $0.height.equalTo(37)
         }
         
-        subTextField.snp.makeConstraints {
-            $0.top.equalTo(mainTextField.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(contentView).inset(16)
-            self.subTextFieldHeightConstraint = $0.height.greaterThanOrEqualTo(subTextFieldMinHeight).constraint
-        }
-        
-        mapTitle.snp.makeConstraints {
-            $0.top.equalTo(subTextField.snp.bottom).offset(32)
-            $0.leading.equalTo(17)
-        }
-        
-        mapContainerView.snp.makeConstraints {
-            $0.top.equalTo(mapTitle.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(contentView)
-            $0.height.equalTo(250)
-        }
-        
-        mapStackView.snp.makeConstraints {
-            $0.centerY.centerX.equalToSuperview()
-        }
-        
-        galleryTitle.snp.makeConstraints {
-            $0.top.equalTo(mapContainerView.snp.bottom).offset(32)
+        segmentControl.snp.makeConstraints {
+            $0.top.equalTo(subTextLabel.snp.bottom).offset(48)
             $0.leading.equalTo(contentView).inset(16)
+            $0.height.equalTo(30)
+            $0.width.equalTo(123)
+        }
+        
+        mapView.snp.makeConstraints {
+            $0.top.equalTo(segmentControl).offset(-10)
+            $0.leading.trailing.equalTo(contentView)
+            $0.height.equalTo(300)
+        }
+        
+        albumImageView.snp.makeConstraints {
+            $0.top.equalTo(segmentControl).offset(-10)
+            $0.leading.trailing.equalTo(contentView)
+            $0.height.equalTo(300)
         }
         
         galleryCollectionView.snp.makeConstraints {
-            $0.top.equalTo(galleryTitle.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(contentView).inset(16)
-            $0.height.equalTo(120)
+            $0.top.equalTo(mapView.snp.bottom).offset(10)
+            $0.leading.trailing.equalTo(contentView)
+            $0.height.equalTo(90)
         }
         
-        consumptionHeaderStackView.snp.makeConstraints {
-            $0.top.equalTo(consumptionStackView.snp.top)
-            $0.leading.trailing.equalTo(contentView).inset(16)
-        }
-        
-        consumptionStackView.snp.makeConstraints {
+        mapAllButton.snp.makeConstraints {
             $0.top.equalTo(galleryCollectionView.snp.bottom)
-            $0.leading.equalTo(contentView).inset(16)
+            $0.trailing.equalTo(contentView).inset(16)
         }
         
-        noConsumptionLabel.snp.makeConstraints {
-            $0.top.equalTo(moneyCountTitle.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(contentView).inset(16)
+        albumAllButton.snp.makeConstraints {
+            $0.top.equalTo(galleryCollectionView.snp.bottom)
+            $0.trailing.equalTo(contentView).inset(16)
         }
         
+        moneyTitle.snp.makeConstraints {
+            $0.width.equalTo(80)
+            $0.height.equalTo(32)
+        }
+        
+        moneyCountSubTitle.snp.makeConstraints {
+            $0.bottom.equalTo(moneyCountTitle).inset(3)
+            $0.leading.equalTo(moneyCountTitle.snp.trailing).offset(10)
+        }
+        
+        consumStackView.snp.makeConstraints {
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(48)
+            $0.leading.trailing.equalTo(contentView).offset(16)
+        }
+        
+        consumStackView.setCustomSpacing(8, after: moneyTitle)
         
         friendTitle.snp.makeConstraints {
-            $0.top.equalTo(noConsumptionLabel.snp.bottom).offset(32)
-            $0.leading.equalTo(contentView).offset(17)
+            $0.top.equalTo(consumStackView.snp.bottom).offset(48)
+            $0.leading.equalTo(contentView).offset(16)
         }
         
         friendCollectionView.snp.makeConstraints {
             $0.top.equalTo(friendTitle.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(contentView).inset(17)
+            $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(90)
         }
         
@@ -403,127 +395,146 @@ class DetailViewController: UIViewController {
         }
     }
     
-    func setupTextView() {
-        mainTextField.delegate = self
-        subTextField.delegate = self
-        
-    }
-    
     func setupCollectionView() {
         galleryCollectionView.delegate = self
         galleryCollectionView.dataSource = self
         
+        galleryCollectionView.register(GalleryCollectionViewCell.self, forCellWithReuseIdentifier: GalleryCollectionViewCell.identifier)
+        
         friendCollectionView.delegate = self
         friendCollectionView.dataSource = self
         
-        updateCollectionViewHeight()
+        friendCollectionView.register(FriendCollectionViewCell.self, forCellWithReuseIdentifier: FriendCollectionViewCell.identifier)
+        
     }
     
-    func actionButton() {
-        selectDateButton.addTarget(self, action: #selector(selectDateButtonTapped), for: .touchUpInside)
+    func setupSegmentControl() {
+        segmentControl.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
     }
     
-    @objc func selectDateButtonTapped() {
-        print("버튼눌림")
-        let dateVC = DateViewController()
-        dateVC.modalPresentationStyle = .custom
-        dateVC.transitioningDelegate = self
-        present(dateVC, animated: true, completion: nil)
-    }
-    
-    func createCollectionViewFlowLayout(for scrollDirection: UICollectionView.ScrollDirection) -> UICollectionViewFlowLayout {
-        let layout = CustomFlowLayout()
-        layout.scrollDirection = scrollDirection
-        layout.minimumLineSpacing = 10
-        layout.minimumInteritemSpacing = 5
-        layout.estimatedItemSize = .zero
-        return layout
+    @objc func segmentChanged(_ sender: UISegmentedControl) {
+        if sender.selectedSegmentIndex == 0 {
+            mapView.isHidden = false
+            galleryCollectionView.isHidden = false
+            albumImageView.isHidden = true
+            mapAllButton.isHidden = false
+            albumAllButton.isHidden = true
+        } else {
+            mapView.isHidden = true
+            galleryCollectionView.isHidden = false
+            albumImageView.isHidden = false
+            mapAllButton.isHidden = true
+            albumAllButton.isHidden = false
+            if !selectedImages.isEmpty {
+                albumImageView.image = selectedImages[0]
+            }
+        }
     }
 }
 
-
-extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSource, PHPickerViewControllerDelegate, UICollectionViewDelegateFlowLayout {
-    
+extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == galleryCollectionView {
-            if selectedImages.isEmpty {
-                return 1
-            } else {
-                if isExpanded {
-                    return selectedImages.count
-                } else {
-                    return min(selectedImages.count, 4)
-                }
-            }
-        } else {
-            return max(selectedFriends.count, 1)
+            return selectedImages.count
+        } else if collectionView == friendCollectionView {
+            return selectedFriends.count
         }
+        return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == galleryCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GalleryCollectionViewCell.identifier, for: indexPath) as? GalleryCollectionViewCell else { fatalError("컬렉션 뷰 오류") }
-            if selectedImages.isEmpty {
-                cell.configure(with: nil)
-            } else {
-                if indexPath.row < 3 {
-                    cell.configure(with: selectedImages[indexPath.row])
-                } else if indexPath.row == 3 {
-                    if selectedImages.count > 4 && !isExpanded {
-                        cell.configure(with: selectedImages[indexPath.row], moreCount: selectedImages.count - 4)
-                    } else {
-                        cell.configure(with: selectedImages[indexPath.row])
-                    }
-                } else {
-                    cell.configure(with: selectedImages[indexPath.row])
-                }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GalleryCollectionViewCell.identifier, for: indexPath) as? GalleryCollectionViewCell else {
+                fatalError("컬렉션 뷰 오류")
             }
+            cell.configure(with: selectedImages[indexPath.row])
             return cell
-        } else {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as? FriendCollectionViewCell else { fatalError("컬렉션 뷰 오류") }
-            if selectedFriends.isEmpty {
-                cell.configure(with: nil)
-            } else {
-                cell.configure(with: selectedFriends[indexPath.row])
+        } else if collectionView == friendCollectionView {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as? FriendCollectionViewCell else {
+                fatalError("컬렉션 뷰 오류")
             }
+            cell.configure(with: selectedFriends[indexPath.row])
             return cell
         }
+        return UICollectionViewCell()
     }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView == galleryCollectionView {
-            if selectedImages.isEmpty || indexPath.row == 3 {
-                if selectedImages.count > 4 && !isExpanded {
-                    isExpanded = true
-                    collectionView.reloadData()
-                    updateCollectionViewHeight()
-                } else {
-                    var configuration = PHPickerConfiguration()
-                    configuration.selectionLimit = 0
-                    configuration.filter = .images
-                    let picker = PHPickerViewController(configuration: configuration)
-                    picker.delegate = self
-                    present(picker, animated: true, completion: nil)
-                }
+}
+
+
+
+extension DetailViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView == self.scrollView {
+            let offset = scrollView.contentOffset.y
+            
+            if let overlayView = backgroundImageView.viewWithTag(999) {
+                overlayView.frame = backgroundImageView.bounds
             }
-        }
-    }
-    
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        picker.dismiss(animated: true, completion: nil)
-        for result in results {
-            result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] (object, error) in
-                if let image = object as? UIImage {
-                    DispatchQueue.main.async {
-                        self?.selectedImages.append(image)
-                        self?.galleryCollectionView.reloadData()
-                        self?.updateCollectionViewHeight()
-                        
-                        if let firstImage = self?.selectedImages.first {
-                            self?.backgroundImageView.image = firstImage
-                            self?.applyDarkOverlayToBackgroundImage()
-                        }
+            
+            if offset > 0 {
+                UIView.animate(withDuration: 0.3) {
+                    self.locationStackView.axis = .horizontal
+                    self.locationStackView.spacing = 10
+                    self.locationStackView.alignment = .center
+                    self.locationLabel.font = UIFont.systemFont(ofSize: 20)
+                    self.dateStackView.isHidden = true
+                    
+                    self.locationStackView.snp.remakeConstraints {
+                        $0.top.equalTo(self.view.safeAreaLayoutGuide).offset(20)
+                        $0.centerX.equalToSuperview()
                     }
+                    
+                    self.scrollView.layer.cornerRadius = 40
+                    self.view.clipsToBounds = true
+                    
+                    self.scrollView.snp.remakeConstraints {
+                        $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-40)
+                        $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
+                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+                    }
+                    
+                    self.contentView.snp.remakeConstraints {
+                        $0.edges.equalTo(self.scrollView.contentLayoutGuide)
+                        $0.width.equalTo(self.scrollView.frameLayoutGuide)
+                        $0.bottom.equalTo(self.bottomLogo.snp.bottom).offset(70)
+                    }
+                    
+                    self.backgroundImageView.snp.updateConstraints {
+                        $0.height.equalTo(150)
+                    }
+                    
+                    self.view.layoutIfNeeded()
+                }
+            } else {
+                UIView.animate(withDuration: 0.3) {
+                    self.locationStackView.axis = .vertical
+                    self.locationStackView.spacing = 10
+                    self.locationStackView.alignment = .leading
+                    self.locationLabel.font = UIFont.systemFont(ofSize: 40)
+                    self.dateStackView.isHidden = false
+                    
+                    self.locationStackView.snp.remakeConstraints {
+                        $0.bottom.equalTo(self.scrollView.snp.top).offset(-32)
+                        $0.leading.equalTo(self.topContentView).inset(38)
+                    }
+                    
+                    self.scrollView.snp.remakeConstraints {
+                        $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-40)
+                        $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
+                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+                    }
+                    
+                    self.contentView.snp.remakeConstraints {
+                        $0.edges.equalTo(self.scrollView.contentLayoutGuide)
+                        $0.width.equalTo(self.scrollView.frameLayoutGuide)
+                        $0.bottom.equalTo(self.bottomLogo.snp.bottom).offset(70)
+                    }
+                    
+                    self.backgroundImageView.snp.updateConstraints {
+                        $0.height.equalTo(457)
+                    }
+                    
+                    self.view.layoutIfNeeded()
                 }
             }
         }
@@ -544,179 +555,14 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
         backgroundImageView.bringSubviewToFront(topContentView)
         self.view.layoutIfNeeded()
     }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if collectionView == galleryCollectionView {
-            let height = heightForItem(at: indexPath.row)
-            return CGSize(width: (collectionView.frame.width - 10) / 2, height: height)
-        } else {
-            return CGSize(width: 73, height: 73)
-        }
-    }
-    
-    func heightForItem(at index: Int) -> CGFloat {
-        if index % 4 == 0 || index % 4 == 3 {
-            return 115
-        } else {
-            return 223
-        }
-    }
-    
-    func updateCollectionViewHeight() {
-        galleryCollectionView.layoutIfNeeded()
-        
-        var contentHeight = galleryCollectionView.contentSize.height
-        let minimumHeight: CGFloat = 120
-        
-        if selectedImages.count > 2 {
-            contentHeight -= 90
-        }
-        
-        let newHeight = max(contentHeight, minimumHeight)
-        
-        galleryCollectionView.snp.updateConstraints {
-            $0.height.equalTo(newHeight)
-        }
-        view.layoutIfNeeded()
-    }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let offset = scrollView.contentOffset.y
-        
-        // 디밍뷰의 크기 업데이트
-        if let overlayView = backgroundImageView.viewWithTag(999) {
-            overlayView.frame = backgroundImageView.bounds
-        }
-        
-        if offset > 0 {
-            UIView.animate(withDuration: 0.3) {
-                self.locationStackView.axis = .horizontal
-                self.locationStackView.spacing = 10
-                self.locationStackView.alignment = .center
-                self.locationLabel.font = UIFont.systemFont(ofSize: 20)
-                self.selectDateButton.isHidden = true
-                self.introLocation.isHidden = true
-                
-                self.locationStackView.snp.remakeConstraints {
-                    $0.top.equalTo(self.view.safeAreaLayoutGuide).offset(20)
-                    $0.centerX.equalToSuperview()
-                }
-                
-                self.scrollView.layer.cornerRadius = 40
-                self.view.clipsToBounds = true
-                
-                self.scrollView.snp.remakeConstraints {
-                    $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-40)
-                    $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                    $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
-                }
-                
-                self.contentView.snp.remakeConstraints {
-                    $0.edges.equalTo(self.scrollView.contentLayoutGuide)
-                    $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                    $0.bottom.equalTo(self.bottomLogo.snp.bottom).offset(40)
-                }
-                
-                self.backgroundImageView.snp.updateConstraints {
-                    $0.height.equalTo(150)
-                }
-                
-                self.view.layoutIfNeeded()
-            }
-        } else {
-            UIView.animate(withDuration: 0.3) {
-                self.locationStackView.axis = .vertical
-                self.locationStackView.spacing = 10
-                self.locationStackView.alignment = .leading
-                self.locationLabel.font = UIFont.systemFont(ofSize: 40)
-                self.selectDateButton.isHidden = false
-                self.introLocation.isHidden = false
-                
-                self.locationStackView.snp.remakeConstraints {
-                    $0.top.equalTo(self.introLocation.snp.bottom).offset(20)
-                    $0.leading.equalTo(self.topContentView).inset(38)
-                }
-                
-                self.scrollView.snp.remakeConstraints {
-                    $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-40)
-                    $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                    $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
-                }
-                
-                self.contentView.snp.remakeConstraints {
-                    $0.edges.equalTo(self.scrollView.contentLayoutGuide)
-                    $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                    $0.bottom.equalTo(self.bottomLogo.snp.bottom).offset(40)
-                }
-                
-                self.backgroundImageView.snp.updateConstraints {
-                    $0.height.equalTo(350)
-                }
-                
-                self.view.layoutIfNeeded()
-            }
-        }
-    }
-    
-    @objc func mapContainerViewTapped() {
-        let mapDetailVC = MapDetailViewController()
-        let navigationController = UINavigationController(rootViewController: mapDetailVC)
-        navigationController.modalPresentationStyle = .fullScreen
-        present(navigationController, animated: true, completion: nil)
-    }
 }
-
-
-extension UITextView {
-    func setLeftPaddingPoints(_ amount: CGFloat) {
-        self.textContainerInset.left = amount
-    }
     
-    func setTopPaddingPoints(_ amount: CGFloat) {
-        self.textContainerInset.top = amount
-    }
-}
-
-
-extension DetailViewController: UITextViewDelegate {
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1) {
-            textView.text = nil
-            textView.textColor = .black
-        }
-    }
     
-    func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.text.isEmpty {
-            if textView == mainTextField {
-                textView.text = "여행 제목을 입력해주세요."
-            } else if textView == subTextField {
-                textView.text = "기록을 담아 주세요."
-            }
-            textView.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
-        }
-    }
     
-    func textViewDidChange(_ textView: UITextView) {
-        let size = textView.bounds.size
-        let newSize = textView.sizeThatFits(CGSize(width: size.width, height: CGFloat.greatestFiniteMagnitude))
-        if size.height != newSize.height {
-            UIView.setAnimationsEnabled(false)
-            textView.isScrollEnabled = false
-            self.subTextFieldHeightConstraint?.update(offset: max(newSize.height, subTextFieldMinHeight))
-            UIView.setAnimationsEnabled(true)
-            textView.layoutIfNeeded()
-        }
-    }
-}
+    
 
 
-extension DetailViewController: UIViewControllerTransitioningDelegate {
-    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        if let dateVC = presented as? DateViewController {
-            return DatePresentationController(presentedViewController: dateVC, presenting: presenting)
-        } else {
-            return nil
-        }
-    }
-}
+
+
+
+

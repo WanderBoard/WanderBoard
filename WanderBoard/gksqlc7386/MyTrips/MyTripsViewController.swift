@@ -117,9 +117,9 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     
     @objc func addButtonTapped() {
         let inputVC = DetailInputViewController()
-        inputVC.modalPresentationStyle = .fullScreen
-        present(inputVC, animated: true)
-        //navigationController?.pushViewController(inputVC, animated: true)
+        //inputVC.modalPresentationStyle = .fullScreen
+        //present(inputVC, animated: true)
+        navigationController?.pushViewController(inputVC, animated: true)
     }
     
     @objc func filterButtonTapped(sender: UIButton) {

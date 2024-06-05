@@ -18,6 +18,7 @@ class DetailInputViewController: UIViewController {
     let scrollView = UIScrollView().then {
         $0.showsVerticalScrollIndicator = false
         $0.bounces = false
+        $0.backgroundColor = .white
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 40
     }
@@ -113,7 +114,7 @@ class DetailInputViewController: UIViewController {
     }
     
     let locationRightLabel = UIImageView().then {
-        $0.image = UIImage(systemName: "greaterthan")
+        $0.image = UIImage(systemName: "chevron.right")
         $0.tintColor = .black
     }
     
@@ -135,7 +136,7 @@ class DetailInputViewController: UIViewController {
     }
     
     let consumRightLabel = UIImageView().then {
-        $0.image = UIImage(systemName: "greaterthan")
+        $0.image = UIImage(systemName: "chevron.right")
         $0.tintColor = .black
     }
     
@@ -159,12 +160,38 @@ class DetailInputViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 5
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: 85, height: 85)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .white
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
+    
+    let galleryCountButton = UIButton().then {
+        $0.backgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        $0.layer.cornerRadius = 8
+        $0.contentEdgeInsets = UIEdgeInsets(top: 8, left: 40, bottom: 8, right: 40)
+        $0.isHidden = true
+    }
+
+    let galleryCountLabel = UILabel().then {
+        $0.text = "0/10"
+        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
+    }
+
+    let galleryArrowImageView = UIImageView().then {
+        $0.image = UIImage(systemName: "chevron.right")
+        $0.tintColor = .black
+    }
+
+    let galleryCountStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.spacing = 4
+        $0.isUserInteractionEnabled = false
+    }
     
     let mateLabel = UILabel().then {
         $0.text = "메이트"
@@ -176,6 +203,7 @@ class DetailInputViewController: UIViewController {
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 5
         layout.itemSize = CGSize(width: 85, height: 85)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .white
         collectionView.showsHorizontalScrollIndicator = false
@@ -189,6 +217,7 @@ class DetailInputViewController: UIViewController {
         actionButton()
         setupTextView()
         setupCollectionView()
+        setupNavigationBar()
         
     }
     
@@ -223,9 +252,15 @@ class DetailInputViewController: UIViewController {
         contentView.addSubview(bodyLine)
         contentView.addSubview(galleryLabel)
         contentView.addSubview(galleryCollectionView)
+        contentView.addSubview(galleryCountButton)
+        galleryCountButton.addSubview(galleryCountStackView)
+        
+        galleryCountStackView.addArrangedSubview(galleryCountLabel)
+        galleryCountStackView.addArrangedSubview(galleryArrowImageView)
         
         contentView.addSubview(mateLabel)
         contentView.addSubview(mateCollectionView)
+        
     }
     
     func setupConstraints() {
@@ -244,7 +279,7 @@ class DetailInputViewController: UIViewController {
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.height.equalTo(1200)
+            $0.bottom.equalTo(mateCollectionView.snp.bottom).offset(50)
         }
         
         publicStackView.snp.makeConstraints {
@@ -333,9 +368,18 @@ class DetailInputViewController: UIViewController {
         
         galleryCollectionView.snp.makeConstraints {
             $0.top.equalTo(galleryLabel.snp.bottom).offset(16)
-            $0.leading.equalTo(contentView).inset(32)
-            $0.trailing.equalTo(contentView)
+            $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(100)
+        }
+        
+        galleryCountButton.snp.makeConstraints {
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(5)
+            $0.trailing.equalTo(contentView).inset(32)
+            $0.height.equalTo(44)
+        }
+
+        galleryCountStackView.snp.makeConstraints {
+            $0.center.equalToSuperview()
         }
         
         mateLabel.snp.makeConstraints {
@@ -345,8 +389,7 @@ class DetailInputViewController: UIViewController {
         
         mateCollectionView.snp.makeConstraints {
             $0.top.equalTo(mateLabel.snp.bottom).offset(16)
-            $0.leading.equalTo(contentView).inset(32)
-            $0.trailing.equalTo(contentView)
+            $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(100)
         }
     }
@@ -371,8 +414,10 @@ class DetailInputViewController: UIViewController {
     func actionButton() {
         startDateButton.addTarget(self, action: #selector(showDatePicker(_:)), for: .touchUpInside)
         endDateButton.addTarget(self, action: #selector(showDatePicker(_:)), for: .touchUpInside)
+        galleryCountButton.addTarget(self, action: #selector(showPHPicker), for: .touchUpInside)
+
     }
-    
+        
     @objc func showDatePicker(_ sender: UIButton) {
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
@@ -397,6 +442,32 @@ class DetailInputViewController: UIViewController {
         
         present(alert, animated: true, completion: nil)
     }
+    
+    func setupNavigationBar() {
+        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
+        navigationItem.rightBarButtonItem = doneButton
+    }
+    
+    @objc func doneButtonTapped() {
+        let detailVC = DetailViewController()
+        
+        //detailVC.publicSwitchIsOn = publicSwitch.isOn
+        detailVC.dateStartLabel.text = startDateButton.title(for: .normal)
+        detailVC.dateEndLabel.text = endDateButton.title(for: .normal)
+        detailVC.mainTitleLabel.text = mainTextField.text
+        detailVC.subTextLabel.text = subTextField.text
+        detailVC.selectedImages = selectedImages
+        detailVC.selectedFriends = selectedFriends
+        
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+    
+    func updateGalleryCountButton() {
+        let count = selectedImages.count
+        galleryCountLabel.text = "\(count)/10"
+        galleryCountButton.isHidden = count == 0
+    }
+
     
     func createCollectionViewFlowLayout(for collectionView: UICollectionView) -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
@@ -441,9 +512,9 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
         }
     }
     
-    func showPHPicker() {
+    @objc func showPHPicker() {
         var config = PHPickerConfiguration()
-        config.selectionLimit = 10
+        config.selectionLimit = 10 - selectedImages.count
         config.filter = .images
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = self
@@ -454,17 +525,25 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
 extension DetailInputViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true, completion: nil)
-        selectedImages.removeAll()
+        
+        var newImages: [UIImage] = []
+        
+        let dispatchGroup = DispatchGroup()
         
         for result in results {
+            dispatchGroup.enter()
             result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] (object, error) in
                 if let image = object as? UIImage {
-                    DispatchQueue.main.async {
-                        self?.selectedImages.append(image)
-                        self?.galleryCollectionView.reloadData()
-                    }
+                    newImages.append(image)
                 }
+                dispatchGroup.leave()
             }
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            self.selectedImages.append(contentsOf: newImages.prefix(10 - self.selectedImages.count))
+            self.galleryCollectionView.reloadData()
+            self.updateGalleryCountButton()
         }
     }
 }

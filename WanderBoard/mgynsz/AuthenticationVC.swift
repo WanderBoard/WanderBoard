@@ -243,7 +243,6 @@ class AuthenticationVC: UIViewController {
                     print("이메일 정보가 없습니다.")
                 }
                 //switchRootView(to: SignInViewController())
-                //switchRootView(to: MyPageViewController())
                 switchRootView(to: PageViewController())
             } catch {
                 print("카카오 로그인 실패: \(error)")
@@ -303,10 +302,7 @@ class AuthenticationVC: UIViewController {
                 .compactMap({ $0 as? UIWindowScene })
                 .flatMap({ $0.windows })
                 .first(where: { $0.isKeyWindow }) else { return }
-        // 네비게이션 컨트롤러 생성
-        let navigationController = UINavigationController(rootViewController: viewController)
-        navigationController.navigationBar.tintColor = .font
-        window.rootViewController = navigationController
+        window.rootViewController = PageViewController()
         window.makeKeyAndVisible()
     }
 }

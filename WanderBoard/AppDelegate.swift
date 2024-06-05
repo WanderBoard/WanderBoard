@@ -11,7 +11,6 @@ import FirebaseCore
 import KakaoSDKCommon
 import KakaoSDKAuth
 
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -32,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let initialViewController: UIViewController
         if UserDefaults.standard.bool(forKey: "isLoggedIn") {
-            initialViewController = SignInViewController()
+            initialViewController = PageViewController()
         } else {
             initialViewController = AuthenticationVC()
         }

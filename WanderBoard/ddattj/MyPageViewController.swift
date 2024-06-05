@@ -10,6 +10,30 @@ import SnapKit
 import Then
 import CoreData
 import FirebaseAuth
+import SwiftUI
+
+//미리보기 화면
+extension UIViewController {
+    private struct Preview: UIViewControllerRepresentable {
+        let viewController: UIViewController
+        
+        func makeUIViewController(context: Context) -> UIViewController {
+            return viewController
+        }
+        
+        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+        }
+    }
+    
+    func toPreview() -> some View {
+        Preview(viewController: self)
+    }
+}
+struct MyViewController_PreViews: PreviewProvider {
+    static var previews: some View {
+        MyPageViewController().toPreview() //원하는 VC를 여기다 입력하면 된다.
+    }
+}
 
 class MyPageViewController: BaseViewController, PageIndexed {
     //페이지 이동하려고 추가했습니다 ! - 한빛
@@ -29,6 +53,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     let tableView = UITableView().then(){
         $0.backgroundColor = .clear
     }
+    var userData: AuthDataResultModel?
     
     
     override func viewDidLoad() {
@@ -37,11 +62,21 @@ class MyPageViewController: BaseViewController, PageIndexed {
         tableView.register(MyPageTableViewCell.self, forCellReuseIdentifier: MyPageTableViewCell.identifier)
         tableView.delegate = self
         tableView.dataSource = self
+        
+        do {
+            userData = try AuthenticationManager.shared.getAuthenticatedUser()
+            configureUI()
+        } catch {
+            print("정보를 가져오는데 실패했습니다")
+        }
     }
    
     
     override func configureUI() {
         super.configureUI()
+        guard let userData = userData else {
+            return
+        }
         editButton.setImage(UIImage(systemName: "pencil.circle"), for: .normal)
         editButton.tintColor = .font
         editButton.imageView?.snp.makeConstraints(){
@@ -51,15 +86,17 @@ class MyPageViewController: BaseViewController, PageIndexed {
         let barButtonItem = UIBarButtonItem(customView: editButton)
         self.navigationItem.rightBarButtonItem = barButtonItem
         
+        profile.layer.cornerRadius = 53
         profile.clipsToBounds = true
-        profile.layer.cornerRadius = profile.frame.size.width / 2
         profile.backgroundColor = UIColor(red: 217/255, green: 217/255, blue: 217/255, alpha: 1)
         profile.layer.shadowRadius = 15
         profile.layer.shadowOpacity = 0.25
         
+        myName.text = userData.displayName ?? "No Name"
         myName.font = UIFont.boldSystemFont(ofSize: 22)
         myName.textColor = .font
         
+        myID.text = userData.email ?? "No ID"
         myID.font = UIFont.systemFont(ofSize: 13)
         myID.textColor = .font
         
@@ -93,11 +130,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
         tableView.separatorStyle = .none //테이블뷰 구분선 없앨때 사용
     }
     
-    //    //다크모드 색상까지 같이 지정
-    //    override func updateColor() {
-    //        statusB.backgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "customblack")
-    //    }
-    
     override func constraintLayout() {
         super.constraintLayout()
         [editButton, profile, myName, myID, statusB, myWrite, myPin, myExpend, status1, status2, status3, tableView].forEach(){
@@ -118,7 +150,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         profile.snp.makeConstraints(){
             $0.centerX.equalTo(view)
             $0.top.equalTo(view).offset(112)
-            $0.width.height.equalTo(view.snp.height).multipliedBy(1.0/8.0)
+            $0.width.height.equalTo(106)
         }
         myName.snp.makeConstraints(){
             $0.top.equalTo(profile.snp.bottom).offset(17)
@@ -168,8 +200,10 @@ class MyPageViewController: BaseViewController, PageIndexed {
     
     @objc func edit(){
         let editVC = EditViewController()
+        editVC.previousName = myName.text ?? "no Name"
+        editVC.ID = myID.text ?? "No ID"
+        editVC.userData = self.userData //여기서 쓰인 userData, editVC의 userData로 넘겨주기
         navigationController?.pushViewController(editVC, animated: true)
-        editVC.previousName = myName.text ?? "noName"
     }
 }
 

@@ -31,7 +31,6 @@
 		2A7655022C060FFA00D8A098 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7655012C060FFA00D8A098 /* GoogleSignInSwift */; };
 		2A7655042C0610BA00D8A098 /* SignInWithApple.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7655032C0610BA00D8A098 /* SignInWithApple.swift */; };
 		2A76550B2C06175B00D8A098 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A76550A2C06175B00D8A098 /* AuthenticationManager.swift */; };
-		2A76550F2C061D7D00D8A098 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A76550E2C061D7D00D8A098 /* SignInViewController.swift */; };
 		2A7655112C0622C000D8A098 /* FirestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7655102C0622C000D8A098 /* FirestoreManager.swift */; };
 		2A7655172C06316300D8A098 /* UIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7655162C06316300D8A098 /* UIApplication+Extensions.swift */; };
 		2A7655192C063A0100D8A098 /* AuthenticationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7655182C063A0100D8A098 /* AuthenticationVC.swift */; };
@@ -95,7 +94,6 @@
 		2A7655032C0610BA00D8A098 /* SignInWithApple.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithApple.swift; sourceTree = "<group>"; };
 		2A7655092C0614D800D8A098 /* WanderBoard.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WanderBoard.entitlements; sourceTree = "<group>"; };
 		2A76550A2C06175B00D8A098 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
-		2A76550E2C061D7D00D8A098 /* SignInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
 		2A7655102C0622C000D8A098 /* FirestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreManager.swift; sourceTree = "<group>"; };
 		2A7655162C06316300D8A098 /* UIApplication+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+Extensions.swift"; sourceTree = "<group>"; };
 		2A7655182C063A0100D8A098 /* AuthenticationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationVC.swift; sourceTree = "<group>"; };
@@ -192,7 +190,6 @@
 				2A7655032C0610BA00D8A098 /* SignInWithApple.swift */,
 				2A7654FC2C060FB500D8A098 /* SignInWithGoogle.swift */,
 				2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */,
-				2A76550E2C061D7D00D8A098 /* SignInViewController.swift */,
 			);
 			path = mgynsz;
 			sourceTree = "<group>";
@@ -464,7 +461,6 @@
 				FB72E7402C0F3E92002AADBD /* RecentTableViewCell.swift in Sources */,
 				2A7655232C070B1700D8A098 /* Numeric.swift in Sources */,
 				2A9BED2E2C08B71D0032C403 /* Invitation.swift in Sources */,
-				2A76550F2C061D7D00D8A098 /* SignInViewController.swift in Sources */,
 				2A5F47C42C0E0AFF00D289AA /* MapView.swift in Sources */,
 				2A9BED322C08E2A40032C403 /* PinLogManager.swift in Sources */,
 				2A9BED2A2C08A4330032C403 /* PageControlButton.swift in Sources */,

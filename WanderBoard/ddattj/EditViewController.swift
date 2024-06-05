@@ -24,7 +24,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
         $0.keyboardType = .default
         $0.returnKeyType = .done
     }
-    var previousName = String()
     let nameAlert = UILabel()
     var IDArea = UIView()
     var IDIcon = UIImageView()
@@ -32,15 +31,14 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
     let subTitleBackground = UIView()
     let subTitle = UILabel()
     let withdrawalB = UIButton()
+    var previousName = String()
+    var ID = String()
+    var userData: AuthDataResultModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setIcon()
         view.backgroundColor = .systemBackground
-        
-//        // 프로필이 이미지뷰라 터치기능이 없음 그래서 터치기능을 임의로 만들어줌
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(selectProfileImage))
-//        profile.addGestureRecognizer(tapGesture)
-//        profile.isUserInteractionEnabled = true
     }
     
     override func configureUI(){
@@ -58,7 +56,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
         profile.layer.shadowOpacity = 0.25
         
         
-        myName.placeholder = "\(previousName)"
+        myName.placeholder = previousName
         myName.clearButtonMode = .never // x 버튼 비활성화
         myName.delegate = self
         
@@ -66,9 +64,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
         nameAlert.font = UIFont.systemFont(ofSize: 12)
         nameAlert.textColor = .lightgray
         
-        IDIcon.backgroundColor = .blue
-        
-        myID.text = "내 아이디\(0)"
+        myID.text = ID
         myID.font = UIFont.systemFont(ofSize: 13)
         myID.textColor = .font
         
@@ -82,6 +78,21 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
         withdrawalB.setTitle("회원탈퇴", for: .normal)
         withdrawalB.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         withdrawalB.setTitleColor(UIColor(named: "lightgray"), for: .normal)
+    }
+    
+    func setIcon() {
+        switch self.userData?.authProvider {
+        case .google:
+            self.IDIcon.image = UIImage(named: "googleLogo")
+        case .apple:
+            self.IDIcon.image = UIImage(named: "appleLogo")!.withTintColor(UIColor.font)
+        case .kakao:
+            self.IDIcon.image = UIImage(named: "kakaoLogo")
+        case .email:
+            self.IDIcon.image = UIImage(systemName: "envelope.fill")!.withTintColor(UIColor.font)
+        case nil:
+            print("등록된 로그인 정보가 없습니다")
+        }
     }
     
     @objc func moveToMyPage(){
@@ -130,7 +141,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate {
         profile.snp.makeConstraints(){
             $0.centerX.equalTo(view)
             $0.top.equalTo(view).offset(112)
-            $0.width.height.equalTo(view.snp.height).multipliedBy(1.0/8.0)
+            $0.width.height.equalTo(106)
         }
         myName.snp.makeConstraints(){
             $0.top.equalTo(profile.snp.bottom).offset(27)

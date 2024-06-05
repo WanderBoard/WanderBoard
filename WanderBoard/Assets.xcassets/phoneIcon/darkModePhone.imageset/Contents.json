@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "appleLogoWhite.svg",
+      "filename" : "Group 36653.pdf",
       "idiom" : "universal"
     },
     {
@@ -11,12 +11,15 @@
           "value" : "dark"
         }
       ],
-      "filename" : "appleLogoBlack.svg",
+      "filename" : "darkModePhoneD.pdf",
       "idiom" : "universal"
     }
   ],
   "info" : {
     "author" : "xcode",
     "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
   }
 }

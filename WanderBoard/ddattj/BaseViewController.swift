@@ -11,7 +11,6 @@ import Then
 
 class BaseViewController: UIViewController {
     
-    let myTitle = UILabel()
     let logo = UIImageView()
     var transition: CATransition?
     
@@ -20,20 +19,14 @@ class BaseViewController: UIViewController {
         constraintLayout()
         configureUI()
         createTransition()
+        updateColor()
     }
     func configureUI() {
-        myTitle.font = UIFont.systemFont(ofSize: 22)
-        myTitle.textColor = UIColor(named: "font")
-        logo.image = UIImage(named: "logoFinal")
+        logo.image = UIImage(named: "logo")?.withTintColor(UIColor(named: "lightgray")!)
     }
     
     func constraintLayout() {
-        view.addSubview(myTitle)
         view.addSubview(logo)
-        myTitle.snp.makeConstraints(){
-            $0.centerX.equalTo(view)
-            $0.top.equalTo(view).offset(87)
-        }
     }
     
     //화면전환 애니메이션 설정
@@ -41,72 +34,24 @@ class BaseViewController: UIViewController {
     //여기의 transition을 위에서 선언한 변수의 transition과 같다고 연결해주기
     func createTransition(){
         let transition = CATransition()
-        transition.duration = 0.5
+        transition.duration = 0.3
         transition.type = .push
         transition.subtype = .fromLeft
         self.transition = transition
     }
-}
-
-
-class backButton: UIButton {
-    let backIcon = UIImageView()
-    let label = UILabel()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        constraintLayout()
-        configureUI()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func configureUI(){
-        backIcon.image = UIImage(systemName: "chevron.backward")
-        backIcon.tintColor = UIColor(named: "font")
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textColor = UIColor(named: "font")
-    }
-    
-    func constraintLayout(){
-        self.addSubview(backIcon)
-        self.addSubview(label)
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         
-        backIcon.snp.makeConstraints {
-            $0.width.equalTo(17)
-            $0.height.equalTo(22)
+        // 이전 trait collection과 현재 trait collection이 다를 경우 업데이트
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
         }
-        label.snp.makeConstraints {
-            $0.left.equalTo(backIcon.snp.right).offset(3)
-            $0.centerY.equalTo(backIcon)
-        }
+    }
+    
+    func updateColor(){
+        let color = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        logo.image = UIImage(named: "logo")?.withTintColor(color!)
     }
 }
 
-class actionButton: UIButton {
-    let icon = UIImageView()
-    let label = UILabel()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        constraintLayout()
-        configureUI()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func configureUI(){
-        icon.tintColor = UIColor(named: "font")
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textColor = UIColor(named: "font")
-    }
-    
-    func constraintLayout(){
-        self.addSubview(icon)
-        self.addSubview(label)
-    }
-}

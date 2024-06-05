@@ -8,7 +8,7 @@
 import UIKit
 
 class PrivacyPolicyViewController: BaseViewController {
-    
+    var completionHandler: (() -> Void)?
     let btn = backButton()
 
     override func viewDidLoad() {
@@ -16,6 +16,20 @@ class PrivacyPolicyViewController: BaseViewController {
         view.backgroundColor = .magenta
         configureUI()
         constraintLayout()
+        
+        let confirmButton = UIButton(type: .system)
+        confirmButton.setTitle("확인", for: .normal)
+        confirmButton.addTarget(self, action: #selector(confirmButtonTapped), for: .touchUpInside)
+        
+        view.addSubview(confirmButton)
+        confirmButton.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+    }
+    
+    @objc private func confirmButtonTapped() {
+        completionHandler?()
+        dismiss(animated: true, completion: nil)
     }
     
     override func configureUI() {
@@ -25,6 +39,8 @@ class PrivacyPolicyViewController: BaseViewController {
         btn.addTarget(self, action: #selector(goToBack), for: .touchUpInside)
         
         myTitle.text = "개인정보처리방침"
+        
+        
     }
     
     override func constraintLayout() {

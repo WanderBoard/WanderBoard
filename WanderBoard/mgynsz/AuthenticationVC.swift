@@ -10,6 +10,7 @@ import GoogleSignIn
 import AuthenticationServices
 import SnapKit
 import KakaoSDKUser
+import FirebaseFirestore
 
 class AuthenticationVC: UIViewController {
     
@@ -18,7 +19,7 @@ class AuthenticationVC: UIViewController {
         let text = "발걸음마다 기록하는\n나만의 여행 일지."
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 4 // 줄간격 설정
-
+        
         let attributedText = NSAttributedString(
             string: text,
             attributes: [
@@ -26,7 +27,7 @@ class AuthenticationVC: UIViewController {
                 .paragraphStyle: paragraphStyle
             ]
         )
-
+        
         label.attributedText = attributedText
         label.numberOfLines = 2
         label.textAlignment = .left
@@ -48,14 +49,14 @@ class AuthenticationVC: UIViewController {
         configuration.imagePlacement = .all
         configuration.baseBackgroundColor = UIColor(named: "kakaoYellow")
         configuration.baseForegroundColor = .black
-
+        
         let button = UIButton(configuration: configuration, primaryAction: nil)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         button.layer.cornerRadius = 10
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
         button.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside])
-
+        
         if let imageView = button.imageView, let titleLabel = button.titleLabel {
             
             imageView.contentMode = .scaleAspectFit
@@ -83,7 +84,7 @@ class AuthenticationVC: UIViewController {
         configuration.imagePlacement = .all
         configuration.baseBackgroundColor = UIColor(named: "babygray")
         configuration.baseForegroundColor = .black
-
+        
         let button = UIButton(configuration: configuration, primaryAction: nil)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         button.layer.cornerRadius = 10
@@ -106,7 +107,7 @@ class AuthenticationVC: UIViewController {
                 make.centerY.equalTo(button.snp.centerY)
             }
         }
-
+        
         return button
     }()
     
@@ -118,7 +119,7 @@ class AuthenticationVC: UIViewController {
         configuration.imagePlacement = .all
         configuration.baseBackgroundColor = UIColor(named: "ButtonColor")
         configuration.baseForegroundColor = UIColor(named: "textColor")
-
+        
         let button = UIButton(configuration: configuration, primaryAction: nil)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         button.layer.cornerRadius = 10
@@ -141,7 +142,7 @@ class AuthenticationVC: UIViewController {
                 make.centerY.equalTo(button.snp.centerY)
             }
         }
-
+        
         return button
     }()
     
@@ -183,9 +184,9 @@ class AuthenticationVC: UIViewController {
         logoImageView.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(16)
             make.left.equalToSuperview().offset(42)
-//            make.right.equalToSuperview().inset(39)
+            //            make.right.equalToSuperview().inset(39)
             make.height.equalTo(34)
-//            make.width.equalTo(logoImageView.snp.width).multipliedBy(0.8)
+            //            make.width.equalTo(logoImageView.snp.width).multipliedBy(0.8)
         }
         
         kakaoLoginButton.snp.makeConstraints { make in
@@ -207,11 +208,11 @@ class AuthenticationVC: UIViewController {
         }
         
         termsLabel.snp.makeConstraints { make in
-//            make.top.equalTo(googleSignInButton.snp.bottom).offset(20)
+            //            make.top.equalTo(googleSignInButton.snp.bottom).offset(20)
             make.left.right.equalToSuperview().inset(47)
             make.bottom.equalToSuperview().inset(48)
         }
-
+        
         kakaoLoginButton.addTarget(self, action: #selector(signInKakaoTapped), for: .touchUpInside)
         appleSignInButton.addTarget(self, action: #selector(signInAppleTapped), for: .touchUpInside)
         googleSignInButton.addTarget(self, action: #selector(signInGoogleTapped), for: .touchUpInside)
@@ -223,40 +224,83 @@ class AuthenticationVC: UIViewController {
                 let helper = SignInWithKakaoHelper()
                 let result = try await helper.signIn()
                 if let email = result.email {
-                    // 이미 존재하는 계정인지 확인하고, 없다면 새로 생성
+                    var authDataResult: AuthDataResultModel
                     do {
-                        let authDataResult = try await signInWithEmailAndPassword(email: email, password: "임시비밀번호") // 임시비밀번호는 사용자에게 별도로 안내
-                        // 로그인 성공 처리
-                        // 사용자 정보를 Firestore에 저장
-                        try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: email, displayName: result.nickname, photoURL: result.profileImageUrl?.absoluteString, socialMediaLink: nil, authProvider: AuthProviderOption.kakao.rawValue)
+                        authDataResult = try await AuthenticationManager.shared.signInWithEmailAndPassword(email: email, password: "임시비밀번호")
+                        // Firestore에서 사용자 문서 확인
+                        let existingUser = try await FirestoreManager.shared.checkUserExists(email: email)
+                        let isProfileComplete = existingUser?.isProfileComplete ?? false
+                        
+                        if existingUser != nil {
+                            // 기존 사용자라면 displayName을 업데이트하지 않음
+                            try await FirestoreManager.shared.saveUser(
+                                uid: authDataResult.uid,
+                                email: email,
+                                displayName: nil,
+                                photoURL: result.profileImageUrl?.absoluteString,
+                                socialMediaLink: nil,
+                                authProvider: AuthProviderOption.kakao.rawValue,
+                                gender: "선택안함",
+                                interests: [],
+                                isProfileComplete: isProfileComplete
+                            )
+                        } else {
+                            // 새로운 사용자라면 displayName을 포함하여 저장
+                            try await FirestoreManager.shared.saveUser(
+                                uid: authDataResult.uid,
+                                email: email,
+                                displayName: result.nickname,
+                                photoURL: result.profileImageUrl?.absoluteString,
+                                socialMediaLink: nil,
+                                authProvider: AuthProviderOption.kakao.rawValue,
+                                gender: "선택안함",
+                                interests: [],
+                                isProfileComplete: isProfileComplete
+                            )
+                        }
+                        // Firestore 정보 업데이트
+                        try await UserProfileManager.shared.updateUserProfileFromFirestore()
+                        await handleSignInResult(authDataResult, isProfileComplete: isProfileComplete)
                     } catch {
-                        let authDataResult = try await createUserWithEmailAndPassword(email: email, password: "임시비밀번호")
-                        // 회원가입 성공 처리
-                        // 사용자 정보를 Firestore에 저장
-                        try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: email, displayName: result.nickname, photoURL: result.profileImageUrl?.absoluteString, socialMediaLink: nil, authProvider: AuthProviderOption.kakao.rawValue)
+                        authDataResult = try await AuthenticationManager.shared.createUserWithEmailAndPassword(email: email, password: "임시비밀번호")
+                        // 새로운 사용자라면 displayName을 포함하여 저장
+                        try await FirestoreManager.shared.saveUser(
+                            uid: authDataResult.uid,
+                            email: email,
+                            displayName: result.nickname,
+                            photoURL: result.profileImageUrl?.absoluteString,
+                            socialMediaLink: nil,
+                            authProvider: AuthProviderOption.kakao.rawValue,
+                            gender: "선택안함",
+                            interests: [],
+                            isProfileComplete: false
+                        )
+                        await handleSignUpResult(authDataResult, isProfileComplete: false)
                     }
                 } else {
-                    // 이메일 정보가 없는 경우 처리
                     print("이메일 정보가 없습니다.")
                 }
-                switchRootView(to: SignInViewController())
             } catch {
                 print("카카오 로그인 실패: \(error)")
             }
         }
     }
-
+  
     @objc private func signInGoogleTapped() {
         Task {
             do {
-                guard let helper = SignInWithGoogleHelper() else {
-                    print("Failed to initialize Google Sign-In Helper.")
-                    return
-                }
+                guard let helper = SignInWithGoogleHelper() else { return }
+                
                 let tokens = try await helper.signIn()
-                let _ = try await AuthenticationManager.shared.signInWithGoogle(tokens: tokens)
-                UserDefaults.standard.set(true, forKey: "isLoggedIn")
-                switchRootView(to: SignInViewController())
+                let authDataResult = try await AuthenticationManager.shared.signInWithGoogle(tokens: tokens)
+                let existingUser = try await FirestoreManager.shared.checkUserExists(email: tokens.email ?? "")
+                let isProfileComplete = existingUser?.isProfileComplete ?? false
+                if let existingUser = existingUser {
+                    await handleSignInResult(AuthDataResultModel(user: existingUser, authProvider: .google), isProfileComplete: isProfileComplete)
+                } else {
+                    try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: tokens.email ?? "", authProvider: AuthProviderOption.google.rawValue, gender: "선택안함", interests: [], isProfileComplete: false)
+                    await handleSignUpResult(authDataResult, isProfileComplete: false)
+                }
             } catch {
                 print("구글 로그인 실패: \(error)")
             }
@@ -268,47 +312,80 @@ class AuthenticationVC: UIViewController {
             do {
                 let helper = SignInWithAppleHelper()
                 let result = try await helper.startSignInWithAppleFlow()
-                let _ = try await AuthenticationManager.shared.signInWithApple(tokens: result)
-                UserDefaults.standard.set(true, forKey: "isLoggedIn")
-                switchRootView(to: SignInViewController())
+                let authDataResult = try await AuthenticationManager.shared.signInWithApple(tokens: result)
+                let existingUser = try await FirestoreManager.shared.checkUserExists(email: result.email ?? "")
+                let isProfileComplete = existingUser?.isProfileComplete ?? false
+                if let existingUser = existingUser {
+                    await handleSignInResult(AuthDataResultModel(user: existingUser, authProvider: .apple), isProfileComplete: isProfileComplete)
+                } else {
+                    try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: result.email ?? "", authProvider: AuthProviderOption.apple.rawValue, gender: "선택안함", interests: [], isProfileComplete: false)
+                    await handleSignUpResult(authDataResult, isProfileComplete: false)
+                }
             } catch {
                 print("Apple 로그인 실패: \(error)")
             }
         }
     }
     
+    // 로그인 결과 처리
+    private func handleSignInResult(_ authDataResult: AuthDataResultModel, isProfileComplete: Bool) async {
+        UserDefaults.standard.set(true, forKey: "isLoggedIn")
+        print("DEBUG: Checking profile completeness for user \(authDataResult.uid)")
+        if isProfileComplete,
+           let email = authDataResult.email, !email.isEmpty,
+           let gender = authDataResult.gender, !gender.isEmpty,
+           let interests = authDataResult.interests, !interests.isEmpty {
+            print("DEBUG: User profile is complete. Redirecting to SignInViewController")
+            switchRootView(to: SignInViewController())
+        } else {
+            print("DEBUG: User profile is incomplete. Redirecting to SignUpViewController")
+            presentSignUpViewController()
+        }
+    }
+    
+    private func handleSignUpResult(_ authDataResult: AuthDataResultModel, isProfileComplete: Bool) async {
+        UserDefaults.standard.set(true, forKey: "isLoggedIn")
+        print("DEBUG: User needs to complete profile. Redirecting to SignUpViewController")
+        presentSignUpViewController()
+    }
+    
     @objc private func buttonTouchDown(_ sender: UIButton) {
         animateButton(sender, transform: CGAffineTransform(scaleX: 0.95, y: 0.95))
     }
-
+    
     @objc private func buttonTouchUp(_ sender: UIButton) {
         animateButton(sender, transform: CGAffineTransform.identity)
     }
-
+    
     private func animateButton(_ button: UIButton, transform: CGAffineTransform) {
         UIView.animate(withDuration: 0.1, animations: {
             button.transform = transform
         })
     }
     
+    private func presentSignUpViewController() {
+        let signUpVC = SignUpViewController()
+        signUpVC.modalPresentationStyle = .formSheet
+        present(signUpVC, animated: true, completion: nil)
+    }
+    
     private func switchRootView(to viewController: UIViewController) {
         guard let window = UIApplication.shared.connectedScenes
-                .compactMap({ $0 as? UIWindowScene })
-                .flatMap({ $0.windows })
-                .first(where: { $0.isKeyWindow }) else { return }
-        window.rootViewController = viewController
+            .compactMap({ $0 as? UIWindowScene })
+            .flatMap({ $0.windows })
+            .first(where: { $0.isKeyWindow }) else { return }
+        window.rootViewController = UINavigationController(rootViewController: viewController)
         window.makeKeyAndVisible()
     }
 }
 
-
 // 애플 인증 로그인 관련 프로토콜
 extension AuthenticationVC: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-
+        
     }
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-
+        
     }
 }

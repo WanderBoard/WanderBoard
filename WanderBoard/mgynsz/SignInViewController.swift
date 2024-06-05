@@ -34,7 +34,7 @@ class SignInViewController: UIViewController {
         view.backgroundColor = .white
         setupViews()
         
-        logoutButton.addTarget(self, action: #selector(logoutButtonTapped), for: .touchUpInside)
+        logoutButton.addTarget(self, action: #selector(logOutTapped), for: .touchUpInside)
     }
 
     private func setupViews() {
@@ -52,23 +52,28 @@ class SignInViewController: UIViewController {
         }
     }
 
-    @objc private func logoutButtonTapped() {
+    @objc private func logOutTapped() {
+        
         Task {
             do {
-                try AuthenticationManager.shared.signOut()
-                switchRootView(to: AuthenticationVC())
-            } catch {
-                
+                try await AuthenticationManager.shared.signOut()
+                print("DEBUG: Logout successful") // 로그 추가
+                switchToAuthenticationViewController()
+
+            } catch let signOutError as NSError {
+                print("Error signing out: %@", signOutError)
             }
         }
     }
 
-    private func switchRootView(to viewController: UIViewController) {
-        guard let window = UIApplication.shared.connectedScenes
-                .compactMap({ $0 as? UIWindowScene })
-                .flatMap({ $0.windows })
-                .first(where: { $0.isKeyWindow }) else { return }
-        window.rootViewController = viewController
-        window.makeKeyAndVisible()
+    private func switchToAuthenticationViewController() {
+        if let window = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .flatMap({ $0.windows })
+            .first(where: { $0.isKeyWindow }) {
+            window.rootViewController = AuthenticationVC()
+            window.makeKeyAndVisible()
+        }
     }
+
 }

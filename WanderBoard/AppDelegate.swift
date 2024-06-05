@@ -8,6 +8,8 @@
 import UIKit
 import CoreData
 import FirebaseCore
+import FirebaseAuth
+import FirebaseFirestore
 import KakaoSDKCommon
 import KakaoSDKAuth
 
@@ -29,24 +31,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         KakaoSDK.initSDK(appKey: "fdaab28c4efeacf52167771728104865")
         
         window = UIWindow(frame: UIScreen.main.bounds)
-        
-        let initialViewController: UIViewController
-        if UserDefaults.standard.bool(forKey: "isLoggedIn") {
-            initialViewController = SignInViewController()
-        } else {
-            initialViewController = AuthenticationVC()
-        }
-        window?.rootViewController = initialViewController
-        window?.makeKeyAndVisible()
-        
+        configureInitialViewController()
         return true
     }
     
-    func application(
-        _ app: UIApplication,
-        open url: URL,
-        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
-    ) -> Bool {
+    private func configureInitialViewController() {
+        if UserDefaults.standard.bool(forKey: "isLoggedIn") {
+            if let currentUser = Auth.auth().currentUser {
+                let uid = currentUser.uid
+                Firestore.firestore().collection("users").document(uid).getDocument { (document, error) in
+                    if let document = document, document.exists {
+                        let data = document.data()
+                        let isProfileComplete = data?["isProfileComplete"] as? Bool ?? false
+                        DispatchQueue.main.async {
+                            let initialViewController: UIViewController
+                            if isProfileComplete {
+                                initialViewController = SignInViewController()
+                            } else {
+                                initialViewController = SignUpViewController()
+                            }
+                            self.window?.rootViewController = initialViewController
+                            self.window?.makeKeyAndVisible()
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            self.window?.rootViewController = SignUpViewController()
+                            self.window?.makeKeyAndVisible()
+                        }
+                    }
+                }
+            } else {
+                window?.rootViewController = AuthenticationVC()
+                window?.makeKeyAndVisible()
+            }
+        } else {
+            window?.rootViewController = AuthenticationVC()
+            window?.makeKeyAndVisible()
+        }
+    }
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         if AuthApi.isKakaoTalkLoginUrl(url) {
             return AuthController.handleOpenUrl(url: url)
         }

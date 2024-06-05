@@ -38,7 +38,7 @@ struct AuthDataResultModel {
 enum AuthProviderOption: String, Codable {
     case google = "google.com"
     case apple = "apple.com"
-    case kakao = "kakao.com"
+    case kakao = "kakao.com"//내일 물어보기...
     case email = "email"
 }
 

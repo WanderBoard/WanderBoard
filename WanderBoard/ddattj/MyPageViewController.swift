@@ -272,4 +272,12 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             print("Wrong Way!")
         }
     }
+    
+//    override func updateColor(){
+//        super.updateColor()
+//        let statusBColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+//        statusB.backgroundColor = statusBColor
+//        
+//        
+//    }
 }

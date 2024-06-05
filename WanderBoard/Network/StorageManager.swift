@@ -42,7 +42,7 @@ class StorageManager {
             metadata.customMetadata?["dateTaken"] = "\(dateTaken)"
         }
         
-        let uploadTask = try await storageRef.putDataAsync(imageData, metadata: metadata)
+        _ = try await storageRef.putDataAsync(imageData, metadata: metadata)
         
         let downloadURL = try await storageRef.downloadURL()
         

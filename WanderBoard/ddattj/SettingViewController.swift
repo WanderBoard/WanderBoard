@@ -236,6 +236,7 @@ class SettingViewController: BaseViewController {
         UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
             self.iconL.image = UIImage(systemName: "circle")
             self.iconD.image = UIImage(systemName: "circle")
+
             if sender.isOn {
                 let hour = Calendar.current.component(.hour, from: Date())
                 if hour >= 18 || hour < 6

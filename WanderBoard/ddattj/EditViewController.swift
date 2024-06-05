@@ -45,6 +45,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(tapGestureRecognizer:)))
         profile.isUserInteractionEnabled = true
         profile.addGestureRecognizer(tapGestureRecognizer)
+
     }
     
     override func configureUI(){
@@ -129,6 +130,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             $0.centerX.equalToSuperview()
             $0.width.height.equalTo(21)
             $0.centerY.equalToSuperview()
+
         }
         
         myName.snp.makeConstraints(){

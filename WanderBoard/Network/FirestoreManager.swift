@@ -14,29 +14,13 @@ class FirestoreManager {
     private init() { }
 
     private let db = Firestore.firestore()
-    
-    func checkUserExists(email: String) async throws -> User? {
-        let querySnapshot = try await db.collection("users").whereField("email", isEqualTo: email).getDocuments()
-        if let document = querySnapshot.documents.first {
-            return try? document.data(as: User.self)
-        }
-        return nil
-    }
 
-    func saveUser(uid: String, email: String, displayName: String? = nil, photoURL: String? = nil, socialMediaLink: String? = nil, authProvider: String, gender: String = "선택안함", interests: [String] = [], isProfileComplete: Bool) async throws {
-        
-        guard !email.isEmpty else {
-            throw NSError(domain: "SaveUserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Email is empty. Cannot save user data."])
-        }
-        
+    func saveUser(uid: String, email: String, displayName: String?, photoURL: String?, socialMediaLink: String?, authProvider: String) async throws {
         let userRef = db.collection("users").document(uid)
         
         var dataToSave: [String: Any] = [
-            "uid": uid,
             "email": email,
-            "authProvider": authProvider,
-            "isProfileComplete": isProfileComplete
-            
+            "authProvider": authProvider
         ]
         
         if let displayName = displayName {
@@ -48,59 +32,48 @@ class FirestoreManager {
         if let socialMediaLink = socialMediaLink {
             dataToSave["socialMediaLink"] = socialMediaLink
         }
-        if !interests.isEmpty {
-            dataToSave["interests"] = interests
-        }
+        print("Saving user data to Firestore: \(dataToSave)")
         
-        let document = try await userRef.getDocument()
-        if document.exists {
-            // 기존 문서 업데이트
-            let existingData = document.data() ?? [:]
-            if existingData["gender"] == nil || existingData["gender"] as? String == "선택안함" {
-                dataToSave["gender"] = gender
-            }
-            try await userRef.updateData(dataToSave)
-        } else {
-            // 새 문서 생성
-            dataToSave["gender"] = gender
-            try await userRef.setData(dataToSave, merge: true)
-        }
+        try await userRef.setData(dataToSave, merge: true)
     }
 
     func saveOrUpdateUser(user: UserEntity) async throws {
         let userRef = db.collection("users").document(user.uid ?? "")
+        
         let document = try await userRef.getDocument()
-
-        var dataToUpdate: [String: Any] = [:]
-
-        if let email = user.email, !email.isEmpty {
-            dataToUpdate["email"] = email
-        }
-        if let displayName = user.displayName, !displayName.isEmpty {
-            dataToUpdate["displayName"] = displayName
-        }
-        if let photoURL = user.photoURL, !photoURL.isEmpty {
-            dataToUpdate["photoURL"] = photoURL
-        }
-        if let socialMediaLink = user.socialMediaLink, !socialMediaLink.isEmpty {
-            dataToUpdate["socialMediaLink"] = socialMediaLink
-        }
-        if let authProvider = user.authProvider {
-            dataToUpdate["authProvider"] = authProvider
-        }
-        if let gender = user.gender {
-            dataToUpdate["gender"] = gender
-        }
-        if let interests = user.interests {
-            dataToUpdate["interests"] = interests
-        }
-
-        dataToUpdate["isProfileComplete"] = user.isProfileComplete
-
+        
         if document.exists {
+            var dataToUpdate: [String: Any] = [:]
+            
+            if let email = user.email, !email.isEmpty {
+                dataToUpdate["email"] = email
+            }
+            if let displayName = user.displayName, !displayName.isEmpty {
+                dataToUpdate["displayName"] = displayName
+            }
+            if let photoURL = user.photoURL, !photoURL.isEmpty {
+                dataToUpdate["photoURL"] = photoURL
+            }
+            if let socialMediaLink = user.socialMediaLink, !socialMediaLink.isEmpty {
+                dataToUpdate["socialMediaLink"] = socialMediaLink
+            }
+            if let authProvider = user.authProvider {
+                dataToUpdate["authProvider"] = authProvider
+            }
+            
             try await userRef.updateData(dataToUpdate)
+            print("User updated in Firestore: \(user)")
         } else {
-            try await userRef.setData(dataToUpdate, merge: true)
+            let data: [String: Any] = [
+                "uid": user.uid ?? "",
+                "email": user.email ?? "",
+                "displayName": user.displayName ?? "",
+                "photoURL": user.photoURL ?? "",
+                "socialMediaLink": user.socialMediaLink ?? "",
+                "authProvider": user.authProvider ?? ""
+            ]
+            try await userRef.setData(data)
+            print("User saved to Firestore: \(user)")
         }
     }
 
@@ -143,3 +116,4 @@ class FirestoreManager {
         return snapshot.documents.compactMap { try? $0.data(as: PinLog.self) }
     }
 }
+

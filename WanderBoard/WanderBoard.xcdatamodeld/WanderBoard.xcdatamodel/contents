@@ -4,9 +4,6 @@
         <attribute name="authProvider" optional="YES" attributeType="String"/>
         <attribute name="displayName" optional="YES" attributeType="String"/>
         <attribute name="email" optional="YES" attributeType="String"/>
-        <attribute name="gender" optional="YES" attributeType="String"/>
-        <attribute name="interests" optional="YES" attributeType="String"/>
-        <attribute name="isProfileComplete" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="photoURL" optional="YES" attributeType="String"/>
         <attribute name="socialMediaLink" optional="YES" attributeType="String"/>
         <attribute name="uid" optional="YES" attributeType="String"/>

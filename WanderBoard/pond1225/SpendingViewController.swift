@@ -14,7 +14,7 @@ class SpendingListViewController: UIViewController {
     var dailyExpenses: [DailyExpenses] = []
     
     let backButton: UIButton = {
-       var backButton = UIButton()
+        var backButton = UIButton()
         backButton.tintColor = .black
         backButton.setImage(UIImage(systemName: "chevron.backward"), for: .normal)
         backButton.addTarget(SpendingListViewController.self, action: #selector(backButtonTapped), for: .touchUpInside)
@@ -26,7 +26,7 @@ class SpendingListViewController: UIViewController {
     }
     
     let insertButton: UIButton = {
-       var insertButton = UIButton()
+        var insertButton = UIButton()
         insertButton.tintColor = .black
         insertButton.setImage(UIImage(systemName: "plus"), for: .normal)
         insertButton.addTarget(self, action: #selector(insertButtonTapped), for: .touchUpInside)
@@ -48,7 +48,7 @@ class SpendingListViewController: UIViewController {
     }()
     
     let totalSpendingText: UILabel = {
-       var totalSpendingText = UILabel()
+        var totalSpendingText = UILabel()
         totalSpendingText.text = "총 지출금액"
         totalSpendingText.font = UIFont.systemFont(ofSize: 15)
         totalSpendingText.textColor = .white //나중에 878787로 변경
@@ -65,19 +65,19 @@ class SpendingListViewController: UIViewController {
         return totalSpendingAmount
     }()
     
-   lazy var labelStackView: UIStackView = {
+    lazy var labelStackView: UIStackView = {
         let labelStackView = UIStackView(arrangedSubviews: [
-        UIView(),
-        totalSpendingText,
-        totalSpendingAmount,
-        UIView()
+            UIView(),
+            totalSpendingText,
+            totalSpendingAmount,
+            UIView()
         ])
-       labelStackView.axis = .vertical
-       return labelStackView
+        labelStackView.axis = .vertical
+        return labelStackView
     }()
     
     var tableView : UITableView = {
-       let tableView = UITableView()
+        let tableView = UITableView()
         
         
         
@@ -95,13 +95,14 @@ class SpendingListViewController: UIViewController {
         
         dailyExpenses = [DailyExpenses(date: Date(), expenses: [
             Expense(date: today, expenseContent: "점심", expenseAmount: 12000, category: "식비", memo: "불고기 덮밥"),
-        Expense(date: yesterday, expenseContent: "렌터카", expenseAmount: 250000, category: "교통비", memo: "2박3일 oo렌터카 렌트")
+            Expense(date: yesterday, expenseContent: "렌터카", expenseAmount: 250000, category: "교통비", memo: "2박3일 oo렌터카 렌트")
         ])]
         
         configureUI()
         makeConstraints()
+        setupNavi()
         
-//        tableView = UITableView(frame: .zero, style: .grouped)
+        //        tableView = UITableView(frame: .zero, style: .grouped)
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SpendingTableViewCell.self, forCellReuseIdentifier: "cell")
@@ -130,7 +131,7 @@ class SpendingListViewController: UIViewController {
             $0.width.equalTo(30)
             
         }
-            
+        
         insertButton.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide)
             $0.trailing.equalTo(view.safeAreaLayoutGuide).inset(27.41)
@@ -138,36 +139,40 @@ class SpendingListViewController: UIViewController {
             $0.width.equalTo(24)
         }
         
-            spendingCardbutton.snp.makeConstraints {
-                $0.top.equalToSuperview().offset(115)
-                $0.width.equalTo(344)
-                $0.height.equalTo(203)
-                $0.leading.equalTo(view.safeAreaLayoutGuide).inset(25)
-            }
-            
-            totalSpendingText.snp.makeConstraints {
-                $0.top.equalToSuperview().inset(101.5)
-                $0.leading.equalToSuperview().inset(32)
-                $0.width.equalTo(74)
-                $0.height.equalTo(22.11)
-            }
-            
-            totalSpendingAmount.snp.makeConstraints {
-                $0.top.equalTo(totalSpendingText.snp.bottom).offset(16.08)
-                $0.leading.equalTo(spendingCardbutton.snp.leading).inset(32)
-                $0.width.equalTo(171)
-                $0.height.equalTo(30)
-            }
+        spendingCardbutton.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(115)
+            $0.width.equalTo(344)
+            $0.height.equalTo(203)
+            $0.leading.equalTo(view.safeAreaLayoutGuide).inset(25)
+        }
+        
+        totalSpendingText.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(101.5)
+            $0.leading.equalToSuperview().inset(32)
+            $0.width.equalTo(74)
+            $0.height.equalTo(22.11)
+        }
+        
+        totalSpendingAmount.snp.makeConstraints {
+            $0.top.equalTo(totalSpendingText.snp.bottom).offset(16.08)
+            $0.leading.equalTo(spendingCardbutton.snp.leading).inset(32)
+            $0.width.equalTo(171)
+            $0.height.equalTo(30)
+        }
         
         tableView.snp.makeConstraints {
             $0.top.equalTo(spendingCardbutton.snp.bottom).offset(44)
             $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
         }
-            
-        }
         
     }
     
+    func setupNavi() {
+        navigationController?.navigationBar.tintColor = .black
+    }
+    
+}
+
 extension SpendingListViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return dailyExpenses.count
@@ -202,7 +207,7 @@ extension SpendingListViewController: UITableViewDelegate {
         
         for i in dailyExpenses[section].expenses {
             dailyTotalAmount += i.expenseAmount
-
+            
         }
         
         header.configure(with: dailyExpenses[section].date, dailyTotalAmount: dailyTotalAmount)

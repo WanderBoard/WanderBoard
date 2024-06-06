@@ -53,15 +53,15 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         setupNV()
     }
     
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        plusButton.isHidden = false
-//    }
-//        
-//    override func viewWillDisappear(_ animated: Bool) {
-//        super.viewWillDisappear(animated)
-//        plusButton.isHidden = true
-//    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        plusButton.isHidden = false
+    }
+        
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        plusButton.isHidden = true
+    }
     
     private func setupNV() {
         navigationItem.title = pageText

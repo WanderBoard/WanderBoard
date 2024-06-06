@@ -2,6 +2,8 @@ import UIKit
 import SnapKit
 import Then
 import PhotosUI
+import MapKit
+import SwiftUI
 
 class DetailInputViewController: UIViewController {
     
@@ -123,6 +125,7 @@ class DetailInputViewController: UIViewController {
         $0.alignment = .center
         $0.distribution = .equalSpacing
         $0.spacing = 10
+        $0.isUserInteractionEnabled = false
     }
     
     let consumButton = UIButton().then {
@@ -145,6 +148,7 @@ class DetailInputViewController: UIViewController {
         $0.alignment = .center
         $0.distribution = .equalSpacing
         $0.spacing = 10
+        $0.isUserInteractionEnabled = false
     }
     
     let bodyLine = UIView().then {
@@ -221,6 +225,12 @@ class DetailInputViewController: UIViewController {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.navigationBar.tintColor = .white
+    }
+    
     func setupUI() {
         view.addSubview(topContainarView)
         view.addSubview(scrollView)
@@ -273,7 +283,7 @@ class DetailInputViewController: UIViewController {
         scrollView.snp.makeConstraints {
             $0.top.equalTo(topContainarView.snp.bottom).offset(-40)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(40)
         }
         
         contentView.snp.makeConstraints {
@@ -415,7 +425,26 @@ class DetailInputViewController: UIViewController {
         startDateButton.addTarget(self, action: #selector(showDatePicker(_:)), for: .touchUpInside)
         endDateButton.addTarget(self, action: #selector(showDatePicker(_:)), for: .touchUpInside)
         galleryCountButton.addTarget(self, action: #selector(showPHPicker), for: .touchUpInside)
+        
+        locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
+        consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc func locationButtonTapped() {
+        let viewModel = MapViewModel(region: MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
+            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+        ))
 
+        let mapView = MapViewController(viewModel: viewModel, startDate: Date(), endDate: Date())
+        let hostingController = UIHostingController(rootView: mapView)
+
+        navigationController?.pushViewController(hostingController, animated: true)
+    }
+    
+    @objc func consumButtonTapped() {
+        let spendVC = SpendingListViewController()
+        navigationController?.pushViewController(spendVC, animated: true)
     }
         
     @objc func showDatePicker(_ sender: UIButton) {
@@ -446,6 +475,8 @@ class DetailInputViewController: UIViewController {
     func setupNavigationBar() {
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = doneButton
+        
+        navigationController?.navigationBar.tintColor = .white
     }
     
     @objc func doneButtonTapped() {

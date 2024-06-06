@@ -490,7 +490,7 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.scrollView.snp.remakeConstraints {
                         $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-40)
                         $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(40)
                     }
                     
                     self.contentView.snp.remakeConstraints {
@@ -521,7 +521,7 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.scrollView.snp.remakeConstraints {
                         $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-40)
                         $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(40)
                     }
                     
                     self.contentView.snp.remakeConstraints {

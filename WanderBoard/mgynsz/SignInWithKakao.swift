@@ -70,21 +70,21 @@ final class SignInWithKakaoHelper {
 }
 
 // Firebase 인증과 연동
-func signInWithKakao(kakaoToken: String) async throws -> AuthDataResultModel {
-    let credential = OAuthProvider.credential(withProviderID: "kakao.com", idToken: kakaoToken, rawNonce: nil)
-    let authDataResult = try await Auth.auth().signIn(with: credential)
-    let authProvider = AuthProviderOption.kakao
-    return AuthDataResultModel(user: authDataResult.user, authProvider: authProvider)
-}
-
-func signInWithEmailAndPassword(email: String, password: String) async throws -> AuthDataResultModel {
-    let authDataResult = try await Auth.auth().signIn(withEmail: email, password: password)
-    let authProvider = AuthProviderOption.email
-    return AuthDataResultModel(user: authDataResult.user, authProvider: authProvider)
-}
-
-func createUserWithEmailAndPassword(email: String, password: String) async throws -> AuthDataResultModel {
-    let authDataResult = try await Auth.auth().createUser(withEmail: email, password: password)
-    let authProvider = AuthProviderOption.email
-    return AuthDataResultModel(user: authDataResult.user, authProvider: authProvider)
-}
+//func signInWithKakao(kakaoToken: String) async throws -> AuthDataResultModel {
+//    let credential = OAuthProvider.credential(withProviderID: "kakao.com", idToken: kakaoToken, rawNonce: nil)
+//    let authDataResult = try await Auth.auth().signIn(with: credential)
+//    let authProvider = AuthProviderOption.kakao
+//    return AuthDataResultModel(user: authDataResult.user, authProvider: authProvider)
+//}
+//
+//func signInWithEmailAndPassword(email: String, password: String) async throws -> AuthDataResultModel {
+//    let authDataResult = try await Auth.auth().signIn(withEmail: email, password: password)
+//    let authProvider = AuthProviderOption.email
+//    return AuthDataResultModel(user: authDataResult.user, authProvider: authProvider)
+//}
+//
+//func createUserWithEmailAndPassword(email: String, password: String) async throws -> AuthDataResultModel {
+//    let authDataResult = try await Auth.auth().createUser(withEmail: email, password: password)
+//    let authProvider = AuthProviderOption.email
+//    return AuthDataResultModel(user: authDataResult.user, authProvider: authProvider)
+//}

@@ -32,7 +32,6 @@ class GalleryCollectionViewCell: UICollectionViewCell {
         imageView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-        
     }
     
     func configure(with image: UIImage?) {

@@ -38,6 +38,7 @@ class DetailViewController: UIViewController {
         $0.text = "---"
         $0.font = UIFont.systemFont(ofSize: 40)
         $0.textColor = .white
+        $0.numberOfLines = 2
     }
     
     var dateDaysLabel = UILabel().then {
@@ -227,6 +228,7 @@ class DetailViewController: UIViewController {
         setupCollectionView()
         setupSegmentControl()
         applyDarkOverlayToBackgroundImage()
+        setupActionButton()
         
         view.backgroundColor = .white
         
@@ -442,7 +444,7 @@ class DetailViewController: UIViewController {
         let group = DispatchGroup()
         
         for media in mediaItems {
-            guard let url = URL(string: media.url) else { continue }
+            guard URL(string: media.url) != nil else { continue }
             group.enter()
             loadImage(from: media.url) { [weak self] image in
                 if let image = image {
@@ -501,7 +503,16 @@ class DetailViewController: UIViewController {
         }
     }
     
+    func setupActionButton() {
+        albumAllButton.addTarget(self, action: #selector(showGalleryDetail), for: .touchUpInside)
+    }
     
+    @objc func showGalleryDetail() {
+        let galleryDetailVC = GalleryDetailViewController()
+        galleryDetailVC.selectedImages = selectedImages
+        galleryDetailVC.modalPresentationStyle = .fullScreen
+        present(galleryDetailVC, animated: true, completion: nil)
+    }
 }
 
 extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {

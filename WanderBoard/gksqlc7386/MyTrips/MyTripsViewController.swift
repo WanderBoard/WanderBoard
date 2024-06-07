@@ -174,28 +174,17 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
             cell.filterButton.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
             return cell
         } else {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyTripsCollectionViewCell.identifier, for: indexPath) as? MyTripsCollectionViewCell else { fatalError("컬렉션 뷰 오류")}
-            
-            let tripLog = MyTripsViewController.tripLogs[indexPath.item]
-            
-            if let imageUrl = tripLog.media.first?.url, let url = URL(string: imageUrl) {
-                cell.bgImage.kf.setImage(with: url)
-            } else {
-                cell.bgImage.image = UIImage(systemName: "photo") // 이미지 못불러올시 임시 이미지
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyTripsCollectionViewCell.identifier, for: indexPath) as? MyTripsCollectionViewCell else {
+                fatalError("컬렉션 뷰 오류")
             }
             
-            cell.titleLabel.text = tripLog.location
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let startDate = dateFormatter.string(from: tripLog.startDate)
-            let endDate = dateFormatter.string(from: tripLog.endDate)
-            let duration = Calendar.current.dateComponents([.day], from: tripLog.startDate, to: tripLog.endDate).day ?? 0
-            cell.subTitle.text = "\(startDate) - \(endDate) (\(duration) days)"
+            let tripLog = tripLogs[indexPath.item]
+            cell.configure(with: tripLog)
             
             return cell
         }
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let screenWidth = UIScreen.main.bounds.width
         if indexPath.section == 0 {

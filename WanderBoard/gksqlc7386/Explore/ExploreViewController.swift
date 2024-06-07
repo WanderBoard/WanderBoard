@@ -42,7 +42,6 @@ class ExploreViewController: UIViewController, PageIndexed {
         navigationItem.title = pageText
         navigationItem.largeTitleDisplayMode = .always
         
-        // 네비게이션 바 위에 search 버튼 추가
         if let navigationBarSuperview = navigationController?.navigationBar.superview {
             let customView = UIView()
             customView.backgroundColor = .clear
@@ -50,7 +49,6 @@ class ExploreViewController: UIViewController, PageIndexed {
             
             navigationBarSuperview.addSubview(customView)
             
-            // customView의 크기와 위치 설정
             customView.snp.makeConstraints {
                 $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-30)
                 $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)

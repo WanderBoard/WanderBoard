@@ -23,7 +23,10 @@ struct AuthDataResultModel {
     let photoURL: String?
     var socialMediaLink: String?
     let authProvider: AuthProviderOption
-    
+    var gender: String?
+    var interests: [String]?
+    var isProfileComplete: Bool?
+
     init(user: FirebaseAuth.User, authProvider: AuthProviderOption) {
         self.uid = user.uid
         self.email = user.email
@@ -31,6 +34,21 @@ struct AuthDataResultModel {
         self.photoURL = user.photoURL?.absoluteString
         self.socialMediaLink = nil
         self.authProvider = authProvider
+        self.gender = nil
+        self.interests = nil
+        self.isProfileComplete = nil
+    }
+    
+    init(user: User, authProvider: AuthProviderOption) {
+        self.uid = user.uid
+        self.email = user.email
+        self.displayName = user.displayName
+        self.photoURL = user.photoURL
+        self.socialMediaLink = user.socialMediaLink
+        self.authProvider = authProvider
+        self.gender = user.gender
+        self.interests = user.interests
+        self.isProfileComplete = user.isProfileComplete
     }
 }
 
@@ -38,7 +56,7 @@ struct AuthDataResultModel {
 enum AuthProviderOption: String, Codable {
     case google = "google.com"
     case apple = "apple.com"
-    case kakao = "kakao.com"//내일 물어보기...
+    case kakao = "kakao.com"
     case email = "email"
 }
 
@@ -51,9 +69,8 @@ final class AuthenticationManager {
         guard let user = Auth.auth().currentUser else {
             throw URLError(.badServerResponse)
         }
-        // authProvider를 포함하여 초기화
         let providerData = user.providerData
-        var authProvider: AuthProviderOption = .email // 기본값 설정
+        var authProvider: AuthProviderOption = .email
         for provider in providerData {
             if let providerType = AuthProviderOption(rawValue: provider.providerID) {
                 authProvider = providerType
@@ -62,12 +79,11 @@ final class AuthenticationManager {
         }
         return AuthDataResultModel(user: user, authProvider: authProvider)
     }
-
-    // 변경된 이메일 중복 확인 메서드
+    
+    // 이메일 중복 확인 메서드
     func checkEmailExists(email: String) async -> Bool {
         do {
             _ = try await Auth.auth().createUser(withEmail: email, password: "temporaryPassword")
-            // 임시 사용자가 생성되면 삭제
             let user = Auth.auth().currentUser
             try await user?.delete()
             return false
@@ -75,7 +91,6 @@ final class AuthenticationManager {
             if let errorCode = AuthErrorCode.Code(rawValue: error.code), errorCode == .emailAlreadyInUse {
                 return true
             } else {
-                // 다른 에러 발생 시 false 반환
                 return false
             }
         }
@@ -93,9 +108,9 @@ final class AuthenticationManager {
 
     // 코어 데이터 저장
     @MainActor
-    private func saveUserToCoreData(uid: String, email: String, displayName: String?, photoURL: String?, socialMediaLink: String?, authProvider: AuthProviderOption) throws -> UserEntity {
+    private func saveUserToCoreData(uid: String, email: String, displayName: String?, photoURL: String?, socialMediaLink: String?, authProvider: AuthProviderOption, gender: String, interests: [String]) throws -> UserEntity {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            ErrorUtility.shared.presentErrorAlertAndTerminate(with: "앱 초기화 중 문제가 발생했습니다. 다시 시도해주세요. 🥲")
+            ErrorUtility.shared.presentErrorAlertAndTerminate(with: "앱 초기화 중 문제가 발생했습니다. 다시 시도해주세요.")
             throw NSError(domain: "AppDelegateError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Could not cast UIApplication delegate to AppDelegate"])
         }
         let context = appDelegate.persistentContainer.viewContext
@@ -106,6 +121,8 @@ final class AuthenticationManager {
         userEntity.photoURL = photoURL
         userEntity.socialMediaLink = socialMediaLink
         userEntity.authProvider = authProvider.rawValue
+        userEntity.gender = gender
+        userEntity.interests = interests.joined(separator: ",")
         
         try context.save()
         
@@ -122,14 +139,33 @@ final class AuthenticationManager {
             
             await MainActor.run {
                 do {
-                    _ = try self.saveUserToCoreData(uid: authDataResult.uid, email: tokens.email ?? "", displayName: tokens.nickname, photoURL: tokens.profileImageUrl?.absoluteString, socialMediaLink: nil, authProvider: .kakao)
+                    _ = try self.saveUserToCoreData(
+                        uid: authDataResult.uid,
+                        email: tokens.email ?? "",
+                        displayName: tokens.nickname,
+                        photoURL: tokens.profileImageUrl?.absoluteString,
+                        socialMediaLink: nil,
+                        authProvider: .kakao,
+                        gender: "선택안함",
+                        interests: []
+                    )
                 } catch {
                     ErrorUtility.shared.presentErrorAlertAndTerminate(with: "사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
                 }
             }
             
             do {
-                try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: tokens.email ?? "", displayName: tokens.nickname, photoURL: tokens.profileImageUrl?.absoluteString, socialMediaLink: nil, authProvider: AuthProviderOption.kakao.rawValue)
+                try await FirestoreManager.shared.saveUser(
+                    uid: authDataResult.uid,
+                    email: tokens.email ?? "",
+                    displayName: tokens.nickname,
+                    photoURL: tokens.profileImageUrl?.absoluteString,
+                    socialMediaLink: nil,
+                    authProvider: AuthProviderOption.kakao.rawValue,
+                    gender: "선택안함",
+                    interests: [],
+                    isProfileComplete: false
+                )
             } catch {
                 print("Firestore save error: \(error)")
                 await ErrorUtility.shared.presentErrorAlert(with: "서버에 사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
@@ -143,7 +179,7 @@ final class AuthenticationManager {
             throw error
         }
     }
-    
+
     private func getCustomTokenFromServer(uid: String) async throws -> String {
         let url = URL(string: "https://YOUR_CLOUD_FUNCTIONS_URL/createCustomToken")!
         var request = URLRequest(url: url)
@@ -160,18 +196,26 @@ final class AuthenticationManager {
         let json = try JSONSerialization.jsonObject(with: data) as! [String: Any]
         return json["token"] as! String
     }
-
     
     // 구글 로그인 결과 처리 및 코어데이터 저장
     func signInWithGoogle(tokens: GoogleSignInResult) async throws -> AuthDataResultModel {
         do {
-            let credential = GoogleAuthProvider.credential(withIDToken: tokens.idToken, accessToken: tokens.accessToken) // 생성
-            let authDataResult = try await signIn(credential: credential) // 인증
+            let credential = GoogleAuthProvider.credential(withIDToken: tokens.idToken, accessToken: tokens.accessToken)
+            let authDataResult = try await signIn(credential: credential)
             
             // 코어데이터 저장
             await MainActor.run {
                 do {
-                    _ = try self.saveUserToCoreData(uid: authDataResult.uid, email: tokens.email ?? "", displayName: tokens.displayName, photoURL: tokens.profileImageUrl?.absoluteString, socialMediaLink: nil, authProvider: .google)
+                    _ = try self.saveUserToCoreData(
+                        uid: authDataResult.uid,
+                        email: tokens.email ?? "",
+                        displayName: tokens.displayName,
+                        photoURL: tokens.profileImageUrl?.absoluteString,
+                        socialMediaLink: nil,
+                        authProvider: .google,
+                        gender: "선택안함",
+                        interests: []
+                    )
                 } catch {
                     ErrorUtility.shared.presentErrorAlertAndTerminate(with: "사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
                 }
@@ -179,7 +223,14 @@ final class AuthenticationManager {
             
             // FireStore 저장
             do {
-                try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: tokens.email ?? "", displayName: tokens.displayName, photoURL: tokens.profileImageUrl?.absoluteString, socialMediaLink: nil, authProvider: AuthProviderOption.google.rawValue)
+                try await FirestoreManager.shared.saveUser(
+                    uid: authDataResult.uid,
+                    email: tokens.email ?? "",
+                    authProvider: AuthProviderOption.google.rawValue,
+                    gender: "선택안함",
+                    interests: [],
+                    isProfileComplete: true
+                )
             } catch {
                 await ErrorUtility.shared.presentErrorAlert(with: "서버에 사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
                 throw error
@@ -187,43 +238,97 @@ final class AuthenticationManager {
             
             try await updateUserProfileFromFirestore() // FireStore 정보 업데이트
             
-            return authDataResult // 인증 결과 반환
+            return authDataResult
         } catch {
             await ErrorUtility.shared.presentErrorAlert(with: "Google 로그인 중 문제가 발생했습니다. 다시 시도해주세요.")
             throw error
         }
     }
     
-    // 애플 로그인 결과 처리 및 코어데이터 저장
     func signInWithApple(tokens: SignInWithAppleResult) async throws -> AuthDataResultModel {
         do {
-            let credential = OAuthProvider.credential(withProviderID: "apple.com", idToken: tokens.token, rawNonce: tokens.nonce) // 생성
-            let authDataResult = try await signIn(credential: credential) // 인증
+            let credential = OAuthProvider.credential(withProviderID: "apple.com", idToken: tokens.token, rawNonce: tokens.nonce)
+            let authDataResult = try await signIn(credential: credential)
             
-            // 코어데이터 저장
-            await MainActor.run {
-                do {
-                    _ = try self.saveUserToCoreData(uid: authDataResult.uid, email: tokens.email ?? "", displayName: tokens.displayName, photoURL: nil, socialMediaLink: nil, authProvider: .apple)
-                } catch {
-                    ErrorUtility.shared.presentErrorAlertAndTerminate(with: "사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
+            // 이메일 가져오기
+            var email = tokens.email ?? ""
+            if email.isEmpty {
+                email = try await fetchEmailFromFirestore(uid: authDataResult.uid) ?? ""
+            }
+
+            if email.isEmpty {
+                await ErrorUtility.shared.presentErrorAlert(with: "Apple 로그인 중 문제가 발생했습니다. 이메일 정보를 가져오지 못했습니다.")
+                throw NSError(domain: "SignInWithAppleError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve email from Apple Sign-In"])
+            }
+
+            // Firestore에서 사용자 문서 확인
+            let existingUser = try await FirestoreManager.shared.checkUserExists(email: email)
+            let isProfileComplete = existingUser?.isProfileComplete ?? false
+
+            // 사용자 문서가 존재하면 로그인 처리
+            if existingUser != nil {
+                await MainActor.run {
+                    if isProfileComplete {
+                        switchRootView(to: PageViewController())
+                    } else {
+                        presentSignUpViewController()
+                    }
+                }
+            } else {
+                // 신규 사용자 처리
+                try await FirestoreManager.shared.saveUser(
+                    uid: authDataResult.uid,
+                    email: email,
+                    displayName: tokens.displayName,
+                    photoURL: nil,
+                    authProvider: AuthProviderOption.apple.rawValue,
+                    gender: "선택안함",
+                    interests: [],
+                    isProfileComplete: false
+                )
+                await MainActor.run {
+                    presentSignUpViewController()
                 }
             }
-            
-            // FireStore 저장
-            do {
-                try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: tokens.email ?? "", displayName: tokens.displayName, photoURL: nil, socialMediaLink: nil, authProvider: AuthProviderOption.apple.rawValue)
-            } catch {
-                await ErrorUtility.shared.presentErrorAlert(with: "서버에 사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
-                throw error
-            }
-            
-            try await updateUserProfileFromFirestore() // FireStore 정보 업데이트
-            
-            return authDataResult // 인증 결과 반환
+
+            return authDataResult
         } catch {
             await ErrorUtility.shared.presentErrorAlert(with: "Apple 로그인 중 문제가 발생했습니다. 다시 시도해주세요.")
             throw error
         }
+    }
+
+    private func presentSignUpViewController() {
+        DispatchQueue.main.async {
+            let signUpVC = SignUpViewController()
+            signUpVC.modalPresentationStyle = .formSheet
+            UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .flatMap { $0.windows }
+                .first { $0.isKeyWindow }?
+                .rootViewController?
+                .present(signUpVC, animated: true, completion: nil)
+        }
+    }
+    
+    private func switchRootView(to viewController: UIViewController) {
+        DispatchQueue.main.async {
+            guard let window = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .flatMap({ $0.windows })
+                .first(where: { $0.isKeyWindow }) else { return }
+            window.rootViewController = UINavigationController(rootViewController: viewController)
+            window.makeKeyAndVisible()
+        }
+    }
+
+    func fetchEmailFromFirestore(uid: String) async throws -> String? {
+        let userRef = Firestore.firestore().collection("users").document(uid)
+        let document = try await userRef.getDocument()
+        guard let data = document.data(), let email = data["email"] as? String, !email.isEmpty else {
+            return nil
+        }
+        return email
     }
 
     // 파이어베이스에 인증 요청
@@ -273,13 +378,36 @@ final class AuthenticationManager {
 
     // SignOut FireBase와 연결 해제
     @MainActor
-    func signOut() throws {
-        do {
-            try Auth.auth().signOut()
-            UserDefaults.standard.set(false, forKey: "isLoggedIn")
-        } catch {
-            ErrorUtility.shared.presentErrorAlert(with: "로그아웃 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.")
-            throw error
+    func signOut() async throws {
+        // 실제 비동기 작업 예시
+        try await withCheckedThrowingContinuation { continuation in
+            do {
+                try Auth.auth().signOut()
+                continuation.resume(returning: ())
+            } catch {
+                continuation.resume(throwing: error)
+            }
         }
+    }
+    
+    // 이메일과 비밀번호로 로그인
+    func signInWithEmailAndPassword(email: String, password: String) async throws -> AuthDataResultModel {
+        let authDataResult = try await Auth.auth().signIn(withEmail: email, password: password)
+        let authProvider = AuthProviderOption.email
+        return AuthDataResultModel(user: authDataResult.user, authProvider: authProvider)
+    }
+
+    // 이메일과 비밀번호로 사용자 생성
+    func createUserWithEmailAndPassword(email: String, password: String) async throws -> AuthDataResultModel {
+        let authDataResult = try await Auth.auth().createUser(withEmail: email, password: password)
+        let authProvider = AuthProviderOption.email
+        return AuthDataResultModel(user: authDataResult.user, authProvider: authProvider)
+    }
+    
+    func signInWithKakao(kakaoToken: String) async throws -> AuthDataResultModel {
+        let credential = OAuthProvider.credential(withProviderID: "kakao.com", idToken: kakaoToken, rawNonce: nil)
+        let authDataResult = try await Auth.auth().signIn(with: credential)
+        let authProvider = AuthProviderOption.kakao
+        return AuthDataResultModel(user: authDataResult.user, authProvider: authProvider)
     }
 }

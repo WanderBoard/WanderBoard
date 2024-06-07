@@ -9,9 +9,14 @@ import UIKit
 import Then
 import SnapKit
 import SwiftUI
+import FirebaseAuth
+import Kingfisher
 
 class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDelegateFlowLayout {
 
+    var tripLogs: [PinLog] = []
+    let pinLogManager = PinLogManager()
+    
     var pageIndex: Int?
     var pageText: String?
     
@@ -51,17 +56,21 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         setupConstraints()
         setGradient()
         setupNV()
+        
+        Task {
+            await loadData()
+        }
     }
     
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        plusButton.isHidden = false
-//    }
-//        
-//    override func viewWillDisappear(_ animated: Bool) {
-//        super.viewWillDisappear(animated)
-//        plusButton.isHidden = true
-//    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        plusButton.isHidden = false
+    }
+        
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        plusButton.isHidden = true
+    }
     
     private func setupNV() {
         navigationItem.title = pageText
@@ -117,8 +126,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     
     @objc func addButtonTapped() {
         let inputVC = DetailInputViewController()
-        //inputVC.modalPresentationStyle = .fullScreen
-        //present(inputVC, animated: true)
+        inputVC.delegate = self
         navigationController?.pushViewController(inputVC, animated: true)
     }
     
@@ -127,6 +135,22 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         let filterTitle = filters[filterIndex]
         print("Filter button tapped: \(filterTitle)")
     }
+    
+    func loadData() async {
+        do {
+            guard let userId = Auth.auth().currentUser?.uid else { return }
+            tripLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
+            collectionView.reloadData()
+        } catch {
+            print("Failed to fetch pin logs: \(error.localizedDescription)")
+        }
+    }
+    
+    func addNewTripLog(_ log: PinLog) {
+        tripLogs.insert(log, at: 0)
+        collectionView.reloadData()
+    }
+    
 }
 
 extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -138,7 +162,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
         if section == 0 {
             return filters.count
         } else {
-            return 10
+            return tripLogs.count
         }
     }
 
@@ -150,7 +174,24 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
             cell.filterButton.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
             return cell
         } else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyTripsCollectionViewCell.identifier, for: indexPath) as! MyTripsCollectionViewCell
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyTripsCollectionViewCell.identifier, for: indexPath) as? MyTripsCollectionViewCell else { fatalError("컬렉션 뷰 오류")}
+            
+            let tripLog = tripLogs[indexPath.item]
+            
+            if let imageUrl = tripLog.media.first?.url, let url = URL(string: imageUrl) {
+                cell.bgImage.kf.setImage(with: url)
+            } else {
+                cell.bgImage.image = UIImage(systemName: "photo") // 이미지 못불러올시 임시 이미지
+            }
+            
+            cell.titleLabel.text = tripLog.location
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let startDate = dateFormatter.string(from: tripLog.startDate)
+            let endDate = dateFormatter.string(from: tripLog.endDate)
+            let duration = Calendar.current.dateComponents([.day], from: tripLog.startDate, to: tripLog.endDate).day ?? 0
+            cell.subTitle.text = "\(startDate) - \(endDate) (\(duration) days)"
+            
             return cell
         }
     }
@@ -197,5 +238,11 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
         detailVC.modalPresentationStyle = .fullScreen
         present(detailVC, animated: true)
         //navigationController?.pushViewController(detailVC, animated: true)
+    }
+}
+
+extension MyTripsViewController: DetailInputViewControllerDelegate {
+    func didSavePinLog(_ pinLog: PinLog) {
+        addNewTripLog(pinLog)
     }
 }

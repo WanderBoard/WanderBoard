@@ -9,6 +9,15 @@ import UIKit
 
 
 class PrivacyPolicyViewController: BaseViewController {
+    var completionHandler: (() -> Void)?    // 진영 추가
+    
+    // 진영 추가
+    private let agreeButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("동의함", for: .normal)
+        button.layer.cornerRadius = 10
+        return button
+    }()
     
     let scrollView = UIScrollView()
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout().then {
@@ -29,6 +38,10 @@ class PrivacyPolicyViewController: BaseViewController {
         collectionView.delegate = self
         collectionView.register(PrivacyPolicyCollectionViewCell.self, forCellWithReuseIdentifier: "PrivacyPolicyCollectionViewCell")
         
+        // 진영 추카
+        agreeButton.addTarget(self, action: #selector(agreeButtonTapped), for: .touchUpInside)
+
+        
     }
     override func configureUI() {
     }
@@ -38,6 +51,7 @@ class PrivacyPolicyViewController: BaseViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(collectionView)
         scrollView.addSubview(logo)
+        view.addSubview(agreeButton)
         
         scrollView.snp.makeConstraints {
             $0.top.equalTo(view).offset(112)
@@ -57,6 +71,20 @@ class PrivacyPolicyViewController: BaseViewController {
             $0.height.equalTo(18.24)
             $0.bottom.equalToSuperview().inset(55)
         }
+        
+        // 진영 추가
+        agreeButton.snp.makeConstraints {
+            $0.left.equalToSuperview().inset(30)
+            $0.right.equalToSuperview().inset(30)
+            $0.height.equalTo(50)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(48)
+        }
+    }
+    
+    // 진영 추가
+    @objc private func agreeButtonTapped() {
+        completionHandler?()
+        dismiss(animated: true, completion: nil)
     }
 }
 

@@ -14,7 +14,7 @@ import Kingfisher
 
 class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDelegateFlowLayout {
 
-    var tripLogs: [PinLog] = []
+    static var tripLogs: [PinLog] = [] //시안: 마이페이지의 tripLogs개수 업데이트를 위해 static 변수 사용
     let pinLogManager = PinLogManager()
     
     var pageIndex: Int?
@@ -139,7 +139,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     func loadData() async {
         do {
             guard let userId = Auth.auth().currentUser?.uid else { return }
-            tripLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
+            MyTripsViewController.tripLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
             collectionView.reloadData()
         } catch {
             print("Failed to fetch pin logs: \(error.localizedDescription)")
@@ -147,7 +147,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
     
     func addNewTripLog(_ log: PinLog) {
-        tripLogs.insert(log, at: 0)
+        MyTripsViewController.tripLogs.insert(log, at: 0)
         collectionView.reloadData()
     }
     
@@ -162,7 +162,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
         if section == 0 {
             return filters.count
         } else {
-            return tripLogs.count
+            return MyTripsViewController.tripLogs.count
         }
     }
 
@@ -176,7 +176,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
         } else {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyTripsCollectionViewCell.identifier, for: indexPath) as? MyTripsCollectionViewCell else { fatalError("컬렉션 뷰 오류")}
             
-            let tripLog = tripLogs[indexPath.item]
+            let tripLog = MyTripsViewController.tripLogs[indexPath.item]
             
             if let imageUrl = tripLog.media.first?.url, let url = URL(string: imageUrl) {
                 cell.bgImage.kf.setImage(with: url)

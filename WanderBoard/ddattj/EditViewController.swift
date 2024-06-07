@@ -8,7 +8,6 @@
 import UIKit
 import PhotosUI
 
-
 class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewControllerDelegate {
     
     let doneButton = UIButton()
@@ -45,7 +44,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(tapGestureRecognizer:)))
         profile.isUserInteractionEnabled = true
         profile.addGestureRecognizer(tapGestureRecognizer)
-
     }
     
     override func configureUI(){
@@ -62,9 +60,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         profile.clipsToBounds = true
         profile.contentMode = .scaleAspectFill
         profile.layer.cornerRadius = 53
-        profile.backgroundColor = .babygray
-        profile.layer.shadowRadius = 15
-        profile.layer.shadowOpacity = 0.25
+        profile.backgroundColor = .lightgray
         
         myName.placeholder = previousName
         myName.clearButtonMode = .never // x 버튼 비활성화
@@ -74,7 +70,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         nameAlert.text = "* 닉네임은 3글자 이상, 16글자 이하여야 합니다"
         nameAlert.font = UIFont.systemFont(ofSize: 12)
-        nameAlert.textColor = .lightgray
+        nameAlert.textColor = .darkgray
         
         myID.text = ID
         myID.font = UIFont.systemFont(ofSize: 13)
@@ -93,15 +89,24 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     }
     
     func setIcon() {
+        let iconColor: UIColor
+        if traitCollection.userInterfaceStyle == .dark {
+            iconColor = UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1)
+        } else {
+            iconColor = UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
+        }
+        
         switch self.userData?.authProvider {
         case .google:
             self.IDIcon.image = UIImage(named: "googleLogo")
         case .apple:
-            self.IDIcon.image = UIImage(named: "appleLogo")!.withTintColor(UIColor.font)
+            self.IDIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
         case .kakao:
-            self.IDIcon.image = UIImage(named: "kakaoLogo")
+            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+            self.IDIcon.tintColor = iconColor
         case .email:
-            self.IDIcon.image = UIImage(systemName: "envelope.fill")!.withTintColor(UIColor.font)
+            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+            self.IDIcon.tintColor = iconColor // 이메일 로그인은 추가 안함, 카카오랑 같은 아이콘 뜨도록 설정
         case nil:
             print("등록된 로그인 정보가 없습니다")
         }
@@ -191,15 +196,23 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         guard let stringRange = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
         
-        if updatedText.count >= 3 && updatedText.count <= 16 {
-            nameAlert.textColor = .lightgray
-            doneButton.isEnabled = true
-        } else {
-            //글자수를 맞추지 못할 시 안내문 빨갛게 변하며 이동버튼도 비활성화
-            nameAlert.textColor = .red
-            doneButton.titleLabel?.textColor = .lightgray
-            doneButton.isEnabled = false
-        }
+        // 띄어쓰기를 포함하고 있는지 확인
+           if updatedText.contains(" ") {
+               // 띄어쓰기 포함 시 안내문 빨갛게 변하며 이동버튼도 비활성화
+               nameAlert.textColor = .red
+               doneButton.titleLabel?.textColor = .lightgray
+               doneButton.isEnabled = false
+               // 띄어쓰기 포함된 경우 false 반환하여 입력 거부
+               return false
+           } else if updatedText.count >= 3 && updatedText.count <= 16 {
+               nameAlert.textColor = .lightgray
+               doneButton.isEnabled = true
+           } else {
+               // 글자수를 맞추지 못할 시 안내문 빨갛게 변하며 이동버튼도 비활성화
+               nameAlert.textColor = .red
+               doneButton.titleLabel?.textColor = .lightgray
+               doneButton.isEnabled = false
+           }
         return true
     }
     
@@ -235,10 +248,18 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let scriptBackgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
         subTitleBackground.backgroundColor = scriptBackgroundColor
         
-        let myNameColor = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
-        self.myName.layer.borderColor = myNameColor
+        let nameAlertColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
+        nameAlert.textColor = nameAlertColor
         
-        let profileColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "babygray")
-        self.profile.backgroundColor = profileColor
+        let myNameColor = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
+        myName.layer.borderColor = myNameColor
+        
+        let profileColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        profile.backgroundColor = profileColor
+        
+        //카카오톡 한정으로 다크모드시 아이콘 색상 변경
+        let iconColor = traitCollection.userInterfaceStyle == .dark ? UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1) : UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
+        IDIcon.tintColor = iconColor
+        setIcon()
     }
 }

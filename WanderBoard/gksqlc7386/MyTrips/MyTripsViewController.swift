@@ -235,9 +235,9 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let detailVC = DetailViewController()
-        detailVC.modalPresentationStyle = .fullScreen
-        present(detailVC, animated: true)
-        //navigationController?.pushViewController(detailVC, animated: true)
+        let selectedTripLog = tripLogs[indexPath.item]
+        detailVC.pinLog = selectedTripLog
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }
 

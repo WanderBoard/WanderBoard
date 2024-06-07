@@ -18,7 +18,7 @@ struct MapViewController: View {
     var startDate: Date
     var endDate: Date
     var onLocationSelected: ((CLLocationCoordinate2D, String) -> Void)?
-
+    
     var body: some View {
         ZStack(alignment: .top) {
             MapView(viewModel: viewModel, onMapTap: nil)
@@ -132,20 +132,25 @@ struct MapViewController: View {
                 annotation.title = mapItem.name
                 annotation.subtitle = mapItem.placemark.title
                 locationManager.annotations = [annotation]
-
-                onLocationSelected?(mapItem.placemark.coordinate, mapItem.placemark.title ?? "Unknown Location")
-
+                
+                let administrativeArea = mapItem.placemark.administrativeArea ?? ""
+                let locality = mapItem.placemark.locality ?? mapItem.placemark.subLocality ?? ""
+                let locationTitle = "\(administrativeArea), \(locality)".trimmingCharacters(in: .whitespaces)
+                
+                onLocationSelected?(mapItem.placemark.coordinate, locationTitle)
+                
                 // 위치가 선택되었다고 알림 표시
-                let alert = UIAlertController(title: "위치 저장됨", message: "\(mapItem.name ?? "Unknown Location")이(가) 저장되었습니다.", preferredStyle: .alert)
+                let alert = UIAlertController(title: "위치 저장됨", message: "\(locationTitle)이(가) 저장되었습니다.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "확인", style: .default))
                 if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                    let rootVC = windowScene.windows.first?.rootViewController {
                     rootVC.present(alert, animated: true, completion: nil)
                 }
+                
             }
         }
     }
-
+    
     private func fetchImages() async {
         do {
             // FirestoreManager의 fetchPinLogs 메서드를 호출하여 네트워크 통신 수행

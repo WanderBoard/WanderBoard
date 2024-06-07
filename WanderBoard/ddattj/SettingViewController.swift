@@ -49,6 +49,11 @@ class SettingViewController: BaseViewController {
         darkMode.addGestureRecognizer(tapRecognizerD)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationItem.largeTitleDisplayMode = .never
+    }
+    
     override func configureUI() {
         super.configureUI()
         scriptBackground1.backgroundColor = .babygray

@@ -82,7 +82,5 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
             $0.trailing.equalTo(contentView.snp.trailing).inset(30)
             $0.bottom.equalTo(contentView.snp.bottom).inset(30)
         }
-        
-        
     }
 }

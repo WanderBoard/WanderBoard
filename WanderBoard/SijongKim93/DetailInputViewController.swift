@@ -1,14 +1,22 @@
 import UIKit
+import FirebaseAuth
 import SnapKit
 import Then
 import PhotosUI
 import MapKit
 import SwiftUI
 
+protocol DetailInputViewControllerDelegate: AnyObject {
+    func didSavePinLog(_ pinLog: PinLog)
+}
+
 class DetailInputViewController: UIViewController {
+    
+    weak var delegate: DetailInputViewControllerDelegate?
     
     var selectedImages: [UIImage] = []
     var selectedFriends: [UIImage] = []
+    let pinLogManager = PinLogManager()
     
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
@@ -428,6 +436,8 @@ class DetailInputViewController: UIViewController {
         
         locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
+        
+        publicSwitch.addTarget(self, action: #selector(switchValueChanged), for: .valueChanged)
     }
     
     @objc func locationButtonTapped() {
@@ -436,10 +446,16 @@ class DetailInputViewController: UIViewController {
             span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
         ))
 
-        let mapView = MapViewController(viewModel: viewModel, startDate: Date(), endDate: Date())
+        let mapView = MapViewController(viewModel: viewModel, startDate: Date(), endDate: Date()) { [weak self] selectedLocation, locationTitle in
+            self?.locationLeftLabel.text = locationTitle
+        }
+        
         let hostingController = UIHostingController(rootView: mapView)
-
         navigationController?.pushViewController(hostingController, animated: true)
+    }
+    
+    @objc func switchValueChanged(_ sender: UISwitch) {
+        sender.isOn = !sender.isOn
     }
     
     @objc func consumButtonTapped() {
@@ -471,6 +487,7 @@ class DetailInputViewController: UIViewController {
         
         present(alert, animated: true, completion: nil)
     }
+
     
     func setupNavigationBar() {
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
@@ -480,17 +497,53 @@ class DetailInputViewController: UIViewController {
     }
     
     @objc func doneButtonTapped() {
-        let detailVC = DetailViewController()
+        guard let locationTitle = locationLeftLabel.text, locationTitle != "지역을 선택하세요" else {
+            // Handle invalid location selection
+            let alert = UIAlertController(title: "오류", message: "지역을 선택해주세요.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "확인", style: .default))
+            present(alert, animated: true, completion: nil)
+            return
+        }
         
-        //detailVC.publicSwitchIsOn = publicSwitch.isOn
-        detailVC.dateStartLabel.text = startDateButton.title(for: .normal)
-        detailVC.dateEndLabel.text = endDateButton.title(for: .normal)
-        detailVC.mainTitleLabel.text = mainTextField.text
-        detailVC.subTextLabel.text = subTextField.text
-        detailVC.selectedImages = selectedImages
-        detailVC.selectedFriends = selectedFriends
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
         
-        navigationController?.pushViewController(detailVC, animated: true)
+        guard let startDateString = startDateButton.title(for: .normal),
+              let endDateString = endDateButton.title(for: .normal),
+              let startDate = dateFormatter.date(from: startDateString),
+              let endDate = dateFormatter.date(from: endDateString) else {
+            // Handle invalid date selection
+            let alert = UIAlertController(title: "오류", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "확인", style: .default))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+        
+        let title = mainTextField.text ?? ""
+        let content = subTextField.text ?? ""
+        let isPublic = publicSwitch.isOn
+        
+        Task {
+            do {
+                let pinLog = try await pinLogManager.createPinLog(
+                    location: locationTitle,
+                    startDate: startDate,
+                    endDate: endDate,
+                    title: title,
+                    content: content,
+                    images: selectedImages,
+                    authorId: Auth.auth().currentUser?.uid ?? "",
+                    attendeeIds: [],
+                    isPublic: isPublic
+                )
+                delegate?.didSavePinLog(pinLog)
+                navigationController?.popViewController(animated: true)
+            } catch {
+                let alert = UIAlertController(title: "오류", message: "데이터 저장에 실패했습니다.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "확인", style: .default))
+                present(alert, animated: true, completion: nil)
+            }
+        }
     }
     
     func updateGalleryCountButton() {

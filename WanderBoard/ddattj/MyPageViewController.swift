@@ -10,30 +10,6 @@ import SnapKit
 import Then
 import CoreData
 import FirebaseAuth
-import SwiftUI
-
-//미리보기 화면
-extension UIViewController {
-    private struct Preview: UIViewControllerRepresentable {
-        let viewController: UIViewController
-        
-        func makeUIViewController(context: Context) -> UIViewController {
-            return viewController
-        }
-        
-        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        }
-    }
-    
-    func toPreview() -> some View {
-        Preview(viewController: self)
-    }
-}
-struct MyViewController_PreViews: PreviewProvider {
-    static var previews: some View {
-        MyPageViewController().toPreview() //원하는 VC를 여기다 입력하면 된다.
-    }
-}
 
 class MyPageViewController: BaseViewController, PageIndexed {
     //페이지 이동하려고 추가했습니다 ! - 한빛
@@ -104,7 +80,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         statusB.layer.shadowRadius = 4
         statusB.layer.shadowOpacity = 0.25
         
-        myWrite.text = "\(1)"
+        myWrite.text = "\(MyTripsViewController.tripLogs.count)"
         myWrite.font = UIFont.systemFont(ofSize: 13)
         myWrite.textColor = .white
         myPin.text = "\(1)"

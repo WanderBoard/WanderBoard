@@ -52,6 +52,7 @@ class BaseViewController: UIViewController {
     func updateColor(){
         let color = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
         logo.image = UIImage(named: "logo")?.withTintColor(color!)
+        
     }
 }
 

@@ -8,7 +8,6 @@
 import UIKit
 import PhotosUI
 
-
 class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewControllerDelegate {
     
     let doneButton = UIButton()
@@ -45,7 +44,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(tapGestureRecognizer:)))
         profile.isUserInteractionEnabled = true
         profile.addGestureRecognizer(tapGestureRecognizer)
-
     }
     
     override func configureUI(){
@@ -63,8 +61,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         profile.contentMode = .scaleAspectFill
         profile.layer.cornerRadius = 53
         profile.backgroundColor = .lightgray
-        profile.layer.shadowOffset = CGSize(width: 0, height: 4)
-        profile.layer.shadowRadius = 15
         
         myName.placeholder = previousName
         myName.clearButtonMode = .never // x 버튼 비활성화
@@ -93,15 +89,24 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     }
     
     func setIcon() {
+        let iconColor: UIColor
+        if traitCollection.userInterfaceStyle == .dark {
+            iconColor = UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1)
+        } else {
+            iconColor = UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
+        }
+        
         switch self.userData?.authProvider {
         case .google:
             self.IDIcon.image = UIImage(named: "googleLogo")
         case .apple:
-            self.IDIcon.image = UIImage(named: "appleLogo")!.withTintColor(UIColor.font)
+            self.IDIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
         case .kakao:
-            self.IDIcon.image = UIImage(named: "kakaoLogo")
+            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+            self.IDIcon.tintColor = iconColor
         case .email:
-            self.IDIcon.image = UIImage(systemName: "envelope.fill")!.withTintColor(UIColor.font)
+            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+            self.IDIcon.tintColor = iconColor // 이메일 로그인은 추가 안함, 카카오랑 같은 아이콘 뜨도록 설정
         case nil:
             print("등록된 로그인 정보가 없습니다")
         }
@@ -243,5 +248,10 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         let profileColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
         profile.backgroundColor = profileColor
+        
+        //카카오톡 한정으로 다크모드시 아이콘 색상 변경
+        let iconColor = traitCollection.userInterfaceStyle == .dark ? UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1) : UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
+        IDIcon.tintColor = iconColor
+        setIcon()
     }
 }

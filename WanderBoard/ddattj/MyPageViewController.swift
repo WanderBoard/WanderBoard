@@ -89,8 +89,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
         profile.layer.cornerRadius = 53
         profile.clipsToBounds = true
         profile.backgroundColor = .lightgray
-        profile.layer.shadowOffset = CGSize(width: 0, height: 4)
-        profile.layer.shadowRadius = 15
         
         myName.text = userData.displayName ?? "No Name"
         myName.font = UIFont.boldSystemFont(ofSize: 22)
@@ -101,8 +99,8 @@ class MyPageViewController: BaseViewController, PageIndexed {
         myID.textColor = .font
         
         statusB.backgroundColor = .customblack
-        statusB.layer.shadowOffset = CGSize(width: 0, height: 4)
         statusB.layer.cornerRadius = 10
+        statusB.layer.shadowOffset = CGSize(width: 0, height: 4)
         statusB.layer.shadowRadius = 4
         statusB.layer.shadowOpacity = 0.25
         
@@ -208,6 +206,13 @@ class MyPageViewController: BaseViewController, PageIndexed {
     override func updateColor(){
         let profileColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
         profile.backgroundColor = profileColor
+        
+        //다크모드 변경시 네비게이션 바도 색상을 배경과 같게 만들어주기
+        let navbarAppearance = UINavigationBarAppearance()
+        navbarAppearance.configureWithOpaqueBackground()
+        let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.clear
+        navbarAppearance.backgroundColor = navBarColor
+        navigationController?.navigationBar.standardAppearance = navbarAppearance
     }
     
 }
@@ -257,6 +262,8 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             let policyVC = PrivacyPolicyViewController()
             navigationController?.pushViewController(policyVC, animated: true)
             policyVC.navigationItem.title = "개인정보처리방침"
+            
+            
         case 2:
             let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
             let confirm = UIAlertAction(title: "확인", style: .default) { _ in

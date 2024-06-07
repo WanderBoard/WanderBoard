@@ -1,3 +1,13 @@
+
+//
+//  ViewController.swift
+//  WanderBoardSijong
+//
+//  Created by 김시종 on 5/28/24.
+//
+
+
+
 import UIKit
 import FirebaseAuth
 import SnapKit
@@ -64,11 +74,13 @@ class DetailInputViewController: UIViewController {
     }
     
     let startDateButton = UIButton(type: .system).then {
-        $0.setTitle("시작일자", for: .normal)
-        $0.setTitleColor(.black, for: .normal)
-        $0.backgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
-        $0.layer.cornerRadius = 6
-        $0.contentEdgeInsets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
+        var configuration = UIButton.Configuration.filled()
+        configuration.title = "시작일자"
+        configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        configuration.baseForegroundColor = .black
+        configuration.cornerStyle = .medium
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10)
+        $0.configuration = configuration
         $0.tintColor = .black
     }
     
@@ -79,11 +91,13 @@ class DetailInputViewController: UIViewController {
     }
     
     let endDateButton = UIButton(type: .system).then {
-        $0.setTitle("종료일자", for: .normal)
-        $0.setTitleColor(.black, for: .normal)
-        $0.backgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
-        $0.layer.cornerRadius = 8
-        $0.contentEdgeInsets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
+        var configuration = UIButton.Configuration.filled()
+        configuration.title = "종료일자"
+        configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        configuration.baseForegroundColor = .black
+        configuration.cornerStyle = .medium
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10)
+        $0.configuration = configuration
         $0.tintColor = .black
     }
     
@@ -180,10 +194,13 @@ class DetailInputViewController: UIViewController {
         return collectionView
     }()
     
-    let galleryCountButton = UIButton().then {
-        $0.backgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+    let galleryCountButton = UIButton(type: .system).then {
+        var configuration = UIButton.Configuration.filled()
+        configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        configuration.cornerStyle = .medium
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 40, bottom: 8, trailing: 40)
+        $0.configuration = configuration
         $0.layer.cornerRadius = 8
-        $0.contentEdgeInsets = UIEdgeInsets(top: 8, left: 40, bottom: 8, right: 40)
         $0.isHidden = true
     }
 
@@ -230,7 +247,6 @@ class DetailInputViewController: UIViewController {
         setupTextView()
         setupCollectionView()
         setupNavigationBar()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -616,7 +632,7 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
         
         for result in results {
             dispatchGroup.enter()
-            result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] (object, error) in
+            result.itemProvider.loadObject(ofClass: UIImage.self) { (object, error) in
                 if let image = object as? UIImage {
                     newImages.append(image)
                 }
@@ -624,7 +640,8 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
             }
         }
         
-        dispatchGroup.notify(queue: .main) {
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            guard let self = self else { return }
             self.selectedImages.append(contentsOf: newImages.prefix(10 - self.selectedImages.count))
             self.galleryCollectionView.reloadData()
             self.updateGalleryCountButton()

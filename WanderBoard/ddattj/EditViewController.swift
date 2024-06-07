@@ -196,15 +196,23 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         guard let stringRange = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
         
-        if updatedText.count >= 3 && updatedText.count <= 16 {
-            nameAlert.textColor = .lightgray
-            doneButton.isEnabled = true
-        } else {
-            //글자수를 맞추지 못할 시 안내문 빨갛게 변하며 이동버튼도 비활성화
-            nameAlert.textColor = .red
-            doneButton.titleLabel?.textColor = .lightgray
-            doneButton.isEnabled = false
-        }
+        // 띄어쓰기를 포함하고 있는지 확인
+           if updatedText.contains(" ") {
+               // 띄어쓰기 포함 시 안내문 빨갛게 변하며 이동버튼도 비활성화
+               nameAlert.textColor = .red
+               doneButton.titleLabel?.textColor = .lightgray
+               doneButton.isEnabled = false
+               // 띄어쓰기 포함된 경우 false 반환하여 입력 거부
+               return false
+           } else if updatedText.count >= 3 && updatedText.count <= 16 {
+               nameAlert.textColor = .lightgray
+               doneButton.isEnabled = true
+           } else {
+               // 글자수를 맞추지 못할 시 안내문 빨갛게 변하며 이동버튼도 비활성화
+               nameAlert.textColor = .red
+               doneButton.titleLabel?.textColor = .lightgray
+               doneButton.isEnabled = false
+           }
         return true
     }
     

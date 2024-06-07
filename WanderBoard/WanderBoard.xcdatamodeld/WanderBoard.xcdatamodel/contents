@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="UserEntity" representedClassName="UserEntity" syncable="YES" codeGenerationType="class">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="UserEntity" representedClassName="UserEntity" isAbstract="YES" syncable="YES" codeGenerationType="class">
         <attribute name="authProvider" optional="YES" attributeType="String"/>
         <attribute name="displayName" optional="YES" attributeType="String"/>
         <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="gender" optional="YES" attributeType="String"/>
+        <attribute name="interests" optional="YES" attributeType="String"/>
+        <attribute name="isProfileComplete" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="photoURL" optional="YES" attributeType="String"/>
         <attribute name="socialMediaLink" optional="YES" attributeType="String"/>
         <attribute name="uid" optional="YES" attributeType="String"/>

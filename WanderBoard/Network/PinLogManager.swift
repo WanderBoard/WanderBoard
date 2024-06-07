@@ -25,7 +25,7 @@ class PinLogManager {
     }
 
     // Pinlog 생성
-    func createPinLog(location: String, startDate: Date, endDate: Date, title: String, content: String, images: [UIImage], authorId: String, attendeeIds: [String], isPublic: Bool) async throws {
+    func createPinLog(location: String, startDate: Date, endDate: Date, title: String, content: String, images: [UIImage], authorId: String, attendeeIds: [String], isPublic: Bool) async throws -> PinLog {
         let storageManager = StorageManager()
         var mediaObjects: [Media] = []
 
@@ -71,6 +71,7 @@ class PinLogManager {
         ]
 
         try await saveDocument(documentRef: documentRef, data: data)
+        return pinLog
     }
 
     // PinLog 업데이트

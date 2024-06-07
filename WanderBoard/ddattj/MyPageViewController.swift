@@ -10,30 +10,6 @@ import SnapKit
 import Then
 import CoreData
 import FirebaseAuth
-import SwiftUI
-
-//미리보기 화면
-extension UIViewController {
-    private struct Preview: UIViewControllerRepresentable {
-        let viewController: UIViewController
-        
-        func makeUIViewController(context: Context) -> UIViewController {
-            return viewController
-        }
-        
-        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        }
-    }
-    
-    func toPreview() -> some View {
-        Preview(viewController: self)
-    }
-}
-struct MyViewController_PreViews: PreviewProvider {
-    static var previews: some View {
-        MyPageViewController().toPreview() //원하는 VC를 여기다 입력하면 된다.
-    }
-}
 
 class MyPageViewController: BaseViewController, PageIndexed {
     //페이지 이동하려고 추가했습니다 ! - 한빛
@@ -88,9 +64,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         
         profile.layer.cornerRadius = 53
         profile.clipsToBounds = true
-        profile.backgroundColor = UIColor(red: 217/255, green: 217/255, blue: 217/255, alpha: 1)
-        profile.layer.shadowRadius = 15
-        profile.layer.shadowOpacity = 0.25
+        profile.backgroundColor = .lightgray
         
         myName.text = userData.displayName ?? "No Name"
         myName.font = UIFont.boldSystemFont(ofSize: 22)
@@ -101,12 +75,12 @@ class MyPageViewController: BaseViewController, PageIndexed {
         myID.textColor = .font
         
         statusB.backgroundColor = .customblack
-        statusB.layer.shadowOffset = CGSize(width: 0, height: 4)
         statusB.layer.cornerRadius = 10
+        statusB.layer.shadowOffset = CGSize(width: 0, height: 4)
         statusB.layer.shadowRadius = 4
         statusB.layer.shadowOpacity = 0.25
         
-        myWrite.text = "\(1)"
+        myWrite.text = "\(MyTripsViewController.tripLogs.count)"
         myWrite.font = UIFont.systemFont(ofSize: 13)
         myWrite.textColor = .white
         myPin.text = "\(1)"
@@ -205,6 +179,18 @@ class MyPageViewController: BaseViewController, PageIndexed {
         editVC.userData = self.userData //여기서 쓰인 userData, editVC의 userData로 넘겨주기
         navigationController?.pushViewController(editVC, animated: true)
     }
+    override func updateColor(){
+        let profileColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        profile.backgroundColor = profileColor
+        
+        //다크모드 변경시 네비게이션 바도 색상을 배경과 같게 만들어주기
+        let navbarAppearance = UINavigationBarAppearance()
+        navbarAppearance.configureWithOpaqueBackground()
+        let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.clear
+        navbarAppearance.backgroundColor = navBarColor
+        navigationController?.navigationBar.standardAppearance = navbarAppearance
+    }
+    
 }
 
 extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
@@ -217,7 +203,6 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         cell.configureContent(for: indexPath.row)
-        cell.background.backgroundColor = (traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray"))!
         cell.selectionStyle = .none
         return cell
     }
@@ -253,6 +238,8 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             let policyVC = PrivacyPolicyViewController()
             navigationController?.pushViewController(policyVC, animated: true)
             policyVC.navigationItem.title = "개인정보처리방침"
+            
+            
         case 2:
             let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
             let confirm = UIAlertAction(title: "확인", style: .default) { _ in
@@ -272,12 +259,4 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             print("Wrong Way!")
         }
     }
-    
-//    override func updateColor(){
-//        super.updateColor()
-//        let statusBColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
-//        statusB.backgroundColor = statusBColor
-//        
-//        
-//    }
 }

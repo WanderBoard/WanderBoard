@@ -8,10 +8,13 @@
 import UIKit
 import SnapKit
 import SwiftUI
+import CoreLocation
 
-class PageViewController: UIViewController {
+class PageViewController: UIViewController, CLLocationManagerDelegate {
     var pageViewController: UIPageViewController!
     let pageContent = ["Explore", "My trips", "My page"]
+    let locationManager = CLLocationManager()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,7 +93,6 @@ class PageViewController: UIViewController {
         
         return navigationController
     }
-        
 }
 
 extension PageViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {

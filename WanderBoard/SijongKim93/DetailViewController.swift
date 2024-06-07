@@ -11,17 +11,16 @@ import MapKit
 import PhotosUI
 import SnapKit
 import Then
+import Alamofire
 
 class DetailViewController: UIViewController {
     
     var selectedImages: [UIImage] = []
     var selectedFriends: [UIImage] = []
-    var isExpanded: Bool = false
+    var pinLog: PinLog?
     
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
-    
-    
     
     let backgroundImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
@@ -32,6 +31,7 @@ class DetailViewController: UIViewController {
     
     let topContentView = UIView().then {
         $0.backgroundColor = .clear
+        $0.isUserInteractionEnabled = false
     }
     
     var locationLabel = UILabel().then {
@@ -128,10 +128,10 @@ class DetailViewController: UIViewController {
         return segment
     }()
     
+    
     let albumImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
-        $0.layer.cornerRadius = 10
         $0.isHidden = true
         $0.isUserInteractionEnabled = false
     }
@@ -226,16 +226,18 @@ class DetailViewController: UIViewController {
         setupConstraints()
         setupCollectionView()
         setupSegmentControl()
+        applyDarkOverlayToBackgroundImage()
         
         view.backgroundColor = .white
         
-//        if let dummyImage = UIImage(systemName: "photo") {
-//            selectedImages = Array(repeating: dummyImage, count: 5)
-//        }
-//
-//        if let dummyImage = UIImage(systemName: "photo") {
-//            selectedFriends = Array(repeating: dummyImage, count: 5)
-//        }
+        if let pinLog = pinLog {
+            configureView(with: pinLog)
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.tintColor = .white
     }
     
     func setupUI() {
@@ -293,7 +295,7 @@ class DetailViewController: UIViewController {
         }
         
         dateStackView.snp.makeConstraints {
-            $0.bottom.equalTo(locationStackView)
+            $0.bottom.equalTo(locationStackView).inset(-1)
             $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(32)
         }
         
@@ -395,6 +397,71 @@ class DetailViewController: UIViewController {
         }
     }
     
+    func configureView(with pinLog: PinLog) {
+        locationLabel.text = pinLog.location
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM.dd"
+        
+        dateStartLabel.text = dateFormatter.string(from: pinLog.startDate)
+        dateEndLabel.text = dateFormatter.string(from: pinLog.endDate)
+        
+        let duration = Calendar.current.dateComponents([.day], from: pinLog.startDate, to: pinLog.endDate).day ?? 0
+        dateDaysLabel.text = "\(duration) Days"
+        mainTitleLabel.text = pinLog.title
+        subTextLabel.text = pinLog.content
+        
+        updateSelectedImages(with: pinLog.media)
+        
+        if let firstMedia = pinLog.media.first, let latitude = firstMedia.latitude, let longitude = firstMedia.longitude {
+            let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+            mapView.addAnnotation(annotation)
+            mapView.setRegion(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)), animated: true)
+        }
+    }
+    
+    func loadImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
+        guard let url = URL(string: urlString) else {
+            completion(nil)
+            return
+        }
+        
+        AF.request(url).response { response in
+            if let data = response.data, let image = UIImage(data: data) {
+                completion(image)
+            } else {
+                completion(nil)
+            }
+        }
+    }
+    
+    func updateSelectedImages(with mediaItems: [Media]) {
+        selectedImages = []
+        let group = DispatchGroup()
+        
+        for media in mediaItems {
+            guard let url = URL(string: media.url) else { continue }
+            group.enter()
+            loadImage(from: media.url) { [weak self] image in
+                if let image = image {
+                    self?.selectedImages.append(image)
+                }
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: .main) {
+            self.galleryCollectionView.reloadData()
+            if let firstImage = self.selectedImages.first {
+                self.backgroundImageView.image = firstImage
+            } else {
+                self.backgroundImageView.image = UIImage(systemName: "photo")
+            }
+        }
+    }
+    
     func setupCollectionView() {
         galleryCollectionView.delegate = self
         galleryCollectionView.dataSource = self
@@ -415,21 +482,26 @@ class DetailViewController: UIViewController {
     @objc func segmentChanged(_ sender: UISegmentedControl) {
         if sender.selectedSegmentIndex == 0 {
             mapView.isHidden = false
-            galleryCollectionView.isHidden = false
             albumImageView.isHidden = true
             mapAllButton.isHidden = false
             albumAllButton.isHidden = true
         } else {
             mapView.isHidden = true
-            galleryCollectionView.isHidden = false
             albumImageView.isHidden = false
             mapAllButton.isHidden = true
             albumAllButton.isHidden = false
-            if !selectedImages.isEmpty {
-                albumImageView.image = selectedImages[0]
+            if let firstImage = selectedImages.first {
+                albumImageView.image = firstImage
             }
+            contentView.sendSubviewToBack(albumImageView)
+        }
+        view.bringSubviewToFront(segmentControl)
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
         }
     }
+    
+    
 }
 
 extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -457,6 +529,13 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return cell
         }
         return UICollectionViewCell()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == galleryCollectionView && segmentControl.selectedSegmentIndex == 1 {
+            let selectedImage = selectedImages[indexPath.row]
+            albumImageView.image = selectedImage
+        }
     }
 }
 
@@ -546,23 +625,18 @@ extension DetailViewController: UIScrollViewDelegate {
                 subview.removeFromSuperview()
             }
         }
-        
-        let overlayView = UIView(frame: backgroundImageView.bounds)
-        overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+
+        let overlayView = UIView()
+        overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         overlayView.tag = 999
-        backgroundImageView.addSubview(overlayView)
         
-        backgroundImageView.bringSubviewToFront(topContentView)
+        backgroundImageView.insertSubview(overlayView, belowSubview: topContentView)
+        
+        overlayView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+
         self.view.layoutIfNeeded()
     }
 }
     
-    
-    
-    
-
-
-
-
-
-

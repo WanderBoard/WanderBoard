@@ -21,15 +21,6 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     var pageText: String?
     
     let filters = ["My Logs", "Our Logs", "Pin Logs"]
-    
-    let colors: [CGColor] = [
-        UIColor.white.cgColor,
-        UIColor.clear.cgColor,
-        UIColor.clear.cgColor,
-        UIColor.clear.cgColor,
-        UIColor.clear.cgColor,
-        UIColor.clear.cgColor
-    ]
 
     lazy var plusButton = UIButton(type: .system).then {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
@@ -46,6 +37,11 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         $0.delegate = self
         $0.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: FilterCollectionViewCell.identifier)
         $0.register(MyTripsCollectionViewCell.self, forCellWithReuseIdentifier: MyTripsCollectionViewCell.identifier)
+    }
+    
+    lazy var emptyView = EmptyView().then {
+        $0.delegate = self
+        $0.isHidden = true
     }
 
     override func viewDidLoad() {
@@ -64,6 +60,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
         Task {
             await loadData()
             plusButton.isHidden = false
@@ -73,6 +70,11 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         plusButton.isHidden = true
+
+        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": false])
+        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": true])
+        updateView()
+
     }
     
     private func setupNV() {
@@ -102,8 +104,13 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
 
     private func setupConstraints() {
         view.addSubview(collectionView)
+        view.addSubview(emptyView)
 
         collectionView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+        emptyView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
     }
@@ -116,11 +123,12 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
                 }
             }
         }
-
+        
+        let gradientColors = [UIColor.white.withAlphaComponent(1).cgColor] + Array(repeating: UIColor.white.withAlphaComponent(0).cgColor, count: 8)
         let gradientLayer = CAGradientLayer()
         gradientLayer.frame = view.bounds
 
-        gradientLayer.colors = colors
+        gradientLayer.colors = gradientColors
         gradientLayer.startPoint = CGPoint(x: 0.5, y: 1.0)
         gradientLayer.endPoint = CGPoint(x: 0.5, y: 0.0)
 
@@ -128,6 +136,9 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
     
     @objc func addButtonTapped() {
+        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true])
+        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false])
+        plusButton.isHidden = true
         let inputVC = DetailInputViewController()
         inputVC.delegate = self
         navigationController?.pushViewController(inputVC, animated: true)
@@ -143,7 +154,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         do {
             guard let userId = Auth.auth().currentUser?.uid else { return }
             MyTripsViewController.tripLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
-            collectionView.reloadData()
+            collectionView.reloadData() //updateView()
         } catch {
             print("Failed to fetch pin logs: \(error.localizedDescription)")
         }
@@ -151,9 +162,21 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     
     func addNewTripLog(_ log: PinLog) {
         MyTripsViewController.tripLogs.insert(log, at: 0)
-        collectionView.reloadData()
+        collectionView.reloadData() //updateView()
     }
     
+    private func updateView() {
+        if MyTripsViewController.tripLogs.isEmpty {
+            collectionView.isHidden = true
+            plusButton.isHidden = true
+            emptyView.isHidden = false
+        } else {
+            collectionView.isHidden = false
+            plusButton.isHidden = false
+            emptyView.isHidden = true
+        }
+        collectionView.reloadData()
+    }
 }
 
 extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -226,6 +249,9 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true])
+        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false])
+        plusButton.isHidden = true
         let detailVC = DetailViewController()
         let selectedTripLog = MyTripsViewController.tripLogs[indexPath.item]
         detailVC.pinLog = selectedTripLog
@@ -236,5 +262,28 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
 extension MyTripsViewController: DetailInputViewControllerDelegate {
     func didSavePinLog(_ pinLog: PinLog) {
         addNewTripLog(pinLog)
+    }
+}
+
+extension MyTripsViewController: EmptyViewDelegate {
+    func didTapAddButton() {
+        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true])
+        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false])
+        let inputVC = DetailInputViewController()
+        inputVC.delegate = self
+        navigationController?.pushViewController(inputVC, animated: true)
+    }
+}
+
+extension MyTripsViewController {
+    var parentPageViewController: PageViewController? {
+        var parentResponder: UIResponder? = self
+        while let parent = parentResponder?.next {
+            if let pageVC = parent as? PageViewController {
+                return pageVC
+            }
+            parentResponder = parent
+        }
+        return nil
     }
 }

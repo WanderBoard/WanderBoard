@@ -60,8 +60,13 @@ struct MapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
             guard let annotation = view.annotation as? MKPointAnnotation else { return }
             if let title = annotation.title, let completion = self.parent.viewModel.searchResults.first(where: { $0.title == title }) {
-                self.parent.viewModel.searchForLocation(completion: completion) { location, address in
-                    // 필요한 동작을 여기에 추가할 수 있습니다.
+                Task {
+                    do {
+                        let mapItem = try await self.parent.viewModel.searchForLocation(completion: completion)
+                        // 필요한 동작을 여기에 추가할 수 있습니다.
+                    } catch {
+                        print("Error: \(error)")
+                    }
                 }
             }
         }

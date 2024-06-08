@@ -22,6 +22,11 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         $0.layer.cornerRadius = 25
     }
     
+    private let blackView = UIImageView().then {
+        $0.backgroundColor = .black.withAlphaComponent(0.4)
+        $0.layer.cornerRadius = 25
+    }
+    
     let titleLabel = UILabel().then{
         $0.text = "Croatia"
         let screenWidth = UIScreen.main.bounds.width
@@ -62,14 +67,20 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
     }
     
     func setupConstraints() {
-        [bgImage, stackView, privateButton].forEach{
-            contentView.addSubview($0)
-        }
+        contentView.addSubview(bgImage)
+        bgImage.addSubview(blackView)
+        
+        blackView.addSubview(stackView)
+        blackView.addSubview(privateButton)
         
         stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(subTitle)
         
         bgImage.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+        blackView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
     

@@ -13,6 +13,7 @@ struct PageControlButton: View {
     @GestureState private var dragOffset: CGFloat = 0
     
     let hapticFeedback = UIImpactFeedbackGenerator(style: .medium)
+    var onIndexChanged: ((Int) -> Void)? //페이지 뷰 컨트롤러랑 연결하면서 많이 건들였습니다.. - 한빛
     
     var body: some View {
         HStack(spacing: 0) {
@@ -39,7 +40,7 @@ struct PageControlButton: View {
                             .foregroundColor(Color("PageCtrlUnselectedText"))
                     }
                 }
-                .frame(maxWidth: selectedIndex == index ? 90 : 45, maxHeight: 40)
+                .frame(maxWidth: selectedIndex == index ? 120 : 40, maxHeight: 40) //사이즈 수정 - 한빛
                 .background(Color("PageCtrlUnselectedBG"))
                 
                 .clipShape(Capsule())
@@ -48,6 +49,7 @@ struct PageControlButton: View {
                         selectedIndex = index
                     }
                     hapticFeedback.impactOccurred()
+                    onIndexChanged?(index)
                 }
             }
         }
@@ -66,8 +68,16 @@ struct PageControlButton: View {
                     selectedIndex = max(selectedIndex - 1, 0)
                 }
                 hapticFeedback.impactOccurred()
+                NotificationCenter.default.post(name: .didChangePage, object: nil, userInfo: ["selectedIndex": selectedIndex])
             }
         )
+        .onReceive(NotificationCenter.default.publisher(for: .didChangePage)) { notification in
+            if let index = notification.userInfo?["selectedIndex"] as? Int {
+                withAnimation(.interactiveSpring) {
+                    selectedIndex = index
+                }
+            }
+        }
     }
     
     private func iconName(for index: Int) -> String {

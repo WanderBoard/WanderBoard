@@ -18,6 +18,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     private var isFirstLoad = true
     private let locationManager = CLLocationManager()
     private let tableView = UITableView()
+    private let placeInfoView = PlaceInfoView()
+
+//    private var searchBar: UISearchBar!
 
     init(viewModel: MapViewModel, startDate: Date, endDate: Date, onLocationSelected: ((CLLocationCoordinate2D, String) -> Void)?) {
         self.viewModel = viewModel
@@ -38,7 +41,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         setupLocationButton()
         centerMapOnUserLocation()
         setupTableView()
+        setupPlaceInfoView()
 
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.navigationItem.rightBarButtonItem?.isEnabled = true
+        }
+        
         viewModel.onLocationAuthorizationGranted = { [weak self] in
             self?.fetchImages()
         }
@@ -50,6 +58,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             viewModel.checkLocationAuthorization()
             isFirstLoad = false
         }
+        
     }
 
     private func setupMapView() {
@@ -60,6 +69,56 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             make.edges.equalToSuperview()
         }
         
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMapTap(_:)))
+        mapView.addGestureRecognizer(tapGesture)
+    }
+    
+    private func setupPlaceInfoView() {
+        view.addSubview(placeInfoView)
+        placeInfoView.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(300)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+            make.leading.equalToSuperview().offset(16)
+            make.height.equalTo(160)
+        }
+        placeInfoView.isHidden = true
+    }
+
+    private func showPlaceInfoView(mapItem: MKMapItem) {
+        placeInfoView.configure(
+            name: mapItem.name ?? "",
+            address: mapItem.placemark.title ?? "", postalCode: mapItem.placemark.postalCode ?? "",
+            phone: mapItem.phoneNumber ?? "",
+            website: mapItem.url?.absoluteString ?? ""
+        )
+        placeInfoView.isHidden = false
+        UIView.animate(withDuration: 0.5) {
+            self.placeInfoView.snp.updateConstraints { make in
+                make.trailing.equalToSuperview().offset(-16)
+            }
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    private func hidePlaceInfoView() {
+        UIView.animate(withDuration: 0.5, animations: {
+            self.placeInfoView.snp.updateConstraints { make in
+                make.trailing.equalToSuperview().offset(300)
+            }
+            self.view.layoutIfNeeded()
+        }, completion: { _ in
+            self.placeInfoView.isHidden = true
+        })
+    }
+    
+    @objc private func handleMapTap(_ gestureRecognizer: UITapGestureRecognizer) {
+        tableView.isHidden = true
+        navigationItem.titleView?.endEditing(true)
+        if let searchBar = navigationItem.titleView as? UISearchBar {
+            searchBar.text = ""
+        }
+        navigationItem.titleView = nil
+        setupNavigationBar()
     }
     
     private func setupTableView() {
@@ -101,29 +160,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationController?.navigationBar.tintColor = .black
         let searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(showSearchBar))
+        searchButton.isEnabled = true
         navigationItem.rightBarButtonItem = searchButton
-    }
-
-    @objc private func showSearchBar() {
-        let searchBar = UISearchBar()
-        searchBar.placeholder = "Search"
-        searchBar.delegate = self
-        navigationItem.titleView = searchBar
-        searchBar.showsCancelButton = true
-        navigationItem.rightBarButtonItem = nil
-        navigationItem.hidesBackButton = true
-        searchBar.becomeFirstResponder()
-        tableView.isHidden = false
-    }
-    
-    @objc private func handleMapTap(gestureRecognizer: UITapGestureRecognizer) {
-        tableView.isHidden = true
-        navigationItem.titleView?.endEditing(true)
-        if let searchBar = navigationItem.titleView as? UISearchBar {
-            searchBar.text = ""
-        }
-        navigationItem.titleView = nil
-        setupNavigationBar()
     }
 
     private func fetchImages() {
@@ -133,24 +171,14 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         adjustTableViewHeight(to: min(viewModel.searchResults.count, 7))
-        applyBottomCornerRadius()
     }
 
     private func adjustTableViewHeight(to numberOfRows: Int) {
         let cellHeight: CGFloat = 55 // 예시: 셀 높이
-        let tableHeight = CGFloat(numberOfRows) * cellHeight + 10
+        let tableHeight = CGFloat(numberOfRows) * cellHeight
         tableView.snp.updateConstraints { make in
             make.height.equalTo(tableHeight)
         }
-    }
-
-    private func applyBottomCornerRadius() {
-        let path = UIBezierPath(roundedRect: tableView.bounds,
-                                byRoundingCorners: [.bottomLeft, .bottomRight],
-                                cornerRadii: CGSize(width: 16, height: 16))
-        let mask = CAShapeLayer()
-        mask.path = path.cgPath
-        tableView.layer.mask = mask
     }
 
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -159,17 +187,34 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         viewModel.searchQuery = searchText
-        viewModel.updateSearchResults(query: searchText)
+//        viewModel.updateSearchResults(query: searchText)
+        viewModel.startSearchDelay()
     }
     
+    @objc private func showSearchBar() {
+        let searchBar = UISearchBar()
+        searchBar.placeholder = "Search"
+        searchBar.delegate = self
+        searchBar.showsCancelButton = true
+        navigationItem.titleView = searchBar
+        navigationItem.rightBarButtonItem = nil
+        navigationItem.hidesBackButton = true
+        searchBar.becomeFirstResponder()
+        viewModel.searchResults = []
+        tableView.reloadData()
+        tableView.isHidden = false
+    }
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.showsCancelButton = false
         searchBar.resignFirstResponder()
         searchBar.text = ""
+        viewModel.searchResults = []
+        tableView.reloadData()
         navigationItem.titleView = nil
         setupNavigationBar()
         navigationItem.hidesBackButton = false
         tableView.isHidden = true
+        hidePlaceInfoView()
     }
 
     @objc private func backButtonTapped() {
@@ -178,7 +223,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let count = min(viewModel.searchResults.count, 7)
-        adjustTableViewHeight(to: count)
         return count
     }
 
@@ -191,24 +235,33 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedResult = viewModel.searchResults[indexPath.row]
-        viewModel.searchForLocation(completion: selectedResult) { [weak self] coordinate, address in
-            guard let self = self else { return }
-            self.mapView.setRegion(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)), animated: true)
-            
-            // 기존 핀 제거
-            self.mapView.removeAnnotations(self.mapView.annotations)
-            
-            // 새로운 핀 추가
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = coordinate
-            annotation.title = selectedResult.title
-            annotation.subtitle = selectedResult.subtitle
-            self.mapView.addAnnotation(annotation)
-            
-            self.tableView.isHidden = true
-            self.navigationItem.titleView = nil
-            self.setupNavigationBar()
-            self.navigationItem.hidesBackButton = false
+        Task {
+            do {
+                let mapItem = try await viewModel.searchForLocation(completion: selectedResult)
+                self.mapView.setRegion(MKCoordinateRegion(center: mapItem.placemark.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)), animated: true)
+                
+                // 기존 핀 제거
+                self.mapView.removeAnnotations(self.mapView.annotations)
+                
+                // 새로운 핀 추가
+                let annotation = MKPointAnnotation()
+                annotation.coordinate = mapItem.placemark.coordinate
+                annotation.title = selectedResult.title
+                annotation.subtitle = selectedResult.subtitle
+                self.mapView.addAnnotation(annotation)
+                
+                self.tableView.isHidden = true
+                self.navigationItem.titleView = nil
+                self.setupNavigationBar()
+                self.navigationItem.hidesBackButton = false
+                
+                // PlaceInfoView 업데이트 및 표시
+                self.showPlaceInfoView(mapItem: mapItem)
+            } catch {
+                print("Error: \(error.localizedDescription)")
+            }
         }
     }
 }
+
+

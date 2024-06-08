@@ -154,7 +154,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         do {
             guard let userId = Auth.auth().currentUser?.uid else { return }
             MyTripsViewController.tripLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
-            collectionView.reloadData() //updateView()
+            updateView()
         } catch {
             print("Failed to fetch pin logs: \(error.localizedDescription)")
         }
@@ -162,7 +162,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     
     func addNewTripLog(_ log: PinLog) {
         MyTripsViewController.tripLogs.insert(log, at: 0)
-        collectionView.reloadData() //updateView()
+        updateView()
     }
     
     private func updateView() {

@@ -128,20 +128,14 @@ class MapViewModel: NSObject, ObservableObject {
         }
     }
     
-    func searchForLocation(completion: MKLocalSearchCompletion, onComplete: @escaping (CLLocationCoordinate2D, String) -> Void) {
+    func searchForLocation(completion: MKLocalSearchCompletion) async throws -> MKMapItem {
         let searchRequest = MKLocalSearch.Request(completion: completion)
         let search = MKLocalSearch(request: searchRequest)
-        search.start { response, error in
-            guard let response = response, let mapItem = response.mapItems.first else {
-                print("Error: \(error?.localizedDescription ?? "Unknown error")")
-                return
-            }
-            let coordinate = mapItem.placemark.coordinate
-            let address = "\(mapItem.placemark.name ?? ""), \(mapItem.placemark.locality ?? ""), \(mapItem.placemark.administrativeArea ?? ""), \(mapItem.placemark.country ?? "")"
-            DispatchQueue.main.async {
-                onComplete(coordinate, address)
-            }
+        let response = try await search.start()
+        guard let mapItem = response.mapItems.first else {
+            throw NSError(domain: "com.wanderboard.MapError", code: -1, userInfo: [NSLocalizedDescriptionKey: "No map items found"])
         }
+        return mapItem
     }
 }
 

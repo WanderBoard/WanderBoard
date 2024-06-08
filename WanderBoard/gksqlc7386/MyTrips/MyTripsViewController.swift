@@ -64,9 +64,12 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        plusButton.isHidden = false
+        Task {
+            await loadData()
+            plusButton.isHidden = false
+        }
     }
-        
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         plusButton.isHidden = true
@@ -178,7 +181,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
                 fatalError("컬렉션 뷰 오류")
             }
             
-            let tripLog = tripLogs[indexPath.item]
+            let tripLog = MyTripsViewController.tripLogs[indexPath.item]
             cell.configure(with: tripLog)
             
             return cell
@@ -224,7 +227,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let detailVC = DetailViewController()
-        let selectedTripLog = tripLogs[indexPath.item]
+        let selectedTripLog = MyTripsViewController.tripLogs[indexPath.item]
         detailVC.pinLog = selectedTripLog
         navigationController?.pushViewController(detailVC, animated: true)
     }

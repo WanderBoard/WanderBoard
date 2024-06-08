@@ -12,6 +12,7 @@ import SwiftUI
 import FirebaseAuth
 import Kingfisher
 
+
 class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDelegateFlowLayout {
 
     static var tripLogs: [PinLog] = [] //시안: 마이페이지의 tripLogs개수 업데이트를 위해 static 변수 사용
@@ -235,7 +236,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let detailVC = DetailViewController()
-        let selectedTripLog = tripLogs[indexPath.item]
+        let selectedTripLog = MyTripsViewController.tripLogs[indexPath.item]
         detailVC.pinLog = selectedTripLog
         navigationController?.pushViewController(detailVC, animated: true)
     }

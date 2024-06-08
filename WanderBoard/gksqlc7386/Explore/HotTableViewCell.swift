@@ -2,12 +2,10 @@
 //  HotTableViewCell.swift
 //  WanderBoard
 //
-//  Created by Luz on 6/3/24.
+//  Created by Luz on 6/6/24.
 //
 
 import UIKit
-import SnapKit
-import Then
 
 class HotTableViewCell: UITableViewCell {
     
@@ -16,9 +14,8 @@ class HotTableViewCell: UITableViewCell {
     let hotView = UIView().then {
         $0.backgroundColor = .white
     
-        // 그림자
-        $0.layer.shadowOffset = CGSize(width: 10, height: 10)
-        $0.layer.shadowOpacity = 0.5
+        $0.layer.shadowOffset = CGSize(width: 5, height: 5)
+        $0.layer.shadowOpacity = 0.3
         $0.layer.shadowRadius = 10
         $0.layer.shadowColor = UIColor.black.cgColor
         $0.layer.masksToBounds = false
@@ -29,20 +26,20 @@ class HotTableViewCell: UITableViewCell {
     
     let hotLabel = UILabel().then {
         $0.text = "Hot"
-        $0.font = .boldSystemFont(ofSize: 20)
+        $0.font = UIFont.boldSystemFont(ofSize: 17)
     }
     
-    let hotLayout = UICollectionViewFlowLayout().then {
-        $0.scrollDirection = .horizontal
-        $0.minimumLineSpacing = 20
-        $0.itemSize = .init(width: 253, height: 332)
-        $0.sectionInset = .init(top: 0, left: 0, bottom: 0, right: 0)
-    }
-    
-    lazy var hotCollectionView = UICollectionView(frame: .zero, collectionViewLayout: hotLayout).then {
+    lazy var hotCollectionView = UICollectionView(frame: .zero, collectionViewLayout: hotCollectionViewLayout).then {
         $0.dataSource = self
         $0.delegate = self
         $0.register(HotCollectionViewCell.self, forCellWithReuseIdentifier: HotCollectionViewCell.identifier)
+    }
+    
+    let hotCollectionViewLayout = UICollectionViewFlowLayout().then {
+        $0.scrollDirection = .horizontal
+        $0.minimumLineSpacing = 20
+        $0.itemSize = .init(width: 240, height: 320)
+        $0.sectionInset = .init(top: 0, left: 30, bottom: 5, right: 0)
     }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -55,34 +52,38 @@ class HotTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupConstraints() {
+    func setupConstraints(){
+        
         contentView.addSubview(hotView)
         
-        hotView.addSubview(hotLabel)
-        hotView.addSubview(hotCollectionView)
+        [hotLabel,hotCollectionView].forEach {
+            hotView.addSubview($0)
+        }
         
         hotView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(16)
+            $0.top.equalToSuperview().offset(20)
             $0.leading.equalToSuperview().inset(30)
             $0.trailing.equalToSuperview()
-            $0.height.equalTo(442)
+            $0.height.equalTo(400)
         }
         
         hotLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(16)
-            $0.leading.equalToSuperview().inset(30)
+            $0.top.equalToSuperview().inset(20)
+            $0.leading.equalToSuperview().inset(40)
         }
         
         hotCollectionView.snp.makeConstraints {
-            $0.top.equalTo(hotLabel.snp.bottom)
-            $0.leading.equalToSuperview().inset(30)
+            $0.top.equalTo(hotLabel.snp.bottom).offset(10)
+            $0.leading.equalToSuperview()
             $0.trailing.equalToSuperview()
-            $0.bottom.equalToSuperview().inset(10)
+            $0.height.equalTo(325)
         }
+        
     }
+
 }
 
-extension HotTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource {
+extension HotTableViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 10
     }
@@ -92,9 +93,7 @@ extension HotTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-            let itemWidth = collectionView.frame.width * 0.7
-            let itemHeight = itemWidth * 336 / 256
-            return CGSize(width: itemWidth, height: itemHeight)
-        }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true])
+    }
 }

@@ -52,6 +52,7 @@
 		2A9BED2E2C08B71D0032C403 /* Invitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED2D2C08B71D0032C403 /* Invitation.swift */; };
 		2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED2F2C08DB200032C403 /* InvitationManager.swift */; };
 		2A9BED322C08E2A40032C403 /* PinLogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED312C08E2A40032C403 /* PinLogManager.swift */; };
+		4D74B4EF2C14696800DA27F9 /* WanderBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4D74B4ED2C14696800DA27F9 /* WanderBoard.xcdatamodeld */; };
 		4D8947312C0F33C30057F083 /* DetailInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947302C0F33C30057F083 /* DetailInputViewController.swift */; };
 		4D8947332C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */; };
 		4D8947352C0F357C0057F083 /* FriendInputCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */; };
@@ -123,6 +124,7 @@
 		2A9BED2D2C08B71D0032C403 /* Invitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Invitation.swift; path = WanderBoard/Models/Invitation.swift; sourceTree = SOURCE_ROOT; };
 		2A9BED2F2C08DB200032C403 /* InvitationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationManager.swift; sourceTree = "<group>"; };
 		2A9BED312C08E2A40032C403 /* PinLogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLogManager.swift; sourceTree = "<group>"; };
+		4D74B4EE2C14696800DA27F9 /* WanderBoard.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WanderBoard.xcdatamodel; sourceTree = "<group>"; };
 		4D8947302C0F33C30057F083 /* DetailInputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailInputViewController.swift; sourceTree = "<group>"; };
 		4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GallaryInPutCollectionViewCell.swift; sourceTree = "<group>"; };
 		4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendInputCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -285,7 +287,11 @@
 				4D9D8B5D2C05B1BE0043E7DF /* LaunchScreen.storyboard */,
 				4D9D8B602C05B1BE0043E7DF /* Info.plist */,
 				2A7654E12C06097400D8A098 /* GoogleService-Info.plist */,
-				FB0C323A2C14ADC600DD2F00 /* WanderBoard.xcdatamodeld */,
+
+				4D74B4ED2C14696800DA27F9 /* WanderBoard.xcdatamodeld */,
+
+				
+
 			);
 			path = WanderBoard;
 			sourceTree = "<group>";
@@ -511,6 +517,7 @@
 				2A5F47C62C0E276500D289AA /* ImageUploader.swift in Sources */,
 				4D9D8B542C05B1BD0043E7DF /* ViewController.swift in Sources */,
 				956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */,
+				4D74B4EF2C14696800DA27F9 /* WanderBoard.xcdatamodeld in Sources */,
 				6BBE4B702C10895000A7A793 /* SpendingTableViewCell.swift in Sources */,
 				FB72E73F2C0F3E92002AADBD /* MyTripsViewController.swift in Sources */,
 				FB72E73D2C0F3E92002AADBD /* RecentCollectionViewCell.swift in Sources */,
@@ -557,7 +564,9 @@
 				4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */,
 				4D9D8B522C05B1BD0043E7DF /* SceneDelegate.swift in Sources */,
 				2A7655192C063A0100D8A098 /* AuthenticationVC.swift in Sources */,
+
 				FB0C323C2C14ADC600DD2F00 /* WanderBoard.xcdatamodeld in Sources */,
+
 				2A8AB17A2C1240E500C5244F /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -937,14 +946,16 @@
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
-		FB0C323A2C14ADC600DD2F00 /* WanderBoard.xcdatamodeld */ = {
+
+		4D74B4ED2C14696800DA27F9 /* WanderBoard.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				FB0C323B2C14ADC600DD2F00 /* WanderBoard.xcdatamodel */,
+				4D74B4EE2C14696800DA27F9 /* WanderBoard.xcdatamodel */,
 			);
-			currentVersion = FB0C323B2C14ADC600DD2F00 /* WanderBoard.xcdatamodel */;
+			currentVersion = 4D74B4EE2C14696800DA27F9 /* WanderBoard.xcdatamodel */;
 			name = WanderBoard.xcdatamodeld;
-			path = ../../../../Downloads/WanderBoard.xcdatamodeld;
+			path = /Users/kimsijong/Desktop/TeamProJect/WanderBoard/WanderBoard/WanderBoard.xcdatamodeld;
+
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

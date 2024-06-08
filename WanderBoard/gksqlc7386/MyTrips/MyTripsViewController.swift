@@ -60,9 +60,21 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        Task {
+            await loadData()
+            plusButton.isHidden = false
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        plusButton.isHidden = true
+
         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": false])
         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": true])
         updateView()
+
     }
     
     private func setupNV() {

@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		2A5D471D2C0A2742005C0F76 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D471C2C0A2742005C0F76 /* MapViewModel.swift */; };
 		2A5D471F2C0A2771005C0F76 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D471E2C0A2771005C0F76 /* LocationManager.swift */; };
-		2A5D47212C0A27B5005C0F76 /* LocationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D47202C0A27B5005C0F76 /* LocationListView.swift */; };
 		2A5D47232C0A27EF005C0F76 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D47222C0A27EF005C0F76 /* MapViewController.swift */; };
 		2A5F47C42C0E0AFF00D289AA /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F47C32C0E0AFF00D289AA /* MapView.swift */; };
 		2A5F47C62C0E276500D289AA /* ImageUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F47C52C0E276500D289AA /* ImageUploader.swift */; };
@@ -46,6 +45,9 @@
 		2A8AB1782C12407B00C5244F /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB1772C12407B00C5244F /* SignUpViewController.swift */; };
 		2A8AB17A2C1240E500C5244F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB1792C1240E500C5244F /* User.swift */; };
 		2A8AB17C2C1241ED00C5244F /* UserProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB17B2C1241ED00C5244F /* UserProfileManager.swift */; };
+
+		2A8AB1892C12CD5F00C5244F /* WanderBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB1872C12CD5F00C5244F /* WanderBoard.xcdatamodeld */; };
+		2A8AB18D2C138A5500C5244F /* CustomLocationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB18C2C138A5500C5244F /* CustomLocationCell.swift */; };
 
 		2A9BED2A2C08A4330032C403 /* PageControlButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED292C08A4330032C403 /* PageControlButton.swift */; };
 		2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED2B2C08B6C60032C403 /* PinLog.swift */; };
@@ -95,7 +97,6 @@
 /* Begin PBXFileReference section */
 		2A5D471C2C0A2742005C0F76 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		2A5D471E2C0A2771005C0F76 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
-		2A5D47202C0A27B5005C0F76 /* LocationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationListView.swift; sourceTree = "<group>"; };
 		2A5D47222C0A27EF005C0F76 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		2A5F47C32C0E0AFF00D289AA /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		2A5F47C52C0E276500D289AA /* ImageUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUploader.swift; sourceTree = "<group>"; };
@@ -116,6 +117,9 @@
 		2A8AB1772C12407B00C5244F /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		2A8AB1792C1240E500C5244F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		2A8AB17B2C1241ED00C5244F /* UserProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileManager.swift; sourceTree = "<group>"; };
+
+		2A8AB1882C12CD5F00C5244F /* WanderBoard.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WanderBoard.xcdatamodel; sourceTree = "<group>"; };
+		2A8AB18C2C138A5500C5244F /* CustomLocationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLocationCell.swift; sourceTree = "<group>"; };
 
 		2A9BED292C08A4330032C403 /* PageControlButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageControlButton.swift; sourceTree = "<group>"; };
 		2A9BED2B2C08B6C60032C403 /* PinLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PinLog.swift; path = WanderBoard/Models/PinLog.swift; sourceTree = SOURCE_ROOT; };
@@ -199,7 +203,7 @@
 				2A5D471C2C0A2742005C0F76 /* MapViewModel.swift */,
 				2A5F47C32C0E0AFF00D289AA /* MapView.swift */,
 				2A5D471E2C0A2771005C0F76 /* LocationManager.swift */,
-				2A5D47202C0A27B5005C0F76 /* LocationListView.swift */,
+				2A8AB18C2C138A5500C5244F /* CustomLocationCell.swift */,
 				2A5D47222C0A27EF005C0F76 /* MapViewController.swift */,
 			);
 			path = MapController;
@@ -517,7 +521,6 @@
 				2A5D47232C0A27EF005C0F76 /* MapViewController.swift in Sources */,
 				FB72E7392C0F3E92002AADBD /* MyTripsCollectionViewCell.swift in Sources */,
 				2A8AB17C2C1241ED00C5244F /* UserProfileManager.swift in Sources */,
-				2A5D47212C0A27B5005C0F76 /* LocationListView.swift in Sources */,
 				FB72E73A2C0F3E92002AADBD /* FilterCollectionViewCell.swift in Sources */,
 				6BBE4B6F2C10895000A7A793 /* InsertSpendingViewController.swift in Sources */,
 				FB72E73C2C0F3E92002AADBD /* HotTableViewCell.swift in Sources */,
@@ -547,6 +550,7 @@
 				2A7655042C0610BA00D8A098 /* SignInWithApple.swift in Sources */,
 				956ED7922C0852B90001BAC6 /* EditViewController.swift in Sources */,
 				2A8AB1782C12407B00C5244F /* SignUpViewController.swift in Sources */,
+				2A8AB18D2C138A5500C5244F /* CustomLocationCell.swift in Sources */,
 				4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */,
 				4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */,
 				4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */,

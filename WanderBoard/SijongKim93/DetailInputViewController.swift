@@ -14,12 +14,15 @@ import Then
 import PhotosUI
 import MapKit
 import SwiftUI
+import CoreLocation
 
 protocol DetailInputViewControllerDelegate: AnyObject {
     func didSavePinLog(_ pinLog: PinLog)
 }
 
 class DetailInputViewController: UIViewController {
+    
+    private let locationManager = LocationManager()
     
     weak var delegate: DetailInputViewControllerDelegate?
     
@@ -489,14 +492,24 @@ class DetailInputViewController: UIViewController {
             center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
             span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
         ))
-        
-        let mapView = MapViewController(viewModel: viewModel, startDate: Date(), endDate: Date()) { [weak self] selectedLocation, locationTitle in
-            self?.locationLeftLabel.text = locationTitle
+
+        viewModel.onLocationAuthorizationGranted = { [weak self] in
+            guard let self = self else { return }
+            let mapVC = MapViewController(viewModel: viewModel, startDate: Date(), endDate: Date()) { selectedLocation, locationTitle in
+                self.locationLeftLabel.text = locationTitle
+            }
+            
+            // 내비게이션 스택에 MapViewController가 없는 경우에만 푸시
+            if !(self.navigationController?.viewControllers.contains(where: { $0 is MapViewController }) ?? false) {
+                self.navigationController?.pushViewController(mapVC, animated: true)
+            }
+
         }
-        
-        let hostingController = UIHostingController(rootView: mapView)
-        navigationController?.pushViewController(hostingController, animated: true)
+
+        // 위치 권한 상태를 확인하고 적절한 동작 수행
+        viewModel.checkLocationAuthorization()
     }
+
     
     
     @objc func consumButtonTapped() {

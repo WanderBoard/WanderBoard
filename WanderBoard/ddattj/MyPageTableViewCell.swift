@@ -19,6 +19,7 @@ class MyPageTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         constraintLayout()//두번째로 init에 함수호출
+        updateColor()
     }
     
     required init?(coder: NSCoder) {
@@ -85,6 +86,20 @@ class MyPageTableViewCell: UITableViewCell {
             $0.centerY.equalTo(background)
             $0.left.equalTo(icon.snp.right).offset(23)
         }
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        // 이전 trait collection과 현재 trait collection이 다를 경우 업데이트
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor(){
+        let backgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+        background.backgroundColor = backgroundColor
     }
     
 }

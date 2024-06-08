@@ -63,7 +63,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         return label
     }()
     
-    private let nicknameTextField: UITextField = {
+     private let nicknameTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = " 닉네임을 입력하세요"
         textField.borderStyle = .none

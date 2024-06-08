@@ -1,4 +1,3 @@
-
 //
 //  ViewController.swift
 //  WanderBoardSijong
@@ -33,6 +32,8 @@ class DetailInputViewController: UIViewController {
     
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
+    
+    var isEditingPhotos = false
     
     let topContainarView = UIView().then {
         $0.backgroundColor = .black
@@ -189,13 +190,21 @@ class DetailInputViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 5
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 0)
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 32, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: 85, height: 85)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .white
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
+    
+    let galleryInstructionLabel = UILabel().then {
+        $0.text = "사진을 꾸욱 누르면 삭제가 가능합니다."
+        $0.font = UIFont.systemFont(ofSize: 14)
+        $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
+        $0.isHidden = true
+        $0.textAlignment = .center
+    }
     
     let galleryCountButton = UIButton(type: .system).then {
         var configuration = UIButton.Configuration.filled()
@@ -206,18 +215,18 @@ class DetailInputViewController: UIViewController {
         $0.layer.cornerRadius = 8
         $0.isHidden = true
     }
-
+    
     let galleryCountLabel = UILabel().then {
         $0.text = "0/10"
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
     }
-
+    
     let galleryArrowImageView = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
         $0.tintColor = .black
     }
-
+    
     let galleryCountStackView = UIStackView().then {
         $0.axis = .horizontal
         $0.alignment = .center
@@ -289,6 +298,7 @@ class DetailInputViewController: UIViewController {
         contentView.addSubview(bodyLine)
         contentView.addSubview(galleryLabel)
         contentView.addSubview(galleryCollectionView)
+        contentView.addSubview(galleryInstructionLabel)
         contentView.addSubview(galleryCountButton)
         galleryCountButton.addSubview(galleryCountStackView)
         
@@ -403,6 +413,11 @@ class DetailInputViewController: UIViewController {
             $0.leading.equalTo(contentView).inset(32)
         }
         
+        galleryInstructionLabel.snp.makeConstraints {
+            $0.top.equalTo(bodyLine.snp.bottom).offset(18)
+            $0.trailing.equalTo(contentView).inset(32)
+        }
+        
         galleryCollectionView.snp.makeConstraints {
             $0.top.equalTo(galleryLabel.snp.bottom).offset(16)
             $0.leading.trailing.equalTo(contentView)
@@ -414,7 +429,7 @@ class DetailInputViewController: UIViewController {
             $0.trailing.equalTo(contentView).inset(32)
             $0.height.equalTo(44)
         }
-
+        
         galleryCountStackView.snp.makeConstraints {
             $0.center.equalToSuperview()
         }
@@ -456,9 +471,22 @@ class DetailInputViewController: UIViewController {
         locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
         
-        publicSwitch.addTarget(self, action: #selector(switchValueChanged), for: .valueChanged)
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(_:)))
+        galleryCollectionView.addGestureRecognizer(longPressGesture)
+        
+        
     }
-    
+
+    @objc func handleLongPressGesture(_ gesture: UILongPressGestureRecognizer) {
+        let point = gesture.location(in: galleryCollectionView)
+        guard let indexPath = galleryCollectionView.indexPathForItem(at: point), !selectedImages.isEmpty else { return }
+
+        if gesture.state == .began {
+            isEditingPhotos = true
+            startShakingCells()
+        }
+    }
+
     @objc func locationButtonTapped() {
         let viewModel = MapViewModel(region: MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
@@ -475,6 +503,7 @@ class DetailInputViewController: UIViewController {
             if !(self.navigationController?.viewControllers.contains(where: { $0 is MapViewController }) ?? false) {
                 self.navigationController?.pushViewController(mapVC, animated: true)
             }
+
         }
 
         // 위치 권한 상태를 확인하고 적절한 동작 수행
@@ -482,15 +511,12 @@ class DetailInputViewController: UIViewController {
     }
 
     
-    @objc func switchValueChanged(_ sender: UISwitch) {
-        sender.isOn = !sender.isOn
-    }
     
     @objc func consumButtonTapped() {
         let spendVC = SpendingListViewController()
         navigationController?.pushViewController(spendVC, animated: true)
     }
-        
+    
     @objc func showDatePicker(_ sender: UIButton) {
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
@@ -515,7 +541,6 @@ class DetailInputViewController: UIViewController {
         
         present(alert, animated: true, completion: nil)
     }
-
     
     func setupNavigationBar() {
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
@@ -540,7 +565,7 @@ class DetailInputViewController: UIViewController {
               let endDateString = endDateButton.title(for: .normal),
               let startDate = dateFormatter.date(from: startDateString),
               let endDate = dateFormatter.date(from: endDateString) else {
-            // Handle invalid date selection
+            
             let alert = UIAlertController(title: "오류", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "확인", style: .default))
             present(alert, animated: true, completion: nil)
@@ -578,8 +603,9 @@ class DetailInputViewController: UIViewController {
         let count = selectedImages.count
         galleryCountLabel.text = "\(count)/10"
         galleryCountButton.isHidden = count == 0
+        galleryInstructionLabel.isHidden = count == 0
     }
-
+    
     
     func createCollectionViewFlowLayout(for collectionView: UICollectionView) -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
@@ -587,6 +613,57 @@ class DetailInputViewController: UIViewController {
         layout.minimumInteritemSpacing = 5
         layout.itemSize = CGSize(width: 85, height: 85)
         return layout
+    }
+    
+    @objc func handleTapGesture(_ gesture: UITapGestureRecognizer) {
+        if isEditingPhotos {
+            stopShakingCells()
+            isEditingPhotos = false
+        }
+    }
+
+    func startShakingCells() {
+        for case let cell as GallaryInPutCollectionViewCell in galleryCollectionView.visibleCells {
+            cell.showDeleteButton(true)
+            shake(cell: cell)
+        }
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
+        view.addGestureRecognizer(tapGesture)
+    }
+
+    func stopShakingCells() {
+        for case let cell as GallaryInPutCollectionViewCell in galleryCollectionView.visibleCells {
+            cell.showDeleteButton(false)
+            cell.layer.removeAllAnimations()
+        }
+    }
+
+    func shake(cell: UICollectionViewCell) {
+        let animation = CABasicAnimation(keyPath: "transform.rotation")
+        animation.fromValue = -0.05
+        animation.toValue = 0.05
+        animation.duration = 0.1
+        animation.repeatCount = .greatestFiniteMagnitude
+        animation.autoreverses = true
+        cell.layer.add(animation, forKey: "shake")
+    }
+
+    @objc func deletePhoto(_ sender: UIButton) {
+        guard let cell = sender.superview?.superview as? GallaryInPutCollectionViewCell,
+              let indexPath = galleryCollectionView.indexPath(for: cell) else { return }
+        
+        selectedImages.remove(at: indexPath.row)
+        if selectedImages.isEmpty {
+            isEditingPhotos = false
+            galleryCollectionView.reloadData()
+            updateGalleryCountButton()
+        } else {
+            galleryCollectionView.performBatchUpdates({
+                galleryCollectionView.deleteItems(at: [indexPath])
+            }) { _ in
+                self.updateGalleryCountButton()
+            }
+        }
     }
 }
 
@@ -604,9 +681,9 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
         if collectionView == galleryCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GallaryInPutCollectionViewCell.identifier, for: indexPath) as? GallaryInPutCollectionViewCell else {fatalError("컬렉션뷰 오류")}
             if selectedImages.isEmpty {
-                cell.configure(with: nil)
+                cell.configure(with: nil, isEditing: isEditingPhotos)
             } else {
-                cell.configure(with: selectedImages[indexPath.row])
+                cell.configure(with: selectedImages[indexPath.row], isEditing: isEditingPhotos)
             }
             return cell
         } else {
@@ -617,7 +694,7 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
             return cell
         }
     }
-        
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if selectedImages.isEmpty || indexPath.row == selectedImages.count {
             showPHPicker()

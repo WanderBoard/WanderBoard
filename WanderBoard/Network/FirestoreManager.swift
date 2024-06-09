@@ -117,44 +117,5 @@ class FirestoreManager {
         let email = document.data()?["email"] as? String
         return email
     }
-
-    func createPinLog(location: String, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool) async throws {
-        let pinLog = PinLog(location: location, startDate: startDate, endDate: endDate, title: title, content: content, media: media, authorId: authorId, attendeeIds: attendeeIds, isPublic: isPublic)
-
-        let documentId = pinLog.id ?? UUID().uuidString
-        let documentRef = db.collection("pinLogs").document(documentId)
-
-        let mediaData = media.map { mediaItem -> [String: Any] in
-            var mediaDict: [String: Any] = ["url": mediaItem.url]
-            if let latitude = mediaItem.latitude, let longitude = mediaItem.longitude {
-                mediaDict["latitude"] = latitude
-                mediaDict["longitude"] = longitude
-            }
-            if let dateTaken = mediaItem.dateTaken {
-                mediaDict["dateTaken"] = Timestamp(date: dateTaken)
-            }
-            return mediaDict
-        }
-
-        let data: [String: Any] = [
-            "location": pinLog.location,
-            "startDate": Timestamp(date: pinLog.startDate),
-            "endDate": Timestamp(date: pinLog.endDate),
-            "duration": pinLog.duration,
-            "title": pinLog.title,
-            "content": pinLog.content,
-            "media": mediaData,
-            "authorId": pinLog.authorId,
-            "attendeeIds": pinLog.attendeeIds,
-            "isPublic": pinLog.isPublic
-        ]
-
-        try await documentRef.setData(data)
-    }
-
-    func fetchPinLogs(forUserId userId: String) async throws -> [PinLog] {
-        let snapshot = try await db.collection("pinLogs").whereField("authorId", isEqualTo: userId).getDocuments()
-        return snapshot.documents.compactMap { try? $0.data(as: PinLog.self) }
-    }
 }
 

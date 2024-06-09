@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import MapKit
 
 class PlaceInfoView: UIView {
 
@@ -49,7 +50,7 @@ class PlaceInfoView: UIView {
         return button
     }()
 
-    private let savePinButton: UIButton = {
+    let savePinButton: UIButton = {
         let button = UIButton()
         button.setTitle("여행지로 지정", for: .normal)
         button.backgroundColor = .black
@@ -137,16 +138,15 @@ class PlaceInfoView: UIView {
         callButton.addTarget(self, action: #selector(callPhoneNumber), for: .touchUpInside)
         callButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
         callButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside])
-        savePinButton.addTarget(self, action: #selector(savePinTapped), for: .touchUpInside)
-        savePinButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
-        savePinButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside])
+//        savePinButton.addTarget(self, action: #selector(savePinTapped), for: .touchUpInside)
+//        savePinButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
+//        savePinButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside])
     }
 
     func configure(name: String, address: String, postalCode: String, phone: String, website: String) {
-        nameLabel.text = name
-//        postalCodeLabel.text = postalCode
-        addressLabel.text = address
-        phoneNumber = phone
+        nameLabel.text = name.isEmpty ? "No Name" : name
+        addressLabel.text = address.isEmpty ? "No Address" : address
+        phoneNumber = phone.isEmpty ? "No Phone" : phone
         
         callButton.isEnabled = !phone.isEmpty
         callButton.alpha = phone.isEmpty ? 0.5 : 1.0
@@ -155,6 +155,7 @@ class PlaceInfoView: UIView {
         websiteButton.alpha = website.isEmpty ? 0.5 : 1.0
         websiteButton.accessibilityLabel = website
     }
+
 
     @objc private func openWebsite() {
         if let website = websiteButton.accessibilityLabel, !website.isEmpty {
@@ -197,10 +198,5 @@ class PlaceInfoView: UIView {
         UIView.animate(withDuration: 0.1) {
             button.transform = transform
         }
-    }
-
-    @objc private func savePinTapped() {
-        print("Save Pin tapped")
-        // Save pin logic here
     }
 }

@@ -15,6 +15,8 @@ import PhotosUI
 import MapKit
 import SwiftUI
 import CoreLocation
+import FirebaseStorage
+import FirebaseFirestore
 
 protocol DetailInputViewControllerDelegate: AnyObject {
     func didSavePinLog(_ pinLog: PinLog)
@@ -23,12 +25,15 @@ protocol DetailInputViewControllerDelegate: AnyObject {
 class DetailInputViewController: UIViewController {
     
     private let locationManager = LocationManager()
+    var savedLocation: CLLocationCoordinate2D?
+    var savedPinLogId: String?
+    var savedAddress: String?
     
     weak var delegate: DetailInputViewControllerDelegate?
     
     var selectedImages: [UIImage] = []
     var selectedFriends: [UIImage] = []
-    let pinLogManager = PinLogManager()
+    let pinLogManager = PinLogManager.shared
     
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
@@ -259,6 +264,8 @@ class DetailInputViewController: UIViewController {
         setupTextView()
         setupCollectionView()
         setupNavigationBar()
+        
+        print("DetailInputViewController loaded") // 디버깅을 위해 추가
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -488,29 +495,110 @@ class DetailInputViewController: UIViewController {
     }
 
     @objc func locationButtonTapped() {
-        let viewModel = MapViewModel(region: MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
-            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-        ))
+        print("locationButtonTapped called")
 
-        viewModel.onLocationAuthorizationGranted = { [weak self] in
-            guard let self = self else { return }
-            let mapVC = MapViewController(viewModel: viewModel, startDate: Date(), endDate: Date()) { selectedLocation, locationTitle in
-                self.locationLeftLabel.text = locationTitle
-            }
-            
-            // 내비게이션 스택에 MapViewController가 없는 경우에만 푸시
-            if !(self.navigationController?.viewControllers.contains(where: { $0 is MapViewController }) ?? false) {
+        Task {
+            do {
+                let (savedLocation, savedAddress) = try await fetchSavedLocation()
+
+                let center: CLLocationCoordinate2D
+                if let savedLocation = savedLocation {
+                    center = savedLocation
+                } else {
+                    // 기본 위치 설정 (샌프란시스코)
+                    center = CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)
+                }
+
+                let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+
+                let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date(), onLocationSelected: { [weak self] (selectedLocation: CLLocationCoordinate2D, address: String) in
+                    guard let self = self else { return }
+                    self.updateLocationLabel(with: address)
+                    self.savedLocation = selectedLocation
+                    self.savedAddress = address
+
+                    // Firestore에 저장
+                    self.saveLocationToFirestore(location: selectedLocation, address: address)
+                })
+
+                // 저장된 위치가 있으면 해당 위치에 핀을 생성
+                if let savedLocation = savedLocation, let savedAddress = savedAddress {
+                    mapVC.addPinToMap(location: savedLocation, address: savedAddress)
+                }
+
                 self.navigationController?.pushViewController(mapVC, animated: true)
+            } catch {
+                print("Error fetching saved location from Firestore: \(error.localizedDescription)")
             }
-
         }
-
-        // 위치 권한 상태를 확인하고 적절한 동작 수행
-        viewModel.checkLocationAuthorization()
     }
 
+    func fetchSavedLocation() async throws -> (CLLocationCoordinate2D?, String?) {
+        let userId = Auth.auth().currentUser?.uid ?? ""
+        let documentRef = Firestore.firestore().collection("users").document(userId)
+
+        let document = try await documentRef.getDocument()
+        if let data = document.data(), let latitude = data["latitude"] as? CLLocationDegrees, let longitude = data["longitude"] as? CLLocationDegrees {
+            let location = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            let address = data["address"] as? String
+            return (location, address)
+        } else {
+            return (nil, nil)
+        }
+    }
+
+    func updateLocationLabel(with address: String) {
+        self.locationLeftLabel.text = address
+    }
+
+    private func saveLocationToFirestore(location: CLLocationCoordinate2D, address: String) {
+        guard let pinLogId = self.savedPinLogId else {
+            createNewPinLog(location: location, address: address)
+            return
+        }
+
+        let data: [String: Any] = [
+            "location": GeoPoint(latitude: location.latitude, longitude: location.longitude),
+            "address": address,
+        ]
+
+        Task {
+            do {
+                try await PinLogManager.shared.updatePinLog(pinLogId: pinLogId, data: data)
+                print("Location updated successfully in Firestore")
+            } catch {
+                print("Error updating location in Firestore: \(error.localizedDescription)")
+            }
+        }
+    }
     
+    private func createNewPinLog(location: CLLocationCoordinate2D, address: String) {
+        var pinLog = PinLog(location: address, address: address, latitude: location.latitude, longitude: location.longitude, startDate: Date(), endDate: Date(), title: "", content: "", media: [], authorId: Auth.auth().currentUser?.uid ?? "", attendeeIds: [], isPublic: true)
+
+        Task {
+            do {
+                let savedPinLog = try await PinLogManager.shared.createOrUpdatePinLog(pinLog: &pinLog, images: [])
+                self.savedPinLogId = savedPinLog.id
+            } catch {
+                print("Error creating new pin log in Firestore: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    func loadSavedLocation() {
+        let userId = Auth.auth().currentUser?.uid ?? ""
+        let documentRef = Firestore.firestore().collection("users").document(userId)
+        documentRef.getDocument { (document, error) in
+            if let document = document, document.exists, let data = document.data() {
+                if let latitude = data["latitude"] as? CLLocationDegrees,
+                   let longitude = data["longitude"] as? CLLocationDegrees {
+                    self.savedLocation = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                    let address = data["address"] as? String ?? ""
+                    self.updateLocationLabel(with: address)
+                }
+            }
+        }
+    }
     
     @objc func consumButtonTapped() {
         let spendVC = SpendingListViewController()
@@ -551,7 +639,6 @@ class DetailInputViewController: UIViewController {
     
     @objc func doneButtonTapped() {
         guard let locationTitle = locationLeftLabel.text, locationTitle != "지역을 선택하세요" else {
-            // Handle invalid location selection
             let alert = UIAlertController(title: "오류", message: "지역을 선택해주세요.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "확인", style: .default))
             present(alert, animated: true, completion: nil)
@@ -565,7 +652,6 @@ class DetailInputViewController: UIViewController {
               let endDateString = endDateButton.title(for: .normal),
               let startDate = dateFormatter.date(from: startDateString),
               let endDate = dateFormatter.date(from: endDateString) else {
-            
             let alert = UIAlertController(title: "오류", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "확인", style: .default))
             present(alert, animated: true, completion: nil)
@@ -575,21 +661,48 @@ class DetailInputViewController: UIViewController {
         let title = mainTextField.text ?? ""
         let content = subTextField.text ?? ""
         let isPublic = publicSwitch.isOn
+        let address = savedAddress ?? "Unknown Address"
+        let latitude = savedLocation?.latitude ?? 0.0
+        let longitude = savedLocation?.longitude ?? 0.0
         
         Task {
             do {
-                let pinLog = try await pinLogManager.createPinLog(
-                    location: locationTitle,
-                    startDate: startDate,
-                    endDate: endDate,
-                    title: title,
-                    content: content,
-                    images: selectedImages,
-                    authorId: Auth.auth().currentUser?.uid ?? "",
-                    attendeeIds: [],
-                    isPublic: isPublic
-                )
-                delegate?.didSavePinLog(pinLog)
+                var pinLog: PinLog
+                
+                if let pinLogId = self.savedPinLogId {
+                    // 핀로그가 이미 존재하는 경우 업데이트
+                    pinLog = PinLog(id: pinLogId,
+                                    location: locationTitle,
+                                    address: address,
+                                    latitude: latitude,
+                                    longitude: longitude,
+                                    startDate: startDate,
+                                    endDate: endDate,
+                                    title: title,
+                                    content: content,
+                                    media: [],
+                                    authorId: Auth.auth().currentUser?.uid ?? "",
+                                    attendeeIds: [],
+                                    isPublic: isPublic)
+                } else {
+                    // 핀로그가 존재하지 않는 경우 새로 생성
+                    pinLog = PinLog(location: locationTitle,
+                                    address: address,
+                                    latitude: latitude,
+                                    longitude: longitude,
+                                    startDate: startDate,
+                                    endDate: endDate,
+                                    title: title,
+                                    content: content,
+                                    media: [],
+                                    authorId: Auth.auth().currentUser?.uid ?? "",
+                                    attendeeIds: [],
+                                    isPublic: isPublic)
+                }
+                
+                let savedPinLog = try await PinLogManager.shared.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages)
+                self.savedPinLogId = savedPinLog.id
+                delegate?.didSavePinLog(savedPinLog)
                 navigationController?.popViewController(animated: true)
             } catch {
                 let alert = UIAlertController(title: "오류", message: "데이터 저장에 실패했습니다.", preferredStyle: .alert)

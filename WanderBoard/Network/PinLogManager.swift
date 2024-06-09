@@ -26,7 +26,7 @@ class PinLogManager {
     func createOrUpdatePinLog(pinLog: inout PinLog, images: [UIImage]) async throws -> PinLog {
         let storageManager = StorageManager()
         var mediaObjects: [Media] = []
-
+        
         for image in images {
             do {
                 let media = try await storageManager.uploadImage(image: image, userId: pinLog.authorId)
@@ -51,7 +51,7 @@ class PinLogManager {
 
         let documentId = pinLog.id ?? UUID().uuidString
         let documentRef = db.collection("pinLogs").document(documentId)
-
+        
         let data: [String: Any] = [
             "location": pinLog.location,
             "address": pinLog.address,
@@ -86,5 +86,10 @@ class PinLogManager {
     func fetchPinLogs(forUserId userId: String) async throws -> [PinLog] {
         let snapshot = try await db.collection("pinLogs").whereField("authorId", isEqualTo: userId).getDocuments()
         return snapshot.documents.compactMap { try? $0.data(as: PinLog.self) }
+    }
+    
+    func deletePinLog(pinLogId: String) async throws {
+        let documentRef = db.collection("pinLogs").document(pinLogId)
+        try await documentRef.delete()
     }
 }

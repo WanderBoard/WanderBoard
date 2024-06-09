@@ -5,179 +5,263 @@
 //  Created by David Jang on 6/1/24.
 //
 
-import SwiftUI
+import UIKit
 import MapKit
-import FirebaseAuth
-import FirebaseFirestore
+import SnapKit
 
-struct MapViewController: View {
-    @StateObject private var locationManager = LocationManager()
-    @State private var searchQuery = ""
-    @State private var timer: Timer?
-    @ObservedObject var viewModel: MapViewModel
-    var startDate: Date
-    var endDate: Date
-    var onLocationSelected: ((CLLocationCoordinate2D, String) -> Void)?
-    
-    var body: some View {
-        ZStack(alignment: .top) {
-            MapView(viewModel: viewModel, onMapTap: nil)
-                .edgesIgnoringSafeArea(.all)
-            
-            VStack {
-                HStack {
-                    HStack {
-                        TextField("", text: $searchQuery)
-                            .padding(8)
-                            .cornerRadius(10)
-                            .overlay(
-                                HStack {
-                                    if searchQuery.isEmpty {
-                                        Image(systemName: "magnifyingglass")
-                                            .foregroundColor(.gray)
-                                            .padding(.leading, 8)
-                                    }
-                                    Spacer()
-                                    if !searchQuery.isEmpty {
-                                        Button(action: {
-                                            searchQuery = ""
-                                            locationManager.searchResults = []
-                                        }) {
-                                            Image(systemName: "xmark.circle.fill")
-                                                .foregroundColor(.gray)
-                                        }
-                                        .padding(.trailing, 8)
-                                    }
-                                }
-                            )
-                            .onChange(of: searchQuery) { newValue in
-                                startSearchDelay()
-                            }
-                    }
-                    .padding(8)
-                    .background(Color.white).opacity(0.8)
-                    .cornerRadius(10)
-                    .shadow(radius: 2)
-                }
-                .padding(.leading, 20)
-                .padding(.trailing, 20)
-                .padding(.top, 20)
-                
-                if locationManager.isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .padding()
-                }
-                
-                if !locationManager.searchResults.isEmpty {
-                    LocationListView(searchResults: locationManager.searchResults) { completion in
-                        searchForLocation(completion: completion)
-                        locationManager.searchResults = []
-                    }
-                    .frame(maxHeight: 600)
-                    .padding(.top, -16)
-                    .padding(.leading, 4)
-                    .padding(.trailing, 4)
-                }
-                
-                Spacer()
-                
-                HStack {
-                    Button(action: {
-                        locationManager.updateUserLocation()
-                    }) {
-                        Image(systemName: "location.fill")
-                            .frame(width: 30, height: 30)
-                            .background(Color.white)
-                            .foregroundColor(.black)
-                            .clipShape(Circle())
-                            .shadow(radius: 10)
-                    }
-                    .padding(.leading, 20)
-                    .padding(.bottom, 40)
-                    Spacer()
-                }
-            }
+class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+    private let mapView = MKMapView()
+    private let viewModel: MapViewModel
+    private let startDate: Date
+    private let endDate: Date
+    private var onLocationSelected: ((CLLocationCoordinate2D, String) -> Void)?
+    private var isFirstLoad = true
+    private let locationManager = CLLocationManager()
+    private let tableView = UITableView()
+    private let placeInfoView = PlaceInfoView()
+
+//    private var searchBar: UISearchBar!
+
+    init(viewModel: MapViewModel, startDate: Date, endDate: Date, onLocationSelected: ((CLLocationCoordinate2D, String) -> Void)?) {
+        self.viewModel = viewModel
+        self.startDate = startDate
+        self.endDate = endDate
+        self.onLocationSelected = onLocationSelected
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupMapView()
+        setupNavigationBar()
+        setupLocationButton()
+        centerMapOnUserLocation()
+        setupTableView()
+        setupPlaceInfoView()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.navigationItem.rightBarButtonItem?.isEnabled = true
         }
-        .onAppear {
-            locationManager.checkLocationAuthorization()
-            Task {
-                await fetchImages()
+        
+        viewModel.onLocationAuthorizationGranted = { [weak self] in
+            self?.fetchImages()
+        }
+        viewModel.searchResultsHandler = { [weak self] _ in
+            self?.tableView.reloadData()
+            self?.adjustTableViewHeight(to: min(self?.viewModel.searchResults.count ?? 0, 7))
+        }
+        if isFirstLoad {
+            viewModel.checkLocationAuthorization()
+            isFirstLoad = false
+        }
+        
+    }
+
+    private func setupMapView() {
+        mapView.delegate = self
+        mapView.showsUserLocation = true
+        view.addSubview(mapView)
+        mapView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMapTap(_:)))
+        mapView.addGestureRecognizer(tapGesture)
+    }
+    
+    private func setupPlaceInfoView() {
+        view.addSubview(placeInfoView)
+        placeInfoView.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(300)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+            make.leading.equalToSuperview().offset(16)
+            make.height.equalTo(160)
+        }
+        placeInfoView.isHidden = true
+    }
+
+    private func showPlaceInfoView(mapItem: MKMapItem) {
+        placeInfoView.configure(
+            name: mapItem.name ?? "",
+            address: mapItem.placemark.title ?? "", postalCode: mapItem.placemark.postalCode ?? "",
+            phone: mapItem.phoneNumber ?? "",
+            website: mapItem.url?.absoluteString ?? ""
+        )
+        placeInfoView.isHidden = false
+        UIView.animate(withDuration: 0.5) {
+            self.placeInfoView.snp.updateConstraints { make in
+                make.trailing.equalToSuperview().offset(-16)
             }
+            self.view.layoutIfNeeded()
         }
     }
     
-    private func startSearchDelay() {
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
-            locationManager.updateSearchResults(query: searchQuery)
-        }
+    private func hidePlaceInfoView() {
+        UIView.animate(withDuration: 0.5, animations: {
+            self.placeInfoView.snp.updateConstraints { make in
+                make.trailing.equalToSuperview().offset(300)
+            }
+            self.view.layoutIfNeeded()
+        }, completion: { _ in
+            self.placeInfoView.isHidden = true
+        })
     }
     
-    private func searchForLocation(completion: MKLocalSearchCompletion) {
-        let searchRequest = MKLocalSearch.Request(completion: completion)
-        let search = MKLocalSearch(request: searchRequest)
-        search.start { response, error in
-            guard let response = response, let mapItem = response.mapItems.first else {
-                print("Error: \(error?.localizedDescription ?? "Unknown error")")
-                return
-            }
-            DispatchQueue.main.async {
-                locationManager.selectedMapItem = mapItem
-                viewModel.region = MKCoordinateRegion(center: mapItem.placemark.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+    @objc private func handleMapTap(_ gestureRecognizer: UITapGestureRecognizer) {
+        tableView.isHidden = true
+        navigationItem.titleView?.endEditing(true)
+        if let searchBar = navigationItem.titleView as? UISearchBar {
+            searchBar.text = ""
+        }
+        navigationItem.titleView = nil
+        setupNavigationBar()
+    }
+    
+    private func setupTableView() {
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(CustomLocationCell.self, forCellReuseIdentifier: CustomLocationCell.identifier)
+        tableView.backgroundColor = UIColor.white.withAlphaComponent(0.7)
+        tableView.isScrollEnabled = false
+        view.addSubview(tableView)
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(0)
+        }
+        tableView.isHidden = true
+    }
+
+    private func setupLocationButton() {
+        let locationButton = UIButton(type: .system)
+        locationButton.setImage(UIImage(systemName: "location.circle.fill"), for: .normal)
+        locationButton.tintColor = .black
+        locationButton.addTarget(self, action: #selector(centerMapOnUserLocation), for: .touchUpInside)
+        view.addSubview(locationButton)
+        locationButton.snp.makeConstraints { make in
+            make.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.width.height.equalTo(50)
+        }
+    }
+
+    @objc private func centerMapOnUserLocation() {
+        if let location = locationManager.location {
+            let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02))
+            mapView.setRegion(region, animated: true)
+        }
+    }
+
+    private func setupNavigationBar() {
+        navigationController?.navigationBar.prefersLargeTitles = false
+        navigationController?.navigationBar.tintColor = .black
+        let searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(showSearchBar))
+        searchButton.isEnabled = true
+        navigationItem.rightBarButtonItem = searchButton
+    }
+
+    private func fetchImages() {
+        // Firebase에서 이미지를 가져오는 로직
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        adjustTableViewHeight(to: min(viewModel.searchResults.count, 7))
+    }
+
+    private func adjustTableViewHeight(to numberOfRows: Int) {
+        let cellHeight: CGFloat = 55 // 예시: 셀 높이
+        let tableHeight = CGFloat(numberOfRows) * cellHeight
+        tableView.snp.updateConstraints { make in
+            make.height.equalTo(tableHeight)
+        }
+    }
+
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        return nil
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        viewModel.searchQuery = searchText
+//        viewModel.updateSearchResults(query: searchText)
+        viewModel.startSearchDelay()
+    }
+    
+    @objc private func showSearchBar() {
+        let searchBar = UISearchBar()
+        searchBar.placeholder = "Search"
+        searchBar.delegate = self
+        searchBar.showsCancelButton = true
+        navigationItem.titleView = searchBar
+        navigationItem.rightBarButtonItem = nil
+        navigationItem.hidesBackButton = true
+        searchBar.becomeFirstResponder()
+        viewModel.searchResults = []
+        tableView.reloadData()
+        tableView.isHidden = false
+    }
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false
+        searchBar.resignFirstResponder()
+        searchBar.text = ""
+        viewModel.searchResults = []
+        tableView.reloadData()
+        navigationItem.titleView = nil
+        setupNavigationBar()
+        navigationItem.hidesBackButton = false
+        tableView.isHidden = true
+        hidePlaceInfoView()
+    }
+
+    @objc private func backButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let count = min(viewModel.searchResults.count, 7)
+        return count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CustomLocationCell", for: indexPath) as! CustomLocationCell
+        let item = viewModel.searchResults[indexPath.row]
+        cell.configure(with: item.title, subtitle: item.subtitle)
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedResult = viewModel.searchResults[indexPath.row]
+        Task {
+            do {
+                let mapItem = try await viewModel.searchForLocation(completion: selectedResult)
+                self.mapView.setRegion(MKCoordinateRegion(center: mapItem.placemark.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)), animated: true)
                 
-                // 핀 추가
+                // 기존 핀 제거
+                self.mapView.removeAnnotations(self.mapView.annotations)
+                
+                // 새로운 핀 추가
                 let annotation = MKPointAnnotation()
                 annotation.coordinate = mapItem.placemark.coordinate
-                annotation.title = mapItem.name
-                annotation.subtitle = mapItem.placemark.title
-                locationManager.annotations = [annotation]
+                annotation.title = selectedResult.title
+                annotation.subtitle = selectedResult.subtitle
+                self.mapView.addAnnotation(annotation)
                 
-                let administrativeArea = mapItem.placemark.administrativeArea ?? ""
-                let locality = mapItem.placemark.locality ?? mapItem.placemark.subLocality ?? ""
-                let locationTitle = "\(administrativeArea), \(locality)".trimmingCharacters(in: .whitespaces)
+                self.tableView.isHidden = true
+                self.navigationItem.titleView = nil
+                self.setupNavigationBar()
+                self.navigationItem.hidesBackButton = false
                 
-                onLocationSelected?(mapItem.placemark.coordinate, locationTitle)
-                
-                // 위치가 선택되었다고 알림 표시
-                let alert = UIAlertController(title: "위치 저장됨", message: "\(locationTitle)이(가) 저장되었습니다.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "확인", style: .default))
-                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let rootVC = windowScene.windows.first?.rootViewController {
-                    rootVC.present(alert, animated: true, completion: nil)
-                }
-                
+                // PlaceInfoView 업데이트 및 표시
+                self.showPlaceInfoView(mapItem: mapItem)
+            } catch {
+                print("Error: \(error.localizedDescription)")
             }
-        }
-    }
-    
-    private func fetchImages() async {
-        do {
-            // FirestoreManager의 fetchPinLogs 메서드를 호출하여 네트워크 통신 수행
-            let pinLogs = try await FirestoreManager.shared.fetchPinLogs(forUserId: Auth.auth().currentUser!.uid)
-            for pinLog in pinLogs {
-                for mediaItem in pinLog.media {
-                    if let latitude = mediaItem.latitude, let longitude = mediaItem.longitude, let dateTaken = mediaItem.dateTaken {
-                        if dateTaken >= startDate && dateTaken <= endDate {
-                            let annotation = MKPointAnnotation()
-                            annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-                            annotation.title = "Image taken on \(dateTaken)"
-                            locationManager.annotations.append(annotation)
-                        }
-                    }
-                }
-            }
-        } catch {
-            print("Failed to fetch images: \(error.localizedDescription)")
         }
     }
 }
 
-struct MapViewController_Previews: PreviewProvider {
-    static var previews: some View {
-        MapViewController(viewModel: MapViewModel(region: MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
-            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-        )), startDate: Date(), endDate: Date())
-    }
-}
+

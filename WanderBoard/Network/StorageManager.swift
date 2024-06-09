@@ -83,4 +83,16 @@ class StorageManager {
         formatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
         return formatter.date(from: dateString)
     }
+    
+    func deleteImage(at path: String, completion: @escaping (Bool) -> Void) {
+        let storageRef = storage.reference(withPath: path)
+        storageRef.delete { error in
+            if let error = error {
+                print("Error deleting image: \(error)")
+                completion(false)
+            } else {
+                completion(true)
+            }
+        }
+    }
 }

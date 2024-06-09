@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MapKit
+import CoreLocation
 
 class MapViewModel: NSObject, ObservableObject {
     @Published var region: MKCoordinateRegion
@@ -18,7 +19,10 @@ class MapViewModel: NSObject, ObservableObject {
     private let locationManager = CLLocationManager()
     private let searchCompleter = MKLocalSearchCompleter()
     private var timer: Timer?
-
+    
+    var onLocationAuthorizationGranted: (() -> Void)?
+    var searchResultsHandler: (([MKLocalSearchCompletion]) -> Void)?
+    
     init(region: MKCoordinateRegion) {
         self.region = region
         super.init()
@@ -27,37 +31,75 @@ class MapViewModel: NSObject, ObservableObject {
         searchCompleter.resultTypes = .query
         checkLocationAuthorization()
     }
-
+    
     func checkLocationAuthorization() {
-        if CLLocationManager.locationServicesEnabled() {
-            switch locationManager.authorizationStatus {
-            case .notDetermined:
-                locationManager.requestWhenInUseAuthorization()
-            case .restricted, .denied:
-                setDefaultRegion()
-            case .authorizedWhenInUse, .authorizedAlways:
-                locationManager.startUpdatingLocation()
-            @unknown default:
-                break
+        DispatchQueue.global().async {
+            if CLLocationManager.locationServicesEnabled() {
+                switch self.locationManager.authorizationStatus {
+                    case .notDetermined:
+                        DispatchQueue.main.async {
+                            self.locationManager.requestWhenInUseAuthorization()
+                        }
+                    case .restricted, .denied:
+                        DispatchQueue.main.async {
+                            self.setDefaultRegion()
+                        }
+                    case .authorizedWhenInUse, .authorizedAlways:
+                        DispatchQueue.main.async {
+                            self.onLocationAuthorizationGranted?()
+                            self.locationManager.startUpdatingLocation()
+                        }
+                    @unknown default:
+                        break
+                }
+            } else {
+                DispatchQueue.main.async {
+                    print("Location services are not enabled")
+                    self.setDefaultRegion()
+                }
             }
-        } else {
-            print("Location services are not enabled")
-            setDefaultRegion()
         }
     }
-
+    
+    
+    
+    
+    
+    //    func requestLocationAuthorization() {
+    //        if CLLocationManager.locationServicesEnabled() {
+    //            switch locationManager.authorizationStatus {
+    //            case .notDetermined:
+    //                DispatchQueue.main.async {
+    //                    self.locationManager.requestWhenInUseAuthorization()
+    //                }
+    //            case .restricted, .denied:
+    //                setDefaultRegion()
+    //            case .authorizedWhenInUse, .authorizedAlways:
+    //                DispatchQueue.main.async {
+    //                    self.locationManager.startUpdatingLocation()
+    //                    self.onLocationAuthorizationGranted?()
+    //                }
+    //            @unknown default:
+    //                break
+    //            }
+    //        } else {
+    //            print("Location services are not enabled")
+    //            setDefaultRegion()
+    //        }
+    //    }
+    
     func setDefaultRegion() {
         DispatchQueue.main.async {
             self.region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.9780), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
         }
     }
-
+    
     func updateSearchResults(query: String) {
         DispatchQueue.main.async {
             self.searchCompleter.queryFragment = query
         }
     }
-
+    
     func updateUserLocation() {
         if let location = self.locationManager.location {
             DispatchQueue.main.async {
@@ -67,28 +109,33 @@ class MapViewModel: NSObject, ObservableObject {
             print("User location is unavailable.")
         }
     }
-
+    
     func startSearchDelay() {
+        isLoading = true
+        searchResults = []
+        searchResultsHandler?(searchResults) // 빈 검색 결과를 전달하여 로딩 셀을 표시
         timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
-            self.updateSearchResults(query: self.searchQuery)
+        timer = Timer.scheduledTimer(withTimeInterval: 0.7, repeats: false) { _ in
+            self.searchCompleter.queryFragment = self.searchQuery
         }
     }
-
-    func searchForLocation(completion: MKLocalSearchCompletion, onComplete: @escaping (CLLocationCoordinate2D, String) -> Void) {
+    
+    func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+        DispatchQueue.main.async {
+            self.isLoading = false
+            self.searchResults = completer.results
+            self.searchResultsHandler?(self.searchResults)
+        }
+    }
+    
+    func searchForLocation(completion: MKLocalSearchCompletion) async throws -> MKMapItem {
         let searchRequest = MKLocalSearch.Request(completion: completion)
         let search = MKLocalSearch(request: searchRequest)
-        search.start { response, error in
-            guard let response = response, let mapItem = response.mapItems.first else {
-                print("Error: \(error?.localizedDescription ?? "Unknown error")")
-                return
-            }
-            let coordinate = mapItem.placemark.coordinate
-            let address = "\(mapItem.placemark.name ?? ""), \(mapItem.placemark.locality ?? ""), \(mapItem.placemark.administrativeArea ?? ""), \(mapItem.placemark.country ?? "")"
-            DispatchQueue.main.async {
-                onComplete(coordinate, address)
-            }
+        let response = try await search.start()
+        guard let mapItem = response.mapItems.first else {
+            throw NSError(domain: "com.wanderboard.MapError", code: -1, userInfo: [NSLocalizedDescriptionKey: "No map items found"])
         }
+        return mapItem
     }
 }
 
@@ -117,14 +164,9 @@ extension MapViewModel: CLLocationManagerDelegate {
 }
 
 extension MapViewModel: MKLocalSearchCompleterDelegate {
-    func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+    func completerDidFailWithError(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
         DispatchQueue.main.async {
-            self.searchResults = completer.results
-        }
-    }
-
-    func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
-        DispatchQueue.main.async {
+            self.isLoading = false
             print("Error: \(error.localizedDescription)")
         }
     }

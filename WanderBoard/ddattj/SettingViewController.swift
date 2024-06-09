@@ -224,6 +224,7 @@ class SettingViewController: BaseViewController {
     @objc func viewTappedL(tapGestureRecognizer: UITapGestureRecognizer){
         UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
             self.overrideUserInterfaceStyle = .light
+            UserDefaults.standard.set("light", forKey: "userInterfaceStyle")
             self.iconL.image = UIImage(systemName: "checkmark.circle.fill")
             self.iconD.image = UIImage(systemName: "circle")
         }, completion: nil)
@@ -232,6 +233,7 @@ class SettingViewController: BaseViewController {
     @objc func viewTappedD(tapGestureRecognizer: UITapGestureRecognizer){
         UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
             self.overrideUserInterfaceStyle = .dark
+            UserDefaults.standard.set("dark", forKey: "userInterfaceStyle")
             self.iconD.image = UIImage(systemName: "checkmark.circle.fill")
             self.iconL.image = UIImage(systemName: "circle")
         }, completion: nil)
@@ -248,8 +250,10 @@ class SettingViewController: BaseViewController {
                 {
                     //저녁 6시부터 다음 날 아침 6시까진 다크모드
                     self.overrideUserInterfaceStyle = .dark
+                    UserDefaults.standard.set("dark", forKey: "userInterfaceStyle")
                 } else {
                     self.overrideUserInterfaceStyle = .light
+                    UserDefaults.standard.set("light", forKey: "userInterfaceStyle")
                 }
             }
         }, completion: nil)

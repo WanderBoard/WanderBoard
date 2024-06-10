@@ -40,7 +40,7 @@ struct PageControlButton: View {
                             .foregroundColor(Color("PageCtrlUnselectedText"))
                     }
                 }
-                .frame(maxWidth: selectedIndex == index ? 120 : 40, maxHeight: 40) //사이즈 수정 - 한빛
+                .frame(maxWidth: selectedIndex == index ? 120 : 44, maxHeight: 44) //사이즈 수정 - 한빛 //사이즈 수정(높이 조절) - 시안
                 .background(Color("PageCtrlUnselectedBG"))
                 
                 .clipShape(Capsule())

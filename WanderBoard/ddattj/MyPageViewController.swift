@@ -10,6 +10,7 @@ import SnapKit
 import Then
 import CoreData
 import FirebaseAuth
+import FirebaseFirestore
 
 class MyPageViewController: BaseViewController, PageIndexed {
     //페이지 이동하려고 추가했습니다 ! - 한빛
@@ -29,7 +30,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     let tableView = UITableView().then(){
         $0.backgroundColor = .clear
     }
-    var userData: AuthDataResultModel?
+    var userData: User?
     
     
     override func viewDidLoad() {
@@ -38,15 +39,21 @@ class MyPageViewController: BaseViewController, PageIndexed {
         tableView.register(MyPageTableViewCell.self, forCellReuseIdentifier: MyPageTableViewCell.identifier)
         tableView.delegate = self
         tableView.dataSource = self
-        
-        do {
-            userData = try AuthenticationManager.shared.getAuthenticatedUser()
-            configureUI()
-        } catch {
-            print("정보를 가져오는데 실패했습니다")
-        }
-        
+        fetchUserData()
     }
+    func fetchUserData() {
+        Task {
+            do {
+                if let authUser = try? AuthenticationManager.shared.getAuthenticatedUser(), let email = authUser.email {
+                    userData = try await FirestoreManager.shared.checkUserExists(email: email)
+                    updateUI()
+                }
+            } catch {
+                print("유저데이터를 받아오는데 실패했습니다")
+            }
+        }
+    }
+    
     //에딧창에서 추가해준 이름과 사진 불러오기
     func updateUserData(name: String, image: UIImage?) {
             myName.text = name
@@ -78,11 +85,9 @@ class MyPageViewController: BaseViewController, PageIndexed {
         profile.clipsToBounds = true
         profile.backgroundColor = .lightgray
         
-        myName.text = userData.displayName ?? "No Name"
         myName.font = UIFont.boldSystemFont(ofSize: 22)
         myName.textColor = .font
         
-        myID.text = userData.email ?? "No ID"
         myID.font = UIFont.systemFont(ofSize: 13)
         myID.textColor = .font
         
@@ -126,12 +131,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             $0.right.equalTo(view).offset(-16)
             $0.width.height.equalTo(44)
-        }
-        logo.snp.makeConstraints(){
-            $0.centerX.equalTo(view)
-            $0.width.equalTo(143)
-            $0.height.equalTo(18.24)
-            $0.bottom.equalTo(view).offset(-55)
         }
         profile.snp.makeConstraints(){
             $0.centerX.equalTo(view)
@@ -193,6 +192,13 @@ class MyPageViewController: BaseViewController, PageIndexed {
         editVC.previousImage = profile.image
         editVC.userData = self.userData //여기서 쓰인 userData, editVC의 userData로 넘겨주기
         navigationController?.pushViewController(editVC, animated: true)
+    }
+    
+    func updateUI() {
+        guard let userData = userData else { return }
+        profile.image = UIImage(named: "\(String(describing: userData.photoURL))")
+        myName.text = userData.displayName
+        myID.text = userData.email
     }
     
     override func updateColor(){

@@ -7,6 +7,7 @@
 
 import UIKit
 import PhotosUI
+import FirebaseAuth
 
 class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewControllerDelegate {
     
@@ -33,9 +34,9 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     let subTitle = UILabel()
     let withdrawalB = UIButton()
     var previousImage: UIImage?
-    var previousName = String()
-    var ID = String()
-    var userData: AuthDataResultModel?
+    var previousName: String = ""
+    var ID: String = ""
+    var userData: User?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -97,6 +98,15 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         withdrawalB.setTitleColor(UIColor(named: "lightgray"), for: .normal)
     }
     
+    func getUserLogin() -> AuthDataResultModel? {
+        guard let currentUser = Auth.auth().currentUser else {
+            return nil
+        }
+        
+        let authProvider = AuthProviderOption(rawValue: currentUser.providerData.first?.providerID ?? "") ?? .email
+                return AuthDataResultModel(user: currentUser, authProvider: authProvider)
+    }
+    
     func setIcon() {
         let iconColor: UIColor
         if traitCollection.userInterfaceStyle == .dark {
@@ -105,21 +115,26 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             iconColor = UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
         }
         
-        switch self.userData?.authProvider {
-        case .google:
-            self.IDIcon.image = UIImage(named: "googleLogo")
-        case .apple:
-            self.IDIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
-        case .kakao:
-            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-            self.IDIcon.tintColor = iconColor
-        case .email:
-            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-            self.IDIcon.tintColor = iconColor // 이메일 로그인은 추가 안함, 카카오랑 같은 아이콘 뜨도록 설정
-        case nil:
-            print("등록된 로그인 정보가 없습니다")
-        }
-    }
+        guard let userData = self.userData else {
+                print("등록된 로그인 정보가 없습니다")
+                return
+            }
+        
+        switch userData.authProvider {
+               case AuthProviderOption.google.rawValue:
+                   self.IDIcon.image = UIImage(named: "googleLogo")
+               case AuthProviderOption.apple.rawValue:
+                   self.IDIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
+               case AuthProviderOption.kakao.rawValue:
+                   self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+                   self.IDIcon.tintColor = iconColor
+               case AuthProviderOption.email.rawValue:
+                   self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+                   self.IDIcon.tintColor = iconColor // 이메일 로그인은 추가 안함, 카카오랑 같은 아이콘 뜨도록 설정
+               default:
+                   print("등록된 로그인 정보가 없습니다")
+               }
+           }
     
     override func constraintLayout() {
         super.constraintLayout() //부모뷰의 설정을 가져온다

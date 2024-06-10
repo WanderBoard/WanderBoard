@@ -63,7 +63,7 @@ class AuthenticationVC: UIViewController {
             imageView.translatesAutoresizingMaskIntoConstraints = false
             titleLabel.translatesAutoresizingMaskIntoConstraints = false
             imageView.snp.makeConstraints { make in
-                make.width.height.equalTo(20) // 이미지 크기 조절
+                make.width.height.equalTo(20)
                 make.centerY.equalTo(button.snp.centerY)
                 make.trailing.equalTo(titleLabel.snp.leading).inset(-16)
             }

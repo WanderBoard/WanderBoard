@@ -24,13 +24,14 @@ class DetailViewController: UIViewController {
     
     var selectedImages: [UIImage] = []
     var selectedFriends: [UIImage] = []
+
     var pinLog: PinLog? {
         didSet {
             guard let pinLog = pinLog else { return }
             configureView(with: pinLog)
         }
     }
-    
+
     var mapViewController: MapViewController?
 
     let subTextFieldMinHeight: CGFloat = 90
@@ -101,9 +102,10 @@ class DetailViewController: UIViewController {
         $0.backgroundColor = .white
     }
     
-    let shareButton = UIButton().then {
-        $0.setImage(UIImage(systemName: "square.and.arrow.up"), for: .normal)
+    let optionsButton = UIButton().then {
+        $0.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         $0.tintColor = .black
+        $0.showsMenuAsPrimaryAction = true
     }
     
     var mainTitleLabel = UILabel().then {
@@ -222,7 +224,7 @@ class DetailViewController: UIViewController {
     }()
     
     let bottomLogo = UIImageView().then {
-        $0.image = UIImage(named: "logoBlack")
+        $0.image = UIImage(named: "logo")
     }
     
 
@@ -278,7 +280,7 @@ class DetailViewController: UIViewController {
         
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-        contentView.addSubview(shareButton)
+        contentView.addSubview(optionsButton)
         contentView.addSubview(mainTitleLabel)
         contentView.addSubview(subTextLabel)
 //        contentView.addSubview(mapView)
@@ -331,7 +333,7 @@ class DetailViewController: UIViewController {
         
         dateStackView.snp.makeConstraints {
             $0.bottom.equalTo(locationStackView).inset(-1)
-            $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(32)
+            $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(10)
         }
         
         scrollView.snp.makeConstraints {
@@ -343,10 +345,10 @@ class DetailViewController: UIViewController {
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.bottom.equalTo(bottomLogo.snp.bottom).offset(70)
+            $0.bottom.equalTo(bottomLogo.snp.bottom).offset(30)
         }
         
-        shareButton.snp.makeConstraints {
+        optionsButton.snp.makeConstraints {
             $0.top.trailing.equalTo(contentView).inset(24)
             $0.width.height.equalTo(24)
         }
@@ -656,7 +658,6 @@ class DetailViewController: UIViewController {
             self.view.layoutIfNeeded()
         }
     }
-
 }
 
 extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {

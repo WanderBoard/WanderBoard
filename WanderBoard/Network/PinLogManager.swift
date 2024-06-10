@@ -26,7 +26,7 @@ class PinLogManager {
     func createOrUpdatePinLog(pinLog: inout PinLog, images: [UIImage]) async throws -> PinLog {
         let storageManager = StorageManager()
         var mediaObjects: [Media] = []
-
+        
         for image in images {
             do {
                 let media = try await storageManager.uploadImage(image: image, userId: pinLog.authorId)
@@ -51,7 +51,7 @@ class PinLogManager {
 
         let documentId = pinLog.id ?? UUID().uuidString
         let documentRef = db.collection("pinLogs").document(documentId)
-
+        
         let data: [String: Any] = [
             "location": pinLog.location,
             "address": pinLog.address,
@@ -97,4 +97,5 @@ class PinLogManager {
 //        let document = try await db.collection("pinLogs").document(pinLogId).getDocument()
 //        return try document.data(as: PinLog.self)
 //    }
+
 }

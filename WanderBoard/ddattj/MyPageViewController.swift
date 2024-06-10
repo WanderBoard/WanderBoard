@@ -111,9 +111,9 @@ class MyPageViewController: BaseViewController, PageIndexed {
             $0.right.equalTo(statusB.snp.right).offset(-31)
         }
         tableView.snp.makeConstraints(){
-            $0.top.equalTo(statusB.snp.bottom).offset(49)
+            $0.top.equalTo(statusB.snp.bottom).offset(33)
             $0.horizontalEdges.equalToSuperview().inset(32)
-            $0.bottom.equalTo(view).offset(-242)
+            $0.bottom.equalTo(view).offset(-234)
         }
     }
     
@@ -165,7 +165,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
         status3.textColor = .white
         
         tableView.backgroundColor = .clear
-        tableView.separatorStyle = .none //테이블뷰 구분선 없앨때 사용
         
         // userData가 있으면 userData에 맞게 업데이트
         //userData가 없을 경우 위의 기능은 정상적으로 수행하고 만약 값이 있을 경우엔 중괄호 내부의 역할을 수행해줄것을 요청
@@ -217,7 +216,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     //수정된 정보 파이어베이스 저장하기
     func updateProfile(displayName: String?, photoURL: URL?) {
         if let user = Auth.auth().currentUser {
-            var changeRequest = user.createProfileChangeRequest()
+            let changeRequest = user.createProfileChangeRequest()
             if let displayName = displayName {
                 changeRequest.displayName = displayName
             }
@@ -258,56 +257,52 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
     
     //각 셀마다 이동할 화면 지정
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        //버튼과 같은 느낌을 주기 위해 튀어오르는 효과 애니메이션 추가
-        //다음엔 그렇게 많지 않다면 버튼으로 하자..
-        //우선 '셀'은 테이블뷰의 셀이라고 알려주기
+        // 버튼과 같은 느낌을 주기 위해 튀어오르는 효과 애니메이션 추가
+        // 다음엔 그렇게 많지 않다면 버튼으로 하자..
+        // 우선 '셀'은 테이블뷰의 셀이라고 알려주기
         guard let cell = tableView.cellForRow(at: indexPath) else { return }
-        //눌렀을때 셀의 사이즈를 확대했다가 다시 원상태로 돌아가는 효과 넣기
-        UIView.animate(withDuration: 0.1,
-                       animations: {
+        // 눌렀을 때 셀의 사이즈를 확대했다가 다시 원상태로 돌아가는 효과 넣기
+        UIView.animate(withDuration: 0.05, animations: {
             cell.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
-        },
-                       completion: { _ in
-            UIView.animate(withDuration: 0.1) {
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.05, animations: {
                 cell.transform = CGAffineTransform.identity
-            }
+            }, completion: { _ in
+                // 애니메이션이 완료된 후에 ViewController를 푸시
+                switch indexPath.row {
+                case 0:
+                    NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
+                    NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                    let settingVC = SettingViewController()
+                    self.navigationController?.pushViewController(settingVC, animated: true)
+                    settingVC.navigationItem.title = "환경설정"
+                case 1:
+                    NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
+                    NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                    let policyVC = PrivacyPolicyViewController()
+                    self.navigationController?.pushViewController(policyVC, animated: true)
+                    policyVC.navigationItem.title = "개인정보처리방침"
+                case 2:
+                    NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
+                    NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                    let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
+                    let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                        let logOutVC = AuthenticationVC()
+                        if let transition = self.transition {
+                            self.navigationController?.view.layer.add(transition, forKey: kCATransition)
+                        }
+                        self.navigationController?.pushViewController(logOutVC, animated: false)
+                        self.navigationController?.navigationBar.isHidden = true
+                    }
+                    let close = UIAlertAction(title: "취소", style: .destructive, handler: nil)
+                    
+                    alert.addAction(close)
+                    alert.addAction(confirm)
+                    self.present(alert, animated: true, completion: nil)
+                default:
+                    print("Wrong Way!")
+                }
+            })
         })
-        
-        switch indexPath.row {
-        case 0:
-            NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
-            NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
-            let settingVC = SettingViewController()
-            navigationController?.pushViewController(settingVC, animated: true)
-            settingVC.navigationItem.title = "환경설정"
-        case 1:
-            NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
-            NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
-            let policyVC = PrivacyPolicyViewController()
-            navigationController?.pushViewController(policyVC, animated: true)
-            policyVC.navigationItem.title = "개인정보처리방침"
-            
-            
-        case 2:
-            NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
-            NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
-            let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
-            let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-                let logOutVC = AuthenticationVC()
-                if let transition = self.transition {
-                                       self.navigationController?.view.layer.add(transition, forKey: kCATransition)
-                                   }
-                self.navigationController?.pushViewController(logOutVC, animated: false)
-                self.navigationController?.navigationBar.isHidden = true
-            }
-            let close = UIAlertAction(title: "취소", style: .destructive, handler: nil)
-            
-            alert.addAction(close)
-            alert.addAction(confirm)
-            present(alert, animated: true, completion: nil)
-        default:
-            print("Wrong Way!")
-        }
     }
 }

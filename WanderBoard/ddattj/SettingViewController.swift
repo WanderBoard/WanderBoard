@@ -32,21 +32,17 @@ class SettingViewController: BaseViewController {
         view.backgroundColor = .systemBackground
         configureUI()
         constraintLayout()
-        
-        //토글로 모드 자동전환 실행
-        toggle.addTarget(self, action: #selector(modeChangedWithToggle), for: .valueChanged)
+        toggle.addTarget(self, action: #selector(modeChangedWithToggle), for: .valueChanged)//토글로 모드 자동전환 실행
         
         let tapRecognizerL = UITapGestureRecognizer(target: self, action: #selector(viewTappedL(tapGestureRecognizer:)))
-        // UIView가 상호작용할 수 있게 설정
-        lightMode.isUserInteractionEnabled = true
-        // 제스처 인식기 연결
-        lightMode.addGestureRecognizer(tapRecognizerL)
-        // lightMode의 배경색을 서서히 변경하는 애니메이션
+        lightMode.isUserInteractionEnabled = true  // UIView가 상호작용할 수 있게 설정
+        lightMode.addGestureRecognizer(tapRecognizerL) // 제스처 인식기 연결
         
         let tapRecognizerD
         = UITapGestureRecognizer(target: self, action: #selector(viewTappedD(tapGestureRecognizer:)))
         darkMode.isUserInteractionEnabled = true
         darkMode.addGestureRecognizer(tapRecognizerD)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -224,16 +220,15 @@ class SettingViewController: BaseViewController {
     @objc func viewTappedL(tapGestureRecognizer: UITapGestureRecognizer){
         UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
             self.overrideUserInterfaceStyle = .light
-            UserDefaults.standard.set("light", forKey: "userInterfaceStyle")
             self.iconL.image = UIImage(systemName: "checkmark.circle.fill")
             self.iconD.image = UIImage(systemName: "circle")
+            
         }, completion: nil)
     }
 
     @objc func viewTappedD(tapGestureRecognizer: UITapGestureRecognizer){
         UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
             self.overrideUserInterfaceStyle = .dark
-            UserDefaults.standard.set("dark", forKey: "userInterfaceStyle")
             self.iconD.image = UIImage(systemName: "checkmark.circle.fill")
             self.iconL.image = UIImage(systemName: "circle")
         }, completion: nil)
@@ -241,19 +236,16 @@ class SettingViewController: BaseViewController {
     
     @objc func modeChangedWithToggle(_ sender: UISwitch){
         UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            self.iconL.image = UIImage(systemName: "circle")
-            self.iconD.image = UIImage(systemName: "circle")
-
             if sender.isOn {
+                self.iconL.image = UIImage(systemName: "circle")
+                self.iconD.image = UIImage(systemName: "circle")
                 let hour = Calendar.current.component(.hour, from: Date())
                 if hour >= 18 || hour < 6
                 {
                     //저녁 6시부터 다음 날 아침 6시까진 다크모드
                     self.overrideUserInterfaceStyle = .dark
-                    UserDefaults.standard.set("dark", forKey: "userInterfaceStyle")
                 } else {
                     self.overrideUserInterfaceStyle = .light
-                    UserDefaults.standard.set("light", forKey: "userInterfaceStyle")
                 }
             }
         }, completion: nil)

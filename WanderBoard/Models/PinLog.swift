@@ -15,6 +15,7 @@ struct Media: Codable {
     var latitude: Double?
     var longitude: Double?
     var dateTaken: Date?
+    var isRepresentative: Bool
 
     var location: CLLocation? {
         get {
@@ -40,8 +41,9 @@ struct PinLog: Identifiable, Codable {
     var authorId: String
     var attendeeIds: [String]
     var isPublic: Bool
+    var createdAt: Date?
     
-    init(id: String? = nil, location: String, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool) {
+    init(id: String? = nil, location: String, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?) {
         self.id = id
         self.location = location
         self.startDate = startDate
@@ -53,5 +55,6 @@ struct PinLog: Identifiable, Codable {
         self.authorId = authorId
         self.attendeeIds = attendeeIds
         self.isPublic = isPublic
+        self.createdAt = createdAt
     }
 }

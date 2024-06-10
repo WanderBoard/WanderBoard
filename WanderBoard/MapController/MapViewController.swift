@@ -19,14 +19,15 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     private let locationManager = CLLocationManager()
     private let tableView = UITableView()
     private let placeInfoView = PlaceInfoView()
+    var locationSelected: ((String) -> Void)?
 
 //    private var searchBar: UISearchBar!
 
-    init(viewModel: MapViewModel, startDate: Date, endDate: Date, onLocationSelected: ((CLLocationCoordinate2D, String) -> Void)?) {
+    init(viewModel: MapViewModel, startDate: Date, endDate: Date, locationSelected: ((String) -> Void)? = nil) {
         self.viewModel = viewModel
         self.startDate = startDate
         self.endDate = endDate
-        self.onLocationSelected = onLocationSelected
+        self.locationSelected = locationSelected
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -42,6 +43,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         centerMapOnUserLocation()
         setupTableView()
         setupPlaceInfoView()
+        
+        placeInfoView.delegate = self
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.navigationItem.rightBarButtonItem?.isEnabled = true
@@ -264,4 +267,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     }
 }
 
-
+extension MapViewController: PlaceInfoViewDelegate {
+    func didSelectLocation(_ location: String) {
+        locationSelected?(location)
+        navigationController?.popViewController(animated: true)
+    }
+}

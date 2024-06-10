@@ -8,7 +8,13 @@
 import UIKit
 import SnapKit
 
+protocol PlaceInfoViewDelegate: AnyObject {
+    func didSelectLocation(_ location: String)
+}
+
 class PlaceInfoView: UIView {
+    
+    weak var delegate: PlaceInfoViewDelegate?
 
     private let iconImageView: UIImageView = {
         let imageView = UIImageView()
@@ -198,9 +204,10 @@ class PlaceInfoView: UIView {
             button.transform = transform
         }
     }
-
+    
     @objc private func savePinTapped() {
-        print("Save Pin tapped")
-        // Save pin logic here
+        if let locationName = nameLabel.text {
+            delegate?.didSelectLocation(locationName)
+        }
     }
 }

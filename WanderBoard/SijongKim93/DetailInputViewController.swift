@@ -9,6 +9,7 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
 import SnapKit
 import Then
 import PhotosUI
@@ -22,13 +23,14 @@ protocol DetailInputViewControllerDelegate: AnyObject {
 
 class DetailInputViewController: UIViewController {
     
-    private let locationManager = LocationManager()
-    
     weak var delegate: DetailInputViewControllerDelegate?
     
-    var selectedImages: [UIImage] = []
+    var selectedImages: [(UIImage, Bool)] = []
     var selectedFriends: [UIImage] = []
+    var representativeImageIndex: Int? = 0
+    
     let pinLogManager = PinLogManager()
+    var pinLog: PinLog?
     
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
@@ -259,6 +261,11 @@ class DetailInputViewController: UIViewController {
         setupTextView()
         setupCollectionView()
         setupNavigationBar()
+        
+        if let pinLog = pinLog {
+            configureView(with: pinLog)
+        }
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -446,6 +453,8 @@ class DetailInputViewController: UIViewController {
         }
     }
     
+    
+    
     func setupCollectionView() {
         galleryCollectionView.delegate = self
         galleryCollectionView.dataSource = self
@@ -486,27 +495,26 @@ class DetailInputViewController: UIViewController {
             startShakingCells()
         }
     }
-
+    
     @objc func locationButtonTapped() {
         let viewModel = MapViewModel(region: MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
             span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
         ))
-
+        
         viewModel.onLocationAuthorizationGranted = { [weak self] in
             guard let self = self else { return }
-            let mapVC = MapViewController(viewModel: viewModel, startDate: Date(), endDate: Date()) { selectedLocation, locationTitle in
-                self.locationLeftLabel.text = locationTitle
+            let mapVC = MapViewController(viewModel: viewModel, startDate: Date(), endDate: Date())
+            
+            mapVC.locationSelected = { [weak self] location in
+                self?.locationLeftLabel.text = location
             }
             
-            // 내비게이션 스택에 MapViewController가 없는 경우에만 푸시
             if !(self.navigationController?.viewControllers.contains(where: { $0 is MapViewController }) ?? false) {
                 self.navigationController?.pushViewController(mapVC, animated: true)
             }
-
         }
-
-        // 위치 권한 상태를 확인하고 적절한 동작 수행
+        
         viewModel.checkLocationAuthorization()
     }
 
@@ -519,15 +527,16 @@ class DetailInputViewController: UIViewController {
     
     @objc func showDatePicker(_ sender: UIButton) {
         let datePicker = UIDatePicker()
+        datePicker.tintColor = .black
         datePicker.datePickerMode = .date
-        datePicker.preferredDatePickerStyle = .wheels
+        datePicker.preferredDatePickerStyle = .inline
         
         let alert = UIAlertController(title: "날짜 선택", message: nil, preferredStyle: .actionSheet)
         alert.view.addSubview(datePicker)
         
         datePicker.snp.makeConstraints {
             $0.top.leading.trailing.equalTo(alert.view)
-            $0.bottom.equalTo(alert.view.snp.bottom).offset(-44)
+            $0.bottom.equalTo(alert.view.snp.bottom).offset(-120)
         }
         
         let selectAction = UIAlertAction(title: "선택", style: .default) { _ in
@@ -536,8 +545,13 @@ class DetailInputViewController: UIViewController {
             let selectedDate = dateFormatter.string(from: datePicker.date)
             sender.setTitle(selectedDate, for: .normal)
         }
+        selectAction.setValue(UIColor.black, forKey: "titleTextColor")
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        cancelAction.setValue(UIColor.red, forKey: "titleTextColor")
         
         alert.addAction(selectAction)
+        alert.addAction(cancelAction)
         
         present(alert, animated: true, completion: nil)
     }
@@ -545,56 +559,117 @@ class DetailInputViewController: UIViewController {
     func setupNavigationBar() {
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = doneButton
-        
         navigationController?.navigationBar.tintColor = .white
+    }
+    
+    func configureView(with pinLog: PinLog) {
+        if let firstImageIndex = selectedImages.firstIndex(where: { $0.1 }) {
+            representativeImageIndex = firstImageIndex
+        } else {
+            representativeImageIndex = 0
+        }
+        if !selectedImages.isEmpty {
+            selectedImages[0].1 = true
+        }
+        
+        locationLeftLabel.text = pinLog.location
+        mainTextField.text = pinLog.title
+        mainTextField.textColor = .black
+        subTextField.text = pinLog.content
+        subTextField.textColor = .black
+        publicSwitch.isOn = pinLog.isPublic
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        startDateButton.setTitle(dateFormatter.string(from: pinLog.startDate), for: .normal)
+        endDateButton.setTitle(dateFormatter.string(from: pinLog.endDate), for: .normal)
+        
+        selectedImages.removeAll()
+        
+        let dispatchGroup = DispatchGroup()
+        
+        for media in pinLog.media {
+            guard let url = URL(string: media.url) else { continue }
+            dispatchGroup.enter()
+            URLSession.shared.dataTask(with: url) { data, response, error in
+                if let data = data, let image = UIImage(data: data) {
+                    self.selectedImages.append((image, media.isRepresentative))
+                }
+                dispatchGroup.leave()
+            }.resume()
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            self.galleryCollectionView.reloadData()
+            self.updateGalleryCountButton()
+        }
     }
     
     @objc func doneButtonTapped() {
         guard let locationTitle = locationLeftLabel.text, locationTitle != "지역을 선택하세요" else {
-            // Handle invalid location selection
             let alert = UIAlertController(title: "오류", message: "지역을 선택해주세요.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "확인", style: .default))
             present(alert, animated: true, completion: nil)
             return
         }
-        
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        
+
         guard let startDateString = startDateButton.title(for: .normal),
               let endDateString = endDateButton.title(for: .normal),
               let startDate = dateFormatter.date(from: startDateString),
               let endDate = dateFormatter.date(from: endDateString) else {
-            
             let alert = UIAlertController(title: "오류", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "확인", style: .default))
             present(alert, animated: true, completion: nil)
             return
         }
-        
+
         let title = mainTextField.text ?? ""
         let content = subTextField.text ?? ""
         let isPublic = publicSwitch.isOn
-        
-        Task {
-            do {
-                let pinLog = try await pinLogManager.createPinLog(
-                    location: locationTitle,
-                    startDate: startDate,
-                    endDate: endDate,
-                    title: title,
-                    content: content,
-                    images: selectedImages,
-                    authorId: Auth.auth().currentUser?.uid ?? "",
-                    attendeeIds: [],
-                    isPublic: isPublic
-                )
-                delegate?.didSavePinLog(pinLog)
-                navigationController?.popViewController(animated: true)
-            } catch {
-                let alert = UIAlertController(title: "오류", message: "데이터 저장에 실패했습니다.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "확인", style: .default))
-                present(alert, animated: true, completion: nil)
+
+        if var pinLog = pinLog {
+            // 기존 핀 로그 업데이트
+            pinLog.location = locationTitle
+            pinLog.startDate = startDate
+            pinLog.endDate = endDate
+            pinLog.title = title
+            pinLog.content = content
+            pinLog.isPublic = isPublic
+
+            Task {
+                do {
+                    let updatedPinLog = try await pinLogManager.updatePinLog(pinLogId: pinLog.id!, updatedPinLog: pinLog, newImages: selectedImages)
+                    delegate?.didSavePinLog(updatedPinLog)
+                    navigationController?.popViewController(animated: true)
+                } catch {
+                    print("Failed to update pin log: \(error.localizedDescription)")
+                }
+            }
+        } else {
+            // 새로운 핀 로그 생성
+            Task {
+                do {
+                    let newPinLog = try await pinLogManager.createPinLog(
+                        location: locationTitle,
+                        startDate: startDate,
+                        endDate: endDate,
+                        title: title,
+                        content: content,
+                        images: selectedImages,
+                        authorId: Auth.auth().currentUser?.uid ?? "",
+                        attendeeIds: [],
+                        isPublic: isPublic
+                    )
+                    delegate?.didSavePinLog(newPinLog)
+                    navigationController?.popViewController(animated: true)
+                } catch {
+                    let alert = UIAlertController(title: "오류", message: "데이터 저장에 실패했습니다.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "확인", style: .default))
+                    present(alert, animated: true, completion: nil)
+                }
             }
         }
     }
@@ -681,9 +756,10 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
         if collectionView == galleryCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GallaryInPutCollectionViewCell.identifier, for: indexPath) as? GallaryInPutCollectionViewCell else {fatalError("컬렉션뷰 오류")}
             if selectedImages.isEmpty {
-                cell.configure(with: nil, isEditing: isEditingPhotos)
+                cell.configure(with: nil, isEditing: isEditingPhotos, isRepresentative: false)
             } else {
-                cell.configure(with: selectedImages[indexPath.row], isEditing: isEditingPhotos)
+                let (image, isRepresentative) = selectedImages[indexPath.row]
+                cell.configure(with: image, isEditing: isEditingPhotos, isRepresentative: isRepresentative)
             }
             return cell
         } else {
@@ -694,10 +770,18 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
             return cell
         }
     }
+
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if selectedImages.isEmpty || indexPath.row == selectedImages.count {
-            showPHPicker()
+        if collectionView == galleryCollectionView {
+            if selectedImages.isEmpty || indexPath.row == selectedImages.count {
+                showPHPicker()
+            } else {
+                for i in 0..<selectedImages.count {
+                    selectedImages[i].1 = (i == indexPath.row)
+                }
+                galleryCollectionView.reloadData()
+            }
         }
     }
     
@@ -715,7 +799,7 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true, completion: nil)
         
-        var newImages: [UIImage] = []
+        var newImages: [(UIImage, Bool)] = []
         
         let dispatchGroup = DispatchGroup()
         
@@ -723,7 +807,7 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
             dispatchGroup.enter()
             result.itemProvider.loadObject(ofClass: UIImage.self) { (object, error) in
                 if let image = object as? UIImage {
-                    newImages.append(image)
+                    newImages.append((image, false)) // 선택된 순서대로 추가
                 }
                 dispatchGroup.leave()
             }
@@ -731,7 +815,12 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
         
         dispatchGroup.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
-            self.selectedImages.append(contentsOf: newImages.prefix(10 - self.selectedImages.count))
+            if !newImages.isEmpty {
+                if self.selectedImages.isEmpty {
+                    newImages[0].1 = true // 첫 번째 이미지를 대표 이미지로 설정
+                }
+                self.selectedImages.append(contentsOf: newImages.prefix(10 - self.selectedImages.count))
+            }
             self.galleryCollectionView.reloadData()
             self.updateGalleryCountButton()
         }

@@ -8,6 +8,7 @@
 import UIKit
 import Then
 import SnapKit
+import Kingfisher
 
 class MyTripsCollectionViewCell: UICollectionViewCell {
     
@@ -97,7 +98,7 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(with tripLog: PinLog) {
-        if let imageUrl = tripLog.media.first?.url, let url = URL(string: imageUrl) {
+        if let imageUrl = tripLog.media.first(where: { $0.isRepresentative })?.url ?? tripLog.media.first?.url, let url = URL(string: imageUrl) {
             bgImage.kf.setImage(with: url)
         } else {
             bgImage.image = UIImage(systemName: "photo")

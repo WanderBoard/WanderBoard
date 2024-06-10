@@ -12,10 +12,11 @@ import PhotosUI
 import SnapKit
 import Then
 import Alamofire
+import FirebaseAuth
 
 class DetailViewController: UIViewController {
     
-    var selectedImages: [UIImage] = []
+    var selectedImages: [(UIImage, Bool)] = []
     var selectedFriends: [UIImage] = []
     var pinLog: PinLog?
     let pinLogManager = PinLogManager()
@@ -77,6 +78,10 @@ class DetailViewController: UIViewController {
         $0.spacing = 5
     }
     
+//    let topWhiteSpaceView = UIView().then {
+//        $0.backgroundColor = .white
+//    }
+    
     let scrollView = UIScrollView().then {
         $0.showsVerticalScrollIndicator = false
         $0.bounces = false
@@ -117,10 +122,6 @@ class DetailViewController: UIViewController {
         segment.backgroundColor = UIColor(white: 1, alpha: 0.5)
         segment.layer.cornerRadius = 16
         segment.layer.masksToBounds = true
-//        segment.layer.shadowColor = UIColor.black.cgColor
-//        segment.layer.shadowOffset = CGSize(width: 0, height: 2)
-//        segment.layer.shadowRadius = 10
-//        segment.layer.shadowOpacity = 0.1
         
         segment.setTitleTextAttributes([.foregroundColor: UIColor.white, .backgroundColor: UIColor.black], for: .selected)
         segment.setTitleTextAttributes([.foregroundColor: UIColor.black], for: .normal)
@@ -250,6 +251,7 @@ class DetailViewController: UIViewController {
         topContentView.addSubview(locationStackView)
         topContentView.addSubview(dateStackView)
         
+        //view.addSubview(topWhiteSpaceView)
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(optionsButton)
@@ -302,6 +304,13 @@ class DetailViewController: UIViewController {
             $0.bottom.equalTo(locationStackView).inset(-1)
             $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(10)
         }
+        
+//        topWhiteSpaceView.snp.makeConstraints {
+//            $0.top.equalTo(scrollView.snp.top)
+//            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+//            $0.height.equalTo(40)
+//        }
+
         
         scrollView.snp.makeConstraints {
             $0.top.equalTo(backgroundImageView.snp.bottom).offset(-40)
@@ -450,7 +459,7 @@ class DetailViewController: UIViewController {
             group.enter()
             loadImage(from: media.url) { [weak self] image in
                 if let image = image {
-                    self?.selectedImages.append(image)
+                    self?.selectedImages.append((image, media.isRepresentative))
                 }
                 group.leave()
             }
@@ -458,7 +467,9 @@ class DetailViewController: UIViewController {
         
         group.notify(queue: .main) {
             self.galleryCollectionView.reloadData()
-            if let firstImage = self.selectedImages.first {
+            if let representativeImage = self.selectedImages.first(where: { $0.1 })?.0 {
+                self.backgroundImageView.image = representativeImage
+            } else if let firstImage = self.selectedImages.first?.0 {
                 self.backgroundImageView.image = firstImage
             } else {
                 self.backgroundImageView.image = UIImage(systemName: "photo")
@@ -494,8 +505,12 @@ class DetailViewController: UIViewController {
             albumImageView.isHidden = false
             mapAllButton.isHidden = true
             albumAllButton.isHidden = false
-            if let firstImage = selectedImages.first {
+            if let representativeImage = selectedImages.first(where: { $0.1 })?.0 {
+                albumImageView.image = representativeImage
+            } else if let firstImage = selectedImages.first?.0 {
                 albumImageView.image = firstImage
+            } else {
+                albumImageView.image = UIImage(systemName: "photo")
             }
             contentView.sendSubviewToBack(albumImageView)
         }
@@ -512,7 +527,7 @@ class DetailViewController: UIViewController {
     
     @objc func showGalleryDetail() {
         let galleryDetailVC = GalleryDetailViewController()
-        galleryDetailVC.selectedImages = selectedImages
+        galleryDetailVC.selectedImages = selectedImages.map { $0.0 }
         galleryDetailVC.modalPresentationStyle = .fullScreen
         present(galleryDetailVC, animated: true, completion: nil)
     }
@@ -528,18 +543,33 @@ class DetailViewController: UIViewController {
             attributes: .destructive) { _ in
             self.deletePinLog()
         }
-        
-        optionsButton.menu = UIMenu(title: "", children: [shareAction, deleteAction])
+
+        let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { _ in
+            self.editPinLog()
+        }
+
+        var menuItems = [shareAction]
+
+        if let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid, pinLog.authorId == currentUserId {
+            menuItems.append(editAction)
+            menuItems.append(deleteAction)
+        }
+
+        optionsButton.menu = UIMenu(title: "", children: menuItems)
     }
+
     
     func deletePinLog() {
         let alert = UIAlertController(title: "삭제 확인", message: "핀로그를 삭제하시겠습니까?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "삭제", style: .destructive, handler: { [weak self] _ in
-            guard let self = self, let pinLog = self.pinLog else { return }
+            guard let self = self, let pinLog = self.pinLog, let pinLogId = pinLog.id else {
+                print("Failed to delete pin log: pinLog or pinLog.id is nil")
+                return
+            }
             Task {
                 do {
-                    try await self.pinLogManager.deletePinLog(pinLogId: pinLog.id!)
+                    try await self.pinLogManager.deletePinLog(pinLogId: pinLogId)
                     self.navigationController?.popViewController(animated: true)
                 } catch {
                     print("Failed to delete pin log: \(error.localizedDescription)")
@@ -547,6 +577,15 @@ class DetailViewController: UIViewController {
             }
         }))
         present(alert, animated: true, completion: nil)
+    }
+    
+    func editPinLog() {
+        let inputVC = DetailInputViewController()
+        inputVC.delegate = self
+        if let pinLog = self.pinLog {
+            inputVC.pinLog = pinLog
+        }
+        navigationController?.pushViewController(inputVC, animated: true)
     }
     
     func sharePinLog() {
@@ -569,7 +608,8 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GalleryCollectionViewCell.identifier, for: indexPath) as? GalleryCollectionViewCell else {
                 fatalError("컬렉션 뷰 오류")
             }
-            cell.configure(with: selectedImages[indexPath.row])
+            let (image, _) = selectedImages[indexPath.row]
+            cell.configure(with: image)
             return cell
         } else if collectionView == friendCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as? FriendCollectionViewCell else {
@@ -583,13 +623,11 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == galleryCollectionView && segmentControl.selectedSegmentIndex == 1 {
-            let selectedImage = selectedImages[indexPath.row]
+            let selectedImage = selectedImages[indexPath.row].0
             albumImageView.image = selectedImage
         }
     }
 }
-
-
 
 extension DetailViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -690,3 +728,9 @@ extension DetailViewController: UIScrollViewDelegate {
     }
 }
     
+extension DetailViewController: DetailInputViewControllerDelegate {
+    func didSavePinLog(_ updatedPinLog: PinLog) {
+        self.pinLog = updatedPinLog
+        configureView(with: updatedPinLog)
+    }
+}

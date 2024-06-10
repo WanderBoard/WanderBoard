@@ -118,8 +118,8 @@ class FirestoreManager {
         return email
     }
 
-    func createPinLog(location: String, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool) async throws {
-        let pinLog = PinLog(location: location, startDate: startDate, endDate: endDate, title: title, content: content, media: media, authorId: authorId, attendeeIds: attendeeIds, isPublic: isPublic)
+    func createPinLog(location: String, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date) async throws {
+        let pinLog = PinLog(location: location, startDate: startDate, endDate: endDate, title: title, content: content, media: media, authorId: authorId, attendeeIds: attendeeIds, isPublic: isPublic, createdAt: createdAt)
 
         let documentId = pinLog.id ?? UUID().uuidString
         let documentRef = db.collection("pinLogs").document(documentId)
@@ -146,7 +146,8 @@ class FirestoreManager {
             "media": mediaData,
             "authorId": pinLog.authorId,
             "attendeeIds": pinLog.attendeeIds,
-            "isPublic": pinLog.isPublic
+            "isPublic": pinLog.isPublic,
+            "createdAt": pinLog.createdAt as Any
         ]
 
         try await documentRef.setData(data)

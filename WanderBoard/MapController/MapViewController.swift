@@ -8,9 +8,11 @@
 import UIKit
 import MapKit
 import SnapKit
+import Contacts
 
 class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
-    private let mapView = MKMapView()
+    
+    let mapView = MKMapView()
     private let viewModel: MapViewModel
     private let startDate: Date
     private let endDate: Date
@@ -19,11 +21,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     private let locationManager = CLLocationManager()
     private let tableView = UITableView()
     private let placeInfoView = PlaceInfoView()
+    private var selectedCompletion: MKLocalSearchCompletion?
+    private let pinLogManager = PinLogManager()
+    private var savedPinLogId: String?
 
-//    private var searchBar: UISearchBar!
-
-    init(viewModel: MapViewModel, startDate: Date, endDate: Date, onLocationSelected: ((CLLocationCoordinate2D, String) -> Void)?) {
-        self.viewModel = viewModel
+    init(region: MKCoordinateRegion, startDate: Date, endDate: Date, onLocationSelected: @escaping (CLLocationCoordinate2D, String) -> Void) {
+        self.viewModel = MapViewModel(region: region)
         self.startDate = startDate
         self.endDate = endDate
         self.onLocationSelected = onLocationSelected
@@ -58,8 +61,17 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             viewModel.checkLocationAuthorization()
             isFirstLoad = false
         }
-        
+        placeInfoView.savePinButton.addTarget(self, action: #selector(savePinTapped), for: .touchUpInside)
+
     }
+    
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//            self.savePinTapped()
+//        }
+//    }
 
     private func setupMapView() {
         mapView.delegate = self
@@ -87,7 +99,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     private func showPlaceInfoView(mapItem: MKMapItem) {
         placeInfoView.configure(
             name: mapItem.name ?? "",
-            address: mapItem.placemark.title ?? "", postalCode: mapItem.placemark.postalCode ?? "",
+            address: mapItem.placemark.title?.replacingOccurrences(of: ", 대한민국", with: "") ?? "",
+            postalCode: mapItem.placemark.postalCode ?? "",
             phone: mapItem.phoneNumber ?? "",
             website: mapItem.url?.absoluteString ?? ""
         )
@@ -98,6 +111,15 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             }
             self.view.layoutIfNeeded()
         }
+    }
+    
+    func addPinToMap(location: CLLocationCoordinate2D, address: String) {
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = location
+        annotation.title = address
+        mapView.addAnnotation(annotation)
+        print("Annotation added at \(location.latitude), \(location.longitude) with title: \(address)")
+
     }
     
     private func hidePlaceInfoView() {
@@ -165,7 +187,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     }
 
     private func fetchImages() {
-        // Firebase에서 이미지를 가져오는 로직
+        // Firebase에서 이미지를 가져와야함
     }
     
     override func viewDidLayoutSubviews() {
@@ -183,6 +205,11 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
 
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         return nil
+    }
+    
+    func updateAddressLabel(with address: String) {
+        // 주소 레이블을 업데이트
+        placeInfoView.configure(name: "", address: address, postalCode: "", phone: "", website: "")
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -221,6 +248,21 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         navigationController?.popViewController(animated: true)
     }
     
+    @objc private func savePinTapped() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+
+            guard let annotation = self.mapView.annotations.first(where: { $0 is MKPointAnnotation }) as? MKPointAnnotation else {
+                return
+            }
+
+            let selectedLocation = annotation.coordinate
+            let address = annotation.title ?? "주소 없음"
+
+            self.onLocationSelected?(selectedLocation, address)
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let count = min(viewModel.searchResults.count, 7)
         return count
@@ -235,33 +277,45 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedResult = viewModel.searchResults[indexPath.row]
+        self.selectedCompletion = selectedResult
+
         Task {
             do {
                 let mapItem = try await viewModel.searchForLocation(completion: selectedResult)
-                self.mapView.setRegion(MKCoordinateRegion(center: mapItem.placemark.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)), animated: true)
-                
-                // 기존 핀 제거
+
+                let region = MKCoordinateRegion(center: mapItem.placemark.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02))
+                self.mapView.setRegion(region, animated: true)
+
                 self.mapView.removeAnnotations(self.mapView.annotations)
-                
-                // 새로운 핀 추가
+
                 let annotation = MKPointAnnotation()
                 annotation.coordinate = mapItem.placemark.coordinate
-                annotation.title = selectedResult.title
-                annotation.subtitle = selectedResult.subtitle
+                annotation.title = mapItem.name
+
+                if let postalAddress = mapItem.placemark.postalAddress {
+                    let formatter = CNPostalAddressFormatter()
+                    formatter.style = .mailingAddress
+                    var addressString = formatter.string(from: postalAddress)
+                    addressString = addressString.replacingOccurrences(of: "\n", with: ", ")
+                    addressString = addressString.replacingOccurrences(of: "대한민국", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+                    annotation.customSubtitle = addressString
+                }
+
                 self.mapView.addAnnotation(annotation)
-                
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                }
+
                 self.tableView.isHidden = true
                 self.navigationItem.titleView = nil
                 self.setupNavigationBar()
                 self.navigationItem.hidesBackButton = false
-                
-                // PlaceInfoView 업데이트 및 표시
                 self.showPlaceInfoView(mapItem: mapItem)
+                
             } catch {
                 print("Error: \(error.localizedDescription)")
             }
         }
     }
 }
-
 

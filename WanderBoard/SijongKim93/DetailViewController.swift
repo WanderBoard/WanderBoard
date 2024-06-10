@@ -12,14 +12,28 @@ import PhotosUI
 import SnapKit
 import Then
 import Alamofire
+import FirebaseStorage
+import FirebaseFirestore
+import FirebaseAuth
+import Contacts
+import CoreLocation
+import ImageIO
+
 
 class DetailViewController: UIViewController {
     
     var selectedImages: [UIImage] = []
     var selectedFriends: [UIImage] = []
-    var pinLog: PinLog?
-    let pinLogManager = PinLogManager()
-    
+
+    var pinLog: PinLog? {
+        didSet {
+            guard let pinLog = pinLog else { return }
+            configureView(with: pinLog)
+        }
+    }
+
+    var mapViewController: MapViewController?
+
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
     
@@ -105,9 +119,9 @@ class DetailViewController: UIViewController {
         $0.numberOfLines = 0
     }
     
-    let mapView = MKMapView().then {
-        $0.isUserInteractionEnabled = false
-    }
+//    let mapView = MKMapView().then {
+//        $0.isUserInteractionEnabled = false
+//    }
     
     let segmentControl: UISegmentedControl = {
         let items = ["Map", "Album"]
@@ -117,20 +131,13 @@ class DetailViewController: UIViewController {
         segment.backgroundColor = UIColor(white: 1, alpha: 0.5)
         segment.layer.cornerRadius = 16
         segment.layer.masksToBounds = true
-//        segment.layer.shadowColor = UIColor.black.cgColor
-//        segment.layer.shadowOffset = CGSize(width: 0, height: 2)
-//        segment.layer.shadowRadius = 10
-//        segment.layer.shadowOpacity = 0.1
-        
         segment.setTitleTextAttributes([.foregroundColor: UIColor.white, .backgroundColor: UIColor.black], for: .selected)
         segment.setTitleTextAttributes([.foregroundColor: UIColor.black], for: .normal)
         segment.selectedSegmentTintColor = .black
         segment.layer.borderWidth = 0
-        
         segment.isUserInteractionEnabled = true
         return segment
     }()
-    
     
     let albumImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
@@ -226,6 +233,7 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
         
         setupUI()
+        setupMapViewController() 
         setupConstraints()
         setupCollectionView()
         setupSegmentControl()
@@ -236,8 +244,28 @@ class DetailViewController: UIViewController {
         
         if let pinLog = pinLog {
             configureView(with: pinLog)
+        } else {
+            fetchAndConfigurePinLogs()
         }
     }
+
+    func fetchAndConfigurePinLogs() {
+        Task {
+            do {
+                guard let userId = Auth.auth().currentUser?.uid else { return }
+                let fetchedPinLogs = try await PinLogManager.shared.fetchPinLogs(forUserId: userId)
+                
+                if let firstPinLog = fetchedPinLogs.first {
+                    self.pinLog = firstPinLog
+                }
+            } catch {
+                print("Error fetching pin log data: \(error.localizedDescription)")
+            }
+        }
+    }
+
+
+
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -255,7 +283,7 @@ class DetailViewController: UIViewController {
         contentView.addSubview(optionsButton)
         contentView.addSubview(mainTitleLabel)
         contentView.addSubview(subTextLabel)
-        contentView.addSubview(mapView)
+//        contentView.addSubview(mapView)
         contentView.addSubview(segmentControl)
         contentView.addSubview(galleryCollectionView)
         contentView.addSubview(albumImageView)
@@ -279,6 +307,11 @@ class DetailViewController: UIViewController {
         consumStackView.addArrangedSubview(maxConsumptionLabel)
         
         scrollView.delegate = self
+        
+        if let mapVC = mapViewController {
+            contentView.addSubview(mapVC.view)
+            mapVC.view.isHidden = true // 기본적으로 숨김
+        }
         
     }
     
@@ -337,20 +370,20 @@ class DetailViewController: UIViewController {
             $0.width.equalTo(123)
         }
         
-        mapView.snp.makeConstraints {
-            $0.top.equalTo(segmentControl).offset(-10)
+        mapViewController?.view.snp.makeConstraints {
+            $0.top.equalTo(segmentControl.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(300)
         }
         
         albumImageView.snp.makeConstraints {
-            $0.top.equalTo(segmentControl).offset(-10)
+            $0.top.equalTo(segmentControl.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(300)
         }
         
         galleryCollectionView.snp.makeConstraints {
-            $0.top.equalTo(mapView.snp.bottom).offset(10)
+            $0.top.equalTo(mapViewController!.view.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(90)
         }
@@ -400,63 +433,120 @@ class DetailViewController: UIViewController {
             $0.centerX.equalToSuperview()
         }
     }
+
     
     func configureView(with pinLog: PinLog) {
         locationLabel.text = pinLog.location
-        
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
-        
+
         dateStartLabel.text = dateFormatter.string(from: pinLog.startDate)
         dateEndLabel.text = dateFormatter.string(from: pinLog.endDate)
-        
+
         let duration = Calendar.current.dateComponents([.day], from: pinLog.startDate, to: pinLog.endDate).day ?? 0
         dateDaysLabel.text = "\(duration) Days"
         mainTitleLabel.text = pinLog.title
         subTextLabel.text = pinLog.content
-        
+
+        // 중복 로드를 방지하기 위해 이미지를 초기화하고 로드
+        selectedImages.removeAll()
         updateSelectedImages(with: pinLog.media)
-        
+
         if let firstMedia = pinLog.media.first, let latitude = firstMedia.latitude, let longitude = firstMedia.longitude {
             let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = coordinate
-            mapView.addAnnotation(annotation)
-            mapView.setRegion(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)), animated: true)
+            mapViewController?.addPinToMap(location: coordinate, address: firstMedia.url)
+            mapViewController?.mapView.setRegion(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)), animated: true)
         }
     }
-    
-    func loadImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
-        guard let url = URL(string: urlString) else {
-            completion(nil)
-            return
+
+
+
+
+//    func loadImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
+//        print("Start loading image from URL: \(urlString)")
+//        let storageRef = Storage.storage().reference(forURL: urlString)
+//        storageRef.getData(maxSize: 10 * 1024 * 1024) { data, error in
+//            if let error = error {
+//                print("Error loading image: \(error)")
+//                completion(nil)
+//                return
+//            }
+//            if let data = data, let image = UIImage(data: data) {
+//                print("Image loaded successfully from URL: \(urlString)")
+//                completion(image)
+//            } else {
+//                completion(nil)
+//            }
+//        }
+//    }
+
+
+
+
+    @objc func showGalleryDetail() {
+        let galleryDetailVC = GalleryDetailViewController()
+        galleryDetailVC.selectedImages = selectedImages
+        galleryDetailVC.modalPresentationStyle = .fullScreen
+        present(galleryDetailVC, animated: true, completion: nil)
+    }
+
+    func extractLocation(from image: UIImage) -> CLLocationCoordinate2D? {
+        guard let cgImage = image.cgImage else { return nil }
+        let options = [kCGImageSourceShouldCache: false] as CFDictionary
+        guard let source = CGImageSourceCreateWithData(cgImage.dataProvider!.data! as CFData, options) else { return nil }
+        guard let metadata = CGImageSourceCopyPropertiesAtIndex(source, 0, options) as? [CFString: Any] else { return nil }
+        guard let gpsData = metadata[kCGImagePropertyGPSDictionary] as? [CFString: Any] else { return nil }
+        
+        if let latitude = gpsData[kCGImagePropertyGPSLatitude] as? Double,
+           let longitude = gpsData[kCGImagePropertyGPSLongitude] as? Double {
+            return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         }
         
-        AF.request(url).response { response in
-            if let data = response.data, let image = UIImage(data: data) {
-                completion(image)
+        return nil
+    }
+
+    func printImageLocationData() {
+        for (index, image) in selectedImages.enumerated() {
+            if let location = extractLocation(from: image) {
+                print("Image \(index) location: \(location.latitude), \(location.longitude)")
             } else {
-                completion(nil)
+                print("Image \(index) has no location data")
             }
         }
     }
-    
+
+
+    func setupActionButton() {
+        albumAllButton.addTarget(self, action: #selector(showGalleryDetail), for: .touchUpInside)
+    }
+
+
     func updateSelectedImages(with mediaItems: [Media]) {
-        selectedImages = []
-        let group = DispatchGroup()
-        
+        selectedImages.removeAll()
+        let dispatchGroup = DispatchGroup()
+
         for media in mediaItems {
-            guard URL(string: media.url) != nil else { continue }
-            group.enter()
-            loadImage(from: media.url) { [weak self] image in
+            guard let url = URL(string: media.url) else { continue }
+
+            dispatchGroup.enter()
+            loadImage(from: url) { [weak self] image in
                 if let image = image {
-                    self?.selectedImages.append(image)
+                    if !(self?.selectedImages.contains(where: { $0.pngData() == image.pngData() }) ?? false) {
+                        self?.selectedImages.append(image)
+                    }
+                    // 위치 정보 추출
+                    if let location = self?.extractLocation(from: image) {
+                        print("이미지 위치 정보: \(location.latitude), \(location.longitude)")
+                    } else {
+                        print("이미지 위치 정보가 없습니다.")
+                    }
                 }
-                group.leave()
+                dispatchGroup.leave()
             }
         }
-        
-        group.notify(queue: .main) {
+
+        dispatchGroup.notify(queue: .main) {
             self.galleryCollectionView.reloadData()
             if let firstImage = self.selectedImages.first {
                 self.backgroundImageView.image = firstImage
@@ -465,6 +555,57 @@ class DetailViewController: UIViewController {
             }
         }
     }
+
+
+
+
+    
+    // 이미지를 로드하는 메서드
+    func loadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        print("URL에서 이미지 로드 시작: \(url.absoluteString)")
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            if let data = data, let image = UIImage(data: data) {
+                print("URL에서 이미지 로드 성공: \(url.absoluteString)")
+                completion(image)
+            } else {
+                print("이미지 로드 실패: \(error?.localizedDescription ?? "알 수 없는 오류")")
+                completion(nil)
+            }
+        }
+        task.resume()
+    }
+
+
+    private func setupMapViewController() {
+        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+        mapViewController = MapViewController(region: region, startDate: Date(), endDate: Date()) { [weak self] coordinate, address in
+            // 장소가 선택되었을 때의 처리
+        }
+        guard let mapVC = mapViewController else { return }
+        addChild(mapVC)
+        view.addSubview(mapVC.view)
+        mapVC.view.snp.makeConstraints { make in
+            make.top.equalTo(segmentControl.snp.bottom).offset(10)
+            make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            make.height.equalTo(300)
+        }
+        mapVC.didMove(toParent: self)
+        mapVC.view.isHidden = true // 기본적으로 숨김
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     func setupCollectionView() {
         galleryCollectionView.delegate = self
@@ -485,12 +626,25 @@ class DetailViewController: UIViewController {
     
     @objc func segmentChanged(_ sender: UISegmentedControl) {
         if sender.selectedSegmentIndex == 0 {
-            mapView.isHidden = false
+            mapViewController?.view.isHidden = false
             albumImageView.isHidden = true
             mapAllButton.isHidden = false
             albumAllButton.isHidden = true
+
+            // Firestore에서 pinLog 데이터를 불러와서 맵에 표시
+            if let pinLog = pinLog {
+                for media in pinLog.media {
+                    if let latitude = media.latitude, let longitude = media.longitude {
+                        let annotation = MKPointAnnotation()
+                        annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                        annotation.title = media.url // 필요 시 다른 제목으로 변경 가능
+                        mapViewController?.addPinToMap(location: annotation.coordinate, address: annotation.title ?? "")
+                    }
+                }
+            }
+
         } else {
-            mapView.isHidden = true
+            mapViewController?.view.isHidden = true
             albumImageView.isHidden = false
             mapAllButton.isHidden = true
             albumAllButton.isHidden = false
@@ -503,54 +657,6 @@ class DetailViewController: UIViewController {
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
         }
-    }
-    
-    func setupActionButton() {
-        albumAllButton.addTarget(self, action: #selector(showGalleryDetail), for: .touchUpInside)
-        optionsButton.addTarget(self, action: #selector(setupMenu), for: .touchUpInside)
-    }
-    
-    @objc func showGalleryDetail() {
-        let galleryDetailVC = GalleryDetailViewController()
-        galleryDetailVC.selectedImages = selectedImages
-        galleryDetailVC.modalPresentationStyle = .fullScreen
-        present(galleryDetailVC, animated: true, completion: nil)
-    }
-    
-    @objc func setupMenu() {
-        let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-            self.sharePinLog()
-        }
-
-        let deleteAction = UIAction(
-            title: "삭제하기",
-            image: UIImage(systemName: "trash"),
-            attributes: .destructive) { _ in
-            self.deletePinLog()
-        }
-        
-        optionsButton.menu = UIMenu(title: "", children: [shareAction, deleteAction])
-    }
-    
-    func deletePinLog() {
-        let alert = UIAlertController(title: "삭제 확인", message: "핀로그를 삭제하시겠습니까?", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
-        alert.addAction(UIAlertAction(title: "삭제", style: .destructive, handler: { [weak self] _ in
-            guard let self = self, let pinLog = self.pinLog else { return }
-            Task {
-                do {
-                    try await self.pinLogManager.deletePinLog(pinLogId: pinLog.id!)
-                    self.navigationController?.popViewController(animated: true)
-                } catch {
-                    print("Failed to delete pin log: \(error.localizedDescription)")
-                }
-            }
-        }))
-        present(alert, animated: true, completion: nil)
-    }
-    
-    func sharePinLog() {
-        
     }
 }
 
@@ -580,14 +686,59 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
         }
         return UICollectionViewCell()
     }
+
+//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//        if collectionView == galleryCollectionView && segmentControl.selectedSegmentIndex == 1 {
+//            // indexPath.row 값이 selectedImages 배열 범위 내에 있는지 확인
+//            guard indexPath.row < selectedImages.count else {
+//                print("Index out of range")
+//                return
+//            }
+//
+//            let selectedImage = selectedImages[indexPath.row]
+//            albumImageView.image = selectedImage
+//
+//            // 여기에서 이미지의 위치 정보를 가지고와 맵에 핀을 찍습니다.
+//            guard let mediaItem = pinLog?.media[indexPath.row] else {
+//                print("Media item not found")
+//                return
+//            }
+//
+//            if let latitude = mediaItem.latitude, let longitude = mediaItem.longitude {
+//                let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+//                let annotation = MKPointAnnotation()
+//                annotation.coordinate = coordinate
+//                mapView.addAnnotation(annotation)
+//                mapView.setRegion(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)), animated: true)
+//            }
+//        }
+//    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView == galleryCollectionView && segmentControl.selectedSegmentIndex == 1 {
-            let selectedImage = selectedImages[indexPath.row]
-            albumImageView.image = selectedImage
+        if collectionView == galleryCollectionView {
+            let mediaItem = pinLog?.media[indexPath.row]
+            
+            if segmentControl.selectedSegmentIndex == 0 {
+                // Map 상태일 때
+                if let latitude = mediaItem?.latitude, let longitude = mediaItem?.longitude {
+                    let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                    mapViewController?.addPinToMap(location: coordinate, address: mediaItem?.url ?? "")
+                    mapViewController?.mapView.setRegion(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)), animated: true)
+                    print("Pin added at \(coordinate.latitude), \(coordinate.longitude)")
+                } else {
+                    print("No location data for this media item")
+                }
+            } else if segmentControl.selectedSegmentIndex == 1 {
+                // Album 상태일 때
+                let image = selectedImages[indexPath.row]
+                albumImageView.image = image
+                print("Image set in albumImageView")
+            }
         }
     }
 }
+
+
 
 
 
@@ -690,3 +841,19 @@ extension DetailViewController: UIScrollViewDelegate {
     }
 }
     
+extension StorageReference {
+    func getDataAsync(maxSize: Int64) async throws -> Data {
+        try await withCheckedThrowingContinuation { continuation in
+            self.getData(maxSize: maxSize) { data, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else if let data = data {
+                    continuation.resume(returning: data)
+                } else {
+                    continuation.resume(throwing: NSError(domain: "StorageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error"]))
+                }
+            }
+        }
+    }
+}
+

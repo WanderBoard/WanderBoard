@@ -506,9 +506,6 @@ class DetailInputViewController: UIViewController {
             guard let self = self else { return }
             let mapVC = MapViewController(viewModel: viewModel, startDate: Date(), endDate: Date())
             
-            mapVC.locationSelected = { [weak self] location in
-                self?.locationLeftLabel.text = location
-            }
             
             if !(self.navigationController?.viewControllers.contains(where: { $0 is MapViewController }) ?? false) {
                 self.navigationController?.pushViewController(mapVC, animated: true)

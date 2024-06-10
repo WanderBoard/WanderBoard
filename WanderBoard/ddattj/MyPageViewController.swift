@@ -39,8 +39,11 @@ class MyPageViewController: BaseViewController, PageIndexed {
         tableView.register(MyPageTableViewCell.self, forCellReuseIdentifier: MyPageTableViewCell.identifier)
         tableView.delegate = self
         tableView.dataSource = self
+        
+        configureUI()
         fetchUserData()
     }
+    
     func fetchUserData() {
         Task {
             do {
@@ -54,83 +57,15 @@ class MyPageViewController: BaseViewController, PageIndexed {
         }
     }
     
-    //에딧창에서 추가해준 이름과 사진 불러오기
-    func updateUserData(name: String, image: UIImage?) {
-            myName.text = name
-            profile.image = image ?? UIImage(named: "defaultProfileImage")
-        }
-    
     //페이지 컨트롤러 때문에 추가했습니다 -한빛
     override func viewWillAppear(_ animated: Bool) {
         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": false])
         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": true])
     }
-   
-    override func configureUI() {
-        super.configureUI()
-        guard let userData = userData else {
-            return
-        }
-        editButton.setImage(UIImage(systemName: "pencil.circle"), for: .normal)
-        editButton.tintColor = .font
-        editButton.imageView?.snp.makeConstraints(){
-            $0.width.height.equalTo(26)
-        }
-        editButton.addTarget(self, action: #selector(edit), for: .touchUpInside)
-        let barButtonItem = UIBarButtonItem(customView: editButton)
-        self.navigationItem.rightBarButtonItem = barButtonItem
-        
-        profile.image = UIImage(named: "\(String(describing: userData.photoURL))")
-        profile.layer.cornerRadius = 53
-        profile.clipsToBounds = true
-        profile.backgroundColor = .lightgray
-        
-        myName.font = UIFont.boldSystemFont(ofSize: 22)
-        myName.textColor = .font
-        
-        myID.font = UIFont.systemFont(ofSize: 13)
-        myID.textColor = .font
-        
-        statusB.backgroundColor = .customblack
-        statusB.layer.cornerRadius = 10
-        statusB.layer.shadowOffset = CGSize(width: 0, height: 4)
-        statusB.layer.shadowRadius = 4
-        statusB.layer.shadowOpacity = 0.25
-        
-        myWrite.text = "\(MyTripsViewController.tripLogs.count)"
-        myWrite.font = UIFont.systemFont(ofSize: 13)
-        myWrite.textColor = .white
-        myPin.text = "\(1)"
-        myPin.font = UIFont.systemFont(ofSize: 13)
-        myPin.textColor = .white
-        myExpend.text = "\(1)"
-        myExpend.font =  UIFont.systemFont(ofSize: 13)
-        myExpend.textColor = .white
-        
-        status1.text = "작성한 글"
-        status1.font = UIFont.systemFont(ofSize: 13)
-        status1.textColor = .white
-        status2.text = "핀 개수"
-        status2.font = UIFont.systemFont(ofSize: 13)
-        status2.textColor = .white
-        status3.text = "평균사용금액"
-        status3.font = UIFont.systemFont(ofSize: 13)
-        status3.textColor = .white
-        
-        tableView.backgroundColor = .clear
-        tableView.separatorStyle = .none //테이블뷰 구분선 없앨때 사용
-    }
     
     override func constraintLayout() {
-        super.constraintLayout()
-        [editButton, profile, myName, myID, statusB, myWrite, myPin, myExpend, status1, status2, status3, tableView].forEach(){
+        [profile, myName, myID, statusB, myWrite, myPin, myExpend, status1, status2, status3, tableView].forEach(){
             view.addSubview($0)
-        }
-        
-        editButton.snp.makeConstraints(){
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
-            $0.right.equalTo(view).offset(-16)
-            $0.width.height.equalTo(44)
         }
         profile.snp.makeConstraints(){
             $0.centerX.equalTo(view)
@@ -138,7 +73,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
             $0.width.height.equalTo(106)
         }
         myName.snp.makeConstraints(){
-            $0.top.equalTo(profile.snp.bottom).offset(17)
+            $0.top.equalTo(profile.snp.bottom).offset(19)
             $0.centerX.equalTo(view)
         }
         myID.snp.makeConstraints(){
@@ -177,12 +112,85 @@ class MyPageViewController: BaseViewController, PageIndexed {
         }
         tableView.snp.makeConstraints(){
             $0.top.equalTo(statusB.snp.bottom).offset(49)
-            $0.width.equalTo(318)
-            $0.centerX.equalTo(view)
-            $0.bottom.equalTo(logo.snp.top).offset(-67)
+            $0.horizontalEdges.equalToSuperview().inset(32)
+            $0.bottom.equalTo(view).offset(-242)
         }
     }
     
+    override func configureUI() {
+        
+        editButton.setImage(UIImage(systemName: "pencil.circle"), for: .normal)
+        editButton.tintColor = .font
+        editButton.imageView?.snp.makeConstraints(){
+            $0.width.height.equalTo(26)
+        }
+        editButton.addTarget(self, action: #selector(edit), for: .touchUpInside)
+        let barButtonItem = UIBarButtonItem(customView: editButton)
+        self.navigationItem.rightBarButtonItem = barButtonItem
+        
+        profile.layer.cornerRadius = 53
+        profile.clipsToBounds = true
+        profile.backgroundColor = .lightgray
+        
+        myName.font = UIFont.boldSystemFont(ofSize: 22)
+        myName.textColor = .font
+        
+        myID.font = UIFont.systemFont(ofSize: 13)
+        myID.textColor = .font
+        
+        statusB.backgroundColor = .customblack
+        statusB.layer.cornerRadius = 10
+        statusB.layer.shadowOffset = CGSize(width: 0, height: 4)
+        statusB.layer.shadowRadius = 4
+        statusB.layer.shadowOpacity = 0.25
+        
+        myWrite.text = "\(MyTripsViewController.tripLogs.count)"
+        myWrite.font = UIFont.systemFont(ofSize: 13)
+        myWrite.textColor = .white
+        myPin.text = "\(1)"
+        myPin.font = UIFont.systemFont(ofSize: 13)
+        myPin.textColor = .white
+        myExpend.text = "\(1)"
+        myExpend.font =  UIFont.systemFont(ofSize: 13)
+        myExpend.textColor = .white
+        
+        status1.text = "작성한 글"
+        status1.font = UIFont.systemFont(ofSize: 13)
+        status1.textColor = .white
+        status2.text = "핀 개수"
+        status2.font = UIFont.systemFont(ofSize: 13)
+        status2.textColor = .white
+        status3.text = "평균사용금액"
+        status3.font = UIFont.systemFont(ofSize: 13)
+        status3.textColor = .white
+        
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none //테이블뷰 구분선 없앨때 사용
+        
+        // userData가 있으면 userData에 맞게 업데이트
+        //userData가 없을 경우 위의 기능은 정상적으로 수행하고 만약 값이 있을 경우엔 중괄호 내부의 역할을 수행해줄것을 요청
+           if let userData = userData {
+               profile.image = UIImage(named: "\(String(describing: userData.photoURL))")
+               myName.text = userData.displayName
+               myID.text = userData.email
+           }
+    }
+    
+    
+    func updateUI() {
+        guard let userData = userData else { return }
+        profile.image = UIImage(named: "\(String(describing: userData.photoURL))")
+        myName.text = userData.displayName
+        myID.text = userData.email
+    }
+    
+    //에딧창에서 추가해준 이름과 사진 불러오기
+    func updateUserData(name: String, image: UIImage?) {
+            myName.text = name
+            profile.image = image ?? UIImage(named: "defaultProfileImage")
+        }
+    
+
     @objc func edit(){
         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러 때문에.. - 한빛
         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면 전환 스크롤 제거 - 한빛
@@ -192,13 +200,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
         editVC.previousImage = profile.image
         editVC.userData = self.userData //여기서 쓰인 userData, editVC의 userData로 넘겨주기
         navigationController?.pushViewController(editVC, animated: true)
-    }
-    
-    func updateUI() {
-        guard let userData = userData else { return }
-        profile.image = UIImage(named: "\(String(describing: userData.photoURL))")
-        myName.text = userData.displayName
-        myID.text = userData.email
     }
     
     override func updateColor(){
@@ -213,6 +214,28 @@ class MyPageViewController: BaseViewController, PageIndexed {
         navigationController?.navigationBar.standardAppearance = navbarAppearance
     }
     
+    //수정된 정보 파이어베이스 저장하기
+    func updateProfile(displayName: String?, photoURL: URL?) {
+        if let user = Auth.auth().currentUser {
+            var changeRequest = user.createProfileChangeRequest()
+            if let displayName = displayName {
+                changeRequest.displayName = displayName
+            }
+            if let photoURL = photoURL {
+                changeRequest.photoURL = photoURL
+            }
+            // 사용자 프로필 변경 요청 적용
+            changeRequest.commitChanges { error in
+                if let error = error {
+                    print("프로필 업데이트 실패: \(error.localizedDescription)")
+                } else {
+                    print("프로필이 성공적으로 업데이트되었습니다.")
+                }
+            }
+        } else {
+            print("사용자가 로그인되어 있지 않습니다.")
+        }
+    }
 }
 
 extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {

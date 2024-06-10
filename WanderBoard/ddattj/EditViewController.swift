@@ -205,10 +205,11 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     }
     
     @objc func moveToMyPage(){
-           //이미지와 이름 저장
-           if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
-               myPageVC.updateUserData(name: myName.text ?? previousName, image: profile.image)
-           }
+        // 이미지와 이름 저장
+            let nameToSave = myName.text?.isEmpty ?? true ? previousName : myName.text
+            if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
+                myPageVC.updateUserData(name: nameToSave!, image: profile.image)
+            }
            
            let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
            let confirm = UIAlertAction(title: "확인", style: .default) { _ in

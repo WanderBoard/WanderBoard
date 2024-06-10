@@ -21,15 +21,24 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     private let locationManager = CLLocationManager()
     private let tableView = UITableView()
     private let placeInfoView = PlaceInfoView()
+
+    
+
+//    private var searchBar: UISearchBar!
+
+    init(viewModel: MapViewModel, startDate: Date, endDate: Date, locationSelected: ((String) -> Void)? = nil) {
+        self.viewModel = viewModel
+
     private var selectedCompletion: MKLocalSearchCompletion?
     private let pinLogManager = PinLogManager()
     private var savedPinLogId: String?
 
     init(region: MKCoordinateRegion, startDate: Date, endDate: Date, onLocationSelected: @escaping (CLLocationCoordinate2D, String) -> Void) {
         self.viewModel = MapViewModel(region: region)
+
         self.startDate = startDate
         self.endDate = endDate
-        self.onLocationSelected = onLocationSelected
+        
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -45,6 +54,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         centerMapOnUserLocation()
         setupTableView()
         setupPlaceInfoView()
+        
+        
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.navigationItem.rightBarButtonItem?.isEnabled = true

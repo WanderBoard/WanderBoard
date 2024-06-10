@@ -15,6 +15,9 @@ class PinLogManager {
     private let db = Firestore.firestore()
     private let storage = Storage.storage()
 
+    
+    // Firestore에 데이터를 저장하는 함수
+
     private func saveDocument(documentRef: DocumentReference, data: [String: Any]) async throws {
         try await documentRef.setData(data)
     }
@@ -22,6 +25,28 @@ class PinLogManager {
     private func updateDocument(documentRef: DocumentReference, data: [String: Any]) async throws {
         try await documentRef.updateData(data)
     }
+
+    
+    // Pinlog 생성
+    func createPinLog(location: String, startDate: Date, endDate: Date, title: String, content: String, images: [(UIImage, Bool)], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date) async throws -> PinLog {
+        let storageManager = StorageManager()
+        var mediaObjects: [Media] = []
+        
+        await withTaskGroup(of: Media?.self) { group in
+            for (image, isRepresentative) in images {
+                group.addTask {
+                    return try? await storageManager.uploadImage(image: image, userId: authorId, isRepresentative: isRepresentative)
+                }
+            }
+            
+            for await media in group {
+                if let media = media {
+                    mediaObjects.append(media)
+                }
+            }
+        }
+        
+
 
     func createOrUpdatePinLog(pinLog: inout PinLog, images: [UIImage]) async throws -> PinLog {
         let storageManager = StorageManager()
@@ -37,8 +62,9 @@ class PinLogManager {
             }
         }
 
+
         let mediaData = mediaObjects.map { mediaItem -> [String: Any] in
-            var mediaDict: [String: Any] = ["url": mediaItem.url]
+            var mediaDict: [String: Any] = ["url": mediaItem.url, "isRepresentative": mediaItem.isRepresentative]
             if let latitude = mediaItem.latitude, let longitude = mediaItem.longitude {
                 mediaDict["latitude"] = latitude
                 mediaDict["longitude"] = longitude
@@ -48,6 +74,11 @@ class PinLogManager {
             }
             return mediaDict
         }
+
+        
+        let createdAt = Date()
+        let pinLog = PinLog(location: location, startDate: startDate, endDate: endDate, title: title, content: content, media: mediaObjects, authorId: authorId, attendeeIds: attendeeIds, isPublic: isPublic, createdAt: createdAt)
+        
 
         let documentId = pinLog.id ?? UUID().uuidString
         let documentRef = db.collection("pinLogs").document(documentId)
@@ -65,7 +96,8 @@ class PinLogManager {
             "media": mediaData,
             "authorId": pinLog.authorId,
             "attendeeIds": pinLog.attendeeIds,
-            "isPublic": pinLog.isPublic
+            "isPublic": pinLog.isPublic,
+            "createdAt": Timestamp(date: createdAt)
         ]
 
         if pinLog.id == nil {
@@ -78,9 +110,68 @@ class PinLogManager {
         return pinLog
     }
 
-    func updatePinLog(pinLogId: String, data: [String: Any]) async throws {
+    
+    // PinLog 업데이트
+    func updatePinLog(pinLogId: String, updatedPinLog: PinLog, newImages: [(UIImage, Bool)]) async throws -> PinLog {
+
         let documentRef = db.collection("pinLogs").document(pinLogId)
-        try await updateDocument(documentRef: documentRef, data: data)
+        let storageManager = StorageManager()
+        
+        var mediaObjects: [Media] = []
+        await withTaskGroup(of: Media?.self) { group in
+            for (image, isRepresentative) in newImages {
+                group.addTask {
+                    return try? await storageManager.uploadImage(image: image, userId: updatedPinLog.authorId, isRepresentative: isRepresentative)
+                }
+            }
+            
+            for await media in group {
+                if let media = media {
+                    mediaObjects.append(media)
+                }
+            }
+        }
+
+        let mediaData = mediaObjects.map { mediaItem -> [String: Any] in
+            var mediaDict: [String: Any] = ["url": mediaItem.url, "isRepresentative": mediaItem.isRepresentative]
+            if let latitude = mediaItem.latitude, let longitude = mediaItem.longitude {
+                mediaDict["latitude"] = latitude
+                mediaDict["longitude"] = longitude
+            }
+            if let dateTaken = mediaItem.dateTaken {
+                mediaDict["dateTaken"] = Timestamp(date: dateTaken)
+            }
+            return mediaDict
+        }
+
+        let data: [String: Any] = [
+            "location": updatedPinLog.location,
+            "startDate": Timestamp(date: updatedPinLog.startDate),
+            "endDate": Timestamp(date: updatedPinLog.endDate),
+            "duration": updatedPinLog.duration,
+            "title": updatedPinLog.title,
+            "content": updatedPinLog.content,
+            "media": mediaData,
+            "authorId": updatedPinLog.authorId,
+            "attendeeIds": updatedPinLog.attendeeIds,
+            "isPublic": updatedPinLog.isPublic,
+        ]
+
+        try await documentRef.updateData(data)
+        
+        return PinLog(
+            id: updatedPinLog.id,
+            location: updatedPinLog.location,
+            startDate: updatedPinLog.startDate,
+            endDate: updatedPinLog.endDate,
+            title: updatedPinLog.title,
+            content: updatedPinLog.content,
+            media: mediaObjects,
+            authorId: updatedPinLog.authorId,
+            attendeeIds: updatedPinLog.attendeeIds,
+            isPublic: updatedPinLog.isPublic,
+            createdAt: updatedPinLog.createdAt
+        )
     }
     
     func fetchPinLogs(forUserId userId: String) async throws -> [PinLog] {

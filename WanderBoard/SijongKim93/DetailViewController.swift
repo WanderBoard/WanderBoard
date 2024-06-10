@@ -12,17 +12,18 @@ import PhotosUI
 import SnapKit
 import Then
 import Alamofire
+import FirebaseAuth
 import FirebaseStorage
 import FirebaseFirestore
-import FirebaseAuth
 import Contacts
 import CoreLocation
 import ImageIO
 
 
+
 class DetailViewController: UIViewController {
     
-    var selectedImages: [UIImage] = []
+    var selectedImages: [(UIImage, Bool)] = []
     var selectedFriends: [UIImage] = []
 
     var pinLog: PinLog? {
@@ -91,6 +92,10 @@ class DetailViewController: UIViewController {
         $0.spacing = 5
     }
     
+//    let topWhiteSpaceView = UIView().then {
+//        $0.backgroundColor = .white
+//    }
+    
     let scrollView = UIScrollView().then {
         $0.showsVerticalScrollIndicator = false
         $0.bounces = false
@@ -131,6 +136,7 @@ class DetailViewController: UIViewController {
         segment.backgroundColor = UIColor(white: 1, alpha: 0.5)
         segment.layer.cornerRadius = 16
         segment.layer.masksToBounds = true
+
         segment.setTitleTextAttributes([.foregroundColor: UIColor.white, .backgroundColor: UIColor.black], for: .selected)
         segment.setTitleTextAttributes([.foregroundColor: UIColor.black], for: .normal)
         segment.selectedSegmentTintColor = .black
@@ -278,6 +284,7 @@ class DetailViewController: UIViewController {
         topContentView.addSubview(locationStackView)
         topContentView.addSubview(dateStackView)
         
+        //view.addSubview(topWhiteSpaceView)
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(optionsButton)
@@ -335,6 +342,13 @@ class DetailViewController: UIViewController {
             $0.bottom.equalTo(locationStackView).inset(-1)
             $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(10)
         }
+        
+//        topWhiteSpaceView.snp.makeConstraints {
+//            $0.top.equalTo(scrollView.snp.top)
+//            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+//            $0.height.equalTo(40)
+//        }
+
         
         scrollView.snp.makeConstraints {
             $0.top.equalTo(backgroundImageView.snp.bottom).offset(-40)
@@ -532,6 +546,9 @@ class DetailViewController: UIViewController {
             dispatchGroup.enter()
             loadImage(from: url) { [weak self] image in
                 if let image = image {
+
+                    self?.selectedImages.append((image, media.isRepresentative))
+
                     if !(self?.selectedImages.contains(where: { $0.pngData() == image.pngData() }) ?? false) {
                         self?.selectedImages.append(image)
                     }
@@ -541,6 +558,7 @@ class DetailViewController: UIViewController {
                     } else {
                         print("이미지 위치 정보가 없습니다.")
                     }
+
                 }
                 dispatchGroup.leave()
             }
@@ -548,7 +566,9 @@ class DetailViewController: UIViewController {
 
         dispatchGroup.notify(queue: .main) {
             self.galleryCollectionView.reloadData()
-            if let firstImage = self.selectedImages.first {
+            if let representativeImage = self.selectedImages.first(where: { $0.1 })?.0 {
+                self.backgroundImageView.image = representativeImage
+            } else if let firstImage = self.selectedImages.first?.0 {
                 self.backgroundImageView.image = firstImage
             } else {
                 self.backgroundImageView.image = UIImage(systemName: "photo")
@@ -648,8 +668,12 @@ class DetailViewController: UIViewController {
             albumImageView.isHidden = false
             mapAllButton.isHidden = true
             albumAllButton.isHidden = false
-            if let firstImage = selectedImages.first {
+            if let representativeImage = selectedImages.first(where: { $0.1 })?.0 {
+                albumImageView.image = representativeImage
+            } else if let firstImage = selectedImages.first?.0 {
                 albumImageView.image = firstImage
+            } else {
+                albumImageView.image = UIImage(systemName: "photo")
             }
             contentView.sendSubviewToBack(albumImageView)
         }
@@ -658,6 +682,80 @@ class DetailViewController: UIViewController {
             self.view.layoutIfNeeded()
         }
     }
+
+    
+    func setupActionButton() {
+        albumAllButton.addTarget(self, action: #selector(showGalleryDetail), for: .touchUpInside)
+        optionsButton.addTarget(self, action: #selector(setupMenu), for: .touchUpInside)
+    }
+    
+    @objc func showGalleryDetail() {
+        let galleryDetailVC = GalleryDetailViewController()
+        galleryDetailVC.selectedImages = selectedImages.map { $0.0 }
+        galleryDetailVC.modalPresentationStyle = .fullScreen
+        present(galleryDetailVC, animated: true, completion: nil)
+    }
+    
+    @objc func setupMenu() {
+        let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+            self.sharePinLog()
+        }
+
+        let deleteAction = UIAction(
+            title: "삭제하기",
+            image: UIImage(systemName: "trash"),
+            attributes: .destructive) { _ in
+            self.deletePinLog()
+        }
+
+        let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { _ in
+            self.editPinLog()
+        }
+
+        var menuItems = [shareAction]
+
+        if let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid, pinLog.authorId == currentUserId {
+            menuItems.append(editAction)
+            menuItems.append(deleteAction)
+        }
+
+        optionsButton.menu = UIMenu(title: "", children: menuItems)
+    }
+
+    
+    func deletePinLog() {
+        let alert = UIAlertController(title: "삭제 확인", message: "핀로그를 삭제하시겠습니까?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "삭제", style: .destructive, handler: { [weak self] _ in
+            guard let self = self, let pinLog = self.pinLog, let pinLogId = pinLog.id else {
+                print("Failed to delete pin log: pinLog or pinLog.id is nil")
+                return
+            }
+            Task {
+                do {
+                    try await self.pinLogManager.deletePinLog(pinLogId: pinLogId)
+                    self.navigationController?.popViewController(animated: true)
+                } catch {
+                    print("Failed to delete pin log: \(error.localizedDescription)")
+                }
+            }
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func editPinLog() {
+        let inputVC = DetailInputViewController()
+        inputVC.delegate = self
+        if let pinLog = self.pinLog {
+            inputVC.pinLog = pinLog
+        }
+        navigationController?.pushViewController(inputVC, animated: true)
+    }
+    
+    func sharePinLog() {
+        
+    }
+
 }
 
 extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -675,7 +773,8 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GalleryCollectionViewCell.identifier, for: indexPath) as? GalleryCollectionViewCell else {
                 fatalError("컬렉션 뷰 오류")
             }
-            cell.configure(with: selectedImages[indexPath.row])
+            let (image, _) = selectedImages[indexPath.row]
+            cell.configure(with: image)
             return cell
         } else if collectionView == friendCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as? FriendCollectionViewCell else {
@@ -737,6 +836,7 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
         }
     }
 }
+
 
 
 
@@ -841,6 +941,14 @@ extension DetailViewController: UIScrollViewDelegate {
     }
 }
     
+
+extension DetailViewController: DetailInputViewControllerDelegate {
+    func didSavePinLog(_ updatedPinLog: PinLog) {
+        self.pinLog = updatedPinLog
+        configureView(with: updatedPinLog)
+    }
+}
+
 extension StorageReference {
     func getDataAsync(maxSize: Int64) async throws -> Data {
         try await withCheckedThrowingContinuation { continuation in
@@ -856,4 +964,5 @@ extension StorageReference {
         }
     }
 }
+
 

@@ -32,6 +32,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     let subTitleBackground = UIView()
     let subTitle = UILabel()
     let withdrawalB = UIButton()
+    var previousImage: UIImage?
     var previousName = String()
     var ID = String()
     var userData: AuthDataResultModel?
@@ -44,6 +45,14 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(tapGestureRecognizer:)))
         profile.isUserInteractionEnabled = true
         profile.addGestureRecognizer(tapGestureRecognizer)
+        
+        //마이컨트롤러에 이미지가 있는지 확인. 존재하면 불러오고 없으면 회색배경에 +아이콘
+        if let existingImage = previousImage {
+                   profile.image = existingImage
+                   addImage.tintColor = UIColor.clear
+               } else {
+                   addImage.tintColor = UIColor(named: "textColorSub")
+               }
     }
     
     override func configureUI(){
@@ -68,7 +77,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         IDIcon.contentMode = .scaleAspectFit
         
-        nameAlert.text = "* 닉네임은 3글자 이상, 16글자 이하여야 합니다"
+        nameAlert.text = "😗 글자 수를 맞춰주세요 (2자 이상, 16자 이하)"
         nameAlert.font = UIFont.systemFont(ofSize: 12)
         nameAlert.textColor = .darkgray
         
@@ -135,7 +144,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             $0.centerX.equalToSuperview()
             $0.width.height.equalTo(21)
             $0.centerY.equalToSuperview()
-
+            
         }
         
         myName.snp.makeConstraints(){
@@ -181,50 +190,125 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     }
     
     @objc func moveToMyPage(){
-        let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
-        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-            let myPageVC = MyPageViewController()
-            self.navigationController?.pushViewController(myPageVC, animated: false)
+           //이미지와 이름 저장
+           if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
+               myPageVC.updateUserData(name: myName.text ?? previousName, image: profile.image)
+           }
+           
+           let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
+           let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+               self.navigationController?.popViewController(animated: true)
+           }
+           alert.addAction(confirm)
+           present(alert, animated: true, completion: nil)
+       }
+    
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+           let currentText = textField.text ?? ""
+           guard let stringRange = Range(range, in: currentText) else { return false }
+           let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+
+           // Step 1: 글자 수 체크
+           if updatedText.isEmpty {
+               nameAlert.text = "😗 닉네임을 입력해주세요\n입력하신 닉네임은 다른 사용자에게 노출됩니다"
+               nameAlert.textColor = .darkgray
+               doneButton.isEnabled = false
+               return true
+           }
+
+           if updatedText.count < 2 || updatedText.count > 16 {
+               nameAlert.text = "😗 글자 수를 맞춰주세요 (2자 이상, 16자 이하)"
+               nameAlert.textColor = .darkgray
+               doneButton.isEnabled = false
+               return true
+           }
+
+           // Step 2: 특수문자 포함 여부 체크 (공백과 특수문자만 체크)
+           let nicknamePattern = "^[a-zA-Z0-9가-힣]*$"
+           let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
+           if !nicknamePredicate.evaluate(with: updatedText) {
+               nameAlert.text = "🤬 닉네임에 특수문자나 공백을 포함할 수 없습니다"
+               nameAlert.textColor = .red
+               doneButton.titleLabel?.textColor = .lightGray
+               doneButton.isEnabled = false
+               return true
+           }
+
+           nameAlert.text = ""
+           doneButton.isEnabled = false
+
+           // 중복 체크는 텍스트 편집이 끝난 후에 수행합니다.
+           return true
+       }
+
+       func textFieldDidEndEditing(_ textField: UITextField) {
+           let nickname = textField.text ?? ""
+
+           // 글자 수 및 특수문자 체크 통과한 후 Firestore에서 닉네임 중복 체크
+           if nickname.count >= 2 && nickname.count <= 16 {
+               let nicknamePattern = "^[a-zA-Z0-9가-힣]+$"
+               let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
+               
+               if nicknamePredicate.evaluate(with: nickname) {
+                   Task {
+                       do {
+                           let isDuplicate = try await FirestoreManager.shared.checkDisplayNameExists(displayName: nickname)
+                           if isDuplicate {
+                               nameAlert.text = "😱 아쉬워요.. 다른 사용자가 먼저 등록했어요"
+                               nameAlert.textColor = .red
+                               doneButton.titleLabel?.textColor = .lightGray
+                               doneButton.isEnabled = false
+                           } else {
+                               nameAlert.text = "😁 사용할 수 있는 닉네임입니다!"
+                               nameAlert.textColor = .font
+                               doneButton.isEnabled = true
+                           }
+                       } catch {
+                           let alert = UIAlertController(title: "😵‍💫", message: "닉네임 확인 중 오류가 발생했습니다: \(error.localizedDescription)", preferredStyle: .alert)
+                           let confirm = UIAlertAction(title: "확인", style: .default)
+                           alert.addAction(confirm)
+                           present(alert, animated: true, completion: nil)
+                       }
+                   }
+               }
+           }
+       }
+    
+    //작성완료시 엔터 누르면 키보드 내려가기
+       func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+           textField.resignFirstResponder()
+           return true
+       }
+   
+    
+    
+    
+    @objc func imageViewTapped(tapGestureRecognizer: UITapGestureRecognizer){
+        //하단에서 이미지선택지 알람 등장(액션시트)
+        let alert = UIAlertController(title: "프로필 사진 변경", message: nil, preferredStyle: .actionSheet)
+        let changeToDefault = UIAlertAction(title: "기본으로 변경", style: .default) { _ in
+            self.profile.image = nil
+            self.addImage.tintColor = UIColor.textColorSub
         }
-        alert.addAction(confirm)
+        let selectImage = UIAlertAction(title: "새로운 사진 등록", style: .default) { _ in
+            var configuration = PHPickerConfiguration()
+            configuration.filter = .images
+            configuration.selectionLimit = 1
+            
+            let picker = PHPickerViewController(configuration: configuration)
+            picker.delegate = self
+            self.present(picker, animated: true, completion: nil)
+        }
+        let cancel = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        [changeToDefault, selectImage, cancel].forEach(){
+            alert.addAction($0)
+        }
         present(alert, animated: true, completion: nil)
     }
     
-    //텍스트필드 글자수제한에 관한 코드
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let currentText = textField.text ?? ""
-        guard let stringRange = Range(range, in: currentText) else { return false }
-        let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
-        
-        // 띄어쓰기를 포함하고 있는지 확인
-           if updatedText.contains(" ") {
-               // 띄어쓰기 포함 시 안내문 빨갛게 변하며 이동버튼도 비활성화
-               nameAlert.textColor = .red
-               doneButton.titleLabel?.textColor = .lightgray
-               doneButton.isEnabled = false
-               // 띄어쓰기 포함된 경우 false 반환하여 입력 거부
-               return false
-           } else if updatedText.count >= 3 && updatedText.count <= 16 {
-               nameAlert.textColor = .lightgray
-               doneButton.isEnabled = true
-           } else {
-               // 글자수를 맞추지 못할 시 안내문 빨갛게 변하며 이동버튼도 비활성화
-               nameAlert.textColor = .red
-               doneButton.titleLabel?.textColor = .lightgray
-               doneButton.isEnabled = false
-           }
-        return true
-    }
     
-    @objc func imageViewTapped(tapGestureRecognizer: UITapGestureRecognizer){
-        var configuration = PHPickerConfiguration()
-        configuration.filter = .images
-        configuration.selectionLimit = 1
-        
-        let picker = PHPickerViewController(configuration: configuration)
-        picker.delegate = self
-        present(picker, animated: true, completion: nil)
-    }
     
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true, completion: nil)

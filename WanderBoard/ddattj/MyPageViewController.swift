@@ -45,7 +45,13 @@ class MyPageViewController: BaseViewController, PageIndexed {
         } catch {
             print("정보를 가져오는데 실패했습니다")
         }
+        
     }
+    //에딧창에서 추가해준 이름과 사진 불러오기
+    func updateUserData(name: String, image: UIImage?) {
+            myName.text = name
+            profile.image = image ?? UIImage(named: "defaultProfileImage")
+        }
     
     //페이지 컨트롤러 때문에 추가했습니다 -한빛
     override func viewWillAppear(_ animated: Bool) {
@@ -67,6 +73,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         let barButtonItem = UIBarButtonItem(customView: editButton)
         self.navigationItem.rightBarButtonItem = barButtonItem
         
+        profile.image = UIImage(named: "\(String(describing: userData.photoURL))")
         profile.layer.cornerRadius = 53
         profile.clipsToBounds = true
         profile.backgroundColor = .lightgray
@@ -183,6 +190,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         let editVC = EditViewController()
         editVC.previousName = myName.text ?? "no Name"
         editVC.ID = myID.text ?? "No ID"
+        editVC.previousImage = profile.image
         editVC.userData = self.userData //여기서 쓰인 userData, editVC의 userData로 넘겨주기
         navigationController?.pushViewController(editVC, animated: true)
     }

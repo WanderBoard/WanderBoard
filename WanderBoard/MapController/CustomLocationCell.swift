@@ -66,6 +66,6 @@ class CustomLocationCell: UITableViewCell {
     
     func configure(with title: String, subtitle: String) {
         titleLabel.text = title
-        subtitleLabel.text = subtitle
+        subtitleLabel.text = subtitle.isEmpty ? " " : subtitle
     }
 }

@@ -27,6 +27,12 @@ class PrivacyPolicyViewController: BaseViewController {
     }).then {
         $0.backgroundColor = .clear //collectionView에 대한 then
     }
+    //그라데이션 레이어와 마스크 해줄 레이어 만들기 -> 회색부분을 배경으로 입혀 점진적으로 투명해지는 느낌을 주기 위해 마스크를 씌움
+    let maskedView = UIView(frame: CGRect(x: 0, y: 98, width: 393, height: 60))
+    let maskedView2 = UIView(frame: CGRect(x: 0, y: 792, width: 393, height: 60))
+    let gradientLayer = CAGradientLayer()
+    let gradientLayer2 = CAGradientLayer()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,8 +46,22 @@ class PrivacyPolicyViewController: BaseViewController {
         
         // 진영 추카
         agreeButton.addTarget(self, action: #selector(agreeButtonTapped), for: .touchUpInside)
-
         
+        //마스크 및 그라데이션 설정
+        maskedView.backgroundColor = view.backgroundColor //마스킹 컬러는 백그라운드 컬러로
+        gradientLayer.frame = maskedView.bounds
+        gradientLayer.colors = [UIColor.white.cgColor, UIColor.white.cgColor, UIColor.clear.cgColor, UIColor.clear.cgColor]
+        gradientLayer.locations = [0, 0.3, 0.7, 1]
+        maskedView.layer.mask = gradientLayer
+        view.addSubview(maskedView)
+        
+        maskedView2.backgroundColor = view.backgroundColor
+        gradientLayer2.frame = maskedView2.bounds
+        gradientLayer2.colors = [UIColor.clear.cgColor, UIColor.clear.cgColor, UIColor.white.cgColor, UIColor.white.cgColor]
+        gradientLayer2.locations = [0, 0.1, 0.5, 1]
+        maskedView2.layer.mask = gradientLayer2
+        view.addSubview(maskedView2)
+
     }
     override func configureUI() {
     }
@@ -62,14 +82,14 @@ class PrivacyPolicyViewController: BaseViewController {
         collectionView.snp.makeConstraints {
             $0.edges.equalTo(scrollView)
             $0.width.equalTo(scrollView)
-            $0.height.equalTo(1150)
+            $0.height.equalTo(1130)
         }
         
         logo.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.width.equalTo(143)
             $0.height.equalTo(18.24)
-            $0.bottom.equalToSuperview().inset(55)
+            $0.bottom.equalToSuperview().inset(30)
         }
         
         // 진영 추가

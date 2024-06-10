@@ -8,6 +8,7 @@
 import SwiftUI
 import MapKit
 import CoreLocation
+import Contacts
 
 class MapViewModel: NSObject, ObservableObject {
     @Published var region: MKCoordinateRegion
@@ -60,34 +61,7 @@ class MapViewModel: NSObject, ObservableObject {
             }
         }
     }
-    
-    
-    
-    
-    
-    //    func requestLocationAuthorization() {
-    //        if CLLocationManager.locationServicesEnabled() {
-    //            switch locationManager.authorizationStatus {
-    //            case .notDetermined:
-    //                DispatchQueue.main.async {
-    //                    self.locationManager.requestWhenInUseAuthorization()
-    //                }
-    //            case .restricted, .denied:
-    //                setDefaultRegion()
-    //            case .authorizedWhenInUse, .authorizedAlways:
-    //                DispatchQueue.main.async {
-    //                    self.locationManager.startUpdatingLocation()
-    //                    self.onLocationAuthorizationGranted?()
-    //                }
-    //            @unknown default:
-    //                break
-    //            }
-    //        } else {
-    //            print("Location services are not enabled")
-    //            setDefaultRegion()
-    //        }
-    //    }
-    
+
     func setDefaultRegion() {
         DispatchQueue.main.async {
             self.region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.9780), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
@@ -116,6 +90,12 @@ class MapViewModel: NSObject, ObservableObject {
         searchResultsHandler?(searchResults) // 빈 검색 결과를 전달하여 로딩 셀을 표시
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 0.7, repeats: false) { _ in
+            guard !self.searchQuery.isEmpty else {
+                self.isLoading = false
+                self.searchResults = []
+                self.searchResultsHandler?(self.searchResults)
+                return
+            }
             self.searchCompleter.queryFragment = self.searchQuery
         }
     }
@@ -134,6 +114,20 @@ class MapViewModel: NSObject, ObservableObject {
         let response = try await search.start()
         guard let mapItem = response.mapItems.first else {
             throw NSError(domain: "com.wanderboard.MapError", code: -1, userInfo: [NSLocalizedDescriptionKey: "No map items found"])
+        }
+
+        if let postalAddress = mapItem.placemark.postalAddress {
+            let formatter = CNPostalAddressFormatter()
+            formatter.style = .mailingAddress
+            var addressString = formatter.string(from: postalAddress)
+            addressString = addressString.replacingOccurrences(of: "\n", with: ", ")
+            addressString = addressString.replacingOccurrences(of: "대한민국", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+            // subtitle을 사용하지 않고 사용자 정의 속성을 활용합니다.
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = mapItem.placemark.coordinate
+            annotation.title = mapItem.name
+            annotation.customSubtitle = addressString
         }
         return mapItem
     }
@@ -164,10 +158,25 @@ extension MapViewModel: CLLocationManagerDelegate {
 }
 
 extension MapViewModel: MKLocalSearchCompleterDelegate {
-    func completerDidFailWithError(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
+    func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
         DispatchQueue.main.async {
             self.isLoading = false
             print("Error: \(error.localizedDescription)")
+        }
+    }
+}
+
+extension MKPointAnnotation {
+    private struct AssociatedKeys {
+        static var subtitleKey = "subtitleKey"
+    }
+
+    var customSubtitle: String? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.subtitleKey) as? String
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKeys.subtitleKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 }

@@ -29,55 +29,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate, MK
         searchCompleter.resultTypes = .query
         checkLocationAuthorization()
     }
-
-//    func requestLocationAuthorization(completion: @escaping (Bool) -> Void) {
-//        completionHandler = completion
-//        DispatchQueue.global().async {
-//            if CLLocationManager.locationServicesEnabled() {
-//                DispatchQueue.main.async {
-//                    switch self.locationManager.authorizationStatus {
-//                    case .notDetermined:
-//                        self.locationManager.requestWhenInUseAuthorization()
-//                    case .restricted, .denied:
-//                        completion(false)
-//                    case .authorizedWhenInUse, .authorizedAlways:
-//                        completion(true)
-//                    @unknown default:
-//                        completion(false)
-//                    }
-//                }
-//            } else {
-//                DispatchQueue.main.async {
-//                    completion(false)
-//                }
-//            }
-//        }
-//    }
-    
-    
-
-//    func checkLocationAuthorization() {
-//        DispatchQueue.global().async {
-//            if CLLocationManager.locationServicesEnabled() {
-//                DispatchQueue.main.async {
-//                    switch self.locationManager.authorizationStatus {
-//                    case .notDetermined:
-//                        self.locationManager.requestWhenInUseAuthorization()
-//                    case .restricted, .denied:
-//                        self.setDefaultRegion()
-//                    case .authorizedWhenInUse, .authorizedAlways:
-//                        self.locationManager.startUpdatingLocation()
-//                    @unknown default:
-//                        break
-//                    }
-//                }
-//            } else {
-//                DispatchQueue.main.async {
-//                    self.setDefaultRegion()
-//                }
-//            }
-//        }
-//    }
     
     func checkLocationAuthorization() {
         DispatchQueue.global().async {
@@ -155,21 +106,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate, MK
                 self.region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
             } else {
                 print("User location is unavailable.")
-            }
-        }
-    }
-    
-    func searchForLocation(completion: MKLocalSearchCompletion, completionHandler: @escaping (MKMapItem?) -> Void) {
-        let searchRequest = MKLocalSearch.Request(completion: completion)
-        let search = MKLocalSearch(request: searchRequest)
-        search.start { response, error in
-            guard let response = response, let mapItem = response.mapItems.first else {
-                print("Error: \(error?.localizedDescription ?? "Unknown error")")
-                completionHandler(nil)
-                return
-            }
-            DispatchQueue.main.async {
-                completionHandler(mapItem)
             }
         }
     }

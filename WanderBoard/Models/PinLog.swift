@@ -27,11 +27,28 @@ struct Media: Codable {
             longitude = newValue?.coordinate.longitude
         }
     }
+    
+    var dictionary: [String: Any] {
+        var dict: [String: Any] = ["url": url]
+        if let latitude = latitude {
+            dict["latitude"] = latitude
+        }
+        if let longitude = longitude {
+            dict["longitude"] = longitude
+        }
+        if let dateTaken = dateTaken {
+            dict["dateTaken"] = Timestamp(date: dateTaken)
+        }
+        return dict
+    }
 }
 
 struct PinLog: Identifiable, Codable {
     @DocumentID var id: String?
     var location: String
+    var address: String
+    var latitude: Double
+    var longitude: Double
     var startDate: Date
     var endDate: Date
     var duration: Int
@@ -43,9 +60,14 @@ struct PinLog: Identifiable, Codable {
     var isPublic: Bool
     var createdAt: Date?
     
-    init(id: String? = nil, location: String, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?) {
+
+    init(id: String? = nil, location: String, address: String, latitude: Double, longitude: Double, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?) {
+
         self.id = id
         self.location = location
+        self.address = address
+        self.latitude = latitude
+        self.longitude = longitude
         self.startDate = startDate
         self.endDate = endDate
         self.duration = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0

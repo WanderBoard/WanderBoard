@@ -118,6 +118,7 @@ class FirestoreManager {
         return email
     }
 
+
     func createPinLog(location: String, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date) async throws {
         let pinLog = PinLog(location: location, startDate: startDate, endDate: endDate, title: title, content: content, media: media, authorId: authorId, attendeeIds: attendeeIds, isPublic: isPublic, createdAt: createdAt)
 
@@ -157,5 +158,6 @@ class FirestoreManager {
         let snapshot = try await db.collection("pinLogs").whereField("authorId", isEqualTo: userId).getDocuments()
         return snapshot.documents.compactMap { try? $0.data(as: PinLog.self) }
     }
+
 }
 

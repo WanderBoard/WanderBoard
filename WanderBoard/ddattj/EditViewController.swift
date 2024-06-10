@@ -49,11 +49,11 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         //마이컨트롤러에 이미지가 있는지 확인. 존재하면 불러오고 없으면 회색배경에 +아이콘
         if let existingImage = previousImage {
-                   profile.image = existingImage
-                   addImage.tintColor = UIColor.clear
-               } else {
-                   addImage.tintColor = UIColor(named: "textColorSub")
-               }
+            profile.image = existingImage
+            addImage.tintColor = UIColor.clear
+        } else {
+            addImage.tintColor = UIColor(named: "textColorSub")
+        }
     }
     
     override func configureUI(){
@@ -104,7 +104,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         }
         
         let authProvider = AuthProviderOption(rawValue: currentUser.providerData.first?.providerID ?? "") ?? .email
-                return AuthDataResultModel(user: currentUser, authProvider: authProvider)
+        return AuthDataResultModel(user: currentUser, authProvider: authProvider)
     }
     
     func setIcon() {
@@ -116,25 +116,25 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         }
         
         guard let userData = self.userData else {
-                print("등록된 로그인 정보가 없습니다")
-                return
-            }
+            print("등록된 로그인 정보가 없습니다")
+            return
+        }
         
         switch userData.authProvider {
-               case AuthProviderOption.google.rawValue:
-                   self.IDIcon.image = UIImage(named: "googleLogo")
-               case AuthProviderOption.apple.rawValue:
-                   self.IDIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
-               case AuthProviderOption.kakao.rawValue:
-                   self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-                   self.IDIcon.tintColor = iconColor
-               case AuthProviderOption.email.rawValue:
-                   self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-                   self.IDIcon.tintColor = iconColor // 이메일 로그인은 추가 안함, 카카오랑 같은 아이콘 뜨도록 설정
-               default:
-                   print("등록된 로그인 정보가 없습니다")
-               }
-           }
+        case AuthProviderOption.google.rawValue:
+            self.IDIcon.image = UIImage(named: "googleLogo")
+        case AuthProviderOption.apple.rawValue:
+            self.IDIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
+        case AuthProviderOption.kakao.rawValue:
+            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+            self.IDIcon.tintColor = iconColor
+        case AuthProviderOption.email.rawValue:
+            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+            self.IDIcon.tintColor = iconColor // 이메일 로그인은 추가 안함, 카카오랑 같은 아이콘 뜨도록 설정
+        default:
+            print("등록된 로그인 정보가 없습니다")
+        }
+    }
     
     override func constraintLayout() {
         super.constraintLayout() //부모뷰의 설정을 가져온다
@@ -206,98 +206,135 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     
     @objc func moveToMyPage(){
         // 이미지와 이름 저장
-            let nameToSave = myName.text?.isEmpty ?? true ? previousName : myName.text
-            if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
-                myPageVC.updateUserData(name: nameToSave!, image: profile.image)
+        let nameToSave = myName.text?.isEmpty ?? true ? previousName : myName.text
+        updateProfile(displayName: nameToSave, photoURL: profile.image?.url)
+        if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
+            myPageVC.updateUserData(name: nameToSave!, image: profile.image)
+        }
+        
+        let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
+        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+            self.navigationController?.popViewController(animated: true)
+        }
+        alert.addAction(confirm)
+        present(alert, animated: true, completion: nil)
+    }
+    
+    // 수정한 내용 firebase에 업데이트
+    func updateProfile(displayName: String?, photoURL: URL?) async {
+        // 사용자가 인증되어 있는지 확인
+        guard let user = Auth.auth().currentUser else {
+            print("사용자가 로그인되어 있지 않습니다.")
+            return
+        }
+        let changeRequest = user.createProfileChangeRequest()
+        
+        // 디스플레이 네임 위치에 바꾼 디스플레이네임 집어넣기
+        if let displayName = displayName {
+            changeRequest.displayName = displayName
+        }
+        
+        // 이미지도 똑같은 작업 해주기
+        if let photoURL = photoURL {
+            changeRequest.photoURL = photoURL
+        }
+        
+        // 사용자 프로필 변경 요청 적용
+        if let user = Auth.auth().currentUser {
+            if let displayName = displayName, let photoURL = photoURL {
+                // Firestore 업데이트 호출
+                let userEntity = UserEntity()
+                userEntity.displayName = displayName
+                userEntity.photoURL = photoURL.absoluteString
+                userEntity.email = user.email ?? ""
+                
+                do {
+                    try await FirestoreManager.shared.saveOrUpdateUser(user: userEntity)
+                    print("Firestore에 사용자 정보가 성공적으로 업데이트되었습니다.")
+                } catch {
+                    print("Firestore 업데이트 실패: \(error.localizedDescription)")
+                }
             }
-           
-           let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
-           let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-               self.navigationController?.popViewController(animated: true)
-           }
-           alert.addAction(confirm)
-           present(alert, animated: true, completion: nil)
-       }
+        }
+    }
     
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-           let currentText = textField.text ?? ""
-           guard let stringRange = Range(range, in: currentText) else { return false }
-           let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
-
-           // Step 1: 글자 수 체크
-           if updatedText.isEmpty {
-               nameAlert.text = "😗 닉네임을 입력해주세요\n입력하신 닉네임은 다른 사용자에게 노출됩니다"
-               nameAlert.textColor = .darkgray
-               doneButton.isEnabled = false
-               return true
-           }
-
-           if updatedText.count < 2 || updatedText.count > 16 {
-               nameAlert.text = "😗 글자 수를 맞춰주세요 (2자 이상, 16자 이하)"
-               nameAlert.textColor = .darkgray
-               doneButton.isEnabled = false
-               return true
-           }
-
-           // Step 2: 특수문자 포함 여부 체크 (공백과 특수문자만 체크)
-           let nicknamePattern = "^[a-zA-Z0-9가-힣]*$"
-           let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
-           if !nicknamePredicate.evaluate(with: updatedText) {
-               nameAlert.text = "🤬 닉네임에 특수문자나 공백을 포함할 수 없습니다"
-               nameAlert.textColor = .red
-               doneButton.titleLabel?.textColor = .lightGray
-               doneButton.isEnabled = false
-               return true
-           }
-
-           nameAlert.text = ""
-           doneButton.isEnabled = false
-
-           // 중복 체크는 텍스트 편집이 끝난 후에 수행합니다.
-           return true
-       }
-
-       func textFieldDidEndEditing(_ textField: UITextField) {
-           let nickname = textField.text ?? ""
-
-           // 글자 수 및 특수문자 체크 통과한 후 Firestore에서 닉네임 중복 체크
-           if nickname.count >= 2 && nickname.count <= 16 {
-               let nicknamePattern = "^[a-zA-Z0-9가-힣]+$"
-               let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
-               
-               if nicknamePredicate.evaluate(with: nickname) {
-                   Task {
-                       do {
-                           let isDuplicate = try await FirestoreManager.shared.checkDisplayNameExists(displayName: nickname)
-                           if isDuplicate {
-                               nameAlert.text = "😱 아쉬워요.. 다른 사용자가 먼저 등록했어요"
-                               nameAlert.textColor = .red
-                               doneButton.titleLabel?.textColor = .lightGray
-                               doneButton.isEnabled = false
-                           } else {
-                               nameAlert.text = "😁 사용할 수 있는 닉네임입니다!"
-                               nameAlert.textColor = .font
-                               doneButton.isEnabled = true
-                           }
-                       } catch {
-                           let alert = UIAlertController(title: "😵‍💫", message: "닉네임 확인 중 오류가 발생했습니다: \(error.localizedDescription)", preferredStyle: .alert)
-                           let confirm = UIAlertAction(title: "확인", style: .default)
-                           alert.addAction(confirm)
-                           present(alert, animated: true, completion: nil)
-                       }
-                   }
-               }
-           }
-       }
+        let currentText = textField.text ?? ""
+        guard let stringRange = Range(range, in: currentText) else { return false }
+        let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+        
+        // Step 1: 글자 수 체크
+        if updatedText.isEmpty {
+            nameAlert.text = "😗 닉네임을 입력해주세요\n입력하신 닉네임은 다른 사용자에게 노출됩니다"
+            nameAlert.textColor = .darkgray
+            doneButton.isEnabled = false
+            return true
+        }
+        
+        if updatedText.count < 2 || updatedText.count > 16 {
+            nameAlert.text = "😗 글자 수를 맞춰주세요 (2자 이상, 16자 이하)"
+            nameAlert.textColor = .darkgray
+            doneButton.isEnabled = false
+            return true
+        }
+        
+        // Step 2: 특수문자 포함 여부 체크 (공백과 특수문자만 체크)
+        let nicknamePattern = "^[a-zA-Z0-9가-힣]*$"
+        let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
+        if !nicknamePredicate.evaluate(with: updatedText) {
+            nameAlert.text = "🤬 닉네임에 특수문자나 공백을 포함할 수 없습니다"
+            nameAlert.textColor = .red
+            doneButton.titleLabel?.textColor = .lightGray
+            doneButton.isEnabled = false
+            return true
+        }
+        
+        nameAlert.text = ""
+        doneButton.isEnabled = false
+        
+        // 중복 체크는 텍스트 편집이 끝난 후에 수행합니다.
+        return true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        let nickname = textField.text ?? ""
+        
+        // 글자 수 및 특수문자 체크 통과한 후 Firestore에서 닉네임 중복 체크
+        if nickname.count >= 2 && nickname.count <= 16 {
+            let nicknamePattern = "^[a-zA-Z0-9가-힣]+$"
+            let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
+            
+            if nicknamePredicate.evaluate(with: nickname) {
+                Task {
+                    do {
+                        let isDuplicate = try await FirestoreManager.shared.checkDisplayNameExists(displayName: nickname)
+                        if isDuplicate {
+                            nameAlert.text = "😱 아쉬워요.. 다른 사용자가 먼저 등록했어요"
+                            nameAlert.textColor = .red
+                            doneButton.titleLabel?.textColor = .lightGray
+                            doneButton.isEnabled = false
+                        } else {
+                            nameAlert.text = "😁 사용할 수 있는 닉네임입니다!"
+                            nameAlert.textColor = .font
+                            doneButton.isEnabled = true
+                        }
+                    } catch {
+                        let alert = UIAlertController(title: "😵‍💫", message: "닉네임 확인 중 오류가 발생했습니다: \(error.localizedDescription)", preferredStyle: .alert)
+                        let confirm = UIAlertAction(title: "확인", style: .default)
+                        alert.addAction(confirm)
+                        present(alert, animated: true, completion: nil)
+                    }
+                }
+            }
+        }
+    }
     
     //작성완료시 엔터 누르면 키보드 내려가기
-       func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-           textField.resignFirstResponder()
-           return true
-       }
-   
-    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
     
     
     @objc func imageViewTapped(tapGestureRecognizer: UITapGestureRecognizer){

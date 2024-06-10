@@ -44,12 +44,15 @@ class MyPageViewController: BaseViewController, PageIndexed {
         fetchUserData()
     }
     
+    
     func fetchUserData() {
         Task {
             do {
                 if let authUser = try? AuthenticationManager.shared.getAuthenticatedUser(), let email = authUser.email {
                     userData = try await FirestoreManager.shared.checkUserExists(email: email)
-                    updateUI()
+                    DispatchQueue.main.async {
+                        self.updateUI()
+                    }
                 }
             } catch {
                 print("유저데이터를 받아오는데 실패했습니다")
@@ -168,28 +171,43 @@ class MyPageViewController: BaseViewController, PageIndexed {
         
         // userData가 있으면 userData에 맞게 업데이트
         //userData가 없을 경우 위의 기능은 정상적으로 수행하고 만약 값이 있을 경우엔 중괄호 내부의 역할을 수행해줄것을 요청
-           if let userData = userData {
-               profile.image = UIImage(named: "\(String(describing: userData.photoURL))")
-               myName.text = userData.displayName
-               myID.text = userData.email
-           }
+        if let userData = userData {
+            profile.image = UIImage(named: "\(String(describing: userData.photoURL))")
+            myName.text = userData.displayName
+            myID.text = userData.email
+        }
     }
     
     
     func updateUI() {
         guard let userData = userData else { return }
-        profile.image = UIImage(named: "\(String(describing: userData.photoURL))")
         myName.text = userData.displayName
         myID.text = userData.email
+        
+        //URLSession 사용해서 URL 이미지 다운로드 후 프로필 이미지에 설정해준다.
+        if let photoURLString = userData.photoURL, let photoURL = URL(string: photoURLString) {
+            downloadImage(from: photoURL) { [weak self] image in
+                DispatchQueue.main.async {
+                    self?.profile.image = image
+                }
+            }
+        } else {
+            profile.image = UIImage(named: "defaultProfileImage")
+        }
     }
     
-    //에딧창에서 추가해준 이름과 사진 불러오기
-    func updateUserData(name: String, image: UIImage?) {
-            myName.text = name
-            profile.image = image ?? UIImage(named: "defaultProfileImage")
-        }
+    //이미지 다운로드 메서드
+    private func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else {
+                completion(nil)
+                return
+            }
+            completion(UIImage(data: data))
+        }.resume()
+    }
     
-
+    
     @objc func edit(){
         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러 때문에.. - 한빛
         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면 전환 스크롤 제거 - 한빛
@@ -213,27 +231,10 @@ class MyPageViewController: BaseViewController, PageIndexed {
         navigationController?.navigationBar.standardAppearance = navbarAppearance
     }
     
-    //수정된 정보 파이어베이스 저장하기
-    func updateProfile(displayName: String?, photoURL: URL?) {
-        if let user = Auth.auth().currentUser {
-            let changeRequest = user.createProfileChangeRequest()
-            if let displayName = displayName {
-                changeRequest.displayName = displayName
-            }
-            if let photoURL = photoURL {
-                changeRequest.photoURL = photoURL
-            }
-            // 사용자 프로필 변경 요청 적용
-            changeRequest.commitChanges { error in
-                if let error = error {
-                    print("프로필 업데이트 실패: \(error.localizedDescription)")
-                } else {
-                    print("프로필이 성공적으로 업데이트되었습니다.")
-                }
-            }
-        } else {
-            print("사용자가 로그인되어 있지 않습니다.")
-        }
+    //에딧창에서 추가해준 이름과 사진 불러오기
+    func updateUserData(name: String, image: UIImage?) {
+        myName.text = name
+        profile.image = image ?? UIImage(named: "defaultProfileImage")
     }
 }
 

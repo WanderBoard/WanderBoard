@@ -12,7 +12,7 @@ import Contacts
 
 class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
-    private let mapView = MKMapView()
+    let mapView = MKMapView()
     private let viewModel: MapViewModel
     private let startDate: Date
     private let endDate: Date
@@ -118,6 +118,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         annotation.coordinate = location
         annotation.title = address
         mapView.addAnnotation(annotation)
+        print("Annotation added at \(location.latitude), \(location.longitude) with title: \(address)")
+
     }
     
     private func hidePlaceInfoView() {

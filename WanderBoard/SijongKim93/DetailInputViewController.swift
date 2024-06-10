@@ -11,6 +11,7 @@ import UIKit
 import FirebaseAuth
 import SnapKit
 import Then
+import Photos
 import PhotosUI
 import MapKit
 import SwiftUI
@@ -264,6 +265,7 @@ class DetailInputViewController: UIViewController {
         setupTextView()
         setupCollectionView()
         setupNavigationBar()
+        requestPhotoLibraryAccess()
         
         print("DetailInputViewController loaded") // 디버깅을 위해 추가
     }
@@ -483,24 +485,24 @@ class DetailInputViewController: UIViewController {
         
         
     }
-
+    
     @objc func handleLongPressGesture(_ gesture: UILongPressGestureRecognizer) {
         let point = gesture.location(in: galleryCollectionView)
-        guard let indexPath = galleryCollectionView.indexPathForItem(at: point), !selectedImages.isEmpty else { return }
-
+        guard let _ = galleryCollectionView.indexPathForItem(at: point), !selectedImages.isEmpty else { return }
+        
         if gesture.state == .began {
             isEditingPhotos = true
             startShakingCells()
         }
     }
-
+    
     @objc func locationButtonTapped() {
         print("locationButtonTapped called")
-
+        
         Task {
             do {
                 let (savedLocation, savedAddress) = try await fetchSavedLocation()
-
+                
                 let center: CLLocationCoordinate2D
                 if let savedLocation = savedLocation {
                     center = savedLocation
@@ -508,35 +510,35 @@ class DetailInputViewController: UIViewController {
                     // 기본 위치 설정 (샌프란시스코)
                     center = CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)
                 }
-
+                
                 let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
-
+                
                 let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date(), onLocationSelected: { [weak self] (selectedLocation: CLLocationCoordinate2D, address: String) in
                     guard let self = self else { return }
                     self.updateLocationLabel(with: address)
                     self.savedLocation = selectedLocation
                     self.savedAddress = address
-
+                    
                     // Firestore에 저장
                     self.saveLocationToFirestore(location: selectedLocation, address: address)
                 })
-
+                
                 // 저장된 위치가 있으면 해당 위치에 핀을 생성
                 if let savedLocation = savedLocation, let savedAddress = savedAddress {
                     mapVC.addPinToMap(location: savedLocation, address: savedAddress)
                 }
-
+                
                 self.navigationController?.pushViewController(mapVC, animated: true)
             } catch {
                 print("Error fetching saved location from Firestore: \(error.localizedDescription)")
             }
         }
     }
-
+    
     func fetchSavedLocation() async throws -> (CLLocationCoordinate2D?, String?) {
         let userId = Auth.auth().currentUser?.uid ?? ""
         let documentRef = Firestore.firestore().collection("users").document(userId)
-
+        
         let document = try await documentRef.getDocument()
         if let data = document.data(), let latitude = data["latitude"] as? CLLocationDegrees, let longitude = data["longitude"] as? CLLocationDegrees {
             let location = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -546,22 +548,22 @@ class DetailInputViewController: UIViewController {
             return (nil, nil)
         }
     }
-
+    
     func updateLocationLabel(with address: String) {
         self.locationLeftLabel.text = address
     }
-
+    
     private func saveLocationToFirestore(location: CLLocationCoordinate2D, address: String) {
         guard let pinLogId = self.savedPinLogId else {
             createNewPinLog(location: location, address: address)
             return
         }
-
+        
         let data: [String: Any] = [
             "location": GeoPoint(latitude: location.latitude, longitude: location.longitude),
             "address": address,
         ]
-
+        
         Task {
             do {
                 try await PinLogManager.shared.updatePinLog(pinLogId: pinLogId, data: data)
@@ -574,7 +576,7 @@ class DetailInputViewController: UIViewController {
     
     private func createNewPinLog(location: CLLocationCoordinate2D, address: String) {
         var pinLog = PinLog(location: address, address: address, latitude: location.latitude, longitude: location.longitude, startDate: Date(), endDate: Date(), title: "", content: "", media: [], authorId: Auth.auth().currentUser?.uid ?? "", attendeeIds: [], isPublic: true)
-
+        
         Task {
             do {
                 let savedPinLog = try await PinLogManager.shared.createOrUpdatePinLog(pinLog: &pinLog, images: [])
@@ -584,7 +586,7 @@ class DetailInputViewController: UIViewController {
             }
         }
     }
-
+    
     func loadSavedLocation() {
         let userId = Auth.auth().currentUser?.uid ?? ""
         let documentRef = Firestore.firestore().collection("users").document(userId)
@@ -734,7 +736,7 @@ class DetailInputViewController: UIViewController {
             isEditingPhotos = false
         }
     }
-
+    
     func startShakingCells() {
         for case let cell as GallaryInPutCollectionViewCell in galleryCollectionView.visibleCells {
             cell.showDeleteButton(true)
@@ -743,14 +745,14 @@ class DetailInputViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
         view.addGestureRecognizer(tapGesture)
     }
-
+    
     func stopShakingCells() {
         for case let cell as GallaryInPutCollectionViewCell in galleryCollectionView.visibleCells {
             cell.showDeleteButton(false)
             cell.layer.removeAllAnimations()
         }
     }
-
+    
     func shake(cell: UICollectionViewCell) {
         let animation = CABasicAnimation(keyPath: "transform.rotation")
         animation.fromValue = -0.05
@@ -760,7 +762,73 @@ class DetailInputViewController: UIViewController {
         animation.autoreverses = true
         cell.layer.add(animation, forKey: "shake")
     }
+    
+    func requestPhotoLibraryAccess() {
+        PHPhotoLibrary.requestAuthorization { status in
+            switch status {
+                case .authorized:
+                    print("사진 접근 권한이 허용되었습니다.")
+                case .denied, .restricted, .notDetermined:
+                    print("사진 접근 권한이 거부되었습니다.")
+                case .limited:
+                    print("사진 접근 권한이 제한되었습니다.")
+                @unknown default:
+                    fatalError("새로운 권한 상태")
+            }
+        }
+    }
+    
+    @objc func showPHPicker() {
+        var config = PHPickerConfiguration()
+        config.selectionLimit = 10 - selectedImages.count
+        config.filter = .images
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        present(picker, animated: true, completion: nil)
+    }
+    
+    func extractLocation(from data: Data) -> CLLocationCoordinate2D? {
+        guard let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
+              let properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [CFString: Any],
+              let gpsData = properties[kCGImagePropertyGPSDictionary] as? [CFString: Any],
+              let latitude = gpsData[kCGImagePropertyGPSLatitude] as? Double,
+              let longitude = gpsData[kCGImagePropertyGPSLongitude] as? Double,
+              let latitudeRef = gpsData[kCGImagePropertyGPSLatitudeRef] as? String,
+              let longitudeRef = gpsData[kCGImagePropertyGPSLongitudeRef] as? String else {
+                  return nil
+              }
 
+        let lat = latitudeRef == "S" ? -latitude : latitude
+        let lon = longitudeRef == "W" ? -longitude : longitude
+
+        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+    }
+    
+    //    func extractCreationDate(from result: PHPickerResult) -> Date? {
+    //        var creationDate: Date? = nil
+    //        let dispatchGroup = DispatchGroup()
+    //        dispatchGroup.enter()
+    //
+    //        result.itemProvider.loadItem(forTypeIdentifier: UTType.image.identifier, options: nil) { (item, error) in
+    //            if let url = item as? URL {
+    //                if let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+    //                   let metadata = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+    //                   let exifData = metadata[kCGImagePropertyExifDictionary] as? [CFString: Any],
+    //                   let dateString = exifData[kCGImagePropertyExifDateTimeOriginal] as? String {
+    //
+    //                    let dateFormatter = DateFormatter()
+    //                    dateFormatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
+    //                    creationDate = dateFormatter.date(from: dateString)
+    //                }
+    //            }
+    //            dispatchGroup.leave()
+    //        }
+    //
+    //        dispatchGroup.wait()
+    //        return creationDate
+    //    }
+    
+    
     @objc func deletePhoto(_ sender: UIButton) {
         guard let cell = sender.superview?.superview as? GallaryInPutCollectionViewCell,
               let indexPath = galleryCollectionView.indexPath(for: cell) else { return }
@@ -813,43 +881,49 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
             showPHPicker()
         }
     }
-    
-    @objc func showPHPicker() {
-        var config = PHPickerConfiguration()
-        config.selectionLimit = 10 - selectedImages.count
-        config.filter = .images
-        let picker = PHPickerViewController(configuration: config)
-        picker.delegate = self
-        present(picker, animated: true, completion: nil)
-    }
 }
 
 extension DetailInputViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true, completion: nil)
-        
+
         var newImages: [UIImage] = []
-        
         let dispatchGroup = DispatchGroup()
-        
+
         for result in results {
             dispatchGroup.enter()
             result.itemProvider.loadObject(ofClass: UIImage.self) { (object, error) in
                 if let image = object as? UIImage {
                     newImages.append(image)
+                    result.itemProvider.loadDataRepresentation(forTypeIdentifier: "public.jpeg") { data, error in
+                        if let error = error {
+                            print("Error loading data representation: \(error.localizedDescription)")
+                            return
+                        }
+                        guard let data = data else {
+                            print("No data found.")
+                            return
+                        }
+                        if let location = self.extractLocation(from: data) {
+                            print("위치 정보: \(location.latitude), \(location.longitude)")
+                        } else {
+                            print("위치 정보가 없습니다.")
+                        }
+                    }
+                } else {
+                    print("이미지를 로드하는 중 오류 발생: \(error?.localizedDescription ?? "알 수 없는 오류")")
                 }
                 dispatchGroup.leave()
             }
         }
-        
+
         dispatchGroup.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
             self.selectedImages.append(contentsOf: newImages.prefix(10 - self.selectedImages.count))
             self.galleryCollectionView.reloadData()
             self.updateGalleryCountButton()
         }
-    }
-}
+    }}
 
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {

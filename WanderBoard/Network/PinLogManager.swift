@@ -82,9 +82,19 @@ class PinLogManager {
         let documentRef = db.collection("pinLogs").document(pinLogId)
         try await updateDocument(documentRef: documentRef, data: data)
     }
-
+    
     func fetchPinLogs(forUserId userId: String) async throws -> [PinLog] {
         let snapshot = try await db.collection("pinLogs").whereField("authorId", isEqualTo: userId).getDocuments()
         return snapshot.documents.compactMap { try? $0.data(as: PinLog.self) }
     }
+
+    func fetchPinLog(pinLogId: String) async throws -> PinLog? {
+        let document = try await db.collection("pinLogs").document(pinLogId).getDocument()
+        return try document.data(as: PinLog.self)
+    }
+
+//    func fetchPinLogData(pinLogId: String) async throws -> PinLog? {
+//        let document = try await db.collection("pinLogs").document(pinLogId).getDocument()
+//        return try document.data(as: PinLog.self)
+//    }
 }

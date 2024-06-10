@@ -7,16 +7,8 @@
 
 import UIKit
 
-import UIKit
-
 class GallaryInPutCollectionViewCell: UICollectionViewCell {
     static let identifier = "GallaryInPutCollectionViewCell"
-    
-    var isRepresentative: Bool = false {
-        didSet {
-            representativeLabel.isHidden = !isRepresentative
-        }
-    }
     
     let imageView = UIImageView()
     let addButton = UIButton(type: .system)
@@ -26,17 +18,6 @@ class GallaryInPutCollectionViewCell: UICollectionViewCell {
         $0.backgroundColor = .red
         $0.layer.cornerRadius = 12
         $0.clipsToBounds = true
-        $0.isHidden = true
-    }
-    
-    let representativeLabel = UILabel().then {
-        $0.text = "대표"
-        $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
-        $0.textColor = .white
-        $0.backgroundColor = .black
-        $0.layer.cornerRadius = 8
-        $0.layer.masksToBounds = true
-        $0.textAlignment = .center
         $0.isHidden = true
     }
     
@@ -53,7 +34,6 @@ class GallaryInPutCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(imageView)
         contentView.addSubview(addButton)
         contentView.addSubview(deleteButton)
-        contentView.addSubview(representativeLabel)
         
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 16
@@ -64,7 +44,8 @@ class GallaryInPutCollectionViewCell: UICollectionViewCell {
         }
         
         addButton.setTitle("+", for: .normal)
-        addButton.setTitleColor(#colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1), for: .normal)
+        addButton.setTitleColor(#colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+, for: .normal)
         addButton.titleLabel?.font = UIFont.systemFont(ofSize: 32)
         addButton.backgroundColor = .clear
         addButton.layer.cornerRadius = 16
@@ -83,24 +64,16 @@ class GallaryInPutCollectionViewCell: UICollectionViewCell {
             $0.width.height.equalTo(24)
         }
         
-        representativeLabel.snp.makeConstraints {
-            $0.top.trailing.equalToSuperview().inset(6)
-            $0.size.equalTo(CGSize(width: 40, height: 24))
-        }
-        
         deleteButton.addTarget(nil, action: #selector(DetailInputViewController.deletePhoto(_:)), for: .touchUpInside)
     }
-
-    func configure(with image: UIImage?, isEditing: Bool, isRepresentative: Bool) {
+    func configure(with image: UIImage?, isEditing: Bool) {
         if let image = image {
             imageView.image = image
             imageView.isHidden = false
             addButton.isHidden = true
-            self.isRepresentative = isRepresentative
         } else {
             imageView.isHidden = true
             addButton.isHidden = false
-            representativeLabel.isHidden = true
         }
         showDeleteButton(isEditing)
         if isEditing {
@@ -128,4 +101,3 @@ class GallaryInPutCollectionViewCell: UICollectionViewCell {
         layer.removeAllAnimations()
     }
 }
-

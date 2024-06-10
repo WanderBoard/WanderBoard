@@ -17,7 +17,7 @@ class StorageManager {
     private let db = Firestore.firestore()
     
     // 이미지 업로드 메서드
-    func uploadImage(image: UIImage, userId: String, isRepresentative: Bool) async throws -> Media {
+    func uploadImage(image: UIImage, userId: String) async throws -> Media {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             throw NSError(domain: "ImageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image to data."])
         }
@@ -46,7 +46,7 @@ class StorageManager {
         
         let downloadURL = try await storageRef.downloadURL()
         
-        let media = Media(url: downloadURL.absoluteString, latitude: location?.coordinate.latitude, longitude: location?.coordinate.longitude, dateTaken: extractDateFromImage(image: image), isRepresentative: isRepresentative)
+        let media = Media(url: downloadURL.absoluteString, latitude: location?.coordinate.latitude, longitude: location?.coordinate.longitude, dateTaken: extractDateFromImage(image: image))
         
         return media
     }

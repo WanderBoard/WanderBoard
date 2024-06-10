@@ -9,13 +9,7 @@ import UIKit
 import SnapKit
 import MapKit
 
-protocol PlaceInfoViewDelegate: AnyObject {
-    func didSelectLocation(_ location: String)
-}
-
 class PlaceInfoView: UIView {
-    
-    weak var delegate: PlaceInfoViewDelegate?
 
     private let iconImageView: UIImageView = {
         let imageView = UIImageView()
@@ -205,5 +199,4 @@ class PlaceInfoView: UIView {
             button.transform = transform
         }
     }
-
 }

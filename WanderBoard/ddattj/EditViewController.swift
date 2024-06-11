@@ -30,8 +30,10 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     var IDArea = UIView()
     var IDIcon = UIImageView()
     var myID = UILabel()
-    let subTitleBackground = UIView()
+    let subLine = UIView()
     let subTitle = UILabel()
+    let connectButton = UIButton()
+    let subLine2 = UIView()
     let withdrawalB = UIButton()
     var previousImage: UIImage?
     var previousName: String = ""
@@ -86,12 +88,28 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         myID.font = UIFont.systemFont(ofSize: 13)
         myID.textColor = .font
         
-        subTitleBackground.backgroundColor = .babygray
-        subTitleBackground.layer.cornerRadius = 10
+        subLine.backgroundColor = .babygray
+        subLine.layer.cornerRadius = 10
         
-        subTitle.text = "관리"
+        subTitle.text = "인스타그램"
         subTitle.font = UIFont.boldSystemFont(ofSize: 15)
         subTitle.textColor = .font
+        
+        connectButton.setTitle("연결하기 \(String(describing: UIImage(systemName: "chevron.right")))", for: .normal)
+        connectButton.titleLabel?.font = UIFont.systemFont(ofSize: 13)
+        connectButton.setTitleColor(.font, for: .normal)
+        connectButton.setImage(UIImage(named: "instagramLogo"), for: .normal)
+        if let imageView = connectButton.imageView {
+                   imageView.snp.makeConstraints {
+                       $0.width.height.equalTo(24) // 이미지 크기를 24x24로 설정
+                       $0.centerY.equalToSuperview()
+                       let label = connectButton.titleLabel
+                       $0.right.equalTo(label!.snp.left).offset(-10)
+                   }
+               }
+        
+        subLine2.backgroundColor = .babygray
+        subLine2.layer.cornerRadius = 10
         
         withdrawalB.setTitle("회원탈퇴", for: .normal)
         withdrawalB.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
@@ -138,7 +156,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     
     override func constraintLayout() {
         super.constraintLayout() //부모뷰의 설정을 가져온다
-        [profile, addImage, myName, nameAlert, IDArea, subTitleBackground, subTitle, withdrawalB].forEach(){
+        [profile, addImage, myName, nameAlert, IDArea, subLine, subTitle, connectButton, subLine2, withdrawalB].forEach(){
             view.addSubview($0)
         }
         logo.snp.makeConstraints(){
@@ -186,28 +204,36 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         }
         myID.snp.makeConstraints(){
             $0.centerY.equalTo(IDArea)
-            $0.left.equalTo(IDIcon.snp.right).offset(11)
+            $0.left.equalTo(IDIcon.snp.right).offset(10)
             $0.right.equalTo(IDArea)
         }
-        subTitleBackground.snp.makeConstraints(){
+        subLine.snp.makeConstraints(){
             $0.left.right.equalTo(view).inset(16)
-            $0.height.equalTo(44)
-            $0.top.equalTo(IDArea.snp.bottom).offset(50)
+            $0.height.equalTo(1)
+            $0.top.equalTo(IDArea.snp.bottom).offset(30)
         }
         subTitle.snp.makeConstraints(){
-            $0.centerY.equalTo(subTitleBackground)
-            $0.left.equalTo(subTitleBackground.snp.left).offset(29)
+            $0.top.equalTo(subLine.snp.bottom).offset(30)
+            $0.left.equalTo(subLine.snp.left).offset(16)
+        }
+        connectButton.snp.makeConstraints(){
+            $0.top.equalTo(subLine.snp.bottom).offset(30)
+            $0.right.equalTo(subLine.snp.right).inset(16)
+        }
+        subLine2.snp.makeConstraints(){
+            $0.left.right.equalTo(view).inset(16)
+            $0.height.equalTo(1)
+            $0.top.equalTo(IDArea.snp.bottom).offset(30)
         }
         withdrawalB.snp.makeConstraints(){
-            $0.top.equalTo(subTitleBackground.snp.bottom).offset(18)
-            $0.left.equalTo(subTitleBackground.snp.left).offset(16)
+            $0.top.equalTo(subLine.snp.bottom).offset(18)
+            $0.right.equalTo(subLine.snp.right).inset(16)
         }
     }
     
     @objc func moveToMyPage(){
         // 이미지와 이름 저장
         let nameToSave = myName.text?.isEmpty ?? true ? previousName : myName.text
-        updateProfile(displayName: nameToSave, photoURL: profile.image?.url)
         if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
             myPageVC.updateUserData(name: nameToSave!, image: profile.image)
         }
@@ -382,8 +408,9 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     
     override func updateColor() {
         super.updateColor()
-        let scriptBackgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
-        subTitleBackground.backgroundColor = scriptBackgroundColor
+        let lineBackgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "babygray")
+        subLine.backgroundColor = lineBackgroundColor
+        subLine2.backgroundColor = lineBackgroundColor
         
         let nameAlertColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
         nameAlert.textColor = nameAlertColor
@@ -398,5 +425,8 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let iconColor = traitCollection.userInterfaceStyle == .dark ? UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1) : UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
         IDIcon.tintColor = iconColor
         setIcon()
+        
+        let connectButtonColor = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
+        connectButton.layer.borderColor = connectButtonColor
     }
 }

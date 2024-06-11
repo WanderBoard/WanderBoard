@@ -8,13 +8,7 @@
 import UIKit
 
 class SettingViewController: BaseViewController {
-    
-    let scriptBackground1 = UIView()
-    let scriptTitle1 = UILabel()
-    let subTitle1 = UILabel()
-    let connectButton = UIButton()
-    let scriptBackground2 = UIView()
-    let scriptTitle2 = UILabel()
+
     let lightMode = UIView()
     let phoneImageL = UIImageView()
     let titleL = UILabel()
@@ -52,40 +46,6 @@ class SettingViewController: BaseViewController {
     
     override func configureUI() {
         super.configureUI()
-        scriptBackground1.backgroundColor = .babygray
-        scriptBackground1.layer.cornerRadius = 10
-        
-        scriptTitle1.text = "계정 연결"
-        scriptTitle1.font = UIFont.boldSystemFont(ofSize: 15)
-        scriptTitle1.textColor = .font
-        
-        subTitle1.text = "인스타그램"
-        subTitle1.font = UIFont.boldSystemFont(ofSize: 13)
-        subTitle1.textColor = .font
-        
-        connectButton.layer.borderWidth = 1
-        connectButton.layer.cornerRadius = 10
-        connectButton.layer.borderColor = CGColor(gray: 0, alpha: 1)
-        connectButton.setTitle("인스타그램 계정 연결하기", for: .normal)
-        connectButton.titleLabel?.font = UIFont.systemFont(ofSize: 13)
-        connectButton.setTitleColor(.font, for: .normal)
-        connectButton.setImage(UIImage(named: "instagramLogo"), for: .normal)
-        if let imageView = connectButton.imageView {
-                   imageView.snp.makeConstraints {
-                       $0.width.height.equalTo(24) // 이미지 크기를 24x24로 설정
-                       $0.centerY.equalToSuperview()
-                       let label = connectButton.titleLabel
-                       $0.right.equalTo(label!.snp.left).offset(-8)
-                   }
-               }
-        
-        scriptBackground2.backgroundColor = .babygray
-        scriptBackground2.layer.cornerRadius = 10
-        
-        scriptTitle2.text = "모드 적용"
-        scriptTitle2.font = UIFont.boldSystemFont(ofSize: 15)
-        scriptTitle2.textColor = .font
-        
         phoneImageL.image = UIImage(named: "lightModePhone")
         phoneImageL.contentMode = .scaleAspectFit
         titleL.text = "라이트모드"
@@ -112,40 +72,11 @@ class SettingViewController: BaseViewController {
     
     override func constraintLayout() {
         super.constraintLayout()
-        [scriptBackground1, scriptTitle1, subTitle1, connectButton, scriptBackground2, scriptTitle2, lightMode, darkMode, line, subTitle2, toggle].forEach(){
+        [lightMode, darkMode, line, subTitle2, toggle].forEach(){
             view.addSubview($0)
         }
-        scriptBackground1.snp.makeConstraints(){
-            $0.horizontalEdges.equalTo(view).inset(16)
-            $0.top.equalTo(view).offset(112)
-            $0.height.equalTo(44)
-        }
-        scriptTitle1.snp.makeConstraints(){
-            $0.centerY.equalTo(scriptBackground1)
-            $0.left.equalTo(scriptBackground1.snp.left).offset(29)
-        }
-        subTitle1.snp.makeConstraints(){
-            $0.top.equalTo(scriptBackground1.snp.bottom).offset(26)
-            $0.left.equalTo(scriptBackground1.snp.left).offset(16)
-        }
-        connectButton.snp.makeConstraints(){
-            $0.top.equalTo(scriptBackground1.snp.bottom).offset(17)
-            $0.left.equalTo(subTitle1.snp.right).offset(88)
-            $0.right.equalTo(view).offset(-16)
-            $0.height.equalTo(44)
-            
-        }
-        scriptBackground2.snp.makeConstraints(){
-            $0.horizontalEdges.equalTo(view).inset(16)
-            $0.top.equalTo(connectButton.snp.bottom).offset(44)
-            $0.height.equalTo(44)
-        }
-        scriptTitle2.snp.makeConstraints(){
-            $0.centerY.equalTo(scriptBackground2)
-            $0.left.equalTo(scriptBackground2.snp.left).offset(29)
-        }
         lightMode.snp.makeConstraints(){
-            $0.top.equalTo(scriptBackground2.snp.bottom).offset(21)
+            $0.top.equalTo(view).offset(112)
             $0.left.equalTo(view).offset(81)
             $0.width.equalTo(92)
             $0.height.equalTo(200)
@@ -169,7 +100,7 @@ class SettingViewController: BaseViewController {
         }
         
         darkMode.snp.makeConstraints(){
-            $0.top.equalTo(scriptBackground2.snp.bottom).offset(21)
+            $0.top.equalTo(view).offset(112)
             $0.right.equalTo(view).offset(-81)
             $0.width.equalTo(92)
             $0.height.equalTo(200)
@@ -200,8 +131,8 @@ class SettingViewController: BaseViewController {
             $0.height.equalTo(1)
         }
         subTitle2.snp.makeConstraints(){
-            $0.top.equalTo(line.snp.bottom).offset(21)
-            $0.left.equalTo(scriptBackground2.snp.left).offset(16)
+            $0.top.equalTo(line.snp.bottom).offset(20)
+            $0.left.equalTo(view).offset(32)
         }
         toggle.snp.makeConstraints(){
             $0.top.equalTo(line.snp.bottom).offset(16)
@@ -250,15 +181,4 @@ class SettingViewController: BaseViewController {
             }
         }, completion: nil)
     }
-    
-    override func updateColor(){
-        super.updateColor()
-        let scriptBackgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
-        scriptBackground1.backgroundColor = scriptBackgroundColor
-        scriptBackground2.backgroundColor = scriptBackgroundColor
-        
-        let connectButtonColor = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
-        connectButton.layer.borderColor = connectButtonColor
-    }
-
 }

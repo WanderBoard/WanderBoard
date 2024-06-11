@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2A18AB122C147D6C00E88171 /* PlaceInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A18AB112C147D6C00E88171 /* PlaceInfoView.swift */; };
-		2A18AB182C14BACC00E88171 /* WanderBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2A18AB162C14BACC00E88171 /* WanderBoard.xcdatamodeld */; };
 		2A5D471D2C0A2742005C0F76 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D471C2C0A2742005C0F76 /* MapViewModel.swift */; };
 		2A5D471F2C0A2771005C0F76 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D471E2C0A2771005C0F76 /* LocationManager.swift */; };
 		2A5D47232C0A27EF005C0F76 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D47222C0A27EF005C0F76 /* MapViewController.swift */; };
@@ -81,9 +80,7 @@
 		956ED7942C0852B90001BAC6 /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78B2C0852B90001BAC6 /* MyPageViewController.swift */; };
 		956ED7962C0852B90001BAC6 /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */; };
 		956ED7972C0852B90001BAC6 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78E2C0852B90001BAC6 /* SettingViewController.swift */; };
-
 		FB0C323C2C14ADC600DD2F00 /* (null) in Sources */ = {isa = PBXBuildFile; };
-
 		FB0C323E2C14B07900DD2F00 /* EmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB0C323D2C14B07900DD2F00 /* EmptyView.swift */; };
 		FB0C32442C14C2D000DD2F00 /* WanderBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FB0C32422C14C2D000DD2F00 /* WanderBoard.xcdatamodeld */; };
 		FB72E7372C0F3E92002AADBD /* ExploreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB72E72D2C0F3E92002AADBD /* ExploreViewController.swift */; };
@@ -99,7 +96,6 @@
 
 /* Begin PBXFileReference section */
 		2A18AB112C147D6C00E88171 /* PlaceInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceInfoView.swift; sourceTree = "<group>"; };
-		2A18AB172C14BACC00E88171 /* WanderBoard.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WanderBoard.xcdatamodel; sourceTree = "<group>"; };
 		2A5D471C2C0A2742005C0F76 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		2A5D471E2C0A2771005C0F76 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		2A5D47222C0A27EF005C0F76 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -291,7 +287,6 @@
 				4D9D8B602C05B1BE0043E7DF /* Info.plist */,
 				2A7654E12C06097400D8A098 /* GoogleService-Info.plist */,
 				FB0C32422C14C2D000DD2F00 /* WanderBoard.xcdatamodeld */,
-
 			);
 			path = WanderBoard;
 			sourceTree = "<group>";
@@ -708,11 +703,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WanderBoard/WanderBoard.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7T257QFHVM;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WanderBoard/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱이 사용자의 위치를 사용할 때 권한이 필요합니다.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "앱이 사용자의 사진 라이브러리에 접근할 때 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -722,8 +720,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Project.WanderBoard;
+				PRODUCT_BUNDLE_IDENTIFIER = project.Wandderboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -740,11 +739,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WanderBoard/WanderBoard.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7T257QFHVM;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WanderBoard/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱이 사용자의 위치를 사용할 때 권한이 필요합니다.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "앱이 사용자의 사진 라이브러리에 접근할 때 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -754,8 +756,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Project.WanderBoard;
+				PRODUCT_BUNDLE_IDENTIFIER = project.Wandderboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;

@@ -294,17 +294,17 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             }
             
             // Firestore 업데이트 호출
-            let userEntity =  //여기 뭐라고 써줘야 할지 모르겠음
-            userEntity.displayName = displayName ?? ""
-            userEntity.photoURL = user.photoURL?.absoluteString ?? ""
+//            let userEntity =  //여기 뭐라고 써줘야 할지 모르겠음
+//            userEntity.displayName = displayName ?? ""
+//            userEntity.photoURL = user.photoURL?.absoluteString ?? ""
             
-            do {
-                try await FirestoreManager.shared.saveOrUpdateUser(user: userEntity)
-                print("Firestore에 사용자 정보가 성공적으로 업데이트되었습니다.")
-            } catch {
-                print("Firestore 업데이트 실패: \(error.localizedDescription)")
-            }
-        }
+//            do {
+//                try await FirestoreManager.shared.saveOrUpdateUser(user: userEntity)
+//                print("Firestore에 사용자 정보가 성공적으로 업데이트되었습니다.")
+//            } catch {
+//                print("Firestore 업데이트 실패: \(error.localizedDescription)")
+//            }
+       }
     }
     
     

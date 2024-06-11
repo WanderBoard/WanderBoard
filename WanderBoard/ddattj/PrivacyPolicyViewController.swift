@@ -13,9 +13,12 @@ class PrivacyPolicyViewController: BaseViewController {
     
     // 진영 추가
     private let agreeButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("동의함", for: .normal)
-        button.layer.cornerRadius = 10
+        let button = UIButton(type: .system).then(){
+            $0.setTitle("동의함", for: .normal)
+            $0.setTitleColor(UIColor(named: "textColor"), for: .normal)
+            $0.backgroundColor = .font
+            $0.layer.cornerRadius = 10
+        }
         return button
     }()
     
@@ -29,7 +32,7 @@ class PrivacyPolicyViewController: BaseViewController {
     }
     //그라데이션 레이어와 마스크 해줄 레이어 만들기 -> 회색부분을 배경으로 입혀 점진적으로 투명해지는 느낌을 주기 위해 마스크를 씌움
     let maskedView = UIView(frame: CGRect(x: 0, y: 98, width: 393, height: 60))
-    let maskedView2 = UIView(frame: CGRect(x: 0, y: 792, width: 393, height: 60))
+    let maskedView2 = UIView(frame: CGRect(x: 0, y: 652, width: 393, height: 200))
     let gradientLayer = CAGradientLayer()
     let gradientLayer2 = CAGradientLayer()
     
@@ -37,7 +40,6 @@ class PrivacyPolicyViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        configureUI()
         constraintLayout()
         
         collectionView.dataSource = self
@@ -50,28 +52,31 @@ class PrivacyPolicyViewController: BaseViewController {
         //마스크 및 그라데이션 설정
         maskedView.backgroundColor = view.backgroundColor //마스킹 컬러는 백그라운드 컬러로
         gradientLayer.frame = maskedView.bounds
-        gradientLayer.colors = [UIColor.white.cgColor, UIColor.white.cgColor, UIColor.clear.cgColor, UIColor.clear.cgColor]
+        gradientLayer.colors = [UIColor.white.cgColor, UIColor.white.cgColor, UIColor.white.withAlphaComponent(0.2), UIColor.clear.cgColor]
         gradientLayer.locations = [0, 0.3, 0.7, 1]
         maskedView.layer.mask = gradientLayer
         view.addSubview(maskedView)
         
         maskedView2.backgroundColor = view.backgroundColor
         gradientLayer2.frame = maskedView2.bounds
-        gradientLayer2.colors = [UIColor.clear.cgColor, UIColor.clear.cgColor, UIColor.white.cgColor, UIColor.white.cgColor]
+        gradientLayer2.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.9), UIColor.white.cgColor, UIColor.white.cgColor]
         gradientLayer2.locations = [0, 0.1, 0.5, 1]
         maskedView2.layer.mask = gradientLayer2
         view.addSubview(maskedView2)
+        
+        view.addSubview(agreeButton)// 진영 추가
+        agreeButton.snp.makeConstraints { //최상단에 위치하게 하기 위해 코드를 여기로 이동 - 시안
+            $0.left.equalTo(view).inset(32)
+            $0.right.equalTo(view).inset(32)
+            $0.height.equalTo(50)
+            $0.bottom.equalTo(view).inset(60)
+        }
 
-    }
-    override func configureUI() {
     }
     
     override func constraintLayout() {
-        super.constraintLayout()
         view.addSubview(scrollView)
         scrollView.addSubview(collectionView)
-        scrollView.addSubview(logo)
-        view.addSubview(agreeButton)
         
         scrollView.snp.makeConstraints {
             $0.top.equalTo(view).offset(112)
@@ -82,22 +87,7 @@ class PrivacyPolicyViewController: BaseViewController {
         collectionView.snp.makeConstraints {
             $0.edges.equalTo(scrollView)
             $0.width.equalTo(scrollView)
-            $0.height.equalTo(1130)
-        }
-        
-        logo.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.width.equalTo(143)
-            $0.height.equalTo(18.24)
-            $0.bottom.equalToSuperview().inset(30)
-        }
-        
-        // 진영 추가
-        agreeButton.snp.makeConstraints {
-            $0.left.equalToSuperview().inset(30)
-            $0.right.equalToSuperview().inset(30)
-            $0.height.equalTo(50)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(48)
+            $0.height.equalTo(1170)
         }
     }
     

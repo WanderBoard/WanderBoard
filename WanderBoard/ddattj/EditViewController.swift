@@ -8,6 +8,7 @@
 import UIKit
 import PhotosUI
 import FirebaseAuth
+import FirebaseStorage
 
 class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewControllerDelegate {
     
@@ -33,6 +34,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     let subLine = UIView()
     let subTitle = UILabel()
     let connectButton = UIButton()
+    let iconImageView = UIImageView()
     let subLine2 = UIView()
     let withdrawalB = UIButton()
     var previousImage: UIImage?
@@ -54,7 +56,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             profile.image = existingImage
             addImage.tintColor = UIColor.clear
         } else {
-            addImage.tintColor = UIColor(named: "textColorSub")
+            addImage.tintColor = UIColor.font
         }
     }
     
@@ -95,18 +97,24 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         subTitle.font = UIFont.boldSystemFont(ofSize: 15)
         subTitle.textColor = .font
         
-        connectButton.setTitle("연결하기 \(String(describing: UIImage(systemName: "chevron.right")))", for: .normal)
+        connectButton.backgroundColor = .clear
+        connectButton.setTitle("연결하기", for: .normal)
         connectButton.titleLabel?.font = UIFont.systemFont(ofSize: 13)
         connectButton.setTitleColor(.font, for: .normal)
         connectButton.setImage(UIImage(named: "instagramLogo"), for: .normal)
         if let imageView = connectButton.imageView {
                    imageView.snp.makeConstraints {
                        $0.width.height.equalTo(24) // 이미지 크기를 24x24로 설정
+                       $0.left.equalToSuperview().offset(10)
                        $0.centerY.equalToSuperview()
                        let label = connectButton.titleLabel
                        $0.right.equalTo(label!.snp.left).offset(-10)
                    }
                }
+        
+        iconImageView.image = UIImage(systemName: "chevron.right")
+        iconImageView.tintColor = .font
+        iconImageView.contentMode = .scaleAspectFit
         
         subLine2.backgroundColor = .babygray
         subLine2.layer.cornerRadius = 10
@@ -210,23 +218,31 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         subLine.snp.makeConstraints(){
             $0.left.right.equalTo(view).inset(16)
             $0.height.equalTo(1)
-            $0.top.equalTo(IDArea.snp.bottom).offset(30)
+            $0.top.equalTo(IDIcon.snp.bottom).offset(15)
         }
         subTitle.snp.makeConstraints(){
-            $0.top.equalTo(subLine.snp.bottom).offset(30)
+            $0.top.equalTo(subLine.snp.bottom).offset(25)
             $0.left.equalTo(subLine.snp.left).offset(16)
         }
         connectButton.snp.makeConstraints(){
-            $0.top.equalTo(subLine.snp.bottom).offset(30)
+            $0.centerY.equalTo(subTitle)
             $0.right.equalTo(subLine.snp.right).inset(16)
+            $0.width.equalTo(121)
+            $0.height.equalTo(44)
+        }
+        connectButton.addSubview(iconImageView)
+        iconImageView.snp.makeConstraints(){
+            $0.left.equalTo(connectButton.titleLabel!.snp.right).offset(5)
+            $0.centerY.equalToSuperview()
+            $0.height.equalTo(20)
         }
         subLine2.snp.makeConstraints(){
             $0.left.right.equalTo(view).inset(16)
             $0.height.equalTo(1)
-            $0.top.equalTo(IDArea.snp.bottom).offset(30)
+            $0.top.equalTo(connectButton.snp.bottom).offset(15)
         }
         withdrawalB.snp.makeConstraints(){
-            $0.top.equalTo(subLine.snp.bottom).offset(18)
+            $0.top.equalTo(subLine2.snp.bottom).offset(15)
             $0.right.equalTo(subLine.snp.right).inset(16)
         }
     }
@@ -234,52 +250,59 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     @objc func moveToMyPage(){
         // 이미지와 이름 저장
         let nameToSave = myName.text?.isEmpty ?? true ? previousName : myName.text
-        if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
-            myPageVC.updateUserData(name: nameToSave!, image: profile.image)
+        
+        Task {
+            //네비게이션 컨트롤러로 화면전환할때 함께 저장되도록
+            await updateProfile(displayName: nameToSave, photoURL: profile.image)
+            if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
+                myPageVC.updateUserData(name: nameToSave!, image: profile.image)
+            }
+            
+            let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
+            let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                self.navigationController?.popViewController(animated: true)
+            }
+            alert.addAction(confirm)
+            present(alert, animated: true, completion: nil)
         }
         
-        let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
-        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-            self.navigationController?.popViewController(animated: true)
-        }
-        alert.addAction(confirm)
-        present(alert, animated: true, completion: nil)
-    }
-    
-    // 수정한 내용 firebase에 업데이트
-    func updateProfile(displayName: String?, photoURL: URL?) async {
-        // 사용자가 인증되어 있는지 확인
-        guard let user = Auth.auth().currentUser else {
-            print("사용자가 로그인되어 있지 않습니다.")
-            return
-        }
-        let changeRequest = user.createProfileChangeRequest()
-        
-        // 디스플레이 네임 위치에 바꾼 디스플레이네임 집어넣기
-        if let displayName = displayName {
-            changeRequest.displayName = displayName
-        }
-        
-        // 이미지도 똑같은 작업 해주기
-        if let photoURL = photoURL {
-            changeRequest.photoURL = photoURL
-        }
-        
-        // 사용자 프로필 변경 요청 적용
-        if let user = Auth.auth().currentUser {
-            if let displayName = displayName, let photoURL = photoURL {
-                // Firestore 업데이트 호출
-                let userEntity = UserEntity()
-                userEntity.displayName = displayName
-                userEntity.photoURL = photoURL.absoluteString
-                userEntity.email = user.email ?? ""
-                
+        // Firestore에 사용자 프로필 정보 업데이트
+        func updateProfile(displayName: String?, photoURL: UIImage?) async {
+            guard let user = Auth.auth().currentUser else {
+                print("사용자가 로그인 되어있지 않습니다")
+                return
+            }
+            
+            let changeRequest = user.createProfileChangeRequest()
+            
+            if let displayName = displayName {
+                changeRequest.displayName = displayName
+            }
+            
+            if let photoURL = photoURL, let photoData = photoURL.jpegData(compressionQuality: 0.75) {
+                let storageRef = Storage.storage().reference().child("profile_images/\(user.uid).jpg")
                 do {
-                    try await FirestoreManager.shared.saveOrUpdateUser(user: userEntity)
-                    print("Firestore에 사용자 정보가 성공적으로 업데이트되었습니다.")
+                    let metadata = StorageMetadata()
+                    metadata.contentType = "image/jpeg"
+                    let _ = try await storageRef.putDataAsync(photoData, metadata: metadata)
+                    let downloadURL = try await storageRef.downloadURL()
+                    changeRequest.photoURL = downloadURL
+                    print("이미지 업로드 성공")
                 } catch {
-                    print("Firestore 업데이트 실패: \(error.localizedDescription)")
+                    print("이미지 업로드 실패: \(error.localizedDescription)")
                 }
+            }
+            
+            // Firestore 업데이트 호출
+            let userEntity =  //여기 뭐라고 써줘야 할지 모르겠음
+            userEntity.displayName = displayName ?? ""
+            userEntity.photoURL = user.photoURL?.absoluteString ?? ""
+            
+            do {
+                try await FirestoreManager.shared.saveOrUpdateUser(user: userEntity)
+                print("Firestore에 사용자 정보가 성공적으로 업데이트되었습니다.")
+            } catch {
+                print("Firestore 업데이트 실패: \(error.localizedDescription)")
             }
         }
     }
@@ -428,5 +451,8 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         let connectButtonColor = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
         connectButton.layer.borderColor = connectButtonColor
+        
+        let withdrawalColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        withdrawalB.setTitleColor(withdrawalColor, for: .normal)
     }
 }

@@ -31,6 +31,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         KakaoSDK.initSDK(appKey: "fdaab28c4efeacf52167771728104865")
         
+        //모드 관련 저장된 설정 불러오기
+        if let darkModeEnabled = UserDefaults.standard.value(forKey: "isDarkModeSelected") as? Bool {
+            window?.overrideUserInterfaceStyle = darkModeEnabled ? .dark : .light
+                   } else {
+                       // 기본 설정 (시스템 설정에 따름)
+                       window?.overrideUserInterfaceStyle = .unspecified
+                   }
+        
         window = UIWindow(frame: UIScreen.main.bounds)
         configureInitialViewController()
         return true

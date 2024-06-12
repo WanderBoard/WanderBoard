@@ -252,7 +252,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let nameToSave = myName.text?.isEmpty ?? true ? previousName : myName.text
         
         Task {
-            //네비게이션 컨트롤러로 화면전환할때 함께 저장되도록
+            //네비게이션 컨트롤러로 화면전환할때 파이어베이스 유저에 저장 ->
             await updateProfile(displayName: nameToSave, photoURL: profile.image)
             if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
                 myPageVC.updateUserData(name: nameToSave!, image: profile.image)
@@ -268,43 +268,44 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         // Firestore에 사용자 프로필 정보 업데이트
         func updateProfile(displayName: String?, photoURL: UIImage?) async {
-            guard let user = Auth.auth().currentUser else {
-                print("사용자가 로그인 되어있지 않습니다")
-                return
-            }
-            
-            let changeRequest = user.createProfileChangeRequest()
-            
-            if let displayName = displayName {
-                changeRequest.displayName = displayName
-            }
-            
-            if let photoURL = photoURL, let photoData = photoURL.jpegData(compressionQuality: 0.75) {
-                let storageRef = Storage.storage().reference().child("profile_images/\(user.uid).jpg")
-                do {
-                    let metadata = StorageMetadata()
-                    metadata.contentType = "image/jpeg"
-                    let _ = try await storageRef.putDataAsync(photoData, metadata: metadata)
-                    let downloadURL = try await storageRef.downloadURL()
-                    changeRequest.photoURL = downloadURL
-                    print("이미지 업로드 성공")
-                } catch {
-                    print("이미지 업로드 실패: \(error.localizedDescription)")
-                }
-            }
-            
-            // Firestore 업데이트 호출
-//            let userEntity =  //여기 뭐라고 써줘야 할지 모르겠음
-//            userEntity.displayName = displayName ?? ""
-//            userEntity.photoURL = user.photoURL?.absoluteString ?? ""
-            
-//            do {
-//                try await FirestoreManager.shared.saveOrUpdateUser(user: userEntity)
-//                print("Firestore에 사용자 정보가 성공적으로 업데이트되었습니다.")
-//            } catch {
-//                print("Firestore 업데이트 실패: \(error.localizedDescription)")
-//            }
-       }
+            //            guard let user = Auth.auth().currentUser else {
+            //                print("사용자가 로그인 되어있지 않습니다")
+            //                return
+            //            }
+            //
+            //            let changeRequest = user.createProfileChangeRequest()
+            //
+            //            if let displayName = displayName {
+            //                changeRequest.displayName = displayName
+            //            }
+            //
+            //            if let photoURL = photoURL, let photoData = photoURL.jpegData(compressionQuality: 0.75) {
+            //                let storageRef = Storage.storage().reference().child("profile_images/\(user.uid).jpg")
+            //                do {
+            //                    let metadata = StorageMetadata()
+            //                    metadata.contentType = "image/jpeg"
+            //                    let _ = try await storageRef.putDataAsync(photoData, metadata: metadata)
+            //                    let downloadURL = try await storageRef.downloadURL()
+            //                    changeRequest.photoURL = downloadURL
+            //                    print("이미지 업로드 성공")
+            //                } catch {
+            //                    print("이미지 업로드 실패: \(error.localizedDescription)")
+            //                }
+            //            }
+            //
+            //
+            //            let userEntity = UserEntity()
+            //            userEntity.displayName = displayName ?? ""
+            //            userEntity.photoURL = user.photoURL?.absoluteString ?? ""
+            //
+            //            do {
+            //                try await FirestoreManager.shared.saveOrUpdateUser(user: userEntity)
+            //                print("Firestore에 사용자 정보가 성공적으로 업데이트되었습니다.")
+            //            } catch {
+            //                print("Firestore 업데이트 실패: \(error.localizedDescription)")
+            //            }
+            //        }
+        }
     }
     
     

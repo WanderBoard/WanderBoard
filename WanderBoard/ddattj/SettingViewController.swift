@@ -36,8 +36,8 @@ class SettingViewController: BaseViewController {
         = UITapGestureRecognizer(target: self, action: #selector(viewTappedD(tapGestureRecognizer:)))
         darkMode.isUserInteractionEnabled = true
         darkMode.addGestureRecognizer(tapRecognizerD)
-        
     }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -150,33 +150,47 @@ class SettingViewController: BaseViewController {
     
     @objc func viewTappedL(tapGestureRecognizer: UITapGestureRecognizer){
         UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            self.overrideUserInterfaceStyle = .light
-            self.iconL.image = UIImage(systemName: "checkmark.circle.fill")
-            self.iconD.image = UIImage(systemName: "circle")
-            
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                let appDelegate = windowScene.windows.first
+                appDelegate?.overrideUserInterfaceStyle = .light
+                self.iconL.image = UIImage(systemName: "checkmark.circle.fill")
+                self.iconD.image = UIImage(systemName: "circle")
+                
+                UserDefaults.standard.set(true, forKey: "isLightModeSelected")
+            }
         }, completion: nil)
     }
 
     @objc func viewTappedD(tapGestureRecognizer: UITapGestureRecognizer){
         UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            self.overrideUserInterfaceStyle = .dark
-            self.iconD.image = UIImage(systemName: "checkmark.circle.fill")
-            self.iconL.image = UIImage(systemName: "circle")
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                let appDelegate = windowScene.windows.first
+                appDelegate?.overrideUserInterfaceStyle = .dark
+                self.iconL.image = UIImage(systemName: "circle")
+                self.iconD.image = UIImage(systemName: "checkmark.circle.fill")
+                
+                UserDefaults.standard.set(true, forKey: "isDarkModeSelected")
+            }
         }, completion: nil)
     }
     
     @objc func modeChangedWithToggle(_ sender: UISwitch){
         UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            if sender.isOn {
-                self.iconL.image = UIImage(systemName: "circle")
-                self.iconD.image = UIImage(systemName: "circle")
-                let hour = Calendar.current.component(.hour, from: Date())
-                if hour >= 18 || hour < 6
-                {
-                    //저녁 6시부터 다음 날 아침 6시까진 다크모드
-                    self.overrideUserInterfaceStyle = .dark
-                } else {
-                    self.overrideUserInterfaceStyle = .light
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                let appDelegate = windowScene.windows.first
+                if sender.isOn {
+                    self.iconL.image = UIImage(systemName: "circle")
+                    self.iconD.image = UIImage(systemName: "circle")
+                    let hour = Calendar.current.component(.hour, from: Date())
+                    if hour >= 18 || hour < 6
+                    {
+                        //저녁 6시부터 다음 날 아침 6시까진 다크모드
+                        appDelegate?.overrideUserInterfaceStyle = .dark
+                        UserDefaults.standard.set(true, forKey: "isDarkModeSelected")
+                    } else {
+                        appDelegate?.overrideUserInterfaceStyle = .light
+                        UserDefaults.standard.set(true, forKey: "isLightModeSelected")
+                    }
                 }
             }
         }, completion: nil)

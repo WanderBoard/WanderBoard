@@ -29,6 +29,8 @@ class DetailViewController: UIViewController {
             configureView(with: pinLog)
         }
     }
+    
+    let pinLogManager = PinLogManager()
 
     var mapViewController: MapViewController?
 
@@ -518,19 +520,78 @@ class DetailViewController: UIViewController {
         }
     }
 
-
-
+    func setupActionButton() {
+        albumAllButton.addTarget(self, action: #selector(showGalleryDetail), for: .touchUpInside)
+        optionsButton.addTarget(self, action: #selector(setupMenu), for: .touchUpInside)
+    }
+    
     @objc func showGalleryDetail() {
         let galleryDetailVC = GalleryDetailViewController()
         galleryDetailVC.selectedImages = selectedImages.map { $0.0 }
         galleryDetailVC.modalPresentationStyle = .fullScreen
         present(galleryDetailVC, animated: true, completion: nil)
     }
+    
+    @objc func setupMenu() {
+        let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+            self.sharePinLog()
+        }
 
-    func setupActionButton() {
-        albumAllButton.addTarget(self, action: #selector(showGalleryDetail), for: .touchUpInside)
+        let deleteAction = UIAction(
+            title: "삭제하기",
+            image: UIImage(systemName: "trash"),
+            attributes: .destructive) { _ in
+            self.deletePinLog()
+        }
+
+        let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { _ in
+            self.editPinLog()
+        }
+
+        var menuItems = [shareAction]
+
+        if let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid, pinLog.authorId == currentUserId {
+            menuItems.append(editAction)
+            menuItems.append(deleteAction)
+        }
+
+        optionsButton.menu = UIMenu(title: "", children: menuItems)
     }
 
+    
+    func deletePinLog() {
+        let alert = UIAlertController(title: "삭제 확인", message: "핀로그를 삭제하시겠습니까?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "삭제", style: .destructive, handler: { [weak self] _ in
+            guard let self = self, let pinLog = self.pinLog, let pinLogId = pinLog.id else {
+                print("Failed to delete pin log: pinLog or pinLog.id is nil")
+                return
+            }
+            Task {
+                do {
+                    try await self.pinLogManager.deletePinLog(pinLogId: pinLogId)
+                    self.navigationController?.popViewController(animated: true)
+                } catch {
+                    print("Failed to delete pin log: \(error.localizedDescription)")
+                }
+            }
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func editPinLog() {
+        let inputVC = DetailInputViewController()
+        inputVC.delegate = self
+        if let pinLog = self.pinLog {
+            inputVC.pinLog = pinLog
+        }
+        navigationController?.pushViewController(inputVC, animated: true)
+    }
+    
+    func sharePinLog() {
+        
+    }
+    
     func fetchImagesFromFirestore(completion: @escaping ([Media]) -> Void) {
         let db = Firestore.firestore()
         db.collection("images").getDocuments { snapshot, error in
@@ -575,7 +636,9 @@ class DetailViewController: UIViewController {
 
         dispatchGroup.notify(queue: .main) {
             self.galleryCollectionView.reloadData()
-            if let firstImage = self.selectedImages.first?.0 {
+            if let representativeImage = self.selectedImages.first(where: { $0.1 })?.0 {
+                self.backgroundImageView.image = representativeImage
+            } else if let firstImage = self.selectedImages.first?.0 {
                 self.backgroundImageView.image = firstImage
             } else {
                 self.backgroundImageView.image = UIImage(systemName: "photo")
@@ -658,28 +721,32 @@ class DetailViewController: UIViewController {
     func setupSegmentControl() {
         segmentControl.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
     }
-
+    
     @objc func segmentChanged(_ sender: UISegmentedControl) {
-         if sender.selectedSegmentIndex == 0 {
-             mapViewController?.view.isHidden = false
-             albumImageView.isHidden = true
-             mapAllButton.isHidden = false
-             albumAllButton.isHidden = true
-         } else {
-             mapViewController?.view.isHidden = true
-             albumImageView.isHidden = false
-             mapAllButton.isHidden = true
-             albumAllButton.isHidden = false
-             if let firstImage = selectedImages.first?.0 {
-                 albumImageView.image = firstImage
-             }
-             contentView.sendSubviewToBack(albumImageView)
-         }
-         view.bringSubviewToFront(segmentControl)
-         UIView.animate(withDuration: 0.3) {
-             self.view.layoutIfNeeded()
-         }
-     }
+        if sender.selectedSegmentIndex == 0 {
+            mapViewController?.view.isHidden = false
+            albumImageView.isHidden = true
+            mapAllButton.isHidden = false
+            albumAllButton.isHidden = true
+        } else {
+            mapViewController?.view.isHidden = true
+            albumImageView.isHidden = false
+            mapAllButton.isHidden = true
+            albumAllButton.isHidden = false
+            if let representativeImage = selectedImages.first(where: { $0.1 })?.0 {
+                albumImageView.image = representativeImage
+            } else if let firstImage = selectedImages.first?.0 {
+                albumImageView.image = firstImage
+            } else {
+                albumImageView.image = UIImage(systemName: "photo")
+            }
+            contentView.sendSubviewToBack(albumImageView)
+        }
+        view.bringSubviewToFront(segmentControl)
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
 }
 
 extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -744,19 +811,14 @@ extension DetailViewController: UIScrollViewDelegate {
 
             if offset > 0 {
                 UIView.animate(withDuration: 0.3) {
-                    self.locationStackView.axis = .horizontal
-                    self.locationStackView.spacing = 10
-                    self.locationStackView.alignment = .center
-                    self.locationLabel.font = UIFont.systemFont(ofSize: 20)
+                    self.locationStackView.isHidden = true
                     self.dateStackView.isHidden = true
+                    self.profileStackView.isHidden = true
 
                     self.locationStackView.snp.remakeConstraints {
                         $0.top.equalTo(self.view.safeAreaLayoutGuide).offset(20)
                         $0.centerX.equalToSuperview()
                     }
-
-                    self.scrollView.layer.cornerRadius = 40
-                    self.view.clipsToBounds = true
 
                     self.scrollView.snp.remakeConstraints {
                         $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-40)
@@ -778,11 +840,9 @@ extension DetailViewController: UIScrollViewDelegate {
                 }
             } else {
                 UIView.animate(withDuration: 0.3) {
-                    self.locationStackView.axis = .vertical
-                    self.locationStackView.spacing = 10
-                    self.locationStackView.alignment = .leading
-                    self.locationLabel.font = UIFont.systemFont(ofSize: 40)
+                    self.locationStackView.isHidden = false
                     self.dateStackView.isHidden = false
+                    self.profileStackView.isHidden = false
 
                     self.locationStackView.snp.remakeConstraints {
                         $0.bottom.equalTo(self.scrollView.snp.top).offset(-32)
@@ -802,7 +862,7 @@ extension DetailViewController: UIScrollViewDelegate {
                     }
 
                     self.backgroundImageView.snp.updateConstraints {
-                        $0.height.equalTo(457)
+                        $0.height.equalTo(515)
                     }
 
                     self.view.layoutIfNeeded()
@@ -829,5 +889,12 @@ extension DetailViewController: UIScrollViewDelegate {
         }
 
         self.view.layoutIfNeeded()
+    }
+}
+
+extension DetailViewController: DetailInputViewControllerDelegate {
+    func didSavePinLog(_ updatedPinLog: PinLog) {
+        self.pinLog = updatedPinLog
+        configureView(with: updatedPinLog)
     }
 }

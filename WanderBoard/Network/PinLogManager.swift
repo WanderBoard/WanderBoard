@@ -114,4 +114,9 @@ class PinLogManager {
         let document = try await db.collection("pinLogs").document(pinLogId).getDocument()
         return try document.data(as: PinLog.self)
     }
+    
+    func deletePinLog(pinLogId: String) async throws {
+        let documentRef = db.collection("pinLogs").document(pinLogId)
+        try await documentRef.delete()
+    }
 }

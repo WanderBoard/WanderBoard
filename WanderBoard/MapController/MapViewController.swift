@@ -118,8 +118,26 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         annotation.coordinate = location
         annotation.title = address
         mapView.addAnnotation(annotation)
-        print("Annotation added at \(location.latitude), \(location.longitude) with title: \(address)")
+//        print("Annotation added at \(location.latitude), \(location.longitude) with title: \(address)")
 
+    }
+    
+    func animatePin(at coordinate: CLLocationCoordinate2D) {
+        guard let annotation = mapView.annotations.first(where: { $0.coordinate.latitude == coordinate.latitude && $0.coordinate.longitude == coordinate.longitude }) else {
+            print("No annotation found at given coordinates")
+            return
+        }
+
+        if let annotationView = mapView.view(for: annotation) {
+            let originalTransform = annotationView.transform
+            UIView.animate(withDuration: 0.2, animations: {
+                annotationView.transform = originalTransform.scaledBy(x: 1.5, y: 1.5)
+            }) { _ in
+                UIView.animate(withDuration: 0.2) {
+                    annotationView.transform = originalTransform
+                }
+            }
+        }
     }
     
     private func hidePlaceInfoView() {
@@ -173,7 +191,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
 
     @objc private func centerMapOnUserLocation() {
         if let location = locationManager.location {
-            let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02))
+            let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
             mapView.setRegion(region, animated: true)
         }
     }
@@ -206,6 +224,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         return nil
     }
+    
+    
     
     func updateAddressLabel(with address: String) {
         // 주소 레이블을 업데이트
@@ -283,7 +303,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             do {
                 let mapItem = try await viewModel.searchForLocation(completion: selectedResult)
 
-                let region = MKCoordinateRegion(center: mapItem.placemark.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02))
+                let region = MKCoordinateRegion(center: mapItem.placemark.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
                 self.mapView.setRegion(region, animated: true)
 
                 self.mapView.removeAnnotations(self.mapView.annotations)

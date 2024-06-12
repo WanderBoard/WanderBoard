@@ -23,7 +23,7 @@ class DetailViewController: UIViewController {
     
     weak var delegate: DetailViewControllerDelegate?
     
-    var selectedImages: [(UIImage, Bool)] = []
+    var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
     var selectedFriends: [UIImage] = []
 
     var pinLog: PinLog? {
@@ -281,34 +281,16 @@ class DetailViewController: UIViewController {
 
         if let pinLog = pinLog {
             configureView(with: pinLog)
-        } else {
-            fetchAndConfigurePinLogs()
         }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.tintColor = .white
-        fetchAndConfigurePinLogs()
-    }
-
-    // 핀로그 불러오기
-    func fetchAndConfigurePinLogs() {
-        Task {
-            do {
-                guard let userId = Auth.auth().currentUser?.uid else { return }
-                let fetchedPinLogs = try await PinLogManager.shared.fetchPinLogs(forUserId: userId)
-
-                if let firstPinLog = fetchedPinLogs.first {
-                    self.pinLog = firstPinLog
-                    DispatchQueue.main.async {
-                        self.configureView(with: firstPinLog)
-                        self.updatePinButtonState()
-                    }
-                }
-            } catch {
-                ErrorUtility.shared.presentErrorAlert(with: "Error fetching pin log data")
-            }
+        
+        
+        if let pinLog = pinLog {
+            configureView(with: pinLog)
         }
     }
     
@@ -340,8 +322,6 @@ class DetailViewController: UIViewController {
             }
             // 현재 사용자가 작성자인지 여부에 따라 메뉴 설정
             setupMenu()
-        } else {
-            fetchAndConfigurePinLogs()
         }
     }
     
@@ -608,6 +588,7 @@ class DetailViewController: UIViewController {
             }
         }
     }
+
     
     @objc func showGalleryDetail() {
         let galleryDetailVC = GalleryDetailViewController()
@@ -730,8 +711,9 @@ class DetailViewController: UIViewController {
             dispatchGroup.enter()
             loadImage(from: url) { [weak self] image in
                 if let image = image {
+                    let location = CLLocationCoordinate2D(latitude: media.latitude ?? 0, longitude: media.longitude ?? 0)
                     if !(self?.selectedImages.contains(where: { $0.0.pngData() == image.pngData() }) ?? false) {
-                        self?.selectedImages.append((image, media.isRepresentative)) // 변경: isRepresentative 추가
+                        self?.selectedImages.append((image, media.isRepresentative, media.latitude != nil && media.longitude != nil ? location : nil))
                     }
                 }
                 dispatchGroup.leave()
@@ -869,7 +851,7 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GalleryCollectionViewCell.identifier, for: indexPath) as? GalleryCollectionViewCell else {
                 fatalError("컬렉션 뷰 오류")
             }
-            let (image, isRepresentative) = selectedImages[indexPath.row] // 변경: 튜플 사용
+            let (image, isRepresentative, _) = selectedImages[indexPath.row] // 변경: 튜플 사용, CLLocationCoordinate2D 사용하지 않음
             cell.configure(with: image, isRepresentative: isRepresentative) // 변경: isRepresentative 전달
             return cell
         } else if collectionView == friendCollectionView {
@@ -882,15 +864,14 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
         return UICollectionViewCell()
     }
 
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == galleryCollectionView {
-            let mediaItem = pinLog?.media[indexPath.row]
+            let (_, _, location) = selectedImages[indexPath.row]
             
             if segmentControl.selectedSegmentIndex == 0 {
                 // Map 상태일 때
-                if let latitude = mediaItem?.latitude, let longitude = mediaItem?.longitude {
-                    let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-//                    mapViewController?.addPinToMap(location: coordinate, address: mediaItem?.url ?? "")
+                if let coordinate = location {
                     mapViewController?.animatePin(at: coordinate)
                     mapViewController?.mapView.setRegion(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)), animated: true)
                 } else {

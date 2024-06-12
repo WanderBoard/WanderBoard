@@ -165,7 +165,6 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         }
     }
     
-    
     func addNewTripLog(_ log: PinLog) {
         MyTripsViewController.tripLogs.insert(log, at: 0)
         updateView()
@@ -208,7 +207,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
                 fatalError("컬렉션 뷰 오류")
             }
             
-            let tripLog = MyTripsViewController.tripLogs[indexPath.item]
+            let tripLog = filterTripLogs()[indexPath.item]
             cell.configure(with: tripLog)
             
             return cell
@@ -256,7 +255,10 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
         NotificationHelper.changePage(hidden: true, isEnabled: false)
         plusButton.isHidden = true
         let detailVC = DetailViewController()
-        let selectedTripLog = MyTripsViewController.tripLogs[indexPath.item]
+        
+        let filteredTripLogs = filterTripLogs()
+        let selectedTripLog = filteredTripLogs[indexPath.item]
+        
         detailVC.pinLog = selectedTripLog
         navigationController?.pushViewController(detailVC, animated: true)
     }

@@ -50,9 +50,11 @@ class MyPageViewController: BaseViewController, PageIndexed {
         Task {
             do {
                 if let authUser = try? AuthenticationManager.shared.getAuthenticatedUser(), let email = authUser.email {
-                    userData = try await FirestoreManager.shared.checkUserExists(email: email)
-                    DispatchQueue.main.async {
-                        self.updateUI()
+                    if let user = try await FirestoreManager.shared.checkUserExists(email: email) {
+                        DispatchQueue.main.async {
+                            self.myName.text = user.displayName
+                            self.profile.image = UIImage(named: user.photoURL ?? "")
+                        }
                     }
                 }
             } catch {
@@ -61,7 +63,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         }
     }
     
-    //파이어스토어 -> 아이디 확인 -> 내가 핀 한 게시글 수 구하는 함수를 거친 myPinCount의 정보 가져오기 -> 마이핀에 저장
+    //파이어스토어 -> 아이디 확인 -> 내가 핀 한 게시글 수 구하는 함수를 거친 myPinCount의 정보 가져옥 -> 마이핀에 저장
     func fetchAndDisplayUserPinCount() {
         guard let currentUserId = Auth.auth().currentUser?.uid else { return }
         
@@ -196,33 +198,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     }
     
     
-    func updateUI() {
-        guard let userData = userData else { return }
-        myName.text = userData.displayName
-        myID.text = userData.email
-        
-        //URLSession 사용해서 URL 이미지 다운로드 후 프로필 이미지에 설정해준다.
-        if let photoURLString = userData.photoURL, let photoURL = URL(string: photoURLString) {
-            downloadImage(from: photoURL) { [weak self] image in
-                DispatchQueue.main.async {
-                    self?.profile.image = image
-                }
-            }
-        } else {
-            profile.image = UIImage(named: "defaultProfileImage")
-        }
-    }
     
-    //이미지 다운로드 메서드
-    private func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data, error == nil else {
-                completion(nil)
-                return
-            }
-            completion(UIImage(data: data))
-        }.resume()
-    }
     
     
     @objc func edit(){

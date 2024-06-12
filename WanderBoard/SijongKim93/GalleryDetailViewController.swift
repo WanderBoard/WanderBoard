@@ -24,7 +24,8 @@ class GalleryDetailViewController: UIViewController {
     }
     
     let closeButton = UIButton().then {
-        $0.setTitle("Back", for: .normal)
+        $0.setImage(UIImage(systemName: "xmark"), for: .normal)
+        $0.tintColor = .black
         $0.setTitleColor(.black, for: .normal)
     }
     
@@ -61,7 +62,8 @@ class GalleryDetailViewController: UIViewController {
         
         closeButton.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).inset(20)
-            $0.leading.equalTo(view.safeAreaLayoutGuide).offset(20)
+            $0.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
+            $0.width.height.equalTo(30)
         }
     }
     

@@ -19,6 +19,7 @@ struct User: Codable {
     var authProvider: String?
     var isProfileComplete: Bool?
     var blockedAuthors: [String]?
+    var myPinCount: Int?
 
     init(entity: UserEntity) {
         self.uid = entity.uid ?? ""
@@ -31,6 +32,7 @@ struct User: Codable {
         self.authProvider = entity.authProvider ?? ""
         self.isProfileComplete = entity.isProfileComplete
         self.blockedAuthors = (entity.blockedAuthors?.jsonArray() as? [String]) ?? []
+        self.myPinCount = Int(entity.myPinCount)
 
     }
 
@@ -48,6 +50,7 @@ struct User: Codable {
             userEntity.isProfileComplete = isProfileComplete
         }
         userEntity.blockedAuthors = self.blockedAuthors?.jsonString() ?? "[]"
+        userEntity.myPinCount = Int64(self.myPinCount ?? 0)
         return userEntity
     }
 

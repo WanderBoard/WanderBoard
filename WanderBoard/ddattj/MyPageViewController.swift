@@ -42,6 +42,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         
         configureUI()
         fetchUserData()
+        fetchAndDisplayUserPinCount() // 핀 개수 가져오기 및 UI 업데이트
     }
     
     
@@ -56,6 +57,23 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 }
             } catch {
                 print("유저데이터를 받아오는데 실패했습니다")
+            }
+        }
+    }
+    
+    //파이어스토어 -> 아이디 확인 -> 내가 핀 한 게시글 수 구하는 함수를 거친 myPinCount의 정보 가져오기 -> 마이핀에 저장
+    func fetchAndDisplayUserPinCount() {
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        
+        Task {
+            do {
+                let pinCount = try await FirestoreManager.shared.fetchUserPinCount(userId: currentUserId)
+                DispatchQueue.main.async {
+                    self.myPin.text = "\(pinCount)"
+                }
+                try await FirestoreManager.shared.updateUserPinCount(userId: currentUserId, pinCount: pinCount)
+            } catch {
+                print("핀 개수를 가져오거나 업데이트하는 데 실패했습니다: \(error)")
             }
         }
     }
@@ -150,7 +168,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
         myWrite.text = "\(MyTripsViewController.tripLogs.count)"
         myWrite.font = UIFont.systemFont(ofSize: 13)
         myWrite.textColor = .white
-        myPin.text = "\(1)"
         myPin.font = UIFont.systemFont(ofSize: 13)
         myPin.textColor = .white
         myExpend.text = "\(1)"

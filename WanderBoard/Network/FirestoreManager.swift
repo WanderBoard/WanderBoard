@@ -110,6 +110,17 @@ class FirestoreManager {
             try await userRef.setData(dataToUpdate, merge: true)
         }
     }
+    //내가 핀 얼만큼 찍었는가 계산
+    func fetchUserPinCount(userId: String) async throws -> Int {
+        let pinLogRef = db.collection("pinLogs")
+        let querySnapshot = try await pinLogRef.whereField("pinnedBy", arrayContains: userId).getDocuments()
+        return querySnapshot.documents.count
+    }
+    //핀 찍을때마다 정보 업데이트
+    func updateUserPinCount(userId: String, pinCount: Int) async throws {
+        let userRef = db.collection("users").document(userId)
+        try await userRef.updateData(["totalPins": pinCount])
+    }
     
     // 이메일 가져오기 애플을 위해서...;
     private func fetchEmailFromFirestore(uid: String) async throws -> String? {

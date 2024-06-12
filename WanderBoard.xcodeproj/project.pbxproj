@@ -81,9 +81,6 @@
 		956ED7942C0852B90001BAC6 /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78B2C0852B90001BAC6 /* MyPageViewController.swift */; };
 		956ED7962C0852B90001BAC6 /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */; };
 		956ED7972C0852B90001BAC6 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78E2C0852B90001BAC6 /* SettingViewController.swift */; };
-
-		FB0C323E2C14B07900DD2F00 /* EmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB0C323D2C14B07900DD2F00 /* EmptyView.swift */; };
-
 		FB0C32442C14C2D000DD2F00 /* WanderBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FB0C32422C14C2D000DD2F00 /* WanderBoard.xcdatamodeld */; };
 		FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */; };
 		FB9A3AD62C1984A200E1EAA2 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */; };

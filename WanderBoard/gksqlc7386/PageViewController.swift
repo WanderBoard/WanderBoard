@@ -213,11 +213,5 @@ protocol PageIndexed {
     var pageIndex: Int? { get set }
 }
 
-extension Notification.Name {
-    static let setPageControlButtonVisibility = Notification.Name("setPageControlButtonVisibility")
-    static let didChangePage = Notification.Name("didChangePage")
-    static let setScrollEnabled = Notification.Name("setScrollEnabled")
-}
-
 
 

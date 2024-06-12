@@ -20,6 +20,9 @@ import CoreLocation
 import ImageIO
 
 class DetailViewController: UIViewController {
+    
+    weak var delegate: DetailViewControllerDelegate?
+    
     var selectedImages: [(UIImage, Bool)] = []
     var selectedFriends: [UIImage] = []
 
@@ -269,6 +272,10 @@ class DetailViewController: UIViewController {
         setupSegmentControl()
         applyDarkOverlayToBackgroundImage()
         setupActionButton()
+        
+        //한빛
+        newSetupConstraints()
+        checkId()
 
         view.backgroundColor = .white
 
@@ -282,6 +289,7 @@ class DetailViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.tintColor = .white
+        fetchAndConfigurePinLogs()
     }
 
     // 핀로그 불러오기
@@ -293,11 +301,108 @@ class DetailViewController: UIViewController {
 
                 if let firstPinLog = fetchedPinLogs.first {
                     self.pinLog = firstPinLog
+                    DispatchQueue.main.async {
+                        self.configureView(with: firstPinLog)
+                        self.updatePinButtonState()
+                    }
                 }
             } catch {
                 ErrorUtility.shared.presentErrorAlert(with: "Error fetching pin log data")
             }
         }
+    }
+    
+    //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
+    
+    // 핀 버튼
+    lazy var pinButton = UIButton().then {
+        $0.setImage(UIImage(systemName: "pin.circle"), for: .normal)
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+        $0.tintColor = .white
+        $0.isHidden = true
+        $0.addTarget(self, action: #selector(pinButtonTapped), for: .touchUpInside)
+    }
+    
+    func newSetupConstraints() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pinButton)
+    }
+    
+    func checkId() {
+        if let pinLog = pinLog {
+            if isCurrentUser(pinLog: pinLog) {
+                configureView(with: pinLog)
+                updatePinButtonState()
+            } else {
+                hideAppearUIElements()
+                configureView(with: pinLog)
+                updatePinButtonState()
+            }
+            // 현재 사용자가 작성자인지 여부에 따라 메뉴 설정
+            setupMenu()
+        } else {
+            fetchAndConfigurePinLogs()
+        }
+    }
+    
+    // 현재 사용자가 작성자인지 확인
+    func isCurrentUser(pinLog: PinLog) -> Bool {
+        guard let userId = Auth.auth().currentUser?.uid else { return false }
+        return userId == pinLog.authorId
+    }
+    
+    // 사용자가 아닌 경우 숨길 UI 요소를 정의
+    func hideAppearUIElements() {
+        pinButton.isHidden = false
+        updatePinButtonState()
+    }
+    
+    @objc func pinButtonTapped() {
+        guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else { return }
+        
+        var updatedPinnedBy = pinLog.pinnedBy
+        var updatedPinCount = pinLog.pinCount
+        
+        if let index = updatedPinnedBy.firstIndex(of: currentUserId) {
+            // 현재 사용자가 이미 핀을 한 경우 -> 핀 제거
+            updatedPinnedBy.remove(at: index)
+            updatedPinCount -= 1
+        } else {
+            // 현재 사용자가 핀을 하지 않은 경우 -> 핀 추가
+            updatedPinnedBy.append(currentUserId)
+            updatedPinCount += 1
+        }
+        
+        // Firestore에 업데이트
+        let pinLogRef = Firestore.firestore().collection("pinLogs").document(pinLog.id!)
+        pinLogRef.updateData([
+            "pinnedBy": updatedPinnedBy,
+            "pinCount": updatedPinCount
+        ]) { error in
+            if let error = error {
+                print("Error updating pin log: \(error)")
+            } else {
+                self.pinLog?.pinnedBy = updatedPinnedBy
+                self.pinLog?.pinCount = updatedPinCount
+                print("Updated pinnedBy: \(self.pinLog?.pinnedBy ?? [])")
+                self.updatePinButtonState()
+                if let updatedPinLog = self.pinLog {
+                    print("Delegate called with updated pin log")
+                    self.delegate?.didUpdatePinButton(updatedPinLog)
+                }
+            }
+        }
+    }
+
+    func updatePinButtonState() {
+        guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else { return }
+        
+        if pinLog.pinnedBy.contains(currentUserId) {
+            pinButton.setImage(UIImage(systemName: "pin.circle.fill"), for: .normal)
+        } else {
+            pinButton.setImage(UIImage(systemName: "pin.circle"), for: .normal)
+        }
+        print("Current pinnedBy: \(pinLog.pinnedBy)")
     }
 
     func setupUI() {
@@ -614,7 +719,70 @@ class DetailViewController: UIViewController {
             }
         }
     }
+    
+    @objc func setupMenu() {
+        guard let pinLog = pinLog else { return }
+        if isCurrentUser(pinLog: pinLog) {
+            // 현재 사용자가 작성자인 경우
+            let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                self.sharePinLog()
+            }
 
+            let deleteAction = UIAction(
+                title: "삭제하기",
+                image: UIImage(systemName: "trash"),
+                attributes: .destructive) { _ in
+                self.deletePinLog()
+            }
+            
+            optionsButton.menu = UIMenu(title: "", children: [shareAction, deleteAction])
+        } else {
+            // 다른 사람의 글인 경우
+            let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                self.sharePinLog()
+            }
+            
+            let reportAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "exclamationmark.triangle"), attributes: .destructive) { _ in
+                self.reportPinLog()
+            }
+            
+            optionsButton.menu = UIMenu(title: "", children: [shareAction, reportAction])
+        }
+    }
+    
+    func deletePinLog() {
+        let alert = UIAlertController(title: "삭제 확인", message: "핀로그를 삭제하시겠습니까?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "삭제", style: .destructive, handler: { [weak self] _ in
+            guard let self = self, let pinLog = self.pinLog else { return }
+            Task {
+                do {
+                    try await self.pinLogManager.deletePinLog(pinLogId: pinLog.id!)
+                    self.delegate?.didUpdatePinLog()
+                    self.navigationController?.popViewController(animated: true)
+                } catch {
+                    print("Failed to delete pin log: \(error.localizedDescription)")
+                }
+            }
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func sharePinLog() {
+        
+    }
+    
+    func reportPinLog() {
+        guard let authorId = pinLog?.authorId else { return }
+        Task {
+            do {
+                try await AuthenticationManager.shared.blockAuthor(authorId: authorId)
+                delegate?.didBlockAuthor(authorId)
+            } catch {
+                print("Failed to block author: \(error)")
+            }
+        }
+    }
 
     func updateSelectedImages(with mediaItems: [Media]) {
         selectedImages.removeAll()
@@ -892,9 +1060,16 @@ extension DetailViewController: UIScrollViewDelegate {
     }
 }
 
+
 extension DetailViewController: DetailInputViewControllerDelegate {
     func didSavePinLog(_ updatedPinLog: PinLog) {
         self.pinLog = updatedPinLog
         configureView(with: updatedPinLog)
-    }
+}
+
+protocol DetailViewControllerDelegate: AnyObject {
+    func didUpdatePinLog()
+    func didUpdatePinButton(_ updatedPinLog: PinLog)
+    func didBlockAuthor(_ authorId: String)
+
 }

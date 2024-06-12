@@ -73,8 +73,10 @@ struct PinLog: Identifiable, Codable {
     var attendeeIds: [String]
     var isPublic: Bool
     var createdAt: Date?
+    var pinCount: Int //핀 갯수 추가 - 한빛
+    var pinnedBy: [String] // 핀 상태 확인 - 한빛
     
-    init(id: String? = nil, location: String, address: String, latitude: Double, longitude: Double, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?) {
+    init(id: String? = nil, location: String, address: String, latitude: Double, longitude: Double, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?, pinCount:Int, pinnedBy: [String] = []) {
         self.id = id
         self.location = location
         self.address = address
@@ -90,6 +92,8 @@ struct PinLog: Identifiable, Codable {
         self.attendeeIds = attendeeIds
         self.isPublic = isPublic
         self.createdAt = createdAt
+        self.pinCount = pinCount //핀 갯수 추가 - 한빛
+        self.pinnedBy = pinnedBy // 핀 상태 확인 - 한빛
     }
 }
 

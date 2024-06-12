@@ -87,6 +87,43 @@ class HotCollectionViewCell: UICollectionViewCell {
             $0.width.height.equalTo(30)
         }
     }
-    func configure() {
+    
+    func configure(with hotLog: PinLog) {
+        locationLabel.text = hotLog.location
+        dateLabel.text = formatDate(hotLog.startDate)
+        
+        // 이전 이미지를 초기화
+        backImg.image = nil
+        
+        // 이미지 일단 첫 번째 이미지
+        if let imageUrl = hotLog.media.first?.url, let url = URL(string: imageUrl) {
+            loadImage(from: url) { [weak self] image in
+                DispatchQueue.main.async {
+                    guard self?.locationLabel.text == hotLog.location else {
+                        return
+                    }
+                    self?.backImg.image = image
+                }
+            }
+        } else {
+            backImg.image = UIImage(systemName: "photo") // 임시 기본 이미지
+        }
+    }
+    
+    private func formatDate(_ date: Date) -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM"
+        return dateFormatter.string(from: date)
+    }
+    
+    private func loadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            if let data = data, let image = UIImage(data: data) {
+                completion(image)
+            } else {
+                completion(nil)
+            }
+        }
+        task.resume()
     }
 }

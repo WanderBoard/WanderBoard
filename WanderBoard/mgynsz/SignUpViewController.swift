@@ -80,7 +80,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     private let nicknameHintLabel: UILabel = {
         let label = UILabel()
-        label.text = "*3글자 이상, 16글자 이하, 공백과 특수문자 불가."
+        label.text = "*2글자 이상, 16글자 이하, 공백과 특수문자 불가."
         label.font = UIFont.systemFont(ofSize: 12, weight: .regular)
         label.textColor = .darkgray
         return label
@@ -572,7 +572,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     private func updateDuplicateCheckButtonState() {
         let nicknameLength = nicknameTextField.text?.count ?? 0
-        let isValidLength = nicknameLength >= 3 && nicknameLength <= 16
+        let isValidLength = nicknameLength >= 2 && nicknameLength <= 16
         duplicateCheckButton.isEnabled = isValidLength
         duplicateCheckButton.backgroundColor = isValidLength ? .black : .babygray
         duplicateCheckButton.setTitleColor(isValidLength ? .white : .black, for: .normal)

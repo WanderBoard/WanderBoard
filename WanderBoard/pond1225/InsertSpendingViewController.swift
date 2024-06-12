@@ -23,7 +23,7 @@ class InsertSpendingViewController: UIViewController {
         return titleLabel
     }()
     
-    var dateButton: UIButton = {
+    lazy var dateButton: UIButton = {
         var dateButton = UIButton()
         dateButton.backgroundColor = .lightGray
         dateButton.layer.cornerRadius = 8
@@ -129,7 +129,7 @@ class InsertSpendingViewController: UIViewController {
         return expenseAmountTextField
     }()
     
-    var categoryButton: UIButton = {
+    lazy var categoryButton: UIButton = {
         var categoryButton = UIButton()
         categoryButton.backgroundColor = .lightGray
         categoryButton.layer.cornerRadius = 8
@@ -217,7 +217,7 @@ class InsertSpendingViewController: UIViewController {
         return memoTextField
     }()
     
-    var saveDoneButton: UIButton = {
+    lazy var saveDoneButton: UIButton = {
         var saveDoneButton = UIButton()
         saveDoneButton.backgroundColor = .black
         saveDoneButton.setTitle("Done", for: .normal)

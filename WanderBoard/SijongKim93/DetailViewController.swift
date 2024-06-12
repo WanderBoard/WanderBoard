@@ -359,22 +359,21 @@ class DetailViewController: UIViewController {
     
     @objc func pinButtonTapped() {
         guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else { return }
-        
-        var updatedPinnedBy = pinLog.pinnedBy
-        var updatedPinCount = pinLog.pinCount
-        
+
+        var updatedPinnedBy = pinLog.pinnedBy ?? []
+        var updatedPinCount = pinLog.pinCount ?? 0
+
         if let index = updatedPinnedBy.firstIndex(of: currentUserId) {
-            // 현재 사용자가 이미 핀을 한 경우 -> 핀 제거
             updatedPinnedBy.remove(at: index)
             updatedPinCount -= 1
         } else {
-            // 현재 사용자가 핀을 하지 않은 경우 -> 핀 추가
             updatedPinnedBy.append(currentUserId)
             updatedPinCount += 1
         }
-        
+
         // Firestore에 업데이트
-        let pinLogRef = Firestore.firestore().collection("pinLogs").document(pinLog.id!)
+        guard let pinLogId = pinLog.id else { return }
+        let pinLogRef = Firestore.firestore().collection("pinLogs").document(pinLogId)
         pinLogRef.updateData([
             "pinnedBy": updatedPinnedBy,
             "pinCount": updatedPinCount
@@ -397,12 +396,14 @@ class DetailViewController: UIViewController {
     func updatePinButtonState() {
         guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else { return }
         
-        if pinLog.pinnedBy.contains(currentUserId) {
+        let pinnedBy = pinLog.pinnedBy ?? []
+        
+        if pinnedBy.contains(currentUserId) {
             pinButton.setImage(UIImage(systemName: "pin.circle.fill"), for: .normal)
         } else {
             pinButton.setImage(UIImage(systemName: "pin.circle"), for: .normal)
         }
-        print("Current pinnedBy: \(pinLog.pinnedBy)")
+        print("Current pinnedBy: \(pinnedBy)")
     }
 
     func setupUI() {
@@ -597,18 +598,13 @@ class DetailViewController: UIViewController {
         
         if let firstMedia = pinLog.media.first, let latitude = firstMedia.latitude, let longitude = firstMedia.longitude {
             let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-            //            mapViewController?.addPinToMap(location: coordinate, address: firstMedia.url)
-            //            mapViewController?.addPinToMap(location: coordinate, address: "Image") // 변경된 부분
-            
             mapViewController?.mapView.setRegion(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001)), animated: true)
         }
         
         for media in pinLog.media {
             if let latitude = media.latitude, let longitude = media.longitude {
                 let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-                //                mapViewController?.addPinToMap(location: coordinate, address: media.url)
                 mapViewController?.addPinToMap(location: coordinate, address: "")
-                
             }
         }
     }
@@ -662,6 +658,10 @@ class DetailViewController: UIViewController {
                 self.deletePinLog()
             }
             
+            let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { _ in
+                self.editPinLog()
+            }
+            
             optionsButton.menu = UIMenu(title: "", children: [shareAction, deleteAction])
         } else {
             // 다른 사람의 글인 경우
@@ -699,6 +699,15 @@ class DetailViewController: UIViewController {
         
     }
     
+    func editPinLog() {
+        let inputVC = DetailInputViewController()
+        inputVC.delegate = self
+        if let pinLog = self.pinLog {
+            inputVC.pinLog = pinLog
+        }
+        navigationController?.pushViewController(inputVC, animated: true)
+    }
+    
     func reportPinLog() {
         guard let authorId = pinLog?.authorId else { return }
         Task {
@@ -731,7 +740,9 @@ class DetailViewController: UIViewController {
 
         dispatchGroup.notify(queue: .main) {
             self.galleryCollectionView.reloadData()
-            if let firstImage = self.selectedImages.first?.0 {
+            if let representativeImage = self.selectedImages.first(where: { $0.1 })?.0 {
+                self.backgroundImageView.image = representativeImage
+            } else if let firstImage = self.selectedImages.first?.0 {
                 self.backgroundImageView.image = firstImage
             } else {
                 self.backgroundImageView.image = UIImage(systemName: "photo")
@@ -827,8 +838,12 @@ class DetailViewController: UIViewController {
             albumImageView.isHidden = false
             mapAllButton.isHidden = true
             albumAllButton.isHidden = false
-            if let firstImage = selectedImages.first?.0 {
+            if let representativeImage = selectedImages.first(where: { $0.1 })?.0 {
+                albumImageView.image = representativeImage
+            } else if let firstImage = selectedImages.first?.0 {
                 albumImageView.image = firstImage
+            } else {
+                albumImageView.image = UIImage(systemName: "photo")
             }
             contentView.sendSubviewToBack(albumImageView)
         }
@@ -976,4 +991,11 @@ protocol DetailViewControllerDelegate: AnyObject {
     func didUpdatePinLog()
     func didUpdatePinButton(_ updatedPinLog: PinLog)
     func didBlockAuthor(_ authorId: String)
+}
+
+extension DetailViewController: DetailInputViewControllerDelegate {
+    func didSavePinLog(_ updatedPinLog: PinLog) {
+        self.pinLog = updatedPinLog
+        configureView(with: updatedPinLog)
+    }
 }

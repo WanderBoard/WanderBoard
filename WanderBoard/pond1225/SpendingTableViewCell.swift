@@ -11,10 +11,11 @@ import UIKit
 class SpendingTableViewCell: UITableViewCell {
     static let identifier = "cell"
     
-    let categoryImage: UIImage = {
-        let categoryImage = UIImage()
+    let categoryImageView: UIImageView = {
+        let categoryImageView = UIImageView()
+        categoryImageView.tintColor = .gray //나중에 575757로 색상 변경
         
-        return categoryImage
+        return categoryImageView
     }()
     
     let expenseContent: UILabel = {
@@ -53,7 +54,7 @@ class SpendingTableViewCell: UITableViewCell {
     
     func configureUI() {
         
-//        contentView.addSubview(categoryImage)
+        contentView.addSubview(categoryImageView)
         contentView.addSubview(expenseContent)
         contentView.addSubview(memo)
         contentView.addSubview(expenseAmount)
@@ -62,24 +63,25 @@ class SpendingTableViewCell: UITableViewCell {
     
     func makeConstraints() {
         
-//        categoryImage.snp.makeConstraints {
-//            $0.top.equalTo(SpendingTableViewHeaderView.snp.bottom).inset(20)
-//            $0.leading.equalTo(contentView.safeAreaLayoutGuide).inset(29)
-//        }
-//        
+        categoryImageView.snp.makeConstraints {
+            $0.top.equalTo(contentView.snp.top).inset(8)
+            $0.leading.equalTo(contentView.safeAreaLayoutGuide).inset(32)
+            $0.height.width.equalTo(44)
+        }
+        
         expenseContent.snp.makeConstraints {
-            $0.top.equalTo(contentView.snp.top).offset(5)
-            $0.leading.equalTo(contentView.snp.leading).offset(13.23)
+            $0.top.equalTo(contentView.snp.top).inset(12)
+            $0.leading.equalTo(categoryImageView.snp.trailing).offset(12)
         }
         
         memo.snp.makeConstraints {
-            $0.top.equalTo(expenseContent.snp.bottom)
+            $0.top.equalTo(expenseContent.snp.bottom).offset(4)
             $0.leading.equalTo(expenseContent.snp.leading)
         }
         
         expenseAmount.snp.makeConstraints {
-            $0.centerY.equalTo(expenseContent)
-            $0.trailing.equalTo(contentView.safeAreaLayoutGuide).inset(20)
+            $0.centerY.equalTo(contentView.snp.centerY)
+            $0.trailing.equalTo(contentView.safeAreaLayoutGuide).inset(32)
         }
 
         

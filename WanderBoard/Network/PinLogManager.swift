@@ -136,4 +136,9 @@ class PinLogManager {
         logs.shuffle() // 데이터 랜덤
         return Array(logs.prefix(10)) // 최대 10개 데이터
     }
+    
+    func deletePinLog(pinLogId: String) async throws {
+        let documentRef = db.collection("pinLogs").document(pinLogId)
+        try await documentRef.delete()
+    }
 }

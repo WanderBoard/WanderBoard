@@ -11,15 +11,99 @@ import FirebaseFirestore
 import UIKit
 import CoreLocation
 import ImageIO
+import Photos
+
 
 class StorageManager {
+    static let shared = StorageManager()
+    
     private let storage = Storage.storage()
     private let db = Firestore.firestore()
     
-    // 이미지 업로드 메서드
-    func uploadImage(image: UIImage, userId: String) async throws -> Media {
+    private init() {}
+    
+    func extractLocationFromImage(image: UIImage) -> CLLocationCoordinate2D? {
+        guard let imageData = image.jpegData(compressionQuality: 1.0) else {
+            print("Failed to convert image to data")
+            return nil
+        }
+        
+        guard let source = CGImageSourceCreateWithData(imageData as CFData, nil) else {
+            print("Failed to create image source")
+            return nil
+        }
+        
+        guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] else {
+            print("No properties found in image data")
+            return nil
+        }
+        
+        print("Properties: \(properties)")
+        
+        guard let gpsData = properties[kCGImagePropertyGPSDictionary] as? [CFString: Any] else {
+            print("No GPS data found in properties")
+            return nil
+        }
+        
+        print("GPS Data: \(gpsData)")
+        
+        guard let latitude = gpsData[kCGImagePropertyGPSLatitude] as? Double,
+              let longitude = gpsData[kCGImagePropertyGPSLongitude] as? Double,
+              let latitudeRef = gpsData[kCGImagePropertyGPSLatitudeRef] as? String,
+              let longitudeRef = gpsData[kCGImagePropertyGPSLongitudeRef] as? String else {
+            print("Incomplete GPS data")
+            return nil
+        }
+        
+        let lat = latitudeRef == "S" ? -latitude : latitude
+        let lon = longitudeRef == "W" ? -longitude : longitude
+        
+        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+    }
+    
+    func extractLocation(from data: Data) -> CLLocationCoordinate2D? {
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
+            print("Failed to create image source")
+            return nil
+        }
+        
+        guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] else {
+            print("No properties found in image data")
+            return nil
+        }
+        
+        print("Properties: \(properties)")
+        
+        guard let gpsData = properties[kCGImagePropertyGPSDictionary] as? [CFString: Any] else {
+            print("No GPS data found in properties")
+            return nil
+        }
+        
+        print("GPS Data: \(gpsData)")
+        
+        guard let latitude = gpsData[kCGImagePropertyGPSLatitude] as? Double,
+              let longitude = gpsData[kCGImagePropertyGPSLongitude] as? Double,
+              let latitudeRef = gpsData[kCGImagePropertyGPSLatitudeRef] as? String,
+              let longitudeRef = gpsData[kCGImagePropertyGPSLongitudeRef] as? String else {
+                  print("Incomplete GPS data")
+                  return nil
+              }
+
+        let lat = latitudeRef == "S" ? -latitude : latitude
+        let lon = longitudeRef == "W" ? -longitude : longitude
+        
+        // GPS 정밀도 확인
+        if let hPositioningError = gpsData[kCGImagePropertyGPSHPositioningError] as? Double {
+            print("Horizontal positioning error: \(hPositioningError) meters")
+        }
+
+        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+    }
+    
+    // 이미지와 위치 메타데이터를 업로드하는 메서드
+    func uploadImage(image: UIImage, userId: String, isRepresentative: Bool = false) async throws -> Media {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            throw NSError(domain: "ImageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image to data."])
+            throw NSError(domain: "ImageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "이미지 데이터를 변환하는 데 실패했습니다."])
         }
         
         let fileName = UUID().uuidString
@@ -28,70 +112,62 @@ class StorageManager {
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
         
-        // 이미지에서 위치 메타데이터 추출
-        let location = extractLocationFromImage(image: image)
-        if let location = location {
-            metadata.customMetadata = [
-                "latitude": "\(location.coordinate.latitude)",
-                "longitude": "\(location.coordinate.longitude)"
-            ]
-        }
+        // 이미지 업로드
+        let _ = try await storageRef.putDataAsync(imageData, metadata: metadata)
         
-        // 이미지 촬영 날짜 메타데이터 추출
-        if let dateTaken = extractDateFromImage(image: image) {
-            metadata.customMetadata?["dateTaken"] = "\(dateTaken)"
-        }
-        
-        _ = try await storageRef.putDataAsync(imageData, metadata: metadata)
-        
+        // 다운로드 URL 가져오기
         let downloadURL = try await storageRef.downloadURL()
         
-        let media = Media(url: downloadURL.absoluteString, latitude: location?.coordinate.latitude, longitude: location?.coordinate.longitude, dateTaken: extractDateFromImage(image: image))
+        // 위치 메타데이터 추출
+        var media: Media
+        if let location = extractLocation(from: imageData) {
+            let customMetadata = [
+                "latitude": "\(location.latitude)",
+                "longitude": "\(location.longitude)"
+            ]
+            
+            let updatedMetadata = StorageMetadata()
+            updatedMetadata.customMetadata = customMetadata
+            
+            // 메타데이터를 업데이트
+            _ = try await storageRef.updateMetadataAsync(updatedMetadata)
+            print("😃", updatedMetadata.customMetadata ?? "No metadata")
+            
+            media = Media(url: downloadURL.absoluteString, latitude: location.latitude, longitude: location.longitude, dateTaken: Date(), isRepresentative: isRepresentative)
+        } else {
+            print("No location data found")
+            media = Media(url: downloadURL.absoluteString, latitude: nil, longitude: nil, dateTaken: Date(), isRepresentative: isRepresentative)
+        }
         
         return media
     }
-    
-    // 이미지에서 위치 메타데이터를 추출하는 메서드
-    private func extractLocationFromImage(image: UIImage) -> CLLocation? {
-        guard let cgImage = image.cgImage,
-              let data = cgImage.dataProvider?.data,
-              let cfData = CFDataCreate(kCFAllocatorDefault, CFDataGetBytePtr(data), CFDataGetLength(data)),
-              let source = CGImageSourceCreateWithData(cfData, nil),
-              let metadata = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any],
-              let gpsData = metadata["{GPS}"] as? [String: Any],
-              let latitude = gpsData["Latitude"] as? Double,
-              let longitude = gpsData["Longitude"] as? Double else {
-            return nil
-        }
+}
 
-        return CLLocation(latitude: latitude, longitude: longitude)
-    }
-    
-    // 이미지에서 촬영 날짜 메타데이터를 추출하는 메서드
-    private func extractDateFromImage(image: UIImage) -> Date? {
-        guard let cgImage = image.cgImage,
-              let data = cgImage.dataProvider?.data,
-              let cfData = CFDataCreate(kCFAllocatorDefault, CFDataGetBytePtr(data), CFDataGetLength(data)),
-              let source = CGImageSourceCreateWithData(cfData, nil),
-              let metadata = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any],
-              let exifData = metadata["{Exif}"] as? [String: Any],
-              let dateString = exifData["DateTimeOriginal"] as? String else {
-            return nil
+extension StorageReference {
+    func updateMetadataAsync(_ metadata: StorageMetadata) async throws -> StorageMetadata {
+        try await withCheckedThrowingContinuation { continuation in
+            self.updateMetadata(metadata) { updatedMetadata, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else if let updatedMetadata = updatedMetadata {
+                    continuation.resume(returning: updatedMetadata)
+                } else {
+                    continuation.resume(throwing: NSError(domain: "StorageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error"]))
+                }
+            }
         }
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
-        return formatter.date(from: dateString)
     }
-    
-    func deleteImage(at path: String, completion: @escaping (Bool) -> Void) {
-        let storageRef = storage.reference(withPath: path)
-        storageRef.delete { error in
-            if let error = error {
-                print("Error deleting image: \(error)")
-                completion(false)
-            } else {
-                completion(true)
+
+    func putDataAsync(_ data: Data, metadata: StorageMetadata?) async throws -> StorageMetadata {
+        try await withCheckedThrowingContinuation { continuation in
+            self.putData(data, metadata: metadata) { metadata, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else if let metadata = metadata {
+                    continuation.resume(returning: metadata)
+                } else {
+                    continuation.resume(throwing: NSError(domain: "StorageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error"]))
+                }
             }
         }
     }

@@ -10,37 +10,52 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 import CoreLocation
 
+//struct Media: Codable {
+//    var url: String
+//    var latitude: Double?
+//    var longitude: Double?
+//    var dateTaken: Date?
+//    
+//    func toDictionary() -> [String: Any] {
+//        var dict: [String: Any] = ["url": url]
+//        if let latitude = latitude {
+//            dict["latitude"] = latitude
+//        }
+//        if let longitude = longitude {
+//            dict["longitude"] = longitude
+//        }
+//        if let dateTaken = dateTaken {
+//            dict["dateTaken"] = dateTaken.timeIntervalSince1970
+//        }
+//        return dict
+//    }
+//}
+
 struct Media: Codable {
     var url: String
     var latitude: Double?
     var longitude: Double?
     var dateTaken: Date?
+    var isRepresentative: Bool
 
-    var location: CLLocation? {
-        get {
-            guard let latitude = latitude, let longitude = longitude else { return nil }
-            return CLLocation(latitude: latitude, longitude: longitude)
-        }
-        set {
-            latitude = newValue?.coordinate.latitude
-            longitude = newValue?.coordinate.longitude
-        }
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        url = try container.decode(String.self, forKey: .url)
+        latitude = try container.decodeIfPresent(Double.self, forKey: .latitude)
+        longitude = try container.decodeIfPresent(Double.self, forKey: .longitude)
+        dateTaken = try container.decodeIfPresent(Date.self, forKey: .dateTaken)
+        isRepresentative = try container.decodeIfPresent(Bool.self, forKey: .isRepresentative) ?? false // 기본 값을 false로 설정
     }
-    
-    var dictionary: [String: Any] {
-        var dict: [String: Any] = ["url": url]
-        if let latitude = latitude {
-            dict["latitude"] = latitude
-        }
-        if let longitude = longitude {
-            dict["longitude"] = longitude
-        }
-        if let dateTaken = dateTaken {
-            dict["dateTaken"] = Timestamp(date: dateTaken)
-        }
-        return dict
+
+    init(url: String, latitude: Double?, longitude: Double?, dateTaken: Date?, isRepresentative: Bool = false) {
+        self.url = url
+        self.latitude = latitude
+        self.longitude = longitude
+        self.dateTaken = dateTaken
+        self.isRepresentative = isRepresentative
     }
 }
+
 
 struct PinLog: Identifiable, Codable {
     @DocumentID var id: String?
@@ -57,8 +72,9 @@ struct PinLog: Identifiable, Codable {
     var authorId: String
     var attendeeIds: [String]
     var isPublic: Bool
+    var createdAt: Date?
     
-    init(id: String? = nil, location: String, address: String, latitude: Double, longitude: Double, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool) {
+    init(id: String? = nil, location: String, address: String, latitude: Double, longitude: Double, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?) {
         self.id = id
         self.location = location
         self.address = address
@@ -73,5 +89,61 @@ struct PinLog: Identifiable, Codable {
         self.authorId = authorId
         self.attendeeIds = attendeeIds
         self.isPublic = isPublic
+        self.createdAt = createdAt
     }
 }
+
+//
+//import Foundation
+//import FirebaseFirestore
+//import FirebaseFirestoreSwift
+//import CoreLocation
+//
+//struct Media: Codable {
+//    var url: String
+//    var latitude: Double?
+//    var longitude: Double?
+//    var dateTaken: Date?
+//    var isRepresentative: Bool
+//
+//    var location: CLLocation? {
+//        get {
+//            guard let latitude = latitude, let longitude = longitude else { return nil }
+//            return CLLocation(latitude: latitude, longitude: longitude)
+//        }
+//        set {
+//            latitude = newValue?.coordinate.latitude
+//            longitude = newValue?.coordinate.longitude
+//        }
+//    }
+//}
+//
+//struct PinLog: Identifiable, Codable {
+//    @DocumentID var id: String?
+//    var location: String
+//    var startDate: Date
+//    var endDate: Date
+//    var duration: Int
+//    var title: String
+//    var content: String
+//    var media: [Media]
+//    var authorId: String
+//    var attendeeIds: [String]
+//    var isPublic: Bool
+//    var createdAt: Date?
+//    
+//    init(id: String? = nil, location: String, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?) {
+//        self.id = id
+//        self.location = location
+//        self.startDate = startDate
+//        self.endDate = endDate
+//        self.duration = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0
+//        self.title = title
+//        self.content = content
+//        self.media = media
+//        self.authorId = authorId
+//        self.attendeeIds = attendeeIds
+//        self.isPublic = isPublic
+//        self.createdAt = createdAt
+//    }
+//}

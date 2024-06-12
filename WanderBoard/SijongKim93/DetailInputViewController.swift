@@ -18,6 +18,8 @@ import SwiftUI
 import CoreLocation
 import FirebaseStorage
 import FirebaseFirestore
+import Contacts
+
 
 protocol DetailInputViewControllerDelegate: AnyObject {
     func didSavePinLog(_ pinLog: PinLog)
@@ -32,10 +34,15 @@ class DetailInputViewController: UIViewController {
     
     weak var delegate: DetailInputViewControllerDelegate?
     
-    var selectedImages: [UIImage] = []
+    var selectedImages: [(UIImage, Bool)] = [] // 변경 대표이미지 맞아?
     var selectedFriends: [UIImage] = []
+    var selectedImageData: [Data] = []
+    var representativeImageIndex: Int? = 0
+
+    var imageLocations: [CLLocationCoordinate2D] = []
     let pinLogManager = PinLogManager.shared
-    
+    var pinLog: PinLog? //추가
+
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
     
@@ -267,7 +274,10 @@ class DetailInputViewController: UIViewController {
         setupNavigationBar()
         requestPhotoLibraryAccess()
         
-        print("DetailInputViewController loaded") // 디버깅을 위해 추가
+        if let pinLog = pinLog {
+            configureView(with: pinLog)
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -497,110 +507,34 @@ class DetailInputViewController: UIViewController {
     }
     
     @objc func locationButtonTapped() {
-        print("locationButtonTapped called")
-        
         Task {
-            do {
-                let (savedLocation, savedAddress) = try await fetchSavedLocation()
-                
-                let center: CLLocationCoordinate2D
-                if let savedLocation = savedLocation {
-                    center = savedLocation
-                } else {
-                    // 기본 위치 설정 (샌프란시스코)
-                    center = CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)
-                }
-                
-                let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
-                
-                let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date(), onLocationSelected: { [weak self] (selectedLocation: CLLocationCoordinate2D, address: String) in
-                    guard let self = self else { return }
-                    self.updateLocationLabel(with: address)
-                    self.savedLocation = selectedLocation
-                    self.savedAddress = address
-                    
-                    // Firestore에 저장
-                    self.saveLocationToFirestore(location: selectedLocation, address: address)
-                })
-                
-                // 저장된 위치가 있으면 해당 위치에 핀을 생성
-                if let savedLocation = savedLocation, let savedAddress = savedAddress {
-                    mapVC.addPinToMap(location: savedLocation, address: savedAddress)
-                }
-                
-                self.navigationController?.pushViewController(mapVC, animated: true)
-            } catch {
-                print("Error fetching saved location from Firestore: \(error.localizedDescription)")
+            let center: CLLocationCoordinate2D
+            if let savedLocation = savedLocation {
+                center = savedLocation
+            } else {
+                // 기본 위치 설정 (광화문)
+                center = CLLocationCoordinate2D(latitude: 37.5760222, longitude: 126.9769000)
             }
-        }
-    }
-    
-    func fetchSavedLocation() async throws -> (CLLocationCoordinate2D?, String?) {
-        let userId = Auth.auth().currentUser?.uid ?? ""
-        let documentRef = Firestore.firestore().collection("users").document(userId)
-        
-        let document = try await documentRef.getDocument()
-        if let data = document.data(), let latitude = data["latitude"] as? CLLocationDegrees, let longitude = data["longitude"] as? CLLocationDegrees {
-            let location = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-            let address = data["address"] as? String
-            return (location, address)
-        } else {
-            return (nil, nil)
-        }
-    }
-    
-    func updateLocationLabel(with address: String) {
-        self.locationLeftLabel.text = address
-    }
-    
-    private func saveLocationToFirestore(location: CLLocationCoordinate2D, address: String) {
-        guard let pinLogId = self.savedPinLogId else {
-            createNewPinLog(location: location, address: address)
-            return
-        }
-        
-        let data: [String: Any] = [
-            "location": GeoPoint(latitude: location.latitude, longitude: location.longitude),
-            "address": address,
-        ]
-        
-        Task {
-            do {
-                try await PinLogManager.shared.updatePinLog(pinLogId: pinLogId, data: data)
-                print("Location updated successfully in Firestore")
-            } catch {
-                print("Error updating location in Firestore: \(error.localizedDescription)")
+
+            let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+
+            let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date(), onLocationSelected: { [weak self] (selectedLocation: CLLocationCoordinate2D, address: String) in
+                guard let self = self else { return }
+                self.updateLocationLabel(with: address)
+                self.savedLocation = selectedLocation
+                self.savedAddress = address
+
+            })
+
+            // 저장된 위치가 있으면 해당 위치에 핀을 생성
+            if let savedLocation = savedLocation, let savedAddress = savedAddress {
+                mapVC.addPinToMap(location: savedLocation, address: savedAddress)
             }
+
+            self.navigationController?.pushViewController(mapVC, animated: true)
         }
     }
-    
-    private func createNewPinLog(location: CLLocationCoordinate2D, address: String) {
-        var pinLog = PinLog(location: address, address: address, latitude: location.latitude, longitude: location.longitude, startDate: Date(), endDate: Date(), title: "", content: "", media: [], authorId: Auth.auth().currentUser?.uid ?? "", attendeeIds: [], isPublic: true)
-        
-        Task {
-            do {
-                let savedPinLog = try await PinLogManager.shared.createOrUpdatePinLog(pinLog: &pinLog, images: [])
-                self.savedPinLogId = savedPinLog.id
-            } catch {
-                print("Error creating new pin log in Firestore: \(error.localizedDescription)")
-            }
-        }
-    }
-    
-    func loadSavedLocation() {
-        let userId = Auth.auth().currentUser?.uid ?? ""
-        let documentRef = Firestore.firestore().collection("users").document(userId)
-        documentRef.getDocument { (document, error) in
-            if let document = document, document.exists, let data = document.data() {
-                if let latitude = data["latitude"] as? CLLocationDegrees,
-                   let longitude = data["longitude"] as? CLLocationDegrees {
-                    self.savedLocation = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-                    let address = data["address"] as? String ?? ""
-                    self.updateLocationLabel(with: address)
-                }
-            }
-        }
-    }
+
     
     @objc func consumButtonTapped() {
         let spendVC = SpendingListViewController()
@@ -639,6 +573,128 @@ class DetailInputViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
     }
     
+    func updateLocationLabel(with address: String) {
+        self.locationLeftLabel.text = address
+    }
+    
+    func configureView(with pinLog: PinLog) {
+        if let firstImageIndex = selectedImages.firstIndex(where: { $0.1 }) {
+            representativeImageIndex = firstImageIndex
+        } else {
+            representativeImageIndex = 0
+        }
+        if !selectedImages.isEmpty {
+            selectedImages[0].1 = true
+        }
+        
+        locationLeftLabel.text = pinLog.location
+        mainTextField.text = pinLog.title
+        mainTextField.textColor = .black
+        subTextField.text = pinLog.content
+        subTextField.textColor = .black
+        publicSwitch.isOn = pinLog.isPublic
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        startDateButton.setTitle(dateFormatter.string(from: pinLog.startDate), for: .normal)
+        endDateButton.setTitle(dateFormatter.string(from: pinLog.endDate), for: .normal)
+        
+        selectedImages.removeAll()
+        
+        let dispatchGroup = DispatchGroup()
+        
+        for media in pinLog.media {
+            guard let url = URL(string: media.url) else { continue }
+            dispatchGroup.enter()
+            URLSession.shared.dataTask(with: url) { data, response, error in
+                if let data = data, let image = UIImage(data: data) {
+                    self.selectedImages.append((image, media.isRepresentative))
+                }
+                dispatchGroup.leave()
+            }.resume()
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            self.galleryCollectionView.reloadData()
+            self.updateGalleryCountButton()
+        }
+    }
+
+    
+    func loadSavedLocation() {
+        let userId = Auth.auth().currentUser?.uid ?? ""
+        let documentRef = Firestore.firestore().collection("users").document(userId)
+        documentRef.getDocument { (document, error) in
+            if let document = document, document.exists, let data = document.data() {
+                if let latitude = data["latitude"] as? CLLocationDegrees,
+                   let longitude = data["longitude"] as? CLLocationDegrees {
+                    self.savedLocation = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                    let address = data["address"] as? String ?? ""
+                    self.updateLocationLabel(with: address)
+                }
+            }
+        }
+    }
+    
+    private func saveImageWithLocation(image: UIImage, location: CLLocationCoordinate2D?, address: String, completion: @escaping (Error?) -> Void) {
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            completion(NSError(domain: "ImageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to compress image"]))
+            return
+        }
+
+        let filename = UUID().uuidString + ".jpg"
+        let storageRef = Storage.storage().reference().child("images/\(filename)")
+        
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+        
+        storageRef.putData(imageData, metadata: metadata) { [weak self] metadata, error in
+            if let error = error {
+                completion(error)
+                return
+            }
+            
+            storageRef.downloadURL { [weak self] url, error in
+                if let error = error {
+                    completion(error)
+                    return
+                }
+                
+                guard let downloadURL = url else {
+                    completion(NSError(domain: "ImageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to get download URL"]))
+                    return
+                }
+                
+                guard let self = self else {
+                    completion(NSError(domain: "ImageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Self is nil"]))
+                    return
+                }
+                
+                let mediaItem = Media(
+                    url: downloadURL.absoluteString,
+                    latitude: location?.latitude,
+                    longitude: location?.longitude,
+                    dateTaken: Date(),
+                    isRepresentative: false
+                )
+                
+                self.saveMediaItemToFirestore(mediaItem: mediaItem, address: address, completion: completion)
+            }
+        }
+    }
+
+    private func saveMediaItemToFirestore(mediaItem: Media, address: String, completion: @escaping (Error?) -> Void) {
+        let db = Firestore.firestore()
+        db.collection("images").addDocument(data: [
+            "url": mediaItem.url,
+            "latitude": mediaItem.latitude ?? 0,
+            "longitude": mediaItem.longitude ?? 0,
+            "timestamp": Timestamp(date: mediaItem.dateTaken ?? Date())
+        ]) { error in
+            completion(error)
+        }
+    }
+    
     @objc func doneButtonTapped() {
         guard let locationTitle = locationLeftLabel.text, locationTitle != "지역을 선택하세요" else {
             let alert = UIAlertController(title: "오류", message: "지역을 선택해주세요.", preferredStyle: .alert)
@@ -646,10 +702,10 @@ class DetailInputViewController: UIViewController {
             present(alert, animated: true, completion: nil)
             return
         }
-        
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        
+
         guard let startDateString = startDateButton.title(for: .normal),
               let endDateString = endDateButton.title(for: .normal),
               let startDate = dateFormatter.date(from: startDateString),
@@ -659,18 +715,19 @@ class DetailInputViewController: UIViewController {
             present(alert, animated: true, completion: nil)
             return
         }
-        
+
         let title = mainTextField.text ?? ""
         let content = subTextField.text ?? ""
         let isPublic = publicSwitch.isOn
         let address = savedAddress ?? "Unknown Address"
         let latitude = savedLocation?.latitude ?? 0.0
         let longitude = savedLocation?.longitude ?? 0.0
-        
+
         Task {
             do {
                 var pinLog: PinLog
-                
+                var createdAt: Date?
+
                 if let pinLogId = self.savedPinLogId {
                     // 핀로그가 이미 존재하는 경우 업데이트
                     pinLog = PinLog(id: pinLogId,
@@ -685,7 +742,8 @@ class DetailInputViewController: UIViewController {
                                     media: [],
                                     authorId: Auth.auth().currentUser?.uid ?? "",
                                     attendeeIds: [],
-                                    isPublic: isPublic)
+                                    isPublic: isPublic,
+                                    createdAt: createdAt)
                 } else {
                     // 핀로그가 존재하지 않는 경우 새로 생성
                     pinLog = PinLog(location: locationTitle,
@@ -699,10 +757,11 @@ class DetailInputViewController: UIViewController {
                                     media: [],
                                     authorId: Auth.auth().currentUser?.uid ?? "",
                                     attendeeIds: [],
-                                    isPublic: isPublic)
+                                    isPublic: isPublic,
+                                    createdAt: Date())
                 }
                 
-                let savedPinLog = try await PinLogManager.shared.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages)
+                let savedPinLog = try await PinLogManager.shared.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations)
                 self.savedPinLogId = savedPinLog.id
                 delegate?.didSavePinLog(savedPinLog)
                 navigationController?.popViewController(animated: true)
@@ -787,47 +846,28 @@ class DetailInputViewController: UIViewController {
         present(picker, animated: true, completion: nil)
     }
     
-    func extractLocation(from data: Data) -> CLLocationCoordinate2D? {
-        guard let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
-              let properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [CFString: Any],
-              let gpsData = properties[kCGImagePropertyGPSDictionary] as? [CFString: Any],
-              let latitude = gpsData[kCGImagePropertyGPSLatitude] as? Double,
-              let longitude = gpsData[kCGImagePropertyGPSLongitude] as? Double,
-              let latitudeRef = gpsData[kCGImagePropertyGPSLatitudeRef] as? String,
-              let longitudeRef = gpsData[kCGImagePropertyGPSLongitudeRef] as? String else {
-                  return nil
-              }
-
-        let lat = latitudeRef == "S" ? -latitude : latitude
-        let lon = longitudeRef == "W" ? -longitude : longitude
-
-        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+    private func fetchAddress(for location: CLLocationCoordinate2D, completion: @escaping (String) -> Void) {
+        let geocoder = CLGeocoder()
+        let clLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
+        geocoder.reverseGeocodeLocation(clLocation) { placemarks, error in
+            if let error = error {
+                print("Error fetching address: \(error.localizedDescription)")
+                completion("No Address")
+                return
+            }
+            if let placemark = placemarks?.first {
+                let address = [
+                    placemark.thoroughfare,
+                    placemark.locality,
+                    placemark.administrativeArea,
+                    placemark.country
+                ].compactMap { $0 }.joined(separator: ", ")
+                completion(address)
+            } else {
+                completion("No Address")
+            }
+        }
     }
-    
-    //    func extractCreationDate(from result: PHPickerResult) -> Date? {
-    //        var creationDate: Date? = nil
-    //        let dispatchGroup = DispatchGroup()
-    //        dispatchGroup.enter()
-    //
-    //        result.itemProvider.loadItem(forTypeIdentifier: UTType.image.identifier, options: nil) { (item, error) in
-    //            if let url = item as? URL {
-    //                if let source = CGImageSourceCreateWithURL(url as CFURL, nil),
-    //                   let metadata = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
-    //                   let exifData = metadata[kCGImagePropertyExifDictionary] as? [CFString: Any],
-    //                   let dateString = exifData[kCGImagePropertyExifDateTimeOriginal] as? String {
-    //
-    //                    let dateFormatter = DateFormatter()
-    //                    dateFormatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
-    //                    creationDate = dateFormatter.date(from: dateString)
-    //                }
-    //            }
-    //            dispatchGroup.leave()
-    //        }
-    //
-    //        dispatchGroup.wait()
-    //        return creationDate
-    //    }
-    
     
     @objc func deletePhoto(_ sender: UIButton) {
         guard let cell = sender.superview?.superview as? GallaryInPutCollectionViewCell,
@@ -853,28 +893,36 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
         if collectionView == galleryCollectionView {
             return selectedImages.isEmpty ? 1 : selectedImages.count
         } else if collectionView == mateCollectionView {
-            return 1
+            return selectedFriends.isEmpty ? 1 : selectedFriends.count
         }
         return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == galleryCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GallaryInPutCollectionViewCell.identifier, for: indexPath) as? GallaryInPutCollectionViewCell else {fatalError("컬렉션뷰 오류")}
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GallaryInPutCollectionViewCell.identifier, for: indexPath) as? GallaryInPutCollectionViewCell else {
+                fatalError("컬렉션 뷰 오류")
+            }
             if selectedImages.isEmpty {
-                cell.configure(with: nil, isEditing: isEditingPhotos)
+                cell.configure(with: nil, isEditing: isEditingPhotos, isRepresentative: false)
             } else {
-                cell.configure(with: selectedImages[indexPath.row], isEditing: isEditingPhotos)
+                let (image, isRepresentative) = selectedImages[indexPath.row]
+                cell.configure(with: image, isEditing: isEditingPhotos, isRepresentative: isRepresentative)
             }
             return cell
         } else {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendInputCollectionViewCell.identifier, for: indexPath) as? FriendInputCollectionViewCell else { fatalError("컬렉션뷰 오류")}
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendInputCollectionViewCell.identifier, for: indexPath) as? FriendInputCollectionViewCell else {
+                fatalError("컬렉션 뷰 오류")
+            }
             if selectedFriends.isEmpty {
                 cell.configure(with: nil)
+            } else {
+                cell.configure(with: selectedFriends[indexPath.row])
             }
             return cell
         }
     }
+
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if selectedImages.isEmpty || indexPath.row == selectedImages.count {
@@ -885,45 +933,72 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
 
 extension DetailInputViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        picker.dismiss(animated: true, completion: nil)
+        picker.dismiss(animated: true)
 
-        var newImages: [UIImage] = []
+        guard !results.isEmpty else {
+            print("No result found.")
+            return
+        }
+
         let dispatchGroup = DispatchGroup()
 
         for result in results {
-            dispatchGroup.enter()
-            result.itemProvider.loadObject(ofClass: UIImage.self) { (object, error) in
-                if let image = object as? UIImage {
-                    newImages.append(image)
-                    result.itemProvider.loadDataRepresentation(forTypeIdentifier: "public.jpeg") { data, error in
+            let provider = result.itemProvider
+            if provider.canLoadObject(ofClass: UIImage.self) {
+                dispatchGroup.enter()
+                provider.loadObject(ofClass: UIImage.self) { [weak self] object, error in
+                    guard let self = self else {
+                        dispatchGroup.leave()
+                        return
+                    }
+
+                    if let error = error {
+                        print("Error loading image: \(error.localizedDescription)")
+                        dispatchGroup.leave()
+                        return
+                    }
+
+                    guard let uiImage = object as? UIImage else {
+                        print("Image is nil or not UIImage.")
+                        dispatchGroup.leave()
+                        return
+                    }
+
+                    // 이미지 추가
+                    self.selectedImages.append((uiImage, false))
+
+                    provider.loadDataRepresentation(forTypeIdentifier: "public.jpeg") { data, error in
                         if let error = error {
                             print("Error loading data representation: \(error.localizedDescription)")
+                            dispatchGroup.leave()
                             return
                         }
                         guard let data = data else {
                             print("No data found.")
+                            dispatchGroup.leave()
                             return
                         }
-                        if let location = self.extractLocation(from: data) {
-                            print("위치 정보: \(location.latitude), \(location.longitude)")
+
+                        // 위치 정보 확인 및 디버깅 출력
+                        if let location = StorageManager.shared.extractLocation(from: data) {
+                            self.imageLocations.append(location)
                         } else {
-                            print("위치 정보가 없습니다.")
+                            print("이미지에 위처 정보가 없습니다.")
                         }
+
+                        dispatchGroup.leave()
                     }
-                } else {
-                    print("이미지를 로드하는 중 오류 발생: \(error?.localizedDescription ?? "알 수 없는 오류")")
                 }
-                dispatchGroup.leave()
+            } else {
+                print("No provider or provider cannot load UIImage.")
             }
         }
 
-        dispatchGroup.notify(queue: .main) { [weak self] in
-            guard let self = self else { return }
-            self.selectedImages.append(contentsOf: newImages.prefix(10 - self.selectedImages.count))
+        dispatchGroup.notify(queue: .main) {
             self.galleryCollectionView.reloadData()
-            self.updateGalleryCountButton()
         }
-    }}
+    }
+}
 
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {

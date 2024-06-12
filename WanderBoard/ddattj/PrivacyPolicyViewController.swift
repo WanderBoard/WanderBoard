@@ -31,7 +31,7 @@ class PrivacyPolicyViewController: BaseViewController {
         $0.backgroundColor = .clear //collectionView에 대한 then
     }
     //그라데이션 레이어와 마스크 해줄 레이어 만들기 -> 회색부분을 배경으로 입혀 점진적으로 투명해지는 느낌을 주기 위해 마스크를 씌움
-    let maskedView = UIView(frame: CGRect(x: 0, y: 98, width: 393, height: 60))
+    let maskedView = UIView(frame: CGRect(x: 0, y: 58, width: 393, height: 100))
     let maskedView2 = UIView(frame: CGRect(x: 0, y: 652, width: 393, height: 200))
     let gradientLayer = CAGradientLayer()
     let gradientLayer2 = CAGradientLayer()

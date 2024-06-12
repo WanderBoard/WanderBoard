@@ -242,7 +242,8 @@ class SettingViewController: BaseViewController {
                     self.lightMode.isUserInteractionEnabled = false
                     self.darkMode.isUserInteractionEnabled = false
                     self.applyAutomaticMode(window: appDelegate)
-                    UserDefaults.standard.set(true, forKey: "isAutometic")
+                    //키값 오타때문에....오타에 유의하자
+                    UserDefaults.standard.set(true, forKey: "isAutomatic")
                     print("자동모드 사용중")
                 } else {
                     // 토글이 꺼져 있을 때, 기본 모드를 설정합니다 (라이트 모드)

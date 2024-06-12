@@ -8,7 +8,7 @@
 import UIKit
 
 class SettingViewController: BaseViewController {
-
+    
     let lightMode = UIView()
     let phoneImageL = UIImageView()
     let titleL = UILabel()
@@ -26,6 +26,9 @@ class SettingViewController: BaseViewController {
         view.backgroundColor = .systemBackground
         configureUI()
         constraintLayout()
+        // 저장된 사용자 인터페이스 스타일 적용
+        applySavedUserInterfaceStyle()
+        
         toggle.addTarget(self, action: #selector(modeChangedWithToggle), for: .valueChanged)//토글로 모드 자동전환 실행
         
         let tapRecognizerL = UITapGestureRecognizer(target: self, action: #selector(viewTappedL(tapGestureRecognizer:)))
@@ -148,6 +151,49 @@ class SettingViewController: BaseViewController {
         }
     }
     
+    func applySavedUserInterfaceStyle() {
+        let selectedMode = UserDefaults.standard.string(forKey: "modeSelected") ?? "light"
+        let isAutomatic = UserDefaults.standard.bool(forKey: "isAutomatic")
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            let window = windowScene.windows.first
+            if isAutomatic {
+                toggle.isOn = true
+                self.iconL.image = UIImage(systemName: "circle")
+                self.iconL.tintColor = .babygray
+                self.iconD.image = UIImage(systemName: "circle")
+                self.iconD.tintColor = .babygray
+                lightMode.isUserInteractionEnabled = false
+                darkMode.isUserInteractionEnabled = false
+                applyAutomaticMode(window: window)
+            } else {
+                toggle.isOn = false
+                lightMode.isUserInteractionEnabled = true
+                darkMode.isUserInteractionEnabled = true
+                self.iconL.tintColor = .font
+                self.iconD.tintColor = .font
+                if selectedMode == "dark" {
+                    window?.overrideUserInterfaceStyle = .dark
+                    self.iconL.image = UIImage(systemName: "circle")
+                    self.iconD.image = UIImage(systemName: "checkmark.circle.fill")
+                } else {
+                    window?.overrideUserInterfaceStyle = .light
+                    self.iconL.image = UIImage(systemName: "checkmark.circle.fill")
+                    self.iconD.image = UIImage(systemName: "circle")
+                }
+            }
+        }
+    }
+    
+    func applyAutomaticMode(window: UIWindow?) {
+            let hour = Calendar.current.component(.hour, from: Date())
+            if hour >= 18 || hour < 6 {
+                window?.overrideUserInterfaceStyle = .dark
+            } else {
+                window?.overrideUserInterfaceStyle = .light
+            }
+    }
+    
     @objc func viewTappedL(tapGestureRecognizer: UITapGestureRecognizer){
         UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
@@ -155,12 +201,17 @@ class SettingViewController: BaseViewController {
                 appDelegate?.overrideUserInterfaceStyle = .light
                 self.iconL.image = UIImage(systemName: "checkmark.circle.fill")
                 self.iconD.image = UIImage(systemName: "circle")
-                
-                UserDefaults.standard.set(true, forKey: "isLightModeSelected")
+                self.toggle.isOn = false
+                self.lightMode.isUserInteractionEnabled = true
+                self.darkMode.isUserInteractionEnabled = true
+                self.iconL.tintColor = .font
+                self.iconD.tintColor = .font
+                UserDefaults.standard.set("light", forKey: "modeSelected")
+                UserDefaults.standard.set(false, forKey: "isAutomatic")
             }
         }, completion: nil)
     }
-
+    
     @objc func viewTappedD(tapGestureRecognizer: UITapGestureRecognizer){
         UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve, animations: {
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
@@ -168,8 +219,13 @@ class SettingViewController: BaseViewController {
                 appDelegate?.overrideUserInterfaceStyle = .dark
                 self.iconL.image = UIImage(systemName: "circle")
                 self.iconD.image = UIImage(systemName: "checkmark.circle.fill")
-                
-                UserDefaults.standard.set(true, forKey: "isDarkModeSelected")
+                self.toggle.isOn = false
+                self.lightMode.isUserInteractionEnabled = true
+                self.darkMode.isUserInteractionEnabled = true
+                self.iconL.tintColor = .font
+                self.iconD.tintColor = .font
+                UserDefaults.standard.set("dark", forKey: "modeSelected")
+                UserDefaults.standard.set(false, forKey: "isAutomatic")
             }
         }, completion: nil)
     }
@@ -180,17 +236,25 @@ class SettingViewController: BaseViewController {
                 let appDelegate = windowScene.windows.first
                 if sender.isOn {
                     self.iconL.image = UIImage(systemName: "circle")
+                    self.iconL.tintColor = .babygray
                     self.iconD.image = UIImage(systemName: "circle")
-                    let hour = Calendar.current.component(.hour, from: Date())
-                    if hour >= 18 || hour < 6
-                    {
-                        //저녁 6시부터 다음 날 아침 6시까진 다크모드
-                        appDelegate?.overrideUserInterfaceStyle = .dark
-                        UserDefaults.standard.set(true, forKey: "isDarkModeSelected")
-                    } else {
-                        appDelegate?.overrideUserInterfaceStyle = .light
-                        UserDefaults.standard.set(true, forKey: "isLightModeSelected")
-                    }
+                    self.iconD.tintColor = .babygray
+                    self.lightMode.isUserInteractionEnabled = false
+                    self.darkMode.isUserInteractionEnabled = false
+                    self.applyAutomaticMode(window: appDelegate)
+                    UserDefaults.standard.set(true, forKey: "isAutometic")
+                    print("자동모드 사용중")
+                } else {
+                    // 토글이 꺼져 있을 때, 기본 모드를 설정합니다 (라이트 모드)
+                    self.lightMode.isUserInteractionEnabled = true
+                    self.darkMode.isUserInteractionEnabled = true
+                    self.iconL.tintColor = .font
+                    self.iconD.tintColor = .font
+                    appDelegate?.overrideUserInterfaceStyle = .light
+                    self.iconL.image = UIImage(systemName: "checkmark.circle.fill")
+                    self.iconD.image = UIImage(systemName: "circle")
+                    UserDefaults.standard.set("light", forKey: "modeSelected")
+                    UserDefaults.standard.set(false, forKey: "isAutomatic")
                 }
             }
         }, completion: nil)

@@ -18,6 +18,7 @@ struct User: Codable {
     var socialMediaLink: String?
     var authProvider: String?
     var isProfileComplete: Bool?
+    var blockedAuthors: [String]?
 
     init(entity: UserEntity) {
         self.uid = entity.uid ?? ""
@@ -29,6 +30,7 @@ struct User: Codable {
         self.socialMediaLink = entity.socialMediaLink
         self.authProvider = entity.authProvider ?? ""
         self.isProfileComplete = entity.isProfileComplete
+        self.blockedAuthors = (entity.blockedAuthors?.jsonArray() as? [String]) ?? []
 
     }
 
@@ -45,6 +47,7 @@ struct User: Codable {
         if let isProfileComplete = self.isProfileComplete {
             userEntity.isProfileComplete = isProfileComplete
         }
+        userEntity.blockedAuthors = self.blockedAuthors?.jsonString() ?? "[]"
         return userEntity
     }
 

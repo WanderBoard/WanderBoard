@@ -12,7 +12,6 @@ import SwiftUI
 import FirebaseAuth
 import Kingfisher
 
-
 class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDelegateFlowLayout {
 
     static var tripLogs: [PinLog] = [] //시안: 마이페이지의 tripLogs개수 업데이트를 위해 static 변수 사용
@@ -62,8 +61,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": false])
-        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": true])
+        NotificationHelper.changePage(hidden: false, isEnabled: true)
         updateView()
 
         Task {
@@ -130,8 +128,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
     
     @objc func addButtonTapped() {
-        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true])
-        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false])
+        NotificationHelper.changePage(hidden: true, isEnabled: false)
         plusButton.isHidden = true
         let inputVC = DetailInputViewController()
         inputVC.delegate = self
@@ -148,7 +145,6 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         do {
             guard let userId = Auth.auth().currentUser?.uid else { return }
             MyTripsViewController.tripLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
-
             updateView()
         } catch {
             print("Failed to fetch pin logs: \(error.localizedDescription)")
@@ -161,7 +157,6 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
     
     private func updateView() {
-
         if MyTripsViewController.tripLogs.isEmpty {
             collectionView.isHidden = true
             plusButton.isHidden = true
@@ -245,8 +240,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true])
-        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false])
+        NotificationHelper.changePage(hidden: true, isEnabled: false)
         plusButton.isHidden = true
         let detailVC = DetailViewController()
         let selectedTripLog = MyTripsViewController.tripLogs[indexPath.item]
@@ -263,8 +257,8 @@ extension MyTripsViewController: DetailInputViewControllerDelegate {
 
 extension MyTripsViewController: EmptyViewDelegate {
     func didTapAddButton() {
-        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true])
-        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false])
+        NotificationHelper.changePage(hidden: true, isEnabled: false)
+        plusButton.isHidden = true
         let inputVC = DetailInputViewController()
         inputVC.delegate = self
         navigationController?.pushViewController(inputVC, animated: true)

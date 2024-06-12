@@ -41,8 +41,8 @@ class FirestoreManager {
             "uid": uid,
             "email": email,
             "authProvider": authProvider,
-            "isProfileComplete": isProfileComplete
-            
+            "isProfileComplete": isProfileComplete,
+            "blockedAuthors": [] // 초기값 설정
         ]
         
         if let displayName = displayName {
@@ -106,6 +106,7 @@ class FirestoreManager {
         if document.exists {
             try await userRef.updateData(dataToUpdate)
         } else {
+            dataToUpdate["blockedAuthors"] = [] // 차단 배열 초기값 설정
             try await userRef.setData(dataToUpdate, merge: true)
         }
     }
@@ -116,6 +117,22 @@ class FirestoreManager {
         let document = try await userRef.getDocument()
         let email = document.data()?["email"] as? String
         return email
+    }
+    
+    // 사용자가 차단한 작성자 목록을 업데이트하는 함수
+    func blockAuthor(userId: String, authorId: String) async throws {
+        let userRef = db.collection("users").document(userId)
+        try await userRef.updateData(["blockedAuthors": FieldValue.arrayUnion([authorId])])
+    }
+
+    // 사용자가 차단한 작성자 목록을 가져오는 함수
+    func getBlockedAuthors(userId: String) async throws -> [String] {
+        let userRef = db.collection("users").document(userId)
+        let document = try await userRef.getDocument()
+        guard let data = document.data(), let blockedAuthors = data["blockedAuthors"] as? [String] else {
+            return []
+        }
+        return blockedAuthors
     }
 }
 

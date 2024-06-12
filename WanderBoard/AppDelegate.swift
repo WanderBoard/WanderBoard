@@ -33,7 +33,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.main.bounds)
         configureInitialViewController()
+        applySavedUserInterfaceStyle()
+        
         return true
+    }
+    
+    //세팅뷰컨에서 설정해준 키값을 가져와 앱이 실행될때 반영되도록 설정하는 함수
+    //프린트 넣어보고 어떤 설정값인지 확인
+    private func applySavedUserInterfaceStyle() {
+        let isAutomatic = UserDefaults.standard.bool(forKey: "isAutomatic")
+        let selectedMode = UserDefaults.standard.string(forKey: "modeSelected") ?? "light"
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            let window = windowScene.windows.first
+            if isAutomatic {
+                let hour = Calendar.current.component(.hour, from: Date())
+                if hour >= 18 || hour < 6 {
+                    window?.overrideUserInterfaceStyle = .dark
+                    print("자동 다크모드")
+                } else {
+                    window?.overrideUserInterfaceStyle = .light
+                    print("자동 라이트모드")
+                }
+            } else {
+                if selectedMode == "dark" {
+                    window?.overrideUserInterfaceStyle = .dark
+                    print("버튼으로 다크모드 선택")
+                } else {
+                    window?.overrideUserInterfaceStyle = .light
+                    print("버튼으로 라이트모드 선택")
+                }
+            }
+        }
     }
     
     private func configureInitialViewController() {

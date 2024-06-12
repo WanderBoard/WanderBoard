@@ -148,6 +148,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         do {
             guard let userId = Auth.auth().currentUser?.uid else { return }
             MyTripsViewController.tripLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
+
             updateView()
         } catch {
             print("Failed to fetch pin logs: \(error.localizedDescription)")
@@ -160,6 +161,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
     
     private func updateView() {
+
         if MyTripsViewController.tripLogs.isEmpty {
             collectionView.isHidden = true
             plusButton.isHidden = true

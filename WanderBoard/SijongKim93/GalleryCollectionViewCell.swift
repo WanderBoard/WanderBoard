@@ -12,6 +12,7 @@ class GalleryCollectionViewCell: UICollectionViewCell {
     static let identifier = "GalleryCollectionViewCell"
     
     let imageView = UIImageView()
+    var representativeLabel = UILabel()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -34,7 +35,8 @@ class GalleryCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func configure(with image: UIImage?) {
+    func configure(with image: UIImage?, isRepresentative: Bool) {
         imageView.image = image
+        representativeLabel.isHidden = !isRepresentative
     }
 }

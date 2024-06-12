@@ -11,7 +11,7 @@ import Foundation
 struct Expense {
     let date : Date
     let expenseContent : String
-    let expenseAmount : Double
+    let expenseAmount : Int
     let category : String
     let memo : String
     let imageName: String

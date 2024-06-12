@@ -50,13 +50,13 @@ class SpendingTableViewHeaderView: UITableViewHeaderFooterView {
     func makeConstraints() {
         
         dateLabel.snp.makeConstraints {
-            $0.top.equalTo(contentView.safeAreaLayoutGuide).inset(19)
+            $0.centerY.equalTo(contentView.snp.centerY)
             $0.leading.equalTo(contentView.safeAreaLayoutGuide).inset(32)
         }
         
         
         dailyTotalAmountLabel.snp.makeConstraints {
-            $0.top.equalTo(contentView.safeAreaLayoutGuide).inset(19)
+            $0.centerY.equalTo(contentView.snp.centerY)
             $0.trailing.equalTo(contentView.safeAreaLayoutGuide).inset(32)
             
         }
@@ -67,11 +67,16 @@ class SpendingTableViewHeaderView: UITableViewHeaderFooterView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func formatCurrency(_ amount: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter.string(from: NSNumber(value: amount)) ?? "0"
+    }
+    
     func configure(with date: Date, dailyTotalAmount: Double) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
         dateLabel.text = dateFormatter.string(from: date)
-        dailyTotalAmountLabel.text = String(format: "%.2f 원", dailyTotalAmount)
-    }
+        dailyTotalAmountLabel.text =  "\(formatCurrency(dailyTotalAmount))"}
   
 }

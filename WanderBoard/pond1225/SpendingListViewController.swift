@@ -10,34 +10,10 @@ import SnapKit
 
 class SpendingListViewController: UIViewController {
     
-    
+// MARK: Components
     var dailyExpenses: [DailyExpenses] = []
-    
-    let backButton: UIButton = {
-        var backButton = UIButton()
-        backButton.tintColor = .black
-        backButton.setImage(UIImage(systemName: "chevron.backward"), for: .normal)
-        backButton.addTarget(SpendingListViewController.self, action: #selector(backButtonTapped), for: .touchUpInside)
-        return backButton
-    }()
-    
-    @objc func backButtonTapped() {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    let insertButton: UIButton = {
-        var insertButton = UIButton()
-        insertButton.tintColor = .black
-        insertButton.setImage(UIImage(systemName: "plus"), for: .normal)
-        insertButton.addTarget(self, action: #selector(insertButtonTapped), for: .touchUpInside)
-        return insertButton
-    }()
-    
-    @objc func insertButtonTapped() {
-        let insertSpendingViewController = InsertSpendingViewController()
-        insertSpendingViewController.modalPresentationStyle = .automatic
-        self.present(insertSpendingViewController, animated: true, completion: nil)
-    }
+//    var tripTotalSpendingAmount = Double.self
+
     
     let spendingCardbutton: UIButton = {
         var spendingCardbutton = UIButton()
@@ -78,9 +54,7 @@ class SpendingListViewController: UIViewController {
     
     var tableView : UITableView = {
         let tableView = UITableView()
-        
-        
-        
+
         return tableView
     }()
     
@@ -89,30 +63,55 @@ class SpendingListViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         view.backgroundColor = .white
-        
-        let today = Date()
-        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today)!
-        
-        dailyExpenses = [DailyExpenses(date: Date(), expenses: [
-            Expense(date: today, expenseContent: "점심", expenseAmount: 12000, category: "식비", memo: "불고기 덮밥"),
-            Expense(date: yesterday, expenseContent: "렌터카", expenseAmount: 250000, category: "교통비", memo: "2박3일 oo렌터카 렌트")
-        ])]
+
         
         configureUI()
         makeConstraints()
         setupNavi()
+  
+// MARK: TableView Delegate, DataSource. Header, Cell 등록. Notification Observer
         
-        //        tableView = UITableView(frame: .zero, style: .grouped)
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(SpendingTableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.register(SpendingTableViewHeaderView.self, forHeaderFooterViewReuseIdentifier: SpendingTableViewHeaderView.identifier)
+        NotificationCenter.default.addObserver(self, selector: #selector(didReceiveNewExpenseData(_:)), name: .newExpenseData, object: nil)
+
+        tableView.reloadData()
+    }
+ 
+    
+// MARK: InsertSpendingVC에 입력되어 전달된 데이터 받기
+    @objc func didReceiveNewExpenseData(_ notification: Notification) {
+        guard let expense = notification.userInfo?["expense"] as? Expense else { return }
+        
+        if let index = dailyExpenses.firstIndex(where: { Calendar.current.isDate($0.date, inSameDayAs: expense.date) }) {
+            dailyExpenses[index].expenses.append(expense)
+        } else {
+            let newDailyExpense = DailyExpenses(date: expense.date, expenses: [expense])
+            dailyExpenses.append(newDailyExpense)
+        }
+        
+        sortDailyExpensesByDate()
+        
         tableView.reloadData()
     }
     
+// MARK: 천 단위 컴마 표기
+    func formatCurrency(_ amount: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter.string(from: NSNumber(value: amount)) ?? "0"
+    }
+    
+// MARK: 최신날짜가 위로 오도록 TableView에 정렬
+    func sortDailyExpensesByDate() {
+        dailyExpenses.sort { $0.date > $1.date }
+    }
+  
+// MARK: Components Set up
     func configureUI() {
-        self.view.addSubview(backButton)
-        self.view.addSubview(insertButton)
+
         self.view.addSubview(spendingCardbutton)
         spendingCardbutton.addSubview(totalSpendingText)
         spendingCardbutton.addSubview(totalSpendingAmount)
@@ -120,24 +119,9 @@ class SpendingListViewController: UIViewController {
         
         
     }
-    
+ 
+//MARK: Components Layout
     func makeConstraints() {
-        
-        
-        backButton.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide)
-            $0.leading.equalTo(view.safeAreaLayoutGuide).inset(24.5)
-            $0.height.equalTo(30)
-            $0.width.equalTo(30)
-            
-        }
-        
-        insertButton.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide)
-            $0.trailing.equalTo(view.safeAreaLayoutGuide).inset(27.41)
-            $0.height.equalTo(24)
-            $0.width.equalTo(24)
-        }
         
         spendingCardbutton.snp.makeConstraints {
             $0.top.equalToSuperview().offset(115)
@@ -166,13 +150,47 @@ class SpendingListViewController: UIViewController {
         }
         
     }
-    
+
+// MARK: NavigationBar
     func setupNavi() {
         navigationController?.navigationBar.tintColor = .black
+        navigationItem.rightBarButtonItem = .init(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(insertButtonTapped))
+    }
+
+// MARK: 추가 버튼 클릭시 InsertSpendingVC 보여줌
+    @objc func insertButtonTapped() {
+        let insertSpendingViewController = InsertSpendingViewController()
+        insertSpendingViewController.modalPresentationStyle = .automatic
+        self.present(insertSpendingViewController, animated: true, completion: nil)
     }
     
+    // MARK: TableViewCell Swipe Action 
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let edit = UIContextualAction(style: .normal, title: "수정") { (UIContextualAction, UIView, success: @escaping (Bool) -> Void) in
+            let insertVC = InsertSpendingViewController()
+            insertVC.expenseToEdit = self.dailyExpenses[indexPath.section].expenses[indexPath.row]
+            self.navigationController?.pushViewController(insertVC, animated: true)
+            success(true)
+        }
+        
+        edit.backgroundColor = .systemBlue
+        
+        let delete = UIContextualAction(style: .normal, title: "삭제") { (UIContextualAction, UIView, success: @escaping (Bool) -> Void) in
+            
+            self.dailyExpenses[indexPath.section].expenses.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            success(true)
+        }
+        delete.backgroundColor = .systemRed
+        
+        return UISwipeActionsConfiguration(actions: [delete, edit])
+    }
+   
 }
 
+
+// MARK: TableViewDataSource
 extension SpendingListViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return dailyExpenses.count
@@ -186,17 +204,22 @@ extension SpendingListViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? SpendingTableViewCell else {
             return UITableViewCell()
         }
+        
+        cell.separatorInset = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: 25)
+        
         let expense = dailyExpenses[indexPath.section].expenses[indexPath.row]
-        /*cell.categoryImage =*/ //카테고리 분류 별 이미지 별도로 모델 및 asset에 저장 필요
+        
         cell.expenseContent.text = expense.expenseContent
         cell.memo.text = expense.memo
-        cell.expenseAmount.text = "\(expense.expenseAmount)원"
+        cell.expenseAmount.text = "\(formatCurrency(expense.expenseAmount))"
+        cell.categoryImageView.image = UIImage(systemName: expense.imageName)
         
         return cell
     }
     
 }
 
+// MARK: TableViewDelegate
 extension SpendingListViewController: UITableViewDelegate {
     func tableView(_ tablewView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let header = tablewView.dequeueReusableHeaderFooterView(withIdentifier: SpendingTableViewHeaderView.identifier) as? SpendingTableViewHeaderView else {
@@ -211,12 +234,17 @@ extension SpendingListViewController: UITableViewDelegate {
         }
         
         header.configure(with: dailyExpenses[section].date, dailyTotalAmount: dailyTotalAmount)
+
         
         return header
     }
     
     internal func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 59
+        return 50
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
     }
     
 }

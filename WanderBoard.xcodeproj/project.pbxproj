@@ -716,7 +716,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7T257QFHVM;
+				DEVELOPMENT_TEAM = U68CWSQ94X;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WanderBoard/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱이 사용자의 위치를 사용할 때 권한이 필요합니다.";
@@ -752,7 +752,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7T257QFHVM;
+				DEVELOPMENT_TEAM = U68CWSQ94X;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WanderBoard/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱이 사용자의 위치를 사용할 때 권한이 필요합니다.";

@@ -11,6 +11,8 @@ class HotTableViewCell: UITableViewCell {
     
     static let identifier = String(describing: HotTableViewCell.self)
     
+    weak var delegate: HotTableViewCellDelegate?
+    
     let hotView = UIView().then {
         $0.backgroundColor = .white
     
@@ -40,6 +42,12 @@ class HotTableViewCell: UITableViewCell {
         $0.minimumLineSpacing = 20
         $0.itemSize = .init(width: 240, height: 320)
         $0.sectionInset = .init(top: 0, left: 30, bottom: 5, right: 0)
+    }
+    
+    var hotPinLogs: [PinLog] = [] {
+        didSet {
+            hotCollectionView.reloadData()
+        }
     }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -78,22 +86,30 @@ class HotTableViewCell: UITableViewCell {
             $0.trailing.equalToSuperview()
             $0.height.equalTo(325)
         }
-        
     }
-
+    
+    func configure(with pinLogs: [PinLog]) {
+        self.hotPinLogs = pinLogs
+    }
 }
 
 extension HotTableViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return hotPinLogs.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HotCollectionViewCell.identifier, for: indexPath) as! HotCollectionViewCell
+        let hotLog = hotPinLogs[indexPath.item]
+        cell.configure(with: hotLog)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true])
+        delegate?.hotTableViewCell(self, didSelectItemAt: indexPath)
     }
+}
+
+protocol HotTableViewCellDelegate: AnyObject {
+    func hotTableViewCell(_ cell: HotTableViewCell, didSelectItemAt indexPath: IndexPath)
 }

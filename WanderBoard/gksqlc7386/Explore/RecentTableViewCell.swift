@@ -10,6 +10,11 @@ import UIKit
 class RecentTableViewCell: UITableViewCell {
     static let identifier = String(describing: RecentTableViewCell.self)
     
+    weak var delegate: RecentTableViewCellDelegate?
+    
+    var logCount: Int = 0
+    var recentLogs: [PinLog] = []
+    
     let recentLabel = UILabel().then {
         $0.text = "Recent"
         $0.font = UIFont.boldSystemFont(ofSize: 17)
@@ -37,10 +42,7 @@ class RecentTableViewCell: UITableViewCell {
         let itemHeight = itemWidth * 110 / 160
             
         $0.itemSize = CGSize(width: itemWidth, height: itemHeight)
-        print("Item size: \($0.itemSize)") // 아이템 크기 로그
     }
-
-    var itemCount: Int = 0
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -70,31 +72,42 @@ class RecentTableViewCell: UITableViewCell {
     }
     
     func updateItemCount(_ count: Int) {
-        itemCount = count
+        logCount = count
         recentCollectionView.reloadData()
         layoutIfNeeded()
     }
     
+    func configure(with logs: [PinLog]) {
+        recentLogs = logs
+        logCount = logs.count
+        recentCollectionView.reloadData()
+    }
+    
     func calculateCollectionViewHeight() -> CGFloat {
         let layout = recentCollectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        let rows = ceil(CGFloat(itemCount) / 2.0)
+        let rows = ceil(CGFloat(logCount) / 2.0)
         let height = (rows * layout.itemSize.height) + ((rows - 1) * layout.minimumLineSpacing) + layout.sectionInset.top + layout.sectionInset.bottom + 80 // 80은 레이블과 컬렉션 뷰의 여백 합계
-        print("Calculated collection view height: \(height)")
         return height
     }
 }
 
 extension RecentTableViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return itemCount
+        return logCount
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentCollectionViewCell.identifier, for: indexPath) as! RecentCollectionViewCell
+        cell.configure(with: recentLogs[indexPath.item])
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true])
+        delegate?.recentTableViewCell(self, didSelectItemAt: indexPath)
     }
 }
+
+protocol RecentTableViewCellDelegate: AnyObject {
+    func recentTableViewCell(_ cell: RecentTableViewCell, didSelectItemAt indexPath: IndexPath)
+}
+

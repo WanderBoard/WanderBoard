@@ -74,7 +74,7 @@ class PinLogManager {
             "authorId": pinLog.authorId,
             "attendeeIds": pinLog.attendeeIds,
             "isPublic": pinLog.isPublic,
-            "createdAt": Timestamp(date: pinLog.createdAt ?? Date())
+            "createdAt": Timestamp(date: pinLog.createdAt ?? Date()),
         ]
 
         if pinLog.id == nil {
@@ -93,6 +93,16 @@ class PinLogManager {
 //        try await updateDocument(documentRef: documentRef, data: data)
 //    }
     
+    // PinLog 업데이트
+    func updatePinLog(pinLogId: String, data: [String: Any]) async throws {
+        let documentRef = db.collection("pinLogs").document(pinLogId)
+        try await updateDocument(documentRef: documentRef, data: data)
+    }
+    
+    func deletePinLog(pinLogId: String) async throws {
+        let documentRef = db.collection("pinLogs").document(pinLogId)
+        try await documentRef.delete()
+    }
     
     func fetchPinLogs(forUserId userId: String) async throws -> [PinLog] {
         let snapshot = try await db.collection("pinLogs").whereField("authorId", isEqualTo: userId).getDocuments()
@@ -107,11 +117,23 @@ class PinLogManager {
         print("Fetched pinLogs count: \(pinLogs.count)")
         return pinLogs
     }
-
-
-
-    func fetchPinLog(pinLogId: String) async throws -> PinLog? {
-        let document = try await db.collection("pinLogs").document(pinLogId).getDocument()
-        return try document.data(as: PinLog.self)
+    
+    //공개된 모든 pinLog 가져오는 메서드 추가했습니다 - 한빛
+    func fetchPublicPinLogs() async throws -> [PinLog] {
+        let snapshot = try await db.collection("pinLogs")
+            .whereField("isPublic", isEqualTo: true)
+            .getDocuments()
+        return snapshot.documents.compactMap { try? $0.data(as: PinLog.self) }
+    }
+    
+    // 핫 핀 로그를 가져오는 메서드 추가 - 한빛
+    func fetchHotPinLogs() async throws -> [PinLog] {
+        let snapshot = try await db.collection("pinLogs")
+            .whereField("pinCount", isGreaterThan: 0)
+            .getDocuments()
+        
+        var logs = snapshot.documents.compactMap { try? $0.data(as: PinLog.self) }
+        logs.shuffle() // 데이터 랜덤
+        return Array(logs.prefix(10)) // 최대 10개 데이터
     }
 }

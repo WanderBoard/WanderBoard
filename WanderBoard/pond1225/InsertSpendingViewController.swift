@@ -9,11 +9,17 @@ import Foundation
 import UIKit
 import SnapKit
 
+protocol InsertspendingviewcontrollerDelegate: AnyObject {
+    func didUpdateExpense(_ expense: Expense, at indextPath: IndexPath)
+}
+
 class InsertSpendingViewController: UIViewController {
    
 // MARK: Components
     var expenses: [Expense] = []
     var expenseToEdit: Expense?
+    var editingIndexPath: IndexPath?
+    weak var delegate: InsertspendingviewcontrollerDelegate?
     
     var titleLabel: UILabel = {
         var titleLabel = UILabel()
@@ -250,7 +256,7 @@ class InsertSpendingViewController: UIViewController {
             insertedDateLabel.text = dateFormat(date: expense.date)
             contentTextField.text = expense.expenseContent
             expenseAmountTextField.text = String(expense.expenseAmount)
-            insertedDateLabel.text = expense.category
+            insertedCategoryLabel.text = expense.category
             memoTextField.text = expense.memo
         }
         
@@ -345,7 +351,7 @@ class InsertSpendingViewController: UIViewController {
     func updateDoneButtonState() {
         let isDateSet = !(insertedDateLabel.text?.isEmpty ?? true)
         let isContentSet = !(contentTextField.text?.isEmpty ?? true)
-                let isAmountSet = !(expenseAmountTextField.text?.isEmpty ?? true) && Double(expenseAmountTextField.text ?? "") != nil
+                let isAmountSet = !(expenseAmountTextField.text?.isEmpty ?? true) && Int(expenseAmountTextField.text ?? "") != nil
                 let isCategorySet = !(insertedCategoryLabel.text?.isEmpty ?? true)
         
         saveDoneButton.isEnabled = isDateSet && isContentSet && isAmountSet && isCategorySet
@@ -372,16 +378,18 @@ class InsertSpendingViewController: UIViewController {
             let expense = Expense(
                 date: datePicker.date,
                 expenseContent: content,
-                expenseAmount: Double(amount) ?? 0.0,
+                expenseAmount: Int(amount) ?? 0,
                 category: category,
                 memo: memoTextField.text ?? "",
                 imageName: imageName
             )
             
+        if let indexPath = editingIndexPath {
+            delegate?.didUpdateExpense(expense, at: indexPath)
+        } else {
             NotificationCenter.default.post(name: .newExpenseData, object: nil, userInfo: ["expense" : expense])
-            
+        }
             self.dismiss(animated: true)
-        
     }
 
     

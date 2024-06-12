@@ -67,16 +67,25 @@ class SpendingTableViewHeaderView: UITableViewHeaderFooterView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func formatCurrency(_ amount: Double) -> String {
+    func formatCurrency(_ amount: Int) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
     
-    func configure(with date: Date, dailyTotalAmount: Double) {
+    func configure(with date: Date, dailyTotalAmount: Int) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
         dateLabel.text = dateFormatter.string(from: date)
-        dailyTotalAmountLabel.text =  "\(formatCurrency(dailyTotalAmount))"}
-  
+        dailyTotalAmountLabel.text =  "\(formatCurrency(dailyTotalAmount))원"}
+}
+
+
+// MARK: TableViewCell 수정시 수정데이터 반영 Delegate
+extension SpendingListViewController: InsertspendingviewcontrollerDelegate {
+    func didUpdateExpense(_ expense: Expense, at indexPath: IndexPath) {
+        dailyExpenses[indexPath.section].expenses[indexPath.row] = expense
+        tableView.reloadRows(at: [indexPath], with: .automatic)
+        updateHeaderView(forSection: indexPath.section, withDeletedExpense: expense)
+    }
 }

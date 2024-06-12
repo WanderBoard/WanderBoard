@@ -43,7 +43,7 @@ class DetailViewController: UIViewController {
     let backgroundImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
-        $0.backgroundColor = .black
+        $0.backgroundColor = .clear
         $0.isUserInteractionEnabled = true
     }
 
@@ -57,7 +57,7 @@ class DetailViewController: UIViewController {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 16
-        $0.backgroundColor = .white
+        $0.backgroundColor = UIColor(named: "textColor")
         $0.image = UIImage(systemName: "person")
         $0.snp.makeConstraints {
             $0.width.height.equalTo(32)
@@ -68,7 +68,7 @@ class DetailViewController: UIViewController {
     var nicknameLabel = UILabel().then {
         $0.text = "닉네임"
         $0.font = UIFont.systemFont(ofSize: 12)
-        $0.textColor = .white
+        $0.textColor = .font
     }
 
     // 추가
@@ -81,14 +81,14 @@ class DetailViewController: UIViewController {
     var locationLabel = UILabel().then {
         $0.text = "---"
         $0.font = UIFont.systemFont(ofSize: 40)
-        $0.textColor = .white
+        $0.textColor = .font
         $0.numberOfLines = 2
     }
 
     var dateDaysLabel = UILabel().then {
         $0.text = "0 Days"
         $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = .white
+        $0.textColor = .font
     }
 
     let locationStackView = UIStackView().then {
@@ -100,18 +100,18 @@ class DetailViewController: UIViewController {
     var dateStartLabel = UILabel().then {
         $0.text = "2024.08.13"
         $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = .white
+        $0.textColor = .font
     }
 
     let dateLineLabel = UILabel().then {
         $0.text = "-"
-        $0.textColor = .white
+        $0.textColor = .font
     }
 
     var dateEndLabel = UILabel().then {
         $0.text = "2024.08.15"
         $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = .white
+        $0.textColor = .font
     }
 
     let dateStackView = UIStackView().then {
@@ -128,12 +128,12 @@ class DetailViewController: UIViewController {
     }
 
     let contentView = UIView().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = UIColor(named: "textColor")
     }
 
     let optionsButton = UIButton().then {
         $0.setImage(UIImage(systemName: "ellipsis"), for: .normal)
-        $0.tintColor = .black
+        $0.tintColor = .font
         $0.showsMenuAsPrimaryAction = true
     }
 
@@ -189,7 +189,7 @@ class DetailViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: 85, height: 85)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = UIColor(named: "textColor")
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isScrollEnabled = true
         return collectionView
@@ -199,7 +199,7 @@ class DetailViewController: UIViewController {
         $0.setTitle("전체 지도 보기", for: .normal)
         $0.setTitleColor(#colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1), for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        $0.backgroundColor = .white
+        $0.backgroundColor = UIColor(named: "textColor")
         $0.isHidden = false
     }
 
@@ -207,7 +207,7 @@ class DetailViewController: UIViewController {
         $0.setTitle("전체 앨범 보기", for: .normal)
         $0.setTitleColor(#colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1), for: .normal)
         $0.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        $0.backgroundColor = .white
+        $0.backgroundColor = UIColor(named: "textColor")
         $0.isHidden = true
     }
 
@@ -219,7 +219,7 @@ class DetailViewController: UIViewController {
     var moneyCountTitle = UILabel().then {
         $0.text = "0000000"
         $0.font = UIFont.systemFont(ofSize: 40)
-        $0.textColor = .black
+        $0.textColor = .font
     }
 
     let moneyCountSubTitle = UILabel().then {
@@ -252,7 +252,7 @@ class DetailViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: 85, height: 85)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = UIColor(named: "textColor")
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isScrollEnabled = true
         return collectionView
@@ -277,7 +277,7 @@ class DetailViewController: UIViewController {
         newSetupConstraints()
         checkId()
 
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
 
         if let pinLog = pinLog {
             configureView(with: pinLog)

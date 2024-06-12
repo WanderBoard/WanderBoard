@@ -108,23 +108,15 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
 
     private func setGradient() {
-        if let sublayers = view.layer.sublayers {
-            for sublayer in sublayers {
-                if (sublayer is CAGradientLayer) {
-                    sublayer.removeFromSuperlayer()
-                }
-            }
-        }
-        
-        let gradientColors = [UIColor.white.withAlphaComponent(1).cgColor] + Array(repeating: UIColor.white.withAlphaComponent(0).cgColor, count: 8)
+        let maskedView = UIView(frame: CGRect(x: 0, y: 722, width: 393, height: 130))
         let gradientLayer = CAGradientLayer()
-        gradientLayer.frame = view.bounds
-
-        gradientLayer.colors = gradientColors
-        gradientLayer.startPoint = CGPoint(x: 0.5, y: 1.0)
-        gradientLayer.endPoint = CGPoint(x: 0.5, y: 0.0)
-
-        view.layer.addSublayer(gradientLayer)
+        
+        maskedView.backgroundColor = view.backgroundColor
+        gradientLayer.frame = maskedView.bounds
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98), UIColor.white.cgColor, UIColor.white.cgColor]
+        gradientLayer.locations = [0, 0.05, 0.5, 1]
+        maskedView.layer.mask = gradientLayer
+        view.addSubview(maskedView)
     }
     
     @objc func addButtonTapped() {

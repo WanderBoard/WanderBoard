@@ -9,10 +9,18 @@ import UIKit
 import SnapKit
 import Then
 
-class ExploreViewController: UIViewController, PageIndexed, UISearchBarDelegate {
-
+class ExploreViewController: UIViewController, PageIndexed {
+    
     var pageIndex: Int?
     var pageText: String?
+    
+    var recentLogs: [PinLog] = []
+    var hotLogs: [PinLog] = []
+    var blockedAuthors: [String] = []
+    
+    let pinLogManager = PinLogManager()
+    
+    var recentCellHeight: CGFloat = 0
     
     lazy var searchButton = UIButton(type: .system).then {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
@@ -22,15 +30,6 @@ class ExploreViewController: UIViewController, PageIndexed, UISearchBarDelegate 
         $0.addTarget(self, action: #selector(searchButtonTapped), for: .touchUpInside)
     }
     
-    lazy var searchBar = UISearchBar().then {
-        $0.placeholder = "Search"
-        $0.delegate = self
-        $0.isHidden = true
-        $0.backgroundImage = UIImage()
-        $0.barTintColor = .white
-        $0.backgroundColor = .white
-    }
-    
     lazy var tableView = UITableView().then {
         $0.dataSource = self
         $0.delegate = self
@@ -38,8 +37,6 @@ class ExploreViewController: UIViewController, PageIndexed, UISearchBarDelegate 
         $0.register(HotTableViewCell.self, forCellReuseIdentifier: HotTableViewCell.identifier)
         $0.register(RecentTableViewCell.self, forCellReuseIdentifier: RecentTableViewCell.identifier)
     }
-
-    var recentCellHeight: CGFloat = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,23 +45,44 @@ class ExploreViewController: UIViewController, PageIndexed, UISearchBarDelegate 
         setupConstraints()
         setGradient()
         setupNV()
-        calculateRecentCellHeight()
+        
+        loadData()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NotificationHelper.changePage(hidden: false, isEnabled: true)
+        searchButton.isHidden = false
+        
+        if recentLogs.isEmpty {
+            loadData()
+        }
+        
+        reloadRecentCell()
+    }
+
+    private func loadData() {
+        Task {
+            self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
+            await loadRecentData()
+            await loadHotData()
+        }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": false])
+    private func reloadRecentCell() {
+        let indexPath = IndexPath(row: 1, section: 0) // 두 번째 셀의 인덱스
+        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     private func setupNV() {
         navigationItem.title = pageText
-        navigationItem.largeTitleDisplayMode = .automatic
+        navigationItem.largeTitleDisplayMode = .always
         
-        // 네비게이션 바 위에 search 버튼 추가
         if let navigationBarSuperview = navigationController?.navigationBar.superview {
             let customView = UIView()
             customView.backgroundColor = .clear
             customView.addSubview(searchButton)
-            customView.addSubview(searchBar)
             
             navigationBarSuperview.addSubview(customView)
             
@@ -77,15 +95,9 @@ class ExploreViewController: UIViewController, PageIndexed, UISearchBarDelegate 
             searchButton.snp.makeConstraints {
                 $0.edges.equalToSuperview()
             }
-            
-            searchBar.snp.makeConstraints {
-                $0.leading.equalTo(navigationController!.navigationBar.snp.leading).offset(10)
-                $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-10)
-                $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
-            }
         }
     }
-
+    
     private func setupConstraints() {
         view.addSubview(tableView)
         
@@ -94,10 +106,42 @@ class ExploreViewController: UIViewController, PageIndexed, UISearchBarDelegate 
         }
     }
     
+    private func filterBlockedAuthors(from logs: [PinLog]) -> [PinLog] {
+        return logs.filter { !blockedAuthors.contains($0.authorId) }
+    }
+    
+    func loadRecentData() async {
+        do {
+            let logs = try await pinLogManager.fetchPublicPinLogs()
+            await MainActor.run {
+                //self.recentLogs = logs
+                self.recentLogs = filterBlockedAuthors(from: logs)
+                self.recentLogs.sort { $0.startDate > $1.startDate }
+                self.calculateRecentCellHeight()
+                self.tableView.reloadData()
+            }
+        } catch {
+            print("Failed to fetch pin logs: \(error.localizedDescription)")
+        }
+    }
+    
+    func loadHotData() async {
+        do {
+            let logs = try await pinLogManager.fetchHotPinLogs()
+            await MainActor.run {
+                //self.recentLogs = logs
+                self.hotLogs = filterBlockedAuthors(from: logs)
+                self.tableView.reloadData()
+            }
+        } catch {
+            print("Failed to fetch pin logs: \(error.localizedDescription)")
+        }
+    }
+    
     private func setGradient() {
         if let sublayers = view.layer.sublayers {
             for sublayer in sublayers {
-                if (sublayer is CAGradientLayer) {
+                if sublayer is CAGradientLayer {
                     sublayer.removeFromSuperlayer()
                 }
             }
@@ -106,34 +150,25 @@ class ExploreViewController: UIViewController, PageIndexed, UISearchBarDelegate 
         let gradientColors = [UIColor.white.withAlphaComponent(1).cgColor] + Array(repeating: UIColor.white.withAlphaComponent(0).cgColor, count: 8)
         let gradientLayer = CAGradientLayer()
         gradientLayer.frame = view.bounds
-
         gradientLayer.colors = gradientColors
         gradientLayer.startPoint = CGPoint(x: 0.5, y: 1.0)
         gradientLayer.endPoint = CGPoint(x: 0.5, y: 0.0)
-
+        
         view.layer.addSublayer(gradientLayer)
     }
     
     private func calculateRecentCellHeight() {
-        // 높이를 계산하기 위해 더미 데이터 사용
-        let recentCell = RecentTableViewCell(style: .default, reuseIdentifier: RecentTableViewCell.identifier)
-        recentCell.updateItemCount(20) // 아이템 수 업데이트
+        guard let recentCell = tableView.dequeueReusableCell(withIdentifier: RecentTableViewCell.identifier) as? RecentTableViewCell else { return }
+        recentCell.configure(with: recentLogs)
         recentCellHeight = recentCell.calculateCollectionViewHeight()
+        print("Calculated recentCellHeight: \(recentCellHeight)")
     }
     
     @objc func searchButtonTapped(_ sender: UIButton) {
-        print("searchButton tapped")
-        searchBar.isHidden = !searchBar.isHidden
+        NotificationHelper.changePage(hidden: true, isEnabled: false)
         searchButton.isHidden = true
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        print("Search text: \(searchText)")
-        // 검색 결과 업데이트 로직 구현
-    }
-
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder() // 검색 버튼 클릭 시 키보드 숨기기
+        let searchVC = SearchViewController()
+        navigationController?.pushViewController(searchVC, animated: true)
     }
 }
 
@@ -146,11 +181,15 @@ extension ExploreViewController: UITableViewDelegate, UITableViewDataSource {
         switch indexPath.row {
         case 0:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HotTableViewCell.identifier, for: indexPath) as? HotTableViewCell else { return .init() }
+            cell.configure(with: hotLogs)
+            cell.delegate = self
             cell.selectionStyle = .none
             return cell
         case 1:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: RecentTableViewCell.identifier, for: indexPath) as? RecentTableViewCell else { return .init() }
-            cell.updateItemCount(20) // 아이템 수 업데이트
+            cell.delegate = self
+            cell.configure(with: recentLogs)
+            cell.updateItemCount(recentLogs.count)
             cell.selectionStyle = .none
             return cell
         default:
@@ -163,9 +202,67 @@ extension ExploreViewController: UITableViewDelegate, UITableViewDataSource {
         case 0:
             return 450
         case 1:
+            print("Returning recentCellHeight: \(recentCellHeight) for row 1")
             return recentCellHeight
         default:
             return 0
         }
+    }
+}
+
+extension ExploreViewController: HotTableViewCellDelegate {
+    func hotTableViewCell(_ cell: HotTableViewCell, didSelectItemAt indexPath: IndexPath) {
+        NotificationHelper.changePage(hidden: true, isEnabled: false)
+        searchButton.isHidden = true
+        let detailVC = DetailViewController()
+        let hotPinLog = cell.hotPinLogs[indexPath.item]
+        detailVC.pinLog = hotPinLog
+        detailVC.delegate = self
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+}
+
+extension ExploreViewController: RecentTableViewCellDelegate {
+    func recentTableViewCell(_ cell: RecentTableViewCell, didSelectItemAt indexPath: IndexPath) {
+        NotificationHelper.changePage(hidden: true, isEnabled: false)
+        searchButton.isHidden = true
+        let detailVC = DetailViewController()
+        let selectedPinLog = cell.recentLogs[indexPath.item]
+        detailVC.pinLog = selectedPinLog
+        detailVC.delegate = self
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+}
+
+extension ExploreViewController: DetailViewControllerDelegate {
+    func didUpdatePinButton(_ updatedPinLog: PinLog) {
+        print("Received updated pin log via delegate")
+        if let index = recentLogs.firstIndex(where: { $0.id == updatedPinLog.id }) {
+            recentLogs[index] = updatedPinLog
+            tableView.reloadData()
+        }
+        
+        if let hotIndex = hotLogs.firstIndex(where: { $0.id == updatedPinLog.id }) {
+            hotLogs[hotIndex] = updatedPinLog
+            tableView.reloadData()
+        }
+    }
+    
+    func didUpdatePinLog() {
+        Task {
+            self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
+            await loadRecentData()
+            await loadHotData()
+        }
+    }
+    
+    func didBlockAuthor(_ authorId: String) {
+        self.blockedAuthors.append(authorId)
+        
+        // 차단된 작성자의 로그를 숨기기 위해 필터링
+        self.recentLogs = self.recentLogs.filter { !self.blockedAuthors.contains($0.authorId) }
+        self.hotLogs = self.hotLogs.filter { !self.blockedAuthors.contains($0.authorId) }
+        
+        self.tableView.reloadData()
     }
 }

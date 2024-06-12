@@ -743,7 +743,9 @@ class DetailInputViewController: UIViewController {
                                     authorId: Auth.auth().currentUser?.uid ?? "",
                                     attendeeIds: [],
                                     isPublic: isPublic,
-                                    createdAt: createdAt)
+                                    createdAt: createdAt,
+                                    pinCount: 0,
+                                    pinnedBy: [])
                 } else {
                     // 핀로그가 존재하지 않는 경우 새로 생성
                     pinLog = PinLog(location: locationTitle,
@@ -758,7 +760,9 @@ class DetailInputViewController: UIViewController {
                                     authorId: Auth.auth().currentUser?.uid ?? "",
                                     attendeeIds: [],
                                     isPublic: isPublic,
-                                    createdAt: Date())
+                                    createdAt: Date(),
+                                    pinCount: 0,
+                                    pinnedBy: [])
                 }
                 
                 let savedPinLog = try await PinLogManager.shared.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations)

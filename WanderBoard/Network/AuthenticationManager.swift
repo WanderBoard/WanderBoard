@@ -26,6 +26,7 @@ struct AuthDataResultModel {
     var gender: String?
     var interests: [String]?
     var isProfileComplete: Bool?
+    var blockedAuthors: [String] // 추가된 부분
 
     init(user: FirebaseAuth.User, authProvider: AuthProviderOption) {
         self.uid = user.uid
@@ -37,6 +38,7 @@ struct AuthDataResultModel {
         self.gender = nil
         self.interests = nil
         self.isProfileComplete = nil
+        self.blockedAuthors = [] // 초기값 설정
     }
     
     init(user: User, authProvider: AuthProviderOption) {
@@ -49,6 +51,7 @@ struct AuthDataResultModel {
         self.gender = user.gender
         self.interests = user.interests
         self.isProfileComplete = user.isProfileComplete
+        self.blockedAuthors = user.blockedAuthors ?? [] // 초기값 설정
     }
 }
 
@@ -104,6 +107,22 @@ final class AuthenticationManager {
         
         let authProvider = AuthProviderOption(rawValue: currentUser.providerData.first?.providerID ?? "") ?? .google
         return AuthDataResultModel(user: currentUser, authProvider: authProvider)
+    }
+    
+    // 차단된 작성자 추가
+    func blockAuthor(authorId: String) async throws {
+        guard let currentUser = Auth.auth().currentUser else {
+            throw URLError(.badServerResponse)
+        }
+        try await FirestoreManager.shared.blockAuthor(userId: currentUser.uid, authorId: authorId)
+    }
+
+    // 차단된 작성자 목록 가져오기
+    func getBlockedAuthors() async throws -> [String] {
+        guard let currentUser = Auth.auth().currentUser else {
+            throw URLError(.badServerResponse)
+        }
+        return try await FirestoreManager.shared.getBlockedAuthors(userId: currentUser.uid)
     }
 
     // 코어 데이터 저장

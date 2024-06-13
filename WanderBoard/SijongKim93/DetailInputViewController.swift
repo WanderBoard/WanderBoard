@@ -474,6 +474,7 @@ class DetailInputViewController: UIViewController {
         locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
         
+
     }
     
     
@@ -999,3 +1000,4 @@ extension DetailInputViewController: UITextViewDelegate {
         }
     }
 }
+

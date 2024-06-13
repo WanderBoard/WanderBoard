@@ -718,7 +718,6 @@ class DetailViewController: UIViewController {
         }
         
         group.notify(queue: .main) {
-            print("All images loaded. Total: \(self.selectedImages.count)")
             self.galleryCollectionView.reloadData()
             if let representativeImage = self.selectedImages.first(where: { $0.1 })?.0 {
                 self.backgroundImageView.image = representativeImage
@@ -752,7 +751,7 @@ class DetailViewController: UIViewController {
             "url": imageURL,
             "latitude": location.latitude,
             "longitude": location.longitude,
-            "isRepresentative": false, // 기본값으로 false 설정
+            "isRepresentative": false,
             "timestamp": Timestamp(date: Date())
         ]) { error in
             if let error = error {

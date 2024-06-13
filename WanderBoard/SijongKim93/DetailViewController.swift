@@ -881,6 +881,10 @@ extension DetailViewController: UIScrollViewDelegate {
             
             if let overlayView = backgroundImageView.viewWithTag(999) {
                 overlayView.frame = backgroundImageView.bounds
+                
+                let maxOffset: CGFloat = 150 // 최대로 어두워지는 오프셋 값
+                let alpha = min(1, 0.3 + (offset / maxOffset) * 0.7) // 알파 값 계산
+                overlayView.backgroundColor = UIColor.black.withAlphaComponent(alpha)
             }
             
             if offset > 0 {
@@ -934,6 +938,7 @@ extension DetailViewController: UIScrollViewDelegate {
             }
         }
     }
+
     
     func applyDarkOverlayToBackgroundImage() {
         backgroundImageView.subviews.forEach { subview in

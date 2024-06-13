@@ -24,12 +24,13 @@ class PinLogManager {
         try await documentRef.updateData(data)
     }
     
-    func createOrUpdatePinLog(pinLog: inout PinLog, images: [UIImage], imageLocations: [CLLocationCoordinate2D]) async throws -> PinLog {
+    func createOrUpdatePinLog(pinLog: inout PinLog, images: [UIImage], imageLocations: [CLLocationCoordinate2D], isRepresentativeFlags: [Bool]) async throws -> PinLog {
         var mediaObjects: [Media] = []
         
         for (index, image) in images.enumerated() {
             do {
-                var media = try await StorageManager.shared.uploadImage(image: image, userId: pinLog.authorId)
+                let isRepresentative = isRepresentativeFlags[index]
+                var media = try await StorageManager.shared.uploadImage(image: image, userId: pinLog.authorId, isRepresentative: isRepresentative)
                 if index < imageLocations.count {
                     media.latitude = imageLocations[index].latitude
                     media.longitude = imageLocations[index].longitude

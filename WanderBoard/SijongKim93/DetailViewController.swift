@@ -718,7 +718,6 @@ class DetailViewController: UIViewController {
         }
         
         group.notify(queue: .main) {
-            print("All images loaded. Total: \(self.selectedImages.count)")
             self.galleryCollectionView.reloadData()
             if let representativeImage = self.selectedImages.first(where: { $0.1 })?.0 {
                 self.backgroundImageView.image = representativeImage
@@ -752,7 +751,7 @@ class DetailViewController: UIViewController {
             "url": imageURL,
             "latitude": location.latitude,
             "longitude": location.longitude,
-            "isRepresentative": false, // 기본값으로 false 설정
+            "isRepresentative": false,
             "timestamp": Timestamp(date: Date())
         ]) { error in
             if let error = error {
@@ -882,6 +881,10 @@ extension DetailViewController: UIScrollViewDelegate {
             
             if let overlayView = backgroundImageView.viewWithTag(999) {
                 overlayView.frame = backgroundImageView.bounds
+                
+                let maxOffset: CGFloat = 150 // 최대로 어두워지는 오프셋 값
+                let alpha = min(1, 0.3 + (offset / maxOffset) * 0.7) // 알파 값 계산
+                overlayView.backgroundColor = UIColor.black.withAlphaComponent(alpha)
             }
             
             if offset > 0 {
@@ -935,6 +938,7 @@ extension DetailViewController: UIScrollViewDelegate {
             }
         }
     }
+
     
     func applyDarkOverlayToBackgroundImage() {
         backgroundImageView.subviews.forEach { subview in

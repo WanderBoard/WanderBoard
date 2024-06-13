@@ -555,15 +555,7 @@ class DetailInputViewController: UIViewController {
     }
     
     func configureView(with pinLog: PinLog) {
-        if let firstImageIndex = selectedImages.firstIndex(where: { $0.1 }) {
-            representativeImageIndex = firstImageIndex
-        } else {
-            representativeImageIndex = 0
-        }
-        if !selectedImages.isEmpty {
-            selectedImages[0].1 = true
-        }
-
+        representativeImageIndex = pinLog.media.firstIndex { $0.isRepresentative } ?? 0
         locationLeftLabel.text = pinLog.location
         mainTextField.text = pinLog.title
         mainTextField.textColor = .black
@@ -575,29 +567,36 @@ class DetailInputViewController: UIViewController {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         startDateButton.setTitle(dateFormatter.string(from: pinLog.startDate), for: .normal)
         endDateButton.setTitle(dateFormatter.string(from: pinLog.endDate), for: .normal)
-        
+
         selectedImages.removeAll()
-        
+        imageLocations.removeAll()
+
         let dispatchGroup = DispatchGroup()
-        
+
         for media in pinLog.media {
-            guard let url = URL(string: media.url) else { continue }
             dispatchGroup.enter()
-            URLSession.shared.dataTask(with: url) { data, response, error in
-                if let data = data, let image = UIImage(data: data) {
-                    let location = media.latitude != nil && media.longitude != nil ? CLLocationCoordinate2D(latitude: media.latitude!, longitude: media.longitude!) : nil
-                    self.selectedImages.append((image, media.isRepresentative, location))
-                }
+            if let url = URL(string: media.url) {
+                URLSession.shared.dataTask(with: url) { data, response, error in
+                    if let data = data, let image = UIImage(data: data) {
+                        let location = media.latitude != nil && media.longitude != nil ? CLLocationCoordinate2D(latitude: media.latitude!, longitude: media.longitude!) : nil
+                        self.selectedImages.append((image, media.isRepresentative, location))
+                    } else {
+                        print("Error loading image: \(String(describing: error))")
+                    }
+                    dispatchGroup.leave()
+                }.resume()
+            } else {
                 dispatchGroup.leave()
-            }.resume()
+            }
         }
-        
+
         dispatchGroup.notify(queue: .main) {
+            self.updateRepresentativeImage()
             self.galleryCollectionView.reloadData()
             self.updateGalleryCountButton()
         }
     }
-
+    
     func loadSavedLocation() {
         let userId = Auth.auth().currentUser?.uid ?? ""
         let documentRef = Firestore.firestore().collection("users").document(userId)
@@ -733,7 +732,18 @@ class DetailInputViewController: UIViewController {
                                     pinnedBy: [])
                 }
                 
-                let savedPinLog = try await pinLogManager.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations)
+                // 선택된 대표 이미지가 있으면 설정
+                if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
+                    for i in 0..<selectedImages.count {
+                        selectedImages[i].1 = (i == representativeIndex)
+                    }
+                } else if !selectedImages.isEmpty {
+                    selectedImages[0].1 = true
+                }
+
+                let isRepresentativeFlags = selectedImages.map { $0.1 }
+
+                let savedPinLog = try await pinLogManager.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations, isRepresentativeFlags: isRepresentativeFlags)
                 self.savedPinLogId = savedPinLog.id
                 self.pinLog = savedPinLog
                 delegate?.didSavePinLog(savedPinLog)
@@ -745,7 +755,6 @@ class DetailInputViewController: UIViewController {
                             return
                         }
                     }
-                    // MyTripVC가 네비게이션 스택에 없을 경우 루트로 이동
                     navigationController.popToRootViewController(animated: true)
                 }
             } catch {
@@ -835,6 +844,17 @@ class DetailInputViewController: UIViewController {
             }
         }
     }
+    
+    func updateRepresentativeImage() {
+        if let index = representativeImageIndex, index < selectedImages.count {
+            for i in 0..<selectedImages.count {
+                selectedImages[i].1 = (i == index)
+            }
+        } else {
+            representativeImageIndex = selectedImages.isEmpty ? nil : 0
+        }
+        galleryCollectionView.reloadData()
+    }
 }
 
 extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -878,10 +898,8 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
             if selectedImages.isEmpty || indexPath.row == selectedImages.count {
                 showPHPicker()
             } else {
-                for i in 0..<selectedImages.count {
-                    selectedImages[i].1 = (i == indexPath.row)
-                }
-                galleryCollectionView.reloadData()
+                representativeImageIndex = indexPath.row
+                updateRepresentativeImage()
             }
         }
     }

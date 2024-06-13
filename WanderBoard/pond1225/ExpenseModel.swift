@@ -8,14 +8,25 @@
 import Foundation
 
 
-struct Expense {
+struct Expense: Equatable {
     let date : Date
     let expenseContent : String
     let expenseAmount : Int
     let category : String
     let memo : String
     let imageName: String
-}
+    
+    static func == (lhs: Expense, rhs: Expense) -> Bool {
+            return lhs.date == rhs.date &&
+            lhs.expenseContent == rhs.expenseContent &&
+            lhs.expenseAmount == rhs.expenseAmount &&
+            lhs.category == rhs.category &&
+            lhs.memo == rhs.memo &&
+            lhs.imageName == rhs.imageName
+        }
+    }
+    
+
 
 struct DailyExpenses {
     let date : Date

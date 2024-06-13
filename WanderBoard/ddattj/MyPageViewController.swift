@@ -90,7 +90,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
             do {
                 //사용자 핀로그 불러오기
                 let pinLogs = try await PinLogManager.shared.fetchPinLogs(forUserId: userData.uid)
-                let totalSpendingAmount = pinLogs.reduce(0) { $0 + $1.totalSpendingAmount}
+                let totalSpendingAmount = pinLogs.reduce(0) { $0 + ($1.totalSpendingAmount ?? 0.0)}
                 let averageSpendingAmount = pinLogs.isEmpty ? 0 : totalSpendingAmount / Double(pinLogs.count)
                 
                 DispatchQueue.main.async {

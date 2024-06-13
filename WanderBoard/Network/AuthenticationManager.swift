@@ -127,7 +127,7 @@ final class AuthenticationManager {
 
     // 코어 데이터 저장
     @MainActor
-    private func saveUserToCoreData(uid: String, email: String, displayName: String?, photoURL: String?, socialMediaLink: String?, authProvider: AuthProviderOption, gender: String, interests: [String]) throws -> UserEntity {
+    private func saveUserToCoreData(uid: String, email: String, displayName: String?, photoURL: String?, socialMediaLink: String?, authProvider: AuthProviderOption, gender: String, interests: [String], blockedAuthors: [String]) throws -> UserEntity {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             ErrorUtility.shared.presentErrorAlertAndTerminate(with: "앱 초기화 중 문제가 발생했습니다. 다시 시도해주세요.")
             throw NSError(domain: "AppDelegateError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Could not cast UIApplication delegate to AppDelegate"])
@@ -142,6 +142,7 @@ final class AuthenticationManager {
         userEntity.authProvider = authProvider.rawValue
         userEntity.gender = gender
         userEntity.interests = interests.joined(separator: ",")
+        userEntity.blockedAuthors = blockedAuthors.jsonString() ?? "[]"
         
         try context.save()
         
@@ -166,7 +167,9 @@ final class AuthenticationManager {
                         socialMediaLink: nil,
                         authProvider: .kakao,
                         gender: "선택안함",
-                        interests: []
+                        interests: [],
+                        blockedAuthors: authDataResult.blockedAuthors // 추가된 부분
+
                     )
                 } catch {
                     ErrorUtility.shared.presentErrorAlertAndTerminate(with: "사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
@@ -183,7 +186,8 @@ final class AuthenticationManager {
                     authProvider: AuthProviderOption.kakao.rawValue,
                     gender: "선택안함",
                     interests: [],
-                    isProfileComplete: false
+                    isProfileComplete: false, 
+                    blockedAuthors: authDataResult.blockedAuthors
                 )
             } catch {
                 print("Firestore save error: \(error)")
@@ -233,7 +237,8 @@ final class AuthenticationManager {
                         socialMediaLink: nil,
                         authProvider: .google,
                         gender: "선택안함",
-                        interests: []
+                        interests: [],
+                        blockedAuthors: authDataResult.blockedAuthors
                     )
                 } catch {
                     ErrorUtility.shared.presentErrorAlertAndTerminate(with: "사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
@@ -248,7 +253,8 @@ final class AuthenticationManager {
                     authProvider: AuthProviderOption.google.rawValue,
                     gender: "선택안함",
                     interests: [],
-                    isProfileComplete: true
+                    isProfileComplete: true, 
+                    blockedAuthors: authDataResult.blockedAuthors
                 )
             } catch {
                 await ErrorUtility.shared.presentErrorAlert(with: "서버에 사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
@@ -303,7 +309,8 @@ final class AuthenticationManager {
                     authProvider: AuthProviderOption.apple.rawValue,
                     gender: "선택안함",
                     interests: [],
-                    isProfileComplete: false
+                    isProfileComplete: false, 
+                    blockedAuthors: authDataResult.blockedAuthors
                 )
                 await MainActor.run {
                     presentSignUpViewController()

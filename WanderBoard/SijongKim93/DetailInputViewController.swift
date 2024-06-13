@@ -512,7 +512,6 @@ class DetailInputViewController: UIViewController {
         locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
         
-
     }
     
     
@@ -601,17 +600,17 @@ class DetailInputViewController: UIViewController {
         subTextField.text = pinLog.content
         subTextField.textColor = .black
         publicSwitch.isOn = pinLog.isPublic
-
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         startDateButton.setTitle(dateFormatter.string(from: pinLog.startDate), for: .normal)
         endDateButton.setTitle(dateFormatter.string(from: pinLog.endDate), for: .normal)
-
+        
         selectedImages.removeAll()
         imageLocations.removeAll()
-
+        
         let dispatchGroup = DispatchGroup()
-
+        
         for media in pinLog.media {
             dispatchGroup.enter()
             if let url = URL(string: media.url) {
@@ -628,7 +627,7 @@ class DetailInputViewController: UIViewController {
                 dispatchGroup.leave()
             }
         }
-
+        
         dispatchGroup.notify(queue: .main) {
             self.updateRepresentativeImage()
             self.galleryCollectionView.reloadData()
@@ -742,7 +741,7 @@ class DetailInputViewController: UIViewController {
             do {
                 var pinLog: PinLog
                 var createdAt: Date?
-
+                
                 if let pinLogId = self.savedPinLogId {
                     // 핀로그가 이미 존재하는 경우 업데이트
                     pinLog = PinLog(id: pinLogId,
@@ -760,64 +759,65 @@ class DetailInputViewController: UIViewController {
                                     isPublic: isPublic,
                                     createdAt: createdAt,
                                     pinCount: 0,
-                                    pinnedBy: [], 
-                                    totalSpendingAmount: 0.0)
-                
-                if let existingPinLog = self.pinLog {
-                    pinLog = existingPinLog
-                    pinLog.location = locationTitle
-                    pinLog.address = address
-                    pinLog.latitude = latitude
-                    pinLog.longitude = longitude
-                    pinLog.startDate = startDate
-                    pinLog.endDate = endDate
-                    pinLog.title = title
-                    pinLog.content = content
-                    pinLog.isPublic = isPublic
-
-                } else {
-                    pinLog = PinLog(location: locationTitle,
-                                    address: address,
-                                    latitude: latitude,
-                                    longitude: longitude,
-                                    startDate: startDate,
-                                    endDate: endDate,
-                                    title: title,
-                                    content: content,
-                                    media: [],
-                                    authorId: Auth.auth().currentUser?.uid ?? "",
-                                    attendeeIds: [],
-                                    isPublic: isPublic,
-                                    createdAt: Date(),
-                                    pinCount: 0,
                                     pinnedBy: [],
                                     totalSpendingAmount: 0.0)
-                }
-                
-                // 선택된 대표 이미지가 있으면 설정
-                if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
-                    for i in 0..<selectedImages.count {
-                        selectedImages[i].1 = (i == representativeIndex)
+                    
+                    if let existingPinLog = self.pinLog {
+                        pinLog = existingPinLog
+                        pinLog.location = locationTitle
+                        pinLog.address = address
+                        pinLog.latitude = latitude
+                        pinLog.longitude = longitude
+                        pinLog.startDate = startDate
+                        pinLog.endDate = endDate
+                        pinLog.title = title
+                        pinLog.content = content
+                        pinLog.isPublic = isPublic
+                        
+                    } else {
+                        pinLog = PinLog(location: locationTitle,
+                                        address: address,
+                                        latitude: latitude,
+                                        longitude: longitude,
+                                        startDate: startDate,
+                                        endDate: endDate,
+                                        title: title,
+                                        content: content,
+                                        media: [],
+                                        authorId: Auth.auth().currentUser?.uid ?? "",
+                                        attendeeIds: [],
+                                        isPublic: isPublic,
+                                        createdAt: Date(),
+                                        pinCount: 0,
+                                        pinnedBy: [],
+                                        totalSpendingAmount: 0.0)
                     }
-                } else if !selectedImages.isEmpty {
-                    selectedImages[0].1 = true
-                }
-
-                let isRepresentativeFlags = selectedImages.map { $0.1 }
-
-                let savedPinLog = try await pinLogManager.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations, isRepresentativeFlags: isRepresentativeFlags)
-                self.savedPinLogId = savedPinLog.id
-                self.pinLog = savedPinLog
-                delegate?.didSavePinLog(savedPinLog)
-                
-                if let navigationController = self.navigationController {
-                    for viewController in navigationController.viewControllers {
-                        if viewController is MyTripsViewController {
-                            navigationController.popToViewController(viewController, animated: true)
-                            return
+                    
+                    // 선택된 대표 이미지가 있으면 설정
+                    if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
+                        for i in 0..<selectedImages.count {
+                            selectedImages[i].1 = (i == representativeIndex)
                         }
+                    } else if !selectedImages.isEmpty {
+                        selectedImages[0].1 = true
                     }
-                    navigationController.popToRootViewController(animated: true)
+                    
+                    let isRepresentativeFlags = selectedImages.map { $0.1 }
+                    
+                    let savedPinLog = try await pinLogManager.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations, isRepresentativeFlags: isRepresentativeFlags)
+                    self.savedPinLogId = savedPinLog.id
+                    self.pinLog = savedPinLog
+                    delegate?.didSavePinLog(savedPinLog)
+                    
+                    if let navigationController = self.navigationController {
+                        for viewController in navigationController.viewControllers {
+                            if viewController is MyTripsViewController {
+                                navigationController.popToViewController(viewController, animated: true)
+                                return
+                            }
+                        }
+                        navigationController.popToRootViewController(animated: true)
+                    }
                 }
             } catch {
                 let alert = UIAlertController(title: "오류", message: "데이터 저장에 실패했습니다.", preferredStyle: .alert)
@@ -826,7 +826,6 @@ class DetailInputViewController: UIViewController {
             }
         }
     }
-    
     
     func updateGalleryCountButton() {
         let count = selectedImages.count
@@ -918,6 +917,7 @@ class DetailInputViewController: UIViewController {
         galleryCollectionView.reloadData()
     }
 }
+
 
 extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -1029,6 +1029,7 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
         }
     }
 }
+
 
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {

@@ -242,7 +242,8 @@ class AuthenticationVC: UIViewController {
                                 authProvider: AuthProviderOption.kakao.rawValue,
                                 gender: "선택안함",
                                 interests: [],
-                                isProfileComplete: isProfileComplete
+                                isProfileComplete: isProfileComplete, 
+                                blockedAuthors: authDataResult.blockedAuthors
                             )
                         } else {
                             // 새로운 사용자라면 displayName을 포함하여 저장
@@ -255,7 +256,8 @@ class AuthenticationVC: UIViewController {
                                 authProvider: AuthProviderOption.kakao.rawValue,
                                 gender: "선택안함",
                                 interests: [],
-                                isProfileComplete: isProfileComplete
+                                isProfileComplete: isProfileComplete, 
+                                blockedAuthors: authDataResult.blockedAuthors
                             )
                         }
                         // Firestore 정보 업데이트
@@ -273,7 +275,8 @@ class AuthenticationVC: UIViewController {
                             authProvider: AuthProviderOption.kakao.rawValue,
                             gender: "선택안함",
                             interests: [],
-                            isProfileComplete: false
+                            isProfileComplete: false, 
+                            blockedAuthors: authDataResult.blockedAuthors
                         )
                         await handleSignUpResult(authDataResult, isProfileComplete: false)
                     }
@@ -298,7 +301,7 @@ class AuthenticationVC: UIViewController {
                 if let existingUser = existingUser {
                     await handleSignInResult(AuthDataResultModel(user: existingUser, authProvider: .google), isProfileComplete: isProfileComplete)
                 } else {
-                    try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: tokens.email ?? "", authProvider: AuthProviderOption.google.rawValue, gender: "선택안함", interests: [], isProfileComplete: false)
+                    try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: tokens.email ?? "", authProvider: AuthProviderOption.google.rawValue, gender: "선택안함", interests: [], isProfileComplete: false, blockedAuthors: authDataResult.blockedAuthors)
                     await handleSignUpResult(authDataResult, isProfileComplete: false)
                 }
             } catch {
@@ -318,7 +321,7 @@ class AuthenticationVC: UIViewController {
                 if let existingUser = existingUser {
                     await handleSignInResult(AuthDataResultModel(user: existingUser, authProvider: .apple), isProfileComplete: isProfileComplete)
                 } else {
-                    try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: result.email ?? "", authProvider: AuthProviderOption.apple.rawValue, gender: "선택안함", interests: [], isProfileComplete: false)
+                    try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: result.email ?? "", authProvider: AuthProviderOption.apple.rawValue, gender: "선택안함", interests: [], isProfileComplete: false, blockedAuthors: authDataResult.blockedAuthors)
                     await handleSignUpResult(authDataResult, isProfileComplete: false)
                 }
             } catch {

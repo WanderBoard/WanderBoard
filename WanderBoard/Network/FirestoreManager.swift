@@ -29,7 +29,7 @@ class FirestoreManager {
         return !querySnapshot.documents.isEmpty
     }
 
-    func saveUser(uid: String, email: String, displayName: String? = nil, photoURL: String? = nil, socialMediaLink: String? = nil, authProvider: String, gender: String = "선택안함", interests: [String] = [], isProfileComplete: Bool) async throws {
+    func saveUser(uid: String, email: String, displayName: String? = nil, photoURL: String? = nil, socialMediaLink: String? = nil, authProvider: String, gender: String = "선택안함", interests: [String] = [], isProfileComplete: Bool, blockedAuthors: [String]) async throws {
         
         guard !email.isEmpty else {
             throw NSError(domain: "SaveUserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Email is empty. Cannot save user data."])
@@ -42,7 +42,7 @@ class FirestoreManager {
             "email": email,
             "authProvider": authProvider,
             "isProfileComplete": isProfileComplete,
-            "blockedAuthors": [] // 초기값 설정
+            "blockedAuthors": blockedAuthors // 초기값 설정
         ]
         
         if let displayName = displayName {

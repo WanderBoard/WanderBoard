@@ -287,7 +287,7 @@ class InsertSpendingViewController: UIViewController {
         dateTextField.becomeFirstResponder()
     }
     
-// MARK: DatePicke Done 버튼 클릭시 동작
+// MARK: DatePicker Done 버튼 클릭시 동작
     @objc func donePressed() {
         insertedDateLabel.text = dateFormat(date: datePicker.date)
         updateDoneButtonState()
@@ -384,6 +384,12 @@ class InsertSpendingViewController: UIViewController {
                 imageName: imageName
             )
             
+//        if let originalExpense = expenseToEdit {
+//            if originalExpense == expense {
+//                showAlert(title: "알림", message: "변경된 내용이 없습니다")
+//                return
+//            }
+//        }
         if let indexPath = editingIndexPath {
             delegate?.didUpdateExpense(expense, at: indexPath)
         } else {
@@ -580,6 +586,15 @@ extension InsertSpendingViewController: UITextFieldDelegate {
     }
     
 }
-        
+       
+//// MARK: Alert
+//extension UIViewController {
+//    func showAlert(title: String, message: String) {
+//        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+//        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+//        alertController.addAction(okAction)
+//        present(alertController, animated: true, completion: nil)
+//    }
+//}
     
 

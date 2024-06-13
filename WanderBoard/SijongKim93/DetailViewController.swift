@@ -156,7 +156,7 @@ class DetailViewController: UIViewController {
     }
     
     let textLabelLine = UILabel().then {
-        $0.backgroundColor = .babygray
+        $0.backgroundColor = .lightgray
     }
 
     let segmentControl: UISegmentedControl = {
@@ -303,10 +303,10 @@ class DetailViewController: UIViewController {
     }
     
     func updateColor(){
-        let textLabelLineColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "babygray")
+        let textLabelLineColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
         textLabelLine.backgroundColor = textLabelLineColor
         
-        let ButtonGrayColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
+        let ButtonGrayColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
         mapAllButton.setTitleColor(ButtonGrayColor, for: .normal)
         albumAllButton.setTitleColor(ButtonGrayColor, for: .normal)
         

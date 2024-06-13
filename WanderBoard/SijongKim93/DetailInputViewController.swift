@@ -82,51 +82,53 @@ class DetailInputViewController: UIViewController {
     }
     
     let topLine = UIView().then {
-        $0.backgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        $0.backgroundColor = .lightgray
     }
     
     let dateLabel = UILabel().then {
         $0.text = "날짜"
+        $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
     let startDateButton = UIButton(type: .system).then {
         var configuration = UIButton.Configuration.filled()
         configuration.title = "시작일자"
-        configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
-        configuration.baseForegroundColor = .black
+        configuration.baseBackgroundColor = .babygray
+        configuration.baseForegroundColor = .font
         configuration.cornerStyle = .medium
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10)
         $0.configuration = configuration
-        $0.tintColor = .black
+        $0.tintColor = .font
     }
     
     let endDateLabel = UILabel().then {
         $0.text = "-"
         $0.font = UIFont.systemFont(ofSize: 16)
+        $0.textColor = .font
         $0.textAlignment = .center
     }
     
     let endDateButton = UIButton(type: .system).then {
         var configuration = UIButton.Configuration.filled()
         configuration.title = "종료일자"
-        configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
-        configuration.baseForegroundColor = .black
+        configuration.baseBackgroundColor = .babygray
+        configuration.baseForegroundColor = .font
         configuration.cornerStyle = .medium
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10)
         $0.configuration = configuration
-        $0.tintColor = .black
+        $0.tintColor = .font
     }
     
     let dateContainerView = UIView()
     
     let mainTextField = UITextView().then {
         $0.text = "여행 제목을 입력해주세요."
-        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
-        $0.backgroundColor = .white
+        $0.textColor = .lightgray
+        $0.backgroundColor = .clear
         $0.layer.cornerRadius = 8
         $0.layer.borderWidth = 1
-        $0.layer.borderColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+        $0.layer.borderColor = UIColor.lightgray.cgColor
         $0.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         $0.font = UIFont.systemFont(ofSize: 16)
         $0.isScrollEnabled = false
@@ -134,11 +136,11 @@ class DetailInputViewController: UIViewController {
     
     let subTextField = UITextView().then {
         $0.text = "기록을 담아 주세요."
-        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
-        $0.backgroundColor = .white
+        $0.textColor = .lightgray
+        $0.backgroundColor = .clear
         $0.layer.cornerRadius = 8
         $0.layer.borderWidth = 1
-        $0.layer.borderColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+        $0.layer.borderColor = UIColor.lightgray.cgColor
         $0.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         $0.font = UIFont.systemFont(ofSize: 16)
         $0.isScrollEnabled = false
@@ -152,11 +154,12 @@ class DetailInputViewController: UIViewController {
     let locationLeftLabel = UILabel().then {
         $0.text = "지역을 선택하세요"
         $0.font = UIFont.systemFont(ofSize: 15)
+        $0.textColor = .font
     }
     
     let locationRightLabel = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
-        $0.tintColor = .black
+        $0.tintColor = .font
     }
     
     let locationStackView = UIStackView().then {
@@ -175,11 +178,12 @@ class DetailInputViewController: UIViewController {
     let consumLeftLabel = UILabel().then {
         $0.text = "지출 내역을 추가하세요"
         $0.font = UIFont.systemFont(ofSize: 15)
+        $0.textColor = .font
     }
     
     let consumRightLabel = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
-        $0.tintColor = .black
+        $0.tintColor = .font
     }
     
     let consumStackView = UIStackView().then {
@@ -191,11 +195,12 @@ class DetailInputViewController: UIViewController {
     }
     
     let bodyLine = UIView().then {
-        $0.backgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        $0.backgroundColor = .babygray
     }
     
     let galleryLabel = UILabel().then {
         $0.text = "앨범 추가"
+        $0.textColor = .darkgray
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
@@ -206,7 +211,7 @@ class DetailInputViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 10, left: 32, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: 85, height: 85)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
@@ -266,6 +271,7 @@ class DetailInputViewController: UIViewController {
         setupCollectionView()
         setupNavigationBar()
         requestPhotoLibraryAccess()
+        updateColor()
         
         if let pinLog = pinLog {
             configureView(with: pinLog)
@@ -462,7 +468,24 @@ class DetailInputViewController: UIViewController {
     }
     
     func updateColor(){
+        let textFieldColor = traitCollection.userInterfaceStyle == .dark ? UIColor.darkgray : UIColor.lightgray
+        mainTextField.textColor = textFieldColor
+        mainTextField.layer.borderColor = textFieldColor.cgColor
+        subTextField.textColor = textFieldColor
+        subTextField.layer.borderColor = textFieldColor.cgColor
         
+        let lineColor = traitCollection.userInterfaceStyle == .dark ? UIColor.lightblack : UIColor.lightgray
+        topLine.backgroundColor = lineColor
+        bodyLine.backgroundColor = lineColor
+        
+        let buttonBackground = traitCollection.userInterfaceStyle == .dark ? UIColor.customblack : UIColor.babygray
+        startDateButton.configuration?.baseBackgroundColor = buttonBackground
+        endDateButton.configuration?.baseBackgroundColor = buttonBackground
+        locationButton.backgroundColor = buttonBackground
+        consumButton.backgroundColor = buttonBackground
+        
+        let textGrayColor = traitCollection.userInterfaceStyle == .dark ? UIColor.lightgray : UIColor.darkgray
+        galleryLabel.textColor = textGrayColor
     }
     
     func setupCollectionView() {

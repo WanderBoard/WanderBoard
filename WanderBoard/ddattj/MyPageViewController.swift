@@ -43,6 +43,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         configureUI()
         fetchUserData()
         fetchAndDisplayUserPinCount() // 핀 개수 가져오기 및 UI 업데이트
+        fetchAndDisplayAverageExpenditure()
     }
     
     
@@ -76,6 +77,29 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 try await FirestoreManager.shared.updateUserPinCount(userId: currentUserId, pinCount: pinCount)
             } catch {
                 print("핀 개수를 가져오거나 업데이트하는 데 실패했습니다: \(error)")
+            }
+        }
+    }
+    
+    func fetchAndDisplayAverageExpenditure() {
+        guard let userData = userData else {
+                   print("유저 데이터를 불러오지 못했습니다.")
+                   return
+               }
+        Task {
+            do {
+                //사용자 핀로그 불러오기
+                let pinLogs = try await PinLogManager.shared.fetchPinLogs(forUserId: userData.uid)
+                let totalSpendingAmount = pinLogs.reduce(0) { $0 + $1.totalSpendingAmount}
+                let averageSpendingAmount = pinLogs.isEmpty ? 0 : totalSpendingAmount / Double(pinLogs.count)
+                
+                DispatchQueue.main.async {
+                    self.myExpend.text = pinLogs.isEmpty ? "0₩" : "\(averageSpendingAmount)₩"
+                    print("평균지출금액 불러오기 성공")
+                }
+            }
+                catch {
+                    print("핀로그를 불러오는데에 실패했습니다")
             }
         }
     }
@@ -172,7 +196,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
         myWrite.textColor = .white
         myPin.font = UIFont.systemFont(ofSize: 13)
         myPin.textColor = .white
-        myExpend.text = "\(1)"
         myExpend.font =  UIFont.systemFont(ofSize: 13)
         myExpend.textColor = .white
         
@@ -196,8 +219,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
             myID.text = userData.email
         }
     }
-    
-    
     
     
     

@@ -603,6 +603,7 @@ class DetailViewController: UIViewController {
         dateDaysLabel.text = "\(duration) Days"
         mainTitleLabel.text = pinLog.title
         subTextLabel.text = pinLog.content
+        moneyCountTitle.text = "\(pinLog.totalSpendingAmount)"
 
         selectedImages.removeAll()
         updateSelectedImages(with: pinLog.media)

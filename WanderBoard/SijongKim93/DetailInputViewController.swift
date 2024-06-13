@@ -745,7 +745,7 @@ class DetailInputViewController: UIViewController {
                                     isPublic: isPublic,
                                     createdAt: createdAt,
                                     pinCount: 0,
-                                    pinnedBy: [])
+                                    pinnedBy: [], totalSpendingAmount: 0.0)
                 } else {
                     // 핀로그가 존재하지 않는 경우 새로 생성
                     pinLog = PinLog(location: locationTitle,
@@ -762,7 +762,7 @@ class DetailInputViewController: UIViewController {
                                     isPublic: isPublic,
                                     createdAt: Date(),
                                     pinCount: 0,
-                                    pinnedBy: [])
+                                    pinnedBy: [], totalSpendingAmount: 0.0)
                 }
                 
                 let savedPinLog = try await PinLogManager.shared.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations)

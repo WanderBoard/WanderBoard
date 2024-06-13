@@ -75,6 +75,7 @@ class PinLogManager {
             "attendeeIds": pinLog.attendeeIds,
             "isPublic": pinLog.isPublic,
             "createdAt": Timestamp(date: pinLog.createdAt ?? Date()),
+            "totalSpendingAmount": pinLog.totalSpendingAmount
         ]
 
         if pinLog.id == nil {

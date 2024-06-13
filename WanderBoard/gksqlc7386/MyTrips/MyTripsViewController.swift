@@ -156,7 +156,8 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
                 print("No user ID found")
                 return
             }
-            let pinLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
+            // 위치 정보를 포함하지 않는 핀 로그 데이터를 가져옵니다.
+            let pinLogs = try await pinLogManager.fetchPinLogsWithoutLocation(forUserId: userId)
             MyTripsViewController.tripLogs = pinLogs
             print("Fetched pinLogs: \(pinLogs)")
             updateView()

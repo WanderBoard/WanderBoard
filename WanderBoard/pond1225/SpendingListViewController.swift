@@ -185,11 +185,12 @@ class SpendingListViewController: UIViewController {
         
         let delete = UIContextualAction(style: .normal, title: "삭제") { (UIContextualAction, UIView, success: @escaping (Bool) -> Void) in
             
-            let deletedExpense =            self.dailyExpenses[indexPath.section].expenses.remove(at: indexPath.row)
+            let deletedExpense = self.dailyExpenses[indexPath.section].expenses.remove(at: indexPath.row)
             
             if self.dailyExpenses[indexPath.section].expenses.isEmpty {
                 self.dailyExpenses.remove(at: indexPath.section)
                 tableView.deleteSections(IndexSet(integer: indexPath.section), with: .fade)
+                self.updateTotalSpendingAmount()
             } else {
                 tableView.deleteRows(at: [indexPath], with: .fade)
             }
@@ -216,6 +217,11 @@ class SpendingListViewController: UIViewController {
             headerView.configure(with: dailyExpenses[section].date, dailyTotalAmount: dailyTotalAmount)
         }
         updateTotalSpendingAmount()
+        
+        if dailyExpenses[section].expenses.isEmpty {
+            tableView.deleteSections(IndexSet(integer: section), with: UITableView.RowAnimation.fade)
+            updateTotalSpendingAmount()
+        }
     }
     
     func updateTotalSpendingAmount() {

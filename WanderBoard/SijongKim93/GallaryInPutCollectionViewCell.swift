@@ -81,14 +81,14 @@ class GallaryInPutCollectionViewCell: UICollectionViewCell {
         }
         
         representativeLabel.snp.makeConstraints {
-            $0.top.trailing.equalToSuperview().inset(6)
+            $0.top.leading.equalToSuperview().inset(6)
             $0.size.equalTo(CGSize(width: 40, height: 24))
         }
         
         deleteButton.addTarget(nil, action: #selector(DetailInputViewController.deletePhoto(_:)), for: .touchUpInside)
     }
 
-    func configure(with image: UIImage?, isEditing: Bool, isRepresentative: Bool) {
+    func configure(with image: UIImage?, isRepresentative: Bool) {
         if let image = image {
             imageView.image = image
             imageView.isHidden = false

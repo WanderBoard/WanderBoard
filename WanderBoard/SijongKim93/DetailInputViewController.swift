@@ -19,6 +19,7 @@ import CoreLocation
 import FirebaseStorage
 import FirebaseFirestore
 import Contacts
+import Kingfisher
 
 
 protocol DetailInputViewControllerDelegate: AnyObject {
@@ -34,18 +35,16 @@ class DetailInputViewController: UIViewController {
     
     weak var delegate: DetailInputViewControllerDelegate?
     
-    var selectedImages: [(UIImage, Bool)] = []
+    var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
     var selectedFriends: [UIImage] = []
     var representativeImageIndex: Int? = 0
-
+    
     var imageLocations: [CLLocationCoordinate2D] = []
     let pinLogManager = PinLogManager()
     var pinLog: PinLog? //추가
-
+    
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
-    
-    var isEditingPhotos = false
     
     let topContainarView = UIView().then {
         $0.backgroundColor = .black
@@ -476,7 +475,7 @@ class DetailInputViewController: UIViewController {
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
         
     }
-
+    
     
     @objc func locationButtonTapped() {
         Task {
@@ -487,26 +486,26 @@ class DetailInputViewController: UIViewController {
                 // 기본 위치 설정 (광화문)
                 center = CLLocationCoordinate2D(latitude: 37.5760222, longitude: 126.9769000)
             }
-
+            
             let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
-
+            
             let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date(), onLocationSelected: { [weak self] (selectedLocation: CLLocationCoordinate2D, address: String) in
                 guard let self = self else { return }
                 self.updateLocationLabel(with: address)
                 self.savedLocation = selectedLocation
                 self.savedAddress = address
-
+                
             })
-
+            
             // 저장된 위치가 있으면 해당 위치에 핀을 생성
             if let savedLocation = savedLocation, let savedAddress = savedAddress {
                 mapVC.addPinToMap(location: savedLocation, address: savedAddress)
             }
-
+            
             self.navigationController?.pushViewController(mapVC, animated: true)
         }
     }
-
+    
     
     @objc func consumButtonTapped() {
         let spendVC = SpendingListViewController()
@@ -564,14 +563,14 @@ class DetailInputViewController: UIViewController {
         if !selectedImages.isEmpty {
             selectedImages[0].1 = true
         }
-        
+
         locationLeftLabel.text = pinLog.location
         mainTextField.text = pinLog.title
         mainTextField.textColor = .black
         subTextField.text = pinLog.content
         subTextField.textColor = .black
         publicSwitch.isOn = pinLog.isPublic
-        
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         startDateButton.setTitle(dateFormatter.string(from: pinLog.startDate), for: .normal)
@@ -586,7 +585,8 @@ class DetailInputViewController: UIViewController {
             dispatchGroup.enter()
             URLSession.shared.dataTask(with: url) { data, response, error in
                 if let data = data, let image = UIImage(data: data) {
-                    self.selectedImages.append((image, media.isRepresentative))
+                    let location = media.latitude != nil && media.longitude != nil ? CLLocationCoordinate2D(latitude: media.latitude!, longitude: media.longitude!) : nil
+                    self.selectedImages.append((image, media.isRepresentative, location))
                 }
                 dispatchGroup.leave()
             }.resume()
@@ -598,7 +598,6 @@ class DetailInputViewController: UIViewController {
         }
     }
 
-    
     func loadSavedLocation() {
         let userId = Auth.auth().currentUser?.uid ?? ""
         let documentRef = Firestore.firestore().collection("users").document(userId)
@@ -619,7 +618,7 @@ class DetailInputViewController: UIViewController {
             completion(NSError(domain: "ImageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to compress image"]))
             return
         }
-
+        
         let filename = UUID().uuidString + ".jpg"
         let storageRef = Storage.storage().reference().child("images/\(filename)")
         
@@ -660,7 +659,7 @@ class DetailInputViewController: UIViewController {
             }
         }
     }
-
+    
     private func saveMediaItemToFirestore(mediaItem: Media, address: String, completion: @escaping (Error?) -> Void) {
         let db = Firestore.firestore()
         db.collection("images").addDocument(data: [
@@ -680,10 +679,10 @@ class DetailInputViewController: UIViewController {
             present(alert, animated: true, completion: nil)
             return
         }
-
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-
+        
         guard let startDateString = startDateButton.title(for: .normal),
               let endDateString = endDateButton.title(for: .normal),
               let startDate = dateFormatter.date(from: startDateString),
@@ -693,39 +692,30 @@ class DetailInputViewController: UIViewController {
             present(alert, animated: true, completion: nil)
             return
         }
-
+        
         let title = mainTextField.text ?? ""
         let content = subTextField.text ?? ""
         let isPublic = publicSwitch.isOn
         let address = savedAddress ?? "Unknown Address"
         let latitude = savedLocation?.latitude ?? 0.0
         let longitude = savedLocation?.longitude ?? 0.0
-
+        
         Task {
             do {
                 var pinLog: PinLog
-                var createdAt: Date?
-
-                if let pinLogId = self.savedPinLogId {
-                    // 핀로그가 이미 존재하는 경우 업데이트
-                    pinLog = PinLog(id: pinLogId,
-                                    location: locationTitle,
-                                    address: address,
-                                    latitude: latitude,
-                                    longitude: longitude,
-                                    startDate: startDate,
-                                    endDate: endDate,
-                                    title: title,
-                                    content: content,
-                                    media: [],
-                                    authorId: Auth.auth().currentUser?.uid ?? "",
-                                    attendeeIds: [],
-                                    isPublic: isPublic,
-                                    createdAt: createdAt,
-                                    pinCount: 0,
-                                    pinnedBy: [])
+                
+                if let existingPinLog = self.pinLog {
+                    pinLog = existingPinLog
+                    pinLog.location = locationTitle
+                    pinLog.address = address
+                    pinLog.latitude = latitude
+                    pinLog.longitude = longitude
+                    pinLog.startDate = startDate
+                    pinLog.endDate = endDate
+                    pinLog.title = title
+                    pinLog.content = content
+                    pinLog.isPublic = isPublic
                 } else {
-                    // 핀로그가 존재하지 않는 경우 새로 생성
                     pinLog = PinLog(location: locationTitle,
                                     address: address,
                                     latitude: latitude,
@@ -742,11 +732,22 @@ class DetailInputViewController: UIViewController {
                                     pinCount: 0,
                                     pinnedBy: [])
                 }
-
-                let savedPinLog = try await PinLogManager.shared.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations)
+                
+                let savedPinLog = try await pinLogManager.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations)
                 self.savedPinLogId = savedPinLog.id
+                self.pinLog = savedPinLog
                 delegate?.didSavePinLog(savedPinLog)
-                navigationController?.popViewController(animated: true)
+                
+                if let navigationController = self.navigationController {
+                    for viewController in navigationController.viewControllers {
+                        if viewController is MyTripsViewController {
+                            navigationController.popToViewController(viewController, animated: true)
+                            return
+                        }
+                    }
+                    // MyTripVC가 네비게이션 스택에 없을 경우 루트로 이동
+                    navigationController.popToRootViewController(animated: true)
+                }
             } catch {
                 let alert = UIAlertController(title: "오류", message: "데이터 저장에 실패했습니다.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "확인", style: .default))
@@ -754,7 +755,7 @@ class DetailInputViewController: UIViewController {
             }
         }
     }
-
+    
     
     func updateGalleryCountButton() {
         let count = selectedImages.count
@@ -774,14 +775,14 @@ class DetailInputViewController: UIViewController {
     func requestPhotoLibraryAccess() {
         PHPhotoLibrary.requestAuthorization { status in
             switch status {
-                case .authorized:
-                    print("사진 접근 권한이 허용되었습니다.")
-                case .denied, .restricted, .notDetermined:
-                    print("사진 접근 권한이 거부되었습니다.")
-                case .limited:
-                    print("사진 접근 권한이 제한되었습니다.")
-                @unknown default:
-                    fatalError("새로운 권한 상태")
+            case .authorized:
+                print("사진 접근 권한이 허용되었습니다.")
+            case .denied, .restricted, .notDetermined:
+                print("사진 접근 권한이 거부되었습니다.")
+            case .limited:
+                print("사진 접근 권한이 제한되었습니다.")
+            @unknown default:
+                fatalError("새로운 권한 상태")
             }
         }
     }
@@ -824,7 +825,6 @@ class DetailInputViewController: UIViewController {
         
         selectedImages.remove(at: indexPath.row)
         if selectedImages.isEmpty {
-            isEditingPhotos = false
             galleryCollectionView.reloadData()
             updateGalleryCountButton()
         } else {
@@ -853,10 +853,10 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
                 fatalError("컬렉션 뷰 오류")
             }
             if selectedImages.isEmpty {
-                cell.configure(with: nil, isEditing: isEditingPhotos, isRepresentative: false)
+                cell.configure(with: nil, isRepresentative: false)
             } else {
-                let (image, isRepresentative) = selectedImages[indexPath.row]
-                cell.configure(with: image, isEditing: isEditingPhotos, isRepresentative: isRepresentative)
+                let (image, isRepresentative, _) = selectedImages[indexPath.row]
+                cell.configure(with: image, isRepresentative: isRepresentative)
             }
             return cell
         } else {
@@ -871,11 +871,18 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
             return cell
         }
     }
-
+    
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if selectedImages.isEmpty || indexPath.row == selectedImages.count {
-            showPHPicker()
+        if collectionView == galleryCollectionView {
+            if selectedImages.isEmpty || indexPath.row == selectedImages.count {
+                showPHPicker()
+            } else {
+                for i in 0..<selectedImages.count {
+                    selectedImages[i].1 = (i == indexPath.row)
+                }
+                galleryCollectionView.reloadData()
+            }
         }
     }
 }
@@ -883,14 +890,14 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
 extension DetailInputViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true)
-
+        
         guard !results.isEmpty else {
             print("No result found.")
             return
         }
-
+        
         let dispatchGroup = DispatchGroup()
-
+        
         for result in results {
             let provider = result.itemProvider
             if provider.canLoadObject(ofClass: UIImage.self) {
@@ -900,22 +907,19 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
                         dispatchGroup.leave()
                         return
                     }
-
+                    
                     if let error = error {
                         print("Error loading image: \(error.localizedDescription)")
                         dispatchGroup.leave()
                         return
                     }
-
+                    
                     guard let uiImage = object as? UIImage else {
                         print("Image is nil or not UIImage.")
                         dispatchGroup.leave()
                         return
                     }
-
-                    // 이미지 추가
-                    self.selectedImages.append((uiImage, false))
-
+                    
                     provider.loadDataRepresentation(forTypeIdentifier: "public.jpeg") { data, error in
                         if let error = error {
                             print("Error loading data representation: \(error.localizedDescription)")
@@ -927,14 +931,10 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
                             dispatchGroup.leave()
                             return
                         }
-
-                        // 위치 정보 확인 및 디버깅 출력
-                        if let location = StorageManager.shared.extractLocation(from: data) {
-                            self.imageLocations.append(location)
-                        } else {
-                            print("이미지에 위처 정보가 없습니다.")
-                        }
-
+                        
+                        let location = StorageManager.shared.extractLocation(from: data)
+                        self.selectedImages.append((uiImage, false, location))
+                        
                         dispatchGroup.leave()
                     }
                 }
@@ -942,9 +942,10 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
                 print("No provider or provider cannot load UIImage.")
             }
         }
-
+        
         dispatchGroup.notify(queue: .main) {
             self.galleryCollectionView.reloadData()
+            self.updateGalleryCountButton()
         }
     }
 }

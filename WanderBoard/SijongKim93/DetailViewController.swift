@@ -25,28 +25,23 @@ class DetailViewController: UIViewController {
     
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
     var selectedFriends: [UIImage] = []
-
-    var pinLog: PinLog? {
-        didSet {
-            guard let pinLog = pinLog else { return }
-            configureView(with: pinLog)
-        }
-    }
+    
+    var pinLog: PinLog?
     
     let pinLogManager = PinLogManager()
-
+    
     var mapViewController: MapViewController?
-
+    
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
-
+    
     let backgroundImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.backgroundColor = .clear
         $0.isUserInteractionEnabled = true
     }
-
+    
     let topContentView = UIView().then {
         $0.backgroundColor = .clear
         $0.isUserInteractionEnabled = false
@@ -70,7 +65,7 @@ class DetailViewController: UIViewController {
         $0.font = UIFont.systemFont(ofSize: 12)
         $0.textColor = .font
     }
-
+    
     // 추가
     let profileStackView = UIStackView().then {
         $0.axis = .horizontal
@@ -84,59 +79,59 @@ class DetailViewController: UIViewController {
         $0.textColor = .font
         $0.numberOfLines = 2
     }
-
+    
     var dateDaysLabel = UILabel().then {
         $0.text = "0 Days"
         $0.font = UIFont.systemFont(ofSize: 16)
         $0.textColor = .font
     }
-
+    
     let locationStackView = UIStackView().then {
         $0.axis = .vertical
         $0.alignment = .leading
         $0.spacing = 10
     }
-
+    
     var dateStartLabel = UILabel().then {
         $0.text = "2024.08.13"
         $0.font = UIFont.systemFont(ofSize: 16)
         $0.textColor = .font
     }
-
+    
     let dateLineLabel = UILabel().then {
         $0.text = "-"
         $0.textColor = .font
     }
-
+    
     var dateEndLabel = UILabel().then {
         $0.text = "2024.08.15"
         $0.font = UIFont.systemFont(ofSize: 16)
         $0.textColor = .font
     }
-
+    
     let dateStackView = UIStackView().then {
         $0.axis = .horizontal
         $0.alignment = .leading
         $0.spacing = 5
     }
-
+    
     let scrollView = UIScrollView().then {
         $0.showsVerticalScrollIndicator = false
         $0.bounces = false
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 16
     }
-
+    
     let contentView = UIView().then {
         $0.backgroundColor = UIColor(named: "textColor")
     }
-
+    
     let optionsButton = UIButton().then {
         $0.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         $0.tintColor = .font
         $0.showsMenuAsPrimaryAction = true
     }
-
+    
     var mainTitleLabel = UILabel().then {
         $0.text = "부산에 다녀왔다"
         $0.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
@@ -146,7 +141,7 @@ class DetailViewController: UIViewController {
     let subTextContainer = UIView().then {
         $0.backgroundColor = .clear
     }
-
+    
     var subTextLabel = UILabel().then {
         $0.text = "여기에는 이전 인풋VC 텍스트필드에서 작성된 내용이 들어옵니다. 이 텍스트는 더미 텍스트입니다."
         $0.font = UIFont.systemFont(ofSize: 15)
@@ -158,12 +153,12 @@ class DetailViewController: UIViewController {
     let textLabelLine = UILabel().then {
         $0.backgroundColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
     }
-
+    
     let segmentControl: UISegmentedControl = {
         let items = ["Map", "Album"]
         let segment = UISegmentedControl(items: items)
         segment.selectedSegmentIndex = 0
-
+        
         segment.backgroundColor = UIColor(white: 1, alpha: 0.5)
         segment.layer.cornerRadius = 16
         segment.layer.masksToBounds = true
@@ -174,14 +169,14 @@ class DetailViewController: UIViewController {
         segment.isUserInteractionEnabled = true
         return segment
     }()
-
+    
     let albumImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.isHidden = true
         $0.isUserInteractionEnabled = false
     }
-
+    
     lazy var galleryCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -194,7 +189,7 @@ class DetailViewController: UIViewController {
         collectionView.isScrollEnabled = true
         return collectionView
     }()
-
+    
     let mapAllButton = UIButton().then {
         $0.setTitle("전체 지도 보기", for: .normal)
         $0.setTitleColor(#colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1), for: .normal)
@@ -202,7 +197,7 @@ class DetailViewController: UIViewController {
         $0.backgroundColor = UIColor(named: "textColor")
         $0.isHidden = false
     }
-
+    
     let albumAllButton = UIButton().then {
         $0.setTitle("전체 앨범 보기", for: .normal)
         $0.setTitleColor(#colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1), for: .normal)
@@ -210,41 +205,41 @@ class DetailViewController: UIViewController {
         $0.backgroundColor = UIColor(named: "textColor")
         $0.isHidden = true
     }
-
+    
     let moneyTitle = UILabel().then {
         $0.text = "지출"
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
-
+    
     var moneyCountTitle = UILabel().then {
         $0.text = "0000000"
         $0.font = UIFont.systemFont(ofSize: 40)
         $0.textColor = .font
     }
-
+    
     let moneyCountSubTitle = UILabel().then {
         $0.text = "₩"
         $0.font = UIFont.systemFont(ofSize: 30, weight: .semibold)
         $0.textColor = #colorLiteral(red: 0.5070941448, green: 0.5070941448, blue: 0.5070941448, alpha: 1)
     }
-
+    
     var maxConsumptionLabel = UILabel().then {
         $0.text = "최고금액 지출 : GS25 부산해운대점"
         $0.font = UIFont.systemFont(ofSize: 13)
         $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
     }
-
+    
     let consumStackView = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 0
         $0.alignment = .leading
     }
-
+    
     let friendTitle = UILabel().then {
         $0.text = "메이트"
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
-
+    
     lazy var friendCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -257,14 +252,14 @@ class DetailViewController: UIViewController {
         collectionView.isScrollEnabled = true
         return collectionView
     }()
-
+    
     let bottomLogo = UIImageView().then {
         $0.image = UIImage(named: "logo")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupUI()
         setupMapViewController()
         setupConstraints()
@@ -276,22 +271,15 @@ class DetailViewController: UIViewController {
         //한빛
         newSetupConstraints()
         checkId()
-
+        
         view.backgroundColor = .systemBackground
-
-        if let pinLog = pinLog {
-            configureView(with: pinLog)
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.tintColor = .white
         
-        
-        if let pinLog = pinLog {
-            configureView(with: pinLog)
-        }
+        galleryCollectionView.reloadData()
     }
     
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
@@ -339,10 +327,10 @@ class DetailViewController: UIViewController {
     
     @objc func pinButtonTapped() {
         guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else { return }
-
+        
         var updatedPinnedBy = pinLog.pinnedBy ?? []
         var updatedPinCount = pinLog.pinCount ?? 0
-
+        
         if let index = updatedPinnedBy.firstIndex(of: currentUserId) {
             updatedPinnedBy.remove(at: index)
             updatedPinCount -= 1
@@ -350,7 +338,7 @@ class DetailViewController: UIViewController {
             updatedPinnedBy.append(currentUserId)
             updatedPinCount += 1
         }
-
+        
         // Firestore에 업데이트
         guard let pinLogId = pinLog.id else { return }
         let pinLogRef = Firestore.firestore().collection("pinLogs").document(pinLogId)
@@ -372,7 +360,7 @@ class DetailViewController: UIViewController {
             }
         }
     }
-
+    
     func updatePinButtonState() {
         guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else { return }
         
@@ -385,7 +373,7 @@ class DetailViewController: UIViewController {
         }
         print("Current pinnedBy: \(pinnedBy)")
     }
-
+    
     func setupUI() {
         view.addSubview(backgroundImageView)
         backgroundImageView.addSubview(topContentView)
@@ -395,7 +383,7 @@ class DetailViewController: UIViewController {
         
         profileStackView.addArrangedSubview(profileImageView)
         profileStackView.addArrangedSubview(nicknameLabel)
-
+        
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(optionsButton)
@@ -413,21 +401,21 @@ class DetailViewController: UIViewController {
         contentView.addSubview(friendTitle)
         contentView.addSubview(friendCollectionView)
         contentView.addSubview(bottomLogo)
-
+        
         locationStackView.addArrangedSubview(locationLabel)
         locationStackView.addArrangedSubview(dateDaysLabel)
-
+        
         dateStackView.addArrangedSubview(dateStartLabel)
         dateStackView.addArrangedSubview(dateLineLabel)
         dateStackView.addArrangedSubview(dateEndLabel)
-
+        
         consumStackView.addArrangedSubview(moneyTitle)
         consumStackView.addArrangedSubview(moneyCountTitle)
         consumStackView.addArrangedSubview(maxConsumptionLabel)
-
+        
         scrollView.delegate = self
     }
-
+    
     func setupConstraints() {
         backgroundImageView.snp.makeConstraints {
             $0.top.equalToSuperview()
@@ -453,7 +441,7 @@ class DetailViewController: UIViewController {
             $0.bottom.equalTo(locationStackView).inset(-1)
             $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(10)
         }
-
+        
         
         scrollView.snp.makeConstraints {
             $0.top.equalTo(backgroundImageView.snp.bottom).offset(-20)
@@ -500,19 +488,19 @@ class DetailViewController: UIViewController {
             $0.height.equalTo(30)
             $0.width.equalTo(123)
         }
-
+        
         albumImageView.snp.makeConstraints {
             $0.top.equalTo(segmentControl).offset(-10)
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(300)
         }
-
+        
         galleryCollectionView.snp.makeConstraints {
             $0.top.equalTo(mapViewController!.view.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(90)
         }
-
+        
         mapAllButton.snp.makeConstraints {
             $0.top.equalTo(galleryCollectionView.snp.bottom)
             $0.trailing.equalTo(contentView).inset(16)
@@ -558,21 +546,21 @@ class DetailViewController: UIViewController {
             $0.centerX.equalToSuperview()
         }
     }
-
+    
     func configureView(with pinLog: PinLog) {
         locationLabel.text = pinLog.location
-
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
-
+        
         dateStartLabel.text = dateFormatter.string(from: pinLog.startDate)
         dateEndLabel.text = dateFormatter.string(from: pinLog.endDate)
-
+        
         let duration = Calendar.current.dateComponents([.day], from: pinLog.startDate, to: pinLog.endDate).day ?? 0
         dateDaysLabel.text = "\(duration) Days"
         mainTitleLabel.text = pinLog.title
         subTextLabel.text = pinLog.content
-
+        
         selectedImages.removeAll()
         updateSelectedImages(with: pinLog.media)
         
@@ -587,8 +575,10 @@ class DetailViewController: UIViewController {
                 mapViewController?.addPinToMap(location: coordinate, address: "")
             }
         }
+        galleryCollectionView.reloadData()
     }
-
+    
+    
     
     @objc func showGalleryDetail() {
         let galleryDetailVC = GalleryDetailViewController()
@@ -596,11 +586,11 @@ class DetailViewController: UIViewController {
         galleryDetailVC.modalPresentationStyle = .fullScreen
         present(galleryDetailVC, animated: true, completion: nil)
     }
-
+    
     func setupActionButton() {
         albumAllButton.addTarget(self, action: #selector(showGalleryDetail), for: .touchUpInside)
     }
-
+    
     func fetchImagesFromFirestore(completion: @escaping ([Media]) -> Void) {
         let db = Firestore.firestore()
         db.collection("images").getDocuments { snapshot, error in
@@ -631,19 +621,21 @@ class DetailViewController: UIViewController {
             let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
                 self.sharePinLog()
             }
-
-            let deleteAction = UIAction(
-                title: "삭제하기",
-                image: UIImage(systemName: "trash"),
-                attributes: .destructive) { _ in
-                self.deletePinLog()
-            }
             
             let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { _ in
                 self.editPinLog()
             }
             
-            optionsButton.menu = UIMenu(title: "", children: [shareAction, deleteAction])
+            let deleteAction = UIAction(
+                title: "삭제하기",
+                image: UIImage(systemName: "trash"),
+                attributes: .destructive) { _ in
+                    self.deletePinLog()
+                }
+            
+            
+            
+            optionsButton.menu = UIMenu(title: "", children: [shareAction, editAction, deleteAction])
         } else {
             // 다른 사람의 글인 경우
             let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
@@ -700,27 +692,33 @@ class DetailViewController: UIViewController {
             }
         }
     }
-
+    
     func updateSelectedImages(with mediaItems: [Media]) {
-        selectedImages.removeAll()
-        let dispatchGroup = DispatchGroup()
-
+        selectedImages.removeAll() // selectedImages 배열 초기화
+        
+        let group = DispatchGroup()
+        
         for media in mediaItems {
             guard let url = URL(string: media.url) else { continue }
-
-            dispatchGroup.enter()
-            loadImage(from: url) { [weak self] image in
+            group.enter()
+            loadImage(from: media.url) { [weak self] image in
+                guard let self = self else {
+                    group.leave()
+                    return
+                }
                 if let image = image {
-                    let location = CLLocationCoordinate2D(latitude: media.latitude ?? 0, longitude: media.longitude ?? 0)
-                    if !(self?.selectedImages.contains(where: { $0.0.pngData() == image.pngData() }) ?? false) {
-                        self?.selectedImages.append((image, media.isRepresentative, media.latitude != nil && media.longitude != nil ? location : nil))
+                    let location: CLLocationCoordinate2D? = (media.latitude != nil && media.longitude != nil) ? CLLocationCoordinate2D(latitude: media.latitude!, longitude: media.longitude!) : nil
+                    // 중복 추가 방지
+                    if !self.selectedImages.contains(where: { $0.0 == image && $0.1 == media.isRepresentative && $0.2?.latitude == location?.latitude && $0.2?.longitude == location?.longitude }) {
+                        self.selectedImages.append((image, media.isRepresentative, location))
                     }
                 }
-                dispatchGroup.leave()
+                group.leave()
             }
         }
-
-        dispatchGroup.notify(queue: .main) {
+        
+        group.notify(queue: .main) {
+            print("All images loaded. Total: \(self.selectedImages.count)")
             self.galleryCollectionView.reloadData()
             if let representativeImage = self.selectedImages.first(where: { $0.1 })?.0 {
                 self.backgroundImageView.image = representativeImage
@@ -731,31 +729,22 @@ class DetailViewController: UIViewController {
             }
         }
     }
-
-    // 이미지를 로드하는 메서드
-    func loadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
-        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-            guard let self = self else { return }
-            if let data = data, let image = UIImage(data: data) {
+    
+    func loadImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
+        guard let url = URL(string: urlString) else {
+            completion(nil)
+            return
+        }
+        
+        AF.request(url).response { response in
+            if let data = response.data, let image = UIImage(data: data) {
                 completion(image)
-                // 위치 정보 확인 및 디버깅 출력
-                if let location = StorageManager.shared.extractLocation(from: data) {
-                    // Firestore에 위치 데이터 저장
-                    self.saveImageLocationToFirestore(imageURL: url.absoluteString, location: location)
-                } else {
-                    print("이미지 위치 정보가 없습니다.")
-                }
             } else {
-                print("이미지 로드 실패: \(error?.localizedDescription ?? "Unknown error")")
                 completion(nil)
             }
         }
-        task.resume()
     }
-
-
-
-
+    
     // 이미지 정보 저장
     func saveImageLocationToFirestore(imageURL: String, location: CLLocationCoordinate2D) {
         let db = Firestore.firestore()
@@ -796,19 +785,19 @@ class DetailViewController: UIViewController {
     func setupCollectionView() {
         galleryCollectionView.delegate = self
         galleryCollectionView.dataSource = self
-
+        
         galleryCollectionView.register(GalleryCollectionViewCell.self, forCellWithReuseIdentifier: GalleryCollectionViewCell.identifier)
-
+        
         friendCollectionView.delegate = self
         friendCollectionView.dataSource = self
-
+        
         friendCollectionView.register(FriendCollectionViewCell.self, forCellWithReuseIdentifier: FriendCollectionViewCell.identifier)
     }
-
+    
     func setupSegmentControl() {
         segmentControl.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
     }
-
+    
     @objc func segmentChanged(_ sender: UISegmentedControl) {
         if sender.selectedSegmentIndex == 0 {
             mapViewController?.view.isHidden = false
@@ -845,14 +834,14 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
         }
         return 0
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == galleryCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GalleryCollectionViewCell.identifier, for: indexPath) as? GalleryCollectionViewCell else {
                 fatalError("컬렉션 뷰 오류")
             }
-            let (image, isRepresentative, _) = selectedImages[indexPath.row] // 변경: 튜플 사용, CLLocationCoordinate2D 사용하지 않음
-            cell.configure(with: image, isRepresentative: isRepresentative) // 변경: isRepresentative 전달
+            let (image, isRepresentative, _) = selectedImages[indexPath.row]
+            cell.configure(with: image, isRepresentative: isRepresentative)
             return cell
         } else if collectionView == friendCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as? FriendCollectionViewCell else {
@@ -863,8 +852,8 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
         }
         return UICollectionViewCell()
     }
-
-
+    
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == galleryCollectionView {
             let (_, _, location) = selectedImages[indexPath.row]
@@ -890,11 +879,11 @@ extension DetailViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView == self.scrollView {
             let offset = scrollView.contentOffset.y
-
+            
             if let overlayView = backgroundImageView.viewWithTag(999) {
                 overlayView.frame = backgroundImageView.bounds
             }
-
+            
             if offset > 0 {
                 UIView.animate(withDuration: 0.3, delay: 0, options: [.beginFromCurrentState, .allowUserInteraction], animations: {
                     self.locationStackView.isHidden = true
@@ -924,46 +913,46 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.locationStackView.isHidden = false
                     self.profileStackView.isHidden = false
                     self.dateStackView.isHidden = false
-
+                    
                     self.scrollView.snp.remakeConstraints {
                         $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-40)
                         $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
                         $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(40)
                     }
-
+                    
                     self.contentView.snp.remakeConstraints {
                         $0.edges.equalTo(self.scrollView.contentLayoutGuide)
                         $0.width.equalTo(self.scrollView.frameLayoutGuide)
                         $0.bottom.equalTo(self.bottomLogo.snp.bottom).offset(70)
                     }
-
+                    
                     self.backgroundImageView.snp.updateConstraints {
                         $0.height.equalTo(515)
                     }
-
+                    
                     self.view.layoutIfNeeded()
                 }, completion: nil)
             }
         }
     }
-
+    
     func applyDarkOverlayToBackgroundImage() {
         backgroundImageView.subviews.forEach { subview in
             if subview.tag == 999 {
                 subview.removeFromSuperview()
             }
         }
-
+        
         let overlayView = UIView()
         overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         overlayView.tag = 999
-
+        
         backgroundImageView.insertSubview(overlayView, belowSubview: topContentView)
-
+        
         overlayView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-
+        
         self.view.layoutIfNeeded()
     }
 }
@@ -975,8 +964,8 @@ protocol DetailViewControllerDelegate: AnyObject {
 }
 
 extension DetailViewController: DetailInputViewControllerDelegate {
-    func didSavePinLog(_ updatedPinLog: PinLog) {
-        self.pinLog = updatedPinLog
-        configureView(with: updatedPinLog)
+    func didSavePinLog(_ pinLog: PinLog) {
+        self.pinLog = pinLog
+        configureView(with: pinLog)
     }
 }

@@ -45,6 +45,7 @@ class ExploreViewController: UIViewController, PageIndexed {
         setupConstraints()
         setGradient()
         setupNV()
+        updateNavigationBarColor()
         
         loadData()
     }
@@ -257,5 +258,15 @@ extension ExploreViewController: DetailViewControllerDelegate {
         self.hotLogs = self.hotLogs.filter { !self.blockedAuthors.contains($0.authorId) }
         
         self.tableView.reloadData()
+    }
+}
+
+extension ExploreViewController {
+    func updateNavigationBarColor() {
+        let navbarAppearance = UINavigationBarAppearance()
+        navbarAppearance.configureWithOpaqueBackground()
+        let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.clear
+        navbarAppearance.backgroundColor = navBarColor
+        navigationController?.navigationBar.standardAppearance = navbarAppearance
     }
 }

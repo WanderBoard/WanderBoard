@@ -14,7 +14,7 @@ class HotTableViewCell: UITableViewCell {
     weak var delegate: HotTableViewCellDelegate?
     
     let hotView = UIView().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = UIColor(named: "textColor")
     
         $0.layer.shadowOffset = CGSize(width: 5, height: 5)
         $0.layer.shadowOpacity = 0.3
@@ -54,6 +54,7 @@ class HotTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         setupConstraints()
+        updateColor()
     }
     
     required init?(coder: NSCoder) {
@@ -90,6 +91,20 @@ class HotTableViewCell: UITableViewCell {
     
     func configure(with pinLogs: [PinLog]) {
         self.hotPinLogs = pinLogs
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        // 이전 trait collection과 현재 trait collection이 다를 경우 업데이트
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor(){
+        let shadowColor = traitCollection.userInterfaceStyle == .dark ? UIColor.lightgray : UIColor.black
+        hotView.layer.shadowColor = shadowColor.cgColor
     }
 }
 

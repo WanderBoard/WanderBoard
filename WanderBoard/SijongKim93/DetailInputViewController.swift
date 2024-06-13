@@ -48,24 +48,25 @@ class DetailInputViewController: UIViewController {
     var isEditingPhotos = false
     
     let topContainarView = UIView().then {
-        $0.backgroundColor = .black
+        $0.backgroundColor = .font
     }
     
     let scrollView = UIScrollView().then {
         $0.showsVerticalScrollIndicator = false
         $0.bounces = false
-        $0.backgroundColor = .white
+        $0.backgroundColor = UIColor(named: "textColor")
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 40
     }
     
     let contentView = UIView().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = UIColor(named: "textColor")
     }
     
     let publicLabel = UILabel().then {
         $0.text = "공개 여부"
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.textColor = .font
     }
     
     let publicSwitch = UISwitch().then {
@@ -240,6 +241,7 @@ class DetailInputViewController: UIViewController {
     
     let mateLabel = UILabel().then {
         $0.text = "메이트"
+        $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
@@ -250,7 +252,7 @@ class DetailInputViewController: UIViewController {
         layout.itemSize = CGSize(width: 85, height: 85)
         layout.sectionInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
@@ -448,6 +450,19 @@ class DetailInputViewController: UIViewController {
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(100)
         }
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        // 이전 trait collection과 현재 trait collection이 다를 경우 업데이트
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor(){
+        
     }
     
     func setupCollectionView() {

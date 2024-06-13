@@ -179,6 +179,23 @@ class PageViewController: UIViewController, CLLocationManagerDelegate {
             }
         }
     }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        // 이전 trait collection과 현재 trait collection이 다를 경우 업데이트
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor(){
+        let navbarAppearance = UINavigationBarAppearance()
+        navbarAppearance.configureWithOpaqueBackground()
+        let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.clear
+        navbarAppearance.backgroundColor = navBarColor
+        navigationController?.navigationBar.standardAppearance = navbarAppearance
+    }
 }
 
 extension PageViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
@@ -208,6 +225,7 @@ extension PageViewController: UIPageViewControllerDataSource, UIPageViewControll
         }
     }
 }
+
 
 protocol PageIndexed {
     var pageIndex: Int? { get set }

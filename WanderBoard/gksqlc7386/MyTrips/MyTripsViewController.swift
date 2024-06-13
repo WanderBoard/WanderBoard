@@ -26,8 +26,8 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
         let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
         $0.setImage(image, for: .normal)
-        $0.tintColor = .white
-        $0.backgroundColor = .black
+        $0.tintColor = UIColor(named: "textColor")
+        $0.backgroundColor = .font
         $0.layer.cornerRadius = 15
         $0.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
@@ -52,6 +52,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         setupConstraints()
         setGradient()
         setupNV()
+        updateNavigationBarColor()
         
         print("MyTripsViewController: viewDidLoad called")
         Task {
@@ -291,5 +292,15 @@ extension MyTripsViewController {
             parentResponder = parent
         }
         return nil
+    }
+}
+
+extension MyTripsViewController {
+    func updateNavigationBarColor() {
+        let navbarAppearance = UINavigationBarAppearance()
+        navbarAppearance.configureWithOpaqueBackground()
+        let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.clear
+        navbarAppearance.backgroundColor = navBarColor
+        navigationController?.navigationBar.standardAppearance = navbarAppearance
     }
 }

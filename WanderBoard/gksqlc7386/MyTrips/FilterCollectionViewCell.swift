@@ -14,7 +14,7 @@ class FilterCollectionViewCell: UICollectionViewCell {
     static let identifier = String(describing: FilterCollectionViewCell.self)
     
     let filterButton = UIButton().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = .clear
         $0.setTitleColor(.darkgray, for: .normal)
         $0.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
         $0.layer.cornerRadius = 12
@@ -28,9 +28,22 @@ class FilterCollectionViewCell: UICollectionViewCell {
         filterButton.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+        updateColor()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor(){
+        let lineColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        filterButton.layer.borderColor = lineColor?.cgColor
     }
 }

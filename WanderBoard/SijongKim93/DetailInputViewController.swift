@@ -47,24 +47,25 @@ class DetailInputViewController: UIViewController {
     var subTextFieldHeightConstraint: Constraint?
     
     let topContainarView = UIView().then {
-        $0.backgroundColor = .black
+        $0.backgroundColor = .font
     }
     
     let scrollView = UIScrollView().then {
         $0.showsVerticalScrollIndicator = false
         $0.bounces = false
-        $0.backgroundColor = .white
+        $0.backgroundColor = UIColor(named: "textColor")
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 40
     }
     
     let contentView = UIView().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = UIColor(named: "textColor")
     }
     
     let publicLabel = UILabel().then {
         $0.text = "공개 여부"
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.textColor = .font
     }
     
     let publicSwitch = UISwitch().then {
@@ -80,51 +81,53 @@ class DetailInputViewController: UIViewController {
     }
     
     let topLine = UIView().then {
-        $0.backgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        $0.backgroundColor = .lightgray
     }
     
     let dateLabel = UILabel().then {
         $0.text = "날짜"
+        $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
     let startDateButton = UIButton(type: .system).then {
         var configuration = UIButton.Configuration.filled()
         configuration.title = "시작일자"
-        configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
-        configuration.baseForegroundColor = .black
+        configuration.baseBackgroundColor = .babygray
+        configuration.baseForegroundColor = .font
         configuration.cornerStyle = .medium
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10)
         $0.configuration = configuration
-        $0.tintColor = .black
+        $0.tintColor = .font
     }
     
     let endDateLabel = UILabel().then {
         $0.text = "-"
         $0.font = UIFont.systemFont(ofSize: 16)
+        $0.textColor = .font
         $0.textAlignment = .center
     }
     
     let endDateButton = UIButton(type: .system).then {
         var configuration = UIButton.Configuration.filled()
         configuration.title = "종료일자"
-        configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
-        configuration.baseForegroundColor = .black
+        configuration.baseBackgroundColor = .babygray
+        configuration.baseForegroundColor = .font
         configuration.cornerStyle = .medium
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10)
         $0.configuration = configuration
-        $0.tintColor = .black
+        $0.tintColor = .font
     }
     
     let dateContainerView = UIView()
     
     let mainTextField = UITextView().then {
         $0.text = "여행 제목을 입력해주세요."
-        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
-        $0.backgroundColor = .white
+        $0.textColor = .lightgray
+        $0.backgroundColor = .clear
         $0.layer.cornerRadius = 8
         $0.layer.borderWidth = 1
-        $0.layer.borderColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+        $0.layer.borderColor = UIColor.lightgray.cgColor
         $0.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         $0.font = UIFont.systemFont(ofSize: 16)
         $0.isScrollEnabled = false
@@ -132,11 +135,11 @@ class DetailInputViewController: UIViewController {
     
     let subTextField = UITextView().then {
         $0.text = "기록을 담아 주세요."
-        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
-        $0.backgroundColor = .white
+        $0.textColor = .lightgray
+        $0.backgroundColor = .clear
         $0.layer.cornerRadius = 8
         $0.layer.borderWidth = 1
-        $0.layer.borderColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+        $0.layer.borderColor = UIColor.lightgray.cgColor
         $0.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         $0.font = UIFont.systemFont(ofSize: 16)
         $0.isScrollEnabled = false
@@ -150,11 +153,12 @@ class DetailInputViewController: UIViewController {
     let locationLeftLabel = UILabel().then {
         $0.text = "지역을 선택하세요"
         $0.font = UIFont.systemFont(ofSize: 15)
+        $0.textColor = .font
     }
     
     let locationRightLabel = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
-        $0.tintColor = .black
+        $0.tintColor = .font
     }
     
     let locationStackView = UIStackView().then {
@@ -173,11 +177,12 @@ class DetailInputViewController: UIViewController {
     let consumLeftLabel = UILabel().then {
         $0.text = "지출 내역을 추가하세요"
         $0.font = UIFont.systemFont(ofSize: 15)
+        $0.textColor = .font
     }
     
     let consumRightLabel = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
-        $0.tintColor = .black
+        $0.tintColor = .font
     }
     
     let consumStackView = UIStackView().then {
@@ -189,11 +194,12 @@ class DetailInputViewController: UIViewController {
     }
     
     let bodyLine = UIView().then {
-        $0.backgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        $0.backgroundColor = .babygray
     }
     
     let galleryLabel = UILabel().then {
         $0.text = "앨범 추가"
+        $0.textColor = .darkgray
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
@@ -204,7 +210,7 @@ class DetailInputViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 10, left: 32, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: 85, height: 85)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
@@ -239,6 +245,7 @@ class DetailInputViewController: UIViewController {
     
     let mateLabel = UILabel().then {
         $0.text = "메이트"
+        $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
@@ -249,7 +256,7 @@ class DetailInputViewController: UIViewController {
         layout.itemSize = CGSize(width: 85, height: 85)
         layout.sectionInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
@@ -263,6 +270,7 @@ class DetailInputViewController: UIViewController {
         setupCollectionView()
         setupNavigationBar()
         requestPhotoLibraryAccess()
+        updateColor()
         
         if let pinLog = pinLog {
             configureView(with: pinLog)
@@ -449,6 +457,36 @@ class DetailInputViewController: UIViewController {
         }
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        // 이전 trait collection과 현재 trait collection이 다를 경우 업데이트
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor(){
+        let textFieldColor = traitCollection.userInterfaceStyle == .dark ? UIColor.darkgray : UIColor.lightgray
+        mainTextField.textColor = textFieldColor
+        mainTextField.layer.borderColor = textFieldColor.cgColor
+        subTextField.textColor = textFieldColor
+        subTextField.layer.borderColor = textFieldColor.cgColor
+        
+        let lineColor = traitCollection.userInterfaceStyle == .dark ? UIColor.lightblack : UIColor.lightgray
+        topLine.backgroundColor = lineColor
+        bodyLine.backgroundColor = lineColor
+        
+        let buttonBackground = traitCollection.userInterfaceStyle == .dark ? UIColor.customblack : UIColor.babygray
+        startDateButton.configuration?.baseBackgroundColor = buttonBackground
+        endDateButton.configuration?.baseBackgroundColor = buttonBackground
+        locationButton.backgroundColor = buttonBackground
+        consumButton.backgroundColor = buttonBackground
+        
+        let textGrayColor = traitCollection.userInterfaceStyle == .dark ? UIColor.lightgray : UIColor.darkgray
+        galleryLabel.textColor = textGrayColor
+    }
+    
     func setupCollectionView() {
         galleryCollectionView.delegate = self
         galleryCollectionView.dataSource = self
@@ -562,17 +600,17 @@ class DetailInputViewController: UIViewController {
         subTextField.text = pinLog.content
         subTextField.textColor = .black
         publicSwitch.isOn = pinLog.isPublic
-
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         startDateButton.setTitle(dateFormatter.string(from: pinLog.startDate), for: .normal)
         endDateButton.setTitle(dateFormatter.string(from: pinLog.endDate), for: .normal)
-
+        
         selectedImages.removeAll()
         imageLocations.removeAll()
-
+        
         let dispatchGroup = DispatchGroup()
-
+        
         for media in pinLog.media {
             dispatchGroup.enter()
             if let url = URL(string: media.url) {
@@ -589,7 +627,7 @@ class DetailInputViewController: UIViewController {
                 dispatchGroup.leave()
             }
         }
-
+        
         dispatchGroup.notify(queue: .main) {
             self.updateRepresentativeImage()
             self.galleryCollectionView.reloadData()
@@ -702,20 +740,12 @@ class DetailInputViewController: UIViewController {
         Task {
             do {
                 var pinLog: PinLog
+                var createdAt: Date?
                 
-                if let existingPinLog = self.pinLog {
-                    pinLog = existingPinLog
-                    pinLog.location = locationTitle
-                    pinLog.address = address
-                    pinLog.latitude = latitude
-                    pinLog.longitude = longitude
-                    pinLog.startDate = startDate
-                    pinLog.endDate = endDate
-                    pinLog.title = title
-                    pinLog.content = content
-                    pinLog.isPublic = isPublic
-                } else {
-                    pinLog = PinLog(location: locationTitle,
+                if let pinLogId = self.savedPinLogId {
+                    // 핀로그가 이미 존재하는 경우 업데이트
+                    pinLog = PinLog(id: pinLogId,
+                                    location: locationTitle,
                                     address: address,
                                     latitude: latitude,
                                     longitude: longitude,
@@ -727,35 +757,67 @@ class DetailInputViewController: UIViewController {
                                     authorId: Auth.auth().currentUser?.uid ?? "",
                                     attendeeIds: [],
                                     isPublic: isPublic,
-                                    createdAt: Date(),
+                                    createdAt: createdAt,
                                     pinCount: 0,
-                                    pinnedBy: [])
-                }
-                
-                // 선택된 대표 이미지가 있으면 설정
-                if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
-                    for i in 0..<selectedImages.count {
-                        selectedImages[i].1 = (i == representativeIndex)
+                                    pinnedBy: [],
+                                    totalSpendingAmount: 0.0)
+                    
+                    if let existingPinLog = self.pinLog {
+                        pinLog = existingPinLog
+                        pinLog.location = locationTitle
+                        pinLog.address = address
+                        pinLog.latitude = latitude
+                        pinLog.longitude = longitude
+                        pinLog.startDate = startDate
+                        pinLog.endDate = endDate
+                        pinLog.title = title
+                        pinLog.content = content
+                        pinLog.isPublic = isPublic
+                        
+                    } else {
+                        pinLog = PinLog(location: locationTitle,
+                                        address: address,
+                                        latitude: latitude,
+                                        longitude: longitude,
+                                        startDate: startDate,
+                                        endDate: endDate,
+                                        title: title,
+                                        content: content,
+                                        media: [],
+                                        authorId: Auth.auth().currentUser?.uid ?? "",
+                                        attendeeIds: [],
+                                        isPublic: isPublic,
+                                        createdAt: Date(),
+                                        pinCount: 0,
+                                        pinnedBy: [],
+                                        totalSpendingAmount: 0.0)
                     }
-                } else if !selectedImages.isEmpty {
-                    selectedImages[0].1 = true
-                }
-
-                let isRepresentativeFlags = selectedImages.map { $0.1 }
-
-                let savedPinLog = try await pinLogManager.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations, isRepresentativeFlags: isRepresentativeFlags)
-                self.savedPinLogId = savedPinLog.id
-                self.pinLog = savedPinLog
-                delegate?.didSavePinLog(savedPinLog)
-                
-                if let navigationController = self.navigationController {
-                    for viewController in navigationController.viewControllers {
-                        if viewController is MyTripsViewController {
-                            navigationController.popToViewController(viewController, animated: true)
-                            return
+                    
+                    // 선택된 대표 이미지가 있으면 설정
+                    if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
+                        for i in 0..<selectedImages.count {
+                            selectedImages[i].1 = (i == representativeIndex)
                         }
+                    } else if !selectedImages.isEmpty {
+                        selectedImages[0].1 = true
                     }
-                    navigationController.popToRootViewController(animated: true)
+                    
+                    let isRepresentativeFlags = selectedImages.map { $0.1 }
+                    
+                    let savedPinLog = try await pinLogManager.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations, isRepresentativeFlags: isRepresentativeFlags)
+                    self.savedPinLogId = savedPinLog.id
+                    self.pinLog = savedPinLog
+                    delegate?.didSavePinLog(savedPinLog)
+                    
+                    if let navigationController = self.navigationController {
+                        for viewController in navigationController.viewControllers {
+                            if viewController is MyTripsViewController {
+                                navigationController.popToViewController(viewController, animated: true)
+                                return
+                            }
+                        }
+                        navigationController.popToRootViewController(animated: true)
+                    }
                 }
             } catch {
                 let alert = UIAlertController(title: "오류", message: "데이터 저장에 실패했습니다.", preferredStyle: .alert)
@@ -764,7 +826,6 @@ class DetailInputViewController: UIViewController {
             }
         }
     }
-    
     
     func updateGalleryCountButton() {
         let count = selectedImages.count
@@ -856,6 +917,7 @@ class DetailInputViewController: UIViewController {
         galleryCollectionView.reloadData()
     }
 }
+
 
 extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -968,6 +1030,7 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
     }
 }
 
+
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1) {
@@ -999,3 +1062,4 @@ extension DetailInputViewController: UITextViewDelegate {
         }
     }
 }
+

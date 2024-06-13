@@ -55,6 +55,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         
         setupConstraints()
         setupSearchBar()
+        updateNavigationBarColor()
         
         Task {
             self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
@@ -208,5 +209,15 @@ extension SearchViewController: DetailViewControllerDelegate {
         self.searchedLogs = self.searchedLogs.filter { !self.blockedAuthors.contains($0.authorId) }
         
         self.collectionView.reloadData()
+    }
+}
+//스크롤 내릴때 상단에 고정된 네비게이션 바 색상 변경
+extension SearchViewController {
+    func updateNavigationBarColor() {
+        let navbarAppearance = UINavigationBarAppearance()
+        navbarAppearance.configureWithOpaqueBackground()
+        let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.clear
+        navbarAppearance.backgroundColor = navBarColor
+        navigationController?.navigationBar.standardAppearance = navbarAppearance
     }
 }

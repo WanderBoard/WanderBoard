@@ -9,11 +9,17 @@ import Foundation
 import UIKit
 import SnapKit
 
+protocol InsertspendingviewcontrollerDelegate: AnyObject {
+    func didUpdateExpense(_ expense: Expense, at indextPath: IndexPath)
+}
+
 class InsertSpendingViewController: UIViewController {
    
 // MARK: Components
     var expenses: [Expense] = []
     var expenseToEdit: Expense?
+    var editingIndexPath: IndexPath?
+    weak var delegate: InsertspendingviewcontrollerDelegate?
     
     var titleLabel: UILabel = {
         var titleLabel = UILabel()
@@ -23,7 +29,7 @@ class InsertSpendingViewController: UIViewController {
         return titleLabel
     }()
     
-    var dateButton: UIButton = {
+    lazy var dateButton: UIButton = {
         var dateButton = UIButton()
         dateButton.backgroundColor = .lightGray
         dateButton.layer.cornerRadius = 8
@@ -129,7 +135,7 @@ class InsertSpendingViewController: UIViewController {
         return expenseAmountTextField
     }()
     
-    var categoryButton: UIButton = {
+    lazy var categoryButton: UIButton = {
         var categoryButton = UIButton()
         categoryButton.backgroundColor = .lightGray
         categoryButton.layer.cornerRadius = 8
@@ -217,7 +223,7 @@ class InsertSpendingViewController: UIViewController {
         return memoTextField
     }()
     
-    var saveDoneButton: UIButton = {
+    lazy var saveDoneButton: UIButton = {
         var saveDoneButton = UIButton()
         saveDoneButton.backgroundColor = .black
         saveDoneButton.setTitle("Done", for: .normal)
@@ -250,7 +256,7 @@ class InsertSpendingViewController: UIViewController {
             insertedDateLabel.text = dateFormat(date: expense.date)
             contentTextField.text = expense.expenseContent
             expenseAmountTextField.text = String(expense.expenseAmount)
-            insertedDateLabel.text = expense.category
+            insertedCategoryLabel.text = expense.category
             memoTextField.text = expense.memo
         }
         
@@ -281,7 +287,7 @@ class InsertSpendingViewController: UIViewController {
         dateTextField.becomeFirstResponder()
     }
     
-// MARK: DatePicke Done 버튼 클릭시 동작
+// MARK: DatePicker Done 버튼 클릭시 동작
     @objc func donePressed() {
         insertedDateLabel.text = dateFormat(date: datePicker.date)
         updateDoneButtonState()
@@ -345,7 +351,7 @@ class InsertSpendingViewController: UIViewController {
     func updateDoneButtonState() {
         let isDateSet = !(insertedDateLabel.text?.isEmpty ?? true)
         let isContentSet = !(contentTextField.text?.isEmpty ?? true)
-                let isAmountSet = !(expenseAmountTextField.text?.isEmpty ?? true) && Double(expenseAmountTextField.text ?? "") != nil
+                let isAmountSet = !(expenseAmountTextField.text?.isEmpty ?? true) && Int(expenseAmountTextField.text ?? "") != nil
                 let isCategorySet = !(insertedCategoryLabel.text?.isEmpty ?? true)
         
         saveDoneButton.isEnabled = isDateSet && isContentSet && isAmountSet && isCategorySet
@@ -372,16 +378,24 @@ class InsertSpendingViewController: UIViewController {
             let expense = Expense(
                 date: datePicker.date,
                 expenseContent: content,
-                expenseAmount: Double(amount) ?? 0.0,
+                expenseAmount: Int(amount) ?? 0,
                 category: category,
                 memo: memoTextField.text ?? "",
                 imageName: imageName
             )
             
+//        if let originalExpense = expenseToEdit {
+//            if originalExpense == expense {
+//                showAlert(title: "알림", message: "변경된 내용이 없습니다")
+//                return
+//            }
+//        }
+        if let indexPath = editingIndexPath {
+            delegate?.didUpdateExpense(expense, at: indexPath)
+        } else {
             NotificationCenter.default.post(name: .newExpenseData, object: nil, userInfo: ["expense" : expense])
-            
+        }
             self.dismiss(animated: true)
-        
     }
 
     
@@ -572,6 +586,15 @@ extension InsertSpendingViewController: UITextFieldDelegate {
     }
     
 }
-        
+       
+//// MARK: Alert
+//extension UIViewController {
+//    func showAlert(title: String, message: String) {
+//        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+//        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+//        alertController.addAction(okAction)
+//        present(alertController, animated: true, completion: nil)
+//    }
+//}
     
 

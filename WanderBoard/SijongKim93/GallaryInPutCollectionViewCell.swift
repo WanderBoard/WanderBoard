@@ -69,7 +69,6 @@ class GallaryInPutCollectionViewCell: UICollectionViewCell {
         addButton.layer.borderColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
         addButton.layer.borderWidth = 1
         addButton.clipsToBounds = true
-        addButton.isHidden = true
         addButton.isUserInteractionEnabled = false
         addButton.snp.makeConstraints {
             $0.edges.equalToSuperview()
@@ -82,47 +81,25 @@ class GallaryInPutCollectionViewCell: UICollectionViewCell {
         }
         
         representativeLabel.snp.makeConstraints {
-            $0.top.trailing.equalToSuperview().inset(6)
+            $0.top.leading.equalToSuperview().inset(6)
             $0.size.equalTo(CGSize(width: 40, height: 24))
         }
         
         deleteButton.addTarget(nil, action: #selector(DetailInputViewController.deletePhoto(_:)), for: .touchUpInside)
     }
 
-    func configure(with image: UIImage?, isEditing: Bool, isRepresentative: Bool) {
+    func configure(with image: UIImage?, isRepresentative: Bool) {
         if let image = image {
             imageView.image = image
             imageView.isHidden = false
             addButton.isHidden = true
+            deleteButton.isHidden = false
             self.isRepresentative = isRepresentative
         } else {
             imageView.isHidden = true
             addButton.isHidden = false
             representativeLabel.isHidden = true
+            deleteButton.isHidden = true
         }
-        showDeleteButton(isEditing)
-        if isEditing {
-            startShaking()
-        } else {
-            stopShaking()
-        }
-    }
-    
-    func showDeleteButton(_ show: Bool) {
-        deleteButton.isHidden = !show
-    }
-    
-    func startShaking() {
-        let animation = CABasicAnimation(keyPath: "transform.rotation")
-        animation.fromValue = -0.05
-        animation.toValue = 0.05
-        animation.duration = 0.1
-        animation.repeatCount = .greatestFiniteMagnitude
-        animation.autoreverses = true
-        layer.add(animation, forKey: "shake")
-    }
-    
-    func stopShaking() {
-        layer.removeAllAnimations()
     }
 }

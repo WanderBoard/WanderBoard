@@ -12,7 +12,7 @@ class SpendingListViewController: UIViewController {
     
 // MARK: Components
     var dailyExpenses: [DailyExpenses] = []
-//    var tripTotalSpendingAmount = Double.self
+//    var tripTotalSpendingAmount = Int.self
 
     
     let spendingCardbutton: UIButton = {
@@ -35,7 +35,7 @@ class SpendingListViewController: UIViewController {
     let totalSpendingAmount: UILabel = {
         var totalSpendingAmount = UILabel()
         totalSpendingAmount.adjustsFontSizeToFitWidth = true
-        totalSpendingAmount.text = "₩ 100,000,000" //테이블뷰 또는 컬렉션 뷰 헤더의 금액의 합으로 변경
+        totalSpendingAmount.text = ""
         totalSpendingAmount.font = UIFont.systemFont(ofSize: 34)
         totalSpendingAmount.textColor = .white
         return totalSpendingAmount
@@ -68,6 +68,7 @@ class SpendingListViewController: UIViewController {
         configureUI()
         makeConstraints()
         setupNavi()
+        updateTotalSpendingAmount()
   
 // MARK: TableView Delegate, DataSource. Header, Cell 등록. Notification Observer
         
@@ -95,10 +96,11 @@ class SpendingListViewController: UIViewController {
         sortDailyExpensesByDate()
         
         tableView.reloadData()
+        updateTotalSpendingAmount()
     }
     
 // MARK: 천 단위 컴마 표기
-    func formatCurrency(_ amount: Double) -> String {
+    func formatCurrency(_ amount: Int) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         return formatter.string(from: NSNumber(value: amount)) ?? "0"
@@ -161,16 +163,21 @@ class SpendingListViewController: UIViewController {
     @objc func insertButtonTapped() {
         let insertSpendingViewController = InsertSpendingViewController()
         insertSpendingViewController.modalPresentationStyle = .automatic
+        insertSpendingViewController.delegate = self
         self.present(insertSpendingViewController, animated: true, completion: nil)
     }
     
-    // MARK: TableViewCell Swipe Action 
+    // MARK: TableViewCell 스와이프 삭제, 편집
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
         let edit = UIContextualAction(style: .normal, title: "수정") { (UIContextualAction, UIView, success: @escaping (Bool) -> Void) in
             let insertVC = InsertSpendingViewController()
+            insertVC.modalPresentationStyle = .automatic
             insertVC.expenseToEdit = self.dailyExpenses[indexPath.section].expenses[indexPath.row]
-            self.navigationController?.pushViewController(insertVC, animated: true)
+            insertVC.editingIndexPath = indexPath
+            insertVC.delegate = self
+            self.present(insertVC, animated: true, completion: nil)
+            
             success(true)
         }
         
@@ -178,15 +185,56 @@ class SpendingListViewController: UIViewController {
         
         let delete = UIContextualAction(style: .normal, title: "삭제") { (UIContextualAction, UIView, success: @escaping (Bool) -> Void) in
             
-            self.dailyExpenses[indexPath.section].expenses.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
+            let deletedExpense = self.dailyExpenses[indexPath.section].expenses.remove(at: indexPath.row)
+            
+            if self.dailyExpenses[indexPath.section].expenses.isEmpty {
+                self.dailyExpenses.remove(at: indexPath.section)
+                tableView.deleteSections(IndexSet(integer: indexPath.section), with: .fade)
+                self.updateTotalSpendingAmount()
+            } else {
+                tableView.deleteRows(at: [indexPath], with: .fade)
+            }
+            self.updateHeaderView(forSection: indexPath.section, withDeletedExpense: deletedExpense)
+
             success(true)
         }
+        
         delete.backgroundColor = .systemRed
         
         return UISwipeActionsConfiguration(actions: [delete, edit])
     }
    
+ // MARK: Cell 수정 및 삭제 시, HeaderView 업데이트
+    func updateHeaderView(forSection section: Int, withDeletedExpense deletedExpense: Expense) {
+        guard section < dailyExpenses.count else { return }
+        var dailyTotalAmount: Int = 0
+        
+        for expense in dailyExpenses[section].expenses {
+            dailyTotalAmount += expense.expenseAmount
+        }
+        
+        if let headerView = tableView.headerView(forSection: section) as? SpendingTableViewHeaderView {
+            headerView.configure(with: dailyExpenses[section].date, dailyTotalAmount: dailyTotalAmount)
+        }
+        updateTotalSpendingAmount()
+        
+        if dailyExpenses[section].expenses.isEmpty {
+            tableView.deleteSections(IndexSet(integer: section), with: UITableView.RowAnimation.fade)
+            updateTotalSpendingAmount()
+        }
+    }
+    
+    func updateTotalSpendingAmount() {
+        var totalAmount: Int = 0
+        
+        for dailyExpense in dailyExpenses {
+            for expense in dailyExpense.expenses {
+                totalAmount += expense.expenseAmount
+            }
+        }
+        
+        totalSpendingAmount.text = "\(formatCurrency(totalAmount))원"
+    }
 }
 
 
@@ -211,7 +259,7 @@ extension SpendingListViewController: UITableViewDataSource {
         
         cell.expenseContent.text = expense.expenseContent
         cell.memo.text = expense.memo
-        cell.expenseAmount.text = "\(formatCurrency(expense.expenseAmount))"
+        cell.expenseAmount.text = "\(formatCurrency(expense.expenseAmount))원"
         cell.categoryImageView.image = UIImage(systemName: expense.imageName)
         
         return cell
@@ -226,7 +274,7 @@ extension SpendingListViewController: UITableViewDelegate {
             return nil
         }
         
-        var dailyTotalAmount: Double = 0.0
+        var dailyTotalAmount: Int = 0
         
         for i in dailyExpenses[section].expenses {
             dailyTotalAmount += i.expenseAmount

@@ -46,8 +46,17 @@ class MyPageTableViewCell: UITableViewCell {
             label.text = "개인정보처리방침"
             arrow.image = UIImage(systemName: "chevron.right")
             arrow.tintColor = .font
-
+            
         case 2:
+            icon.image = UIImage(systemName: "nosign")
+            icon.tintColor = .font
+            label.font = UIFont.systemFont(ofSize: 15)
+            label.textColor = .font
+            label.text = "차단관리"
+            arrow.image = UIImage(systemName: "chevron.right")
+            arrow.tintColor = .font
+            
+        case 3:
             icon.image = UIImage(systemName: "door.left.hand.open")
             icon.snp.remakeConstraints(){ //오토레이아웃 리메이크
                 $0.centerY.equalToSuperview()

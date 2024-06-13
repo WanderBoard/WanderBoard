@@ -67,11 +67,11 @@
 		4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */; };
 		4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */; };
 		4DFA376B2C09AA49001B03F8 /* MapDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */; };
-		6BBE4B6E2C10895000A7A793 /* ExpenseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B682C10895000A7A793 /* ExpenseModel.swift */; };
-		6BBE4B6F2C10895000A7A793 /* InsertSpendingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B692C10895000A7A793 /* InsertSpendingViewController.swift */; };
-		6BBE4B702C10895000A7A793 /* SpendingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B6A2C10895000A7A793 /* SpendingTableViewCell.swift */; };
-		6BBE4B712C10895000A7A793 /* SpendingTableViewHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B6B2C10895000A7A793 /* SpendingTableViewHeaderView.swift */; };
-		6BBE4B722C10895000A7A793 /* SpendingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B6C2C10895000A7A793 /* SpendingViewController.swift */; };
+		6BBE4B822C19950100A7A793 /* ExpenseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7C2C19950100A7A793 /* ExpenseModel.swift */; };
+		6BBE4B832C19950100A7A793 /* InsertSpendingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7D2C19950100A7A793 /* InsertSpendingViewController.swift */; };
+		6BBE4B842C19950100A7A793 /* SpendingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7E2C19950100A7A793 /* SpendingListViewController.swift */; };
+		6BBE4B852C19950100A7A793 /* SpendingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7F2C19950100A7A793 /* SpendingTableViewCell.swift */; };
+		6BBE4B862C19950100A7A793 /* SpendingTableViewHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B802C19950100A7A793 /* SpendingTableViewHeaderView.swift */; };
 		9530E4A42C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */; };
 		955A2B762C1989320008A1CB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 955A2B752C1989320008A1CB /* GoogleService-Info.plist */; };
 		9561FFF92C186B440072B065 /* OnboardingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9561FFF82C186B440072B065 /* OnboardingPage.swift */; };
@@ -141,11 +141,11 @@
 		4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryCollectionViewCell.swift; sourceTree = "<group>"; };
 		4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendCollectionViewCell.swift; sourceTree = "<group>"; };
 		4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapDetailViewController.swift; sourceTree = "<group>"; };
-		6BBE4B682C10895000A7A793 /* ExpenseModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseModel.swift; sourceTree = "<group>"; };
-		6BBE4B692C10895000A7A793 /* InsertSpendingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertSpendingViewController.swift; sourceTree = "<group>"; };
-		6BBE4B6A2C10895000A7A793 /* SpendingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpendingTableViewCell.swift; sourceTree = "<group>"; };
-		6BBE4B6B2C10895000A7A793 /* SpendingTableViewHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpendingTableViewHeaderView.swift; sourceTree = "<group>"; };
-		6BBE4B6C2C10895000A7A793 /* SpendingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpendingViewController.swift; sourceTree = "<group>"; };
+		6BBE4B7C2C19950100A7A793 /* ExpenseModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseModel.swift; sourceTree = "<group>"; };
+		6BBE4B7D2C19950100A7A793 /* InsertSpendingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertSpendingViewController.swift; sourceTree = "<group>"; };
+		6BBE4B7E2C19950100A7A793 /* SpendingListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpendingListViewController.swift; sourceTree = "<group>"; };
+		6BBE4B7F2C19950100A7A793 /* SpendingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpendingTableViewCell.swift; sourceTree = "<group>"; };
+		6BBE4B802C19950100A7A793 /* SpendingTableViewHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpendingTableViewHeaderView.swift; sourceTree = "<group>"; };
 		9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyCollectionViewCell.swift; sourceTree = "<group>"; };
 		955A2B752C1989320008A1CB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9561FFF82C186B440072B065 /* OnboardingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPage.swift; sourceTree = "<group>"; };
@@ -272,7 +272,7 @@
 		4D9D8B4E2C05B1BD0043E7DF /* WanderBoard */ = {
 			isa = PBXGroup;
 			children = (
-				6BBE4B6D2C10895000A7A793 /* pond1225 */,
+				6BBE4B812C19950100A7A793 /* pond1225 */,
 				FB58D0112C0961DF00746E05 /* gksqlc7386 */,
 				956ED78F2C0852B90001BAC6 /* ddattj */,
 				2A7655092C0614D800D8A098 /* WanderBoard.entitlements */,
@@ -344,14 +344,14 @@
 			path = SijongKim93;
 			sourceTree = "<group>";
 		};
-		6BBE4B6D2C10895000A7A793 /* pond1225 */ = {
+		6BBE4B812C19950100A7A793 /* pond1225 */ = {
 			isa = PBXGroup;
 			children = (
-				6BBE4B682C10895000A7A793 /* ExpenseModel.swift */,
-				6BBE4B692C10895000A7A793 /* InsertSpendingViewController.swift */,
-				6BBE4B6A2C10895000A7A793 /* SpendingTableViewCell.swift */,
-				6BBE4B6B2C10895000A7A793 /* SpendingTableViewHeaderView.swift */,
-				6BBE4B6C2C10895000A7A793 /* SpendingViewController.swift */,
+				6BBE4B7C2C19950100A7A793 /* ExpenseModel.swift */,
+				6BBE4B7D2C19950100A7A793 /* InsertSpendingViewController.swift */,
+				6BBE4B7E2C19950100A7A793 /* SpendingListViewController.swift */,
+				6BBE4B7F2C19950100A7A793 /* SpendingTableViewCell.swift */,
+				6BBE4B802C19950100A7A793 /* SpendingTableViewHeaderView.swift */,
 			);
 			path = pond1225;
 			sourceTree = "<group>";
@@ -512,6 +512,7 @@
 				956ED7942C0852B90001BAC6 /* MyPageViewController.swift in Sources */,
 				4D8947332C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift in Sources */,
 				FB9A3ADD2C1984B700E1EAA2 /* MyTripsViewController.swift in Sources */,
+				6BBE4B832C19950100A7A793 /* InsertSpendingViewController.swift in Sources */,
 				FB9A3AE92C1984C600E1EAA2 /* RecentTableViewCell.swift in Sources */,
 				2A7655172C06316300D8A098 /* UIApplication+Extensions.swift in Sources */,
 				2A7655232C070B1700D8A098 /* Numeric.swift in Sources */,
@@ -523,9 +524,11 @@
 				2A5F47C62C0E276500D289AA /* ImageUploader.swift in Sources */,
 				FB0C32442C14C2D000DD2F00 /* WanderBoard.xcdatamodeld in Sources */,
 				4D9D8B542C05B1BD0043E7DF /* ViewController.swift in Sources */,
+				6BBE4B862C19950100A7A793 /* SpendingTableViewHeaderView.swift in Sources */,
 				FB9A3AE52C1984C600E1EAA2 /* SearchViewController.swift in Sources */,
 				956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */,
-				6BBE4B702C10895000A7A793 /* SpendingTableViewCell.swift in Sources */,
+				6BBE4B822C19950100A7A793 /* ExpenseModel.swift in Sources */,
+				6BBE4B852C19950100A7A793 /* SpendingTableViewCell.swift in Sources */,
 				FB9A3ADC2C1984B700E1EAA2 /* EmptyView.swift in Sources */,
 				2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */,
 				4D8947312C0F33C30057F083 /* DetailInputViewController.swift in Sources */,
@@ -534,19 +537,17 @@
 				2A8AB17C2C1241ED00C5244F /* UserProfileManager.swift in Sources */,
 				FB9A3AE72C1984C600E1EAA2 /* HotTableViewCell.swift in Sources */,
 				FB9A3AE82C1984C600E1EAA2 /* HotCollectionViewCell.swift in Sources */,
-				6BBE4B6F2C10895000A7A793 /* InsertSpendingViewController.swift in Sources */,
 				2A5D471F2C0A2771005C0F76 /* LocationManager.swift in Sources */,
 				2A76550B2C06175B00D8A098 /* AuthenticationManager.swift in Sources */,
 				2A7654FD2C060FB500D8A098 /* SignInWithGoogle.swift in Sources */,
 				9530E4A42C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift in Sources */,
-				6BBE4B712C10895000A7A793 /* SpendingTableViewHeaderView.swift in Sources */,
 				FB9A3ADE2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift in Sources */,
 				956ED7932C0852B90001BAC6 /* MyPageTableViewCell.swift in Sources */,
 				2A7655112C0622C000D8A098 /* FirestoreManager.swift in Sources */,
 				FB9A3AE62C1984C600E1EAA2 /* ExploreViewController.swift in Sources */,
 				2A8AB1762C12400100C5244F /* SignInViewController.swift in Sources */,
 				4D9D8B502C05B1BD0043E7DF /* AppDelegate.swift in Sources */,
-				6BBE4B722C10895000A7A793 /* SpendingViewController.swift in Sources */,
+				6BBE4B842C19950100A7A793 /* SpendingListViewController.swift in Sources */,
 				956ED7962C0852B90001BAC6 /* PrivacyPolicyViewController.swift in Sources */,
 				2A76551D2C06EE1000D8A098 /* ErrorUtility.swift in Sources */,
 				2A18AB122C147D6C00E88171 /* PlaceInfoView.swift in Sources */,
@@ -554,7 +555,6 @@
 				4DB75A052C13416E001813C3 /* GalleryDetailViewController.swift in Sources */,
 				2A76552C2C073F2F00D8A098 /* SignInWithKakao.swift in Sources */,
 				FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */,
-				6BBE4B6E2C10895000A7A793 /* ExpenseModel.swift in Sources */,
 				9561FFF92C186B440072B065 /* OnboardingPage.swift in Sources */,
 				2A7655212C070B0400D8A098 /* Formatter.swift in Sources */,
 				FB9A3AD62C1984A200E1EAA2 /* NotificationHelper.swift in Sources */,
@@ -716,7 +716,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7T257QFHVM;
+				DEVELOPMENT_TEAM = U68CWSQ94X;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WanderBoard/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱이 사용자의 위치를 사용할 때 권한이 필요합니다.";
@@ -752,7 +752,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7T257QFHVM;
+				DEVELOPMENT_TEAM = U68CWSQ94X;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WanderBoard/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱이 사용자의 위치를 사용할 때 권한이 필요합니다.";

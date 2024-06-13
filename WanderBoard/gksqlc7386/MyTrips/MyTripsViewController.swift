@@ -13,14 +13,14 @@ import FirebaseAuth
 import Kingfisher
 
 class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDelegateFlowLayout {
-
-    static var tripLogs: [PinLog] = [] //시안: 마이페이지의 tripLogs개수 업데이트를 위해 static 변수 사용
+    static var tripLogs: [PinLog] = []
     let pinLogManager = PinLogManager()
     
     var pageIndex: Int?
     var pageText: String?
     
     let filters = ["My Logs", "Our Logs", "Pin Logs"]
+    var currentFilterIndex = 0
 
     lazy var plusButton = UIButton(type: .system).then {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
@@ -53,9 +53,12 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         setGradient()
         setupNV()
         
+        print("MyTripsViewController: viewDidLoad called")
         Task {
             await loadData()
         }
+        
+        currentFilterIndex = 0
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -63,7 +66,9 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         
         NotificationHelper.changePage(hidden: false, isEnabled: true)
         updateView()
-
+        
+        print("MyTripsViewController: viewWillAppear called")
+        
         Task {
             await loadData()
         }
@@ -73,7 +78,6 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         navigationItem.title = pageText
         navigationItem.largeTitleDisplayMode = .always
         
-        // 네비게이션 바 위에 플러스 버튼 추가
         if let navigationBarSuperview = navigationController?.navigationBar.superview {
             let customView = UIView()
             customView.backgroundColor = .clear
@@ -81,7 +85,6 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             
             navigationBarSuperview.addSubview(customView)
             
-            // customView의 크기와 위치 설정
             customView.snp.makeConstraints {
                 $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-30)
                 $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
@@ -119,6 +122,20 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         view.addSubview(maskedView)
     }
     
+    func filterTripLogs() -> [PinLog] {
+        switch currentFilterIndex {
+        case 0:
+            guard let userId = Auth.auth().currentUser?.uid else { return [] }
+            return MyTripsViewController.tripLogs.filter { $0.authorId == userId }
+        case 1:
+            return []
+        case 2:
+            return []
+        default:
+            return []
+        }
+    }
+    
     @objc func addButtonTapped() {
         NotificationHelper.changePage(hidden: true, isEnabled: false)
         plusButton.isHidden = true
@@ -135,8 +152,13 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     
     func loadData() async {
         do {
-            guard let userId = Auth.auth().currentUser?.uid else { return }
-            MyTripsViewController.tripLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
+            guard let userId = Auth.auth().currentUser?.uid else {
+                print("No user ID found")
+                return
+            }
+            let pinLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
+            MyTripsViewController.tripLogs = pinLogs
+            print("Fetched pinLogs: \(pinLogs)")
             updateView()
         } catch {
             print("Failed to fetch pin logs: \(error.localizedDescription)")
@@ -151,11 +173,9 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     private func updateView() {
         if MyTripsViewController.tripLogs.isEmpty {
             collectionView.isHidden = true
-            plusButton.isHidden = true
             emptyView.isHidden = false
         } else {
             collectionView.isHidden = false
-            plusButton.isHidden = false
             emptyView.isHidden = true
         }
         collectionView.reloadData()
@@ -171,7 +191,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
         if section == 0 {
             return filters.count
         } else {
-            return MyTripsViewController.tripLogs.count
+            return filterTripLogs().count
         }
     }
 
@@ -187,7 +207,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
                 fatalError("컬렉션 뷰 오류")
             }
             
-            let tripLog = MyTripsViewController.tripLogs[indexPath.item]
+            let tripLog = filterTripLogs()[indexPath.item]
             cell.configure(with: tripLog)
             
             return cell
@@ -235,7 +255,10 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
         NotificationHelper.changePage(hidden: true, isEnabled: false)
         plusButton.isHidden = true
         let detailVC = DetailViewController()
-        let selectedTripLog = MyTripsViewController.tripLogs[indexPath.item]
+        
+        let filteredTripLogs = filterTripLogs()
+        let selectedTripLog = filteredTripLogs[indexPath.item]
+        
         detailVC.pinLog = selectedTripLog
         navigationController?.pushViewController(detailVC, animated: true)
     }

@@ -69,7 +69,6 @@ class GallaryInPutCollectionViewCell: UICollectionViewCell {
         addButton.layer.borderColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
         addButton.layer.borderWidth = 1
         addButton.clipsToBounds = true
-        addButton.isHidden = true
         addButton.isUserInteractionEnabled = false
         addButton.snp.makeConstraints {
             $0.edges.equalToSuperview()
@@ -94,35 +93,13 @@ class GallaryInPutCollectionViewCell: UICollectionViewCell {
             imageView.image = image
             imageView.isHidden = false
             addButton.isHidden = true
+            deleteButton.isHidden = false
             self.isRepresentative = isRepresentative
         } else {
             imageView.isHidden = true
             addButton.isHidden = false
             representativeLabel.isHidden = true
+            deleteButton.isHidden = true
         }
-        showDeleteButton(isEditing)
-        if isEditing {
-            startShaking()
-        } else {
-            stopShaking()
-        }
-    }
-    
-    func showDeleteButton(_ show: Bool) {
-        deleteButton.isHidden = !show
-    }
-    
-    func startShaking() {
-        let animation = CABasicAnimation(keyPath: "transform.rotation")
-        animation.fromValue = -0.05
-        animation.toValue = 0.05
-        animation.duration = 0.1
-        animation.repeatCount = .greatestFiniteMagnitude
-        animation.autoreverses = true
-        layer.add(animation, forKey: "shake")
-    }
-    
-    func stopShaking() {
-        layer.removeAllAnimations()
     }
 }

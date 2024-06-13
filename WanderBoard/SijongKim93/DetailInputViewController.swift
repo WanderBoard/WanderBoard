@@ -34,13 +34,12 @@ class DetailInputViewController: UIViewController {
     
     weak var delegate: DetailInputViewControllerDelegate?
     
-    var selectedImages: [(UIImage, Bool)] = [] // 변경 대표이미지 맞아?
+    var selectedImages: [(UIImage, Bool)] = []
     var selectedFriends: [UIImage] = []
-    var selectedImageData: [Data] = []
     var representativeImageIndex: Int? = 0
 
     var imageLocations: [CLLocationCoordinate2D] = []
-    let pinLogManager = PinLogManager.shared
+    let pinLogManager = PinLogManager()
     var pinLog: PinLog? //추가
 
     let subTextFieldMinHeight: CGFloat = 90
@@ -211,14 +210,6 @@ class DetailInputViewController: UIViewController {
         return collectionView
     }()
     
-    let galleryInstructionLabel = UILabel().then {
-        $0.text = "사진을 꾸욱 누르면 삭제가 가능합니다."
-        $0.font = UIFont.systemFont(ofSize: 14)
-        $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
-        $0.isHidden = true
-        $0.textAlignment = .center
-    }
-    
     let galleryCountButton = UIButton(type: .system).then {
         var configuration = UIButton.Configuration.filled()
         configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
@@ -317,7 +308,6 @@ class DetailInputViewController: UIViewController {
         contentView.addSubview(bodyLine)
         contentView.addSubview(galleryLabel)
         contentView.addSubview(galleryCollectionView)
-        contentView.addSubview(galleryInstructionLabel)
         contentView.addSubview(galleryCountButton)
         galleryCountButton.addSubview(galleryCountStackView)
         
@@ -432,11 +422,6 @@ class DetailInputViewController: UIViewController {
             $0.leading.equalTo(contentView).inset(32)
         }
         
-        galleryInstructionLabel.snp.makeConstraints {
-            $0.top.equalTo(bodyLine.snp.bottom).offset(18)
-            $0.trailing.equalTo(contentView).inset(32)
-        }
-        
         galleryCollectionView.snp.makeConstraints {
             $0.top.equalTo(galleryLabel.snp.bottom).offset(16)
             $0.leading.trailing.equalTo(contentView)
@@ -490,21 +475,8 @@ class DetailInputViewController: UIViewController {
         locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
         
-        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(_:)))
-        galleryCollectionView.addGestureRecognizer(longPressGesture)
-        
-        
     }
-    
-    @objc func handleLongPressGesture(_ gesture: UILongPressGestureRecognizer) {
-        let point = gesture.location(in: galleryCollectionView)
-        guard let _ = galleryCollectionView.indexPathForItem(at: point), !selectedImages.isEmpty else { return }
-        
-        if gesture.state == .began {
-            isEditingPhotos = true
-            startShakingCells()
-        }
-    }
+
     
     @objc func locationButtonTapped() {
         Task {
@@ -543,15 +515,16 @@ class DetailInputViewController: UIViewController {
     
     @objc func showDatePicker(_ sender: UIButton) {
         let datePicker = UIDatePicker()
+        datePicker.tintColor = .black
         datePicker.datePickerMode = .date
-        datePicker.preferredDatePickerStyle = .wheels
+        datePicker.preferredDatePickerStyle = .inline
         
         let alert = UIAlertController(title: "날짜 선택", message: nil, preferredStyle: .actionSheet)
         alert.view.addSubview(datePicker)
         
         datePicker.snp.makeConstraints {
             $0.top.leading.trailing.equalTo(alert.view)
-            $0.bottom.equalTo(alert.view.snp.bottom).offset(-44)
+            $0.bottom.equalTo(alert.view.snp.bottom).offset(-120)
         }
         
         let selectAction = UIAlertAction(title: "선택", style: .default) { _ in
@@ -560,8 +533,13 @@ class DetailInputViewController: UIViewController {
             let selectedDate = dateFormatter.string(from: datePicker.date)
             sender.setTitle(selectedDate, for: .normal)
         }
+        selectAction.setValue(UIColor.black, forKey: "titleTextColor")
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        cancelAction.setValue(UIColor.red, forKey: "titleTextColor")
         
         alert.addAction(selectAction)
+        alert.addAction(cancelAction)
         
         present(alert, animated: true, completion: nil)
     }
@@ -764,7 +742,7 @@ class DetailInputViewController: UIViewController {
                                     pinCount: 0,
                                     pinnedBy: [], totalSpendingAmount: 0.0)
                 }
-                
+
                 let savedPinLog = try await PinLogManager.shared.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations)
                 self.savedPinLogId = savedPinLog.id
                 delegate?.didSavePinLog(savedPinLog)
@@ -776,12 +754,12 @@ class DetailInputViewController: UIViewController {
             }
         }
     }
+
     
     func updateGalleryCountButton() {
         let count = selectedImages.count
         galleryCountLabel.text = "\(count)/10"
         galleryCountButton.isHidden = count == 0
-        galleryInstructionLabel.isHidden = count == 0
     }
     
     
@@ -791,39 +769,6 @@ class DetailInputViewController: UIViewController {
         layout.minimumInteritemSpacing = 5
         layout.itemSize = CGSize(width: 85, height: 85)
         return layout
-    }
-    
-    @objc func handleTapGesture(_ gesture: UITapGestureRecognizer) {
-        if isEditingPhotos {
-            stopShakingCells()
-            isEditingPhotos = false
-        }
-    }
-    
-    func startShakingCells() {
-        for case let cell as GallaryInPutCollectionViewCell in galleryCollectionView.visibleCells {
-            cell.showDeleteButton(true)
-            shake(cell: cell)
-        }
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
-        view.addGestureRecognizer(tapGesture)
-    }
-    
-    func stopShakingCells() {
-        for case let cell as GallaryInPutCollectionViewCell in galleryCollectionView.visibleCells {
-            cell.showDeleteButton(false)
-            cell.layer.removeAllAnimations()
-        }
-    }
-    
-    func shake(cell: UICollectionViewCell) {
-        let animation = CABasicAnimation(keyPath: "transform.rotation")
-        animation.fromValue = -0.05
-        animation.toValue = 0.05
-        animation.duration = 0.1
-        animation.repeatCount = .greatestFiniteMagnitude
-        animation.autoreverses = true
-        cell.layer.add(animation, forKey: "shake")
     }
     
     func requestPhotoLibraryAccess() {

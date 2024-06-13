@@ -28,6 +28,8 @@ protocol DetailInputViewControllerDelegate: AnyObject {
 
 class DetailInputViewController: UIViewController {
     
+    
+    
     private let locationManager = LocationManager()
     var savedLocation: CLLocationCoordinate2D?
     var savedPinLogId: String?
@@ -36,7 +38,7 @@ class DetailInputViewController: UIViewController {
     weak var delegate: DetailInputViewControllerDelegate?
     
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
-    var selectedFriends: [UIImage] = []
+    var selectedFriends: [UserSummary] = []
     var representativeImageIndex: Int? = 0
     
     var imageLocations: [CLLocationCoordinate2D] = []
@@ -496,7 +498,6 @@ class DetailInputViewController: UIViewController {
         
         galleryCollectionView.register(GallaryInPutCollectionViewCell.self, forCellWithReuseIdentifier: GallaryInPutCollectionViewCell.identifier)
         mateCollectionView.register(FriendInputCollectionViewCell.self, forCellWithReuseIdentifier: FriendInputCollectionViewCell.identifier)
-        
     }
     
     func setupTextView() {
@@ -584,7 +585,6 @@ class DetailInputViewController: UIViewController {
     func setupNavigationBar() {
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = doneButton
-        
         navigationController?.navigationBar.tintColor = .white
     }
     
@@ -710,6 +710,8 @@ class DetailInputViewController: UIViewController {
     }
     
     @objc func doneButtonTapped() {
+        print("Done button tapped") // 호출 여부 확인을 위한 print 문
+        
         guard let locationTitle = locationLeftLabel.text, locationTitle != "지역을 선택하세요" else {
             let alert = UIAlertController(title: "오류", message: "지역을 선택해주세요.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "확인", style: .default))
@@ -755,7 +757,7 @@ class DetailInputViewController: UIViewController {
                                     content: content,
                                     media: [],
                                     authorId: Auth.auth().currentUser?.uid ?? "",
-                                    attendeeIds: [],
+                                    attendeeIds: selectedFriends.map { $0.uid },
                                     isPublic: isPublic,
                                     createdAt: createdAt,
                                     pinCount: 0,
@@ -773,7 +775,7 @@ class DetailInputViewController: UIViewController {
                         pinLog.title = title
                         pinLog.content = content
                         pinLog.isPublic = isPublic
-                        
+                        pinLog.attendeeIds = selectedFriends.map { $0.uid }
                     } else {
                         pinLog = PinLog(location: locationTitle,
                                         address: address,
@@ -785,7 +787,7 @@ class DetailInputViewController: UIViewController {
                                         content: content,
                                         media: [],
                                         authorId: Auth.auth().currentUser?.uid ?? "",
-                                        attendeeIds: [],
+                                        attendeeIds: selectedFriends.map { $0.uid },
                                         isPublic: isPublic,
                                         createdAt: Date(),
                                         pinCount: 0,
@@ -826,6 +828,7 @@ class DetailInputViewController: UIViewController {
             }
         }
     }
+    
     
     func updateGalleryCountButton() {
         let count = selectedImages.count
@@ -948,7 +951,12 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
             if selectedFriends.isEmpty {
                 cell.configure(with: nil)
             } else {
-                cell.configure(with: selectedFriends[indexPath.row])
+                let friend = selectedFriends[indexPath.row]
+                if let photoURL = friend.photoURL, let url = URL(string: photoURL) {
+                    cell.configure(with: url)
+                } else {
+                    cell.configure(with: nil)
+                }
             }
             return cell
         }
@@ -963,7 +971,20 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
                 representativeImageIndex = indexPath.row
                 updateRepresentativeImage()
             }
+        } else if collectionView == mateCollectionView {
+            if selectedFriends.isEmpty {
+                let mateVC = MateViewController()
+                mateVC.delegate = self
+                navigationController?.pushViewController(mateVC, animated: true)
+            }
         }
+    }
+}
+
+extension DetailInputViewController: MateViewControllerDelegate {
+    func didSelectMates(_ mates: [UserSummary]) {
+        selectedFriends = mates
+        mateCollectionView.reloadData()
     }
 }
 
@@ -1029,6 +1050,8 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
         }
     }
 }
+
+
 
 
 extension DetailInputViewController: UITextViewDelegate {

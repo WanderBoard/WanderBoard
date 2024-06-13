@@ -53,6 +53,9 @@
 		2A9BED322C08E2A40032C403 /* PinLogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9BED312C08E2A40032C403 /* PinLogManager.swift */; };
 		4D21E8572C1AB932002FDBC9 /* MateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E8562C1AB932002FDBC9 /* MateViewController.swift */; };
 		4D21E8592C1AB960002FDBC9 /* MateTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E8582C1AB960002FDBC9 /* MateTableViewCell.swift */; };
+		4D21E85B2C1B39E7002FDBC9 /* UserSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E85A2C1B39E7002FDBC9 /* UserSummary.swift */; };
+		4D21E85D2C1B3A4E002FDBC9 /* MateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E85C2C1B3A4E002FDBC9 /* MateManager.swift */; };
+		4D21E85F2C1B4C8A002FDBC9 /* AddedMateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E85E2C1B4C8A002FDBC9 /* AddedMateCell.swift */; };
 		4D8947312C0F33C30057F083 /* DetailInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947302C0F33C30057F083 /* DetailInputViewController.swift */; };
 		4D8947332C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */; };
 		4D8947352C0F357C0057F083 /* FriendInputCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */; };
@@ -130,6 +133,9 @@
 		2A9BED312C08E2A40032C403 /* PinLogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLogManager.swift; sourceTree = "<group>"; };
 		4D21E8562C1AB932002FDBC9 /* MateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MateViewController.swift; sourceTree = "<group>"; };
 		4D21E8582C1AB960002FDBC9 /* MateTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MateTableViewCell.swift; sourceTree = "<group>"; };
+		4D21E85A2C1B39E7002FDBC9 /* UserSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSummary.swift; sourceTree = "<group>"; };
+		4D21E85C2C1B3A4E002FDBC9 /* MateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MateManager.swift; sourceTree = "<group>"; };
+		4D21E85E2C1B4C8A002FDBC9 /* AddedMateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddedMateCell.swift; sourceTree = "<group>"; };
 		4D8947302C0F33C30057F083 /* DetailInputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailInputViewController.swift; sourceTree = "<group>"; };
 		4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GallaryInPutCollectionViewCell.swift; sourceTree = "<group>"; };
 		4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendInputCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -314,6 +320,7 @@
 				2A9BED2B2C08B6C60032C403 /* PinLog.swift */,
 				2A9BED2D2C08B71D0032C403 /* Invitation.swift */,
 				2A8AB1792C1240E500C5244F /* User.swift */,
+				4D21E85A2C1B39E7002FDBC9 /* UserSummary.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -323,6 +330,7 @@
 			children = (
 				4D9D8B6A2C05B2D90043E7DF /* NetworkManager.swift */,
 				2A9BED2F2C08DB200032C403 /* InvitationManager.swift */,
+				4D21E85C2C1B3A4E002FDBC9 /* MateManager.swift */,
 				2A9BED312C08E2A40032C403 /* PinLogManager.swift */,
 				2A5F47C72C0E3A0C00D289AA /* StorageManager.swift */,
 				2A8AB17B2C1241ED00C5244F /* UserProfileManager.swift */,
@@ -344,6 +352,7 @@
 				4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */,
 				4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */,
 				4D21E8562C1AB932002FDBC9 /* MateViewController.swift */,
+				4D21E85E2C1B4C8A002FDBC9 /* AddedMateCell.swift */,
 				4D21E8582C1AB960002FDBC9 /* MateTableViewCell.swift */,
 				4DB75A042C13416E001813C3 /* GalleryDetailViewController.swift */,
 			);
@@ -537,6 +546,7 @@
 				6BBE4B852C19950100A7A793 /* SpendingTableViewCell.swift in Sources */,
 				4D21E8592C1AB960002FDBC9 /* MateTableViewCell.swift in Sources */,
 				FB9A3ADC2C1984B700E1EAA2 /* EmptyView.swift in Sources */,
+				4D21E85B2C1B39E7002FDBC9 /* UserSummary.swift in Sources */,
 				2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */,
 				4D8947312C0F33C30057F083 /* DetailInputViewController.swift in Sources */,
 				2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */,
@@ -546,6 +556,7 @@
 				FB9A3AE82C1984C600E1EAA2 /* HotCollectionViewCell.swift in Sources */,
 				2A5D471F2C0A2771005C0F76 /* LocationManager.swift in Sources */,
 				2A76550B2C06175B00D8A098 /* AuthenticationManager.swift in Sources */,
+				4D21E85D2C1B3A4E002FDBC9 /* MateManager.swift in Sources */,
 				2A7654FD2C060FB500D8A098 /* SignInWithGoogle.swift in Sources */,
 				9530E4A42C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift in Sources */,
 				FB9A3ADE2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift in Sources */,
@@ -577,6 +588,7 @@
 				4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */,
 				4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */,
 				4D9D8B522C05B1BD0043E7DF /* SceneDelegate.swift in Sources */,
+				4D21E85F2C1B4C8A002FDBC9 /* AddedMateCell.swift in Sources */,
 				2A7655192C063A0100D8A098 /* AuthenticationVC.swift in Sources */,
 				2A8AB17A2C1240E500C5244F /* User.swift in Sources */,
 			);

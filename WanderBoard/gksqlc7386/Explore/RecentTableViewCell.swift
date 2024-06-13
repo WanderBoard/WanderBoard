@@ -23,7 +23,6 @@ class RecentTableViewCell: UITableViewCell {
     lazy var recentCollectionView = UICollectionView(frame: .zero, collectionViewLayout: recentCollectionViewLayout).then {
         $0.dataSource = self
         $0.delegate = self
-                
         $0.register(RecentCollectionViewCell.self, forCellWithReuseIdentifier: RecentCollectionViewCell.identifier)
         $0.isScrollEnabled = false
     }

@@ -52,7 +52,7 @@ class DetailViewController: UIViewController {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 16
-        $0.backgroundColor = UIColor(named: "textColor")
+        $0.backgroundColor = UIColor.lightgray
         $0.image = UIImage(systemName: "person")
         $0.snp.makeConstraints {
             $0.width.height.equalTo(32)
@@ -63,7 +63,7 @@ class DetailViewController: UIViewController {
     var nicknameLabel = UILabel().then {
         $0.text = "닉네임"
         $0.font = UIFont.systemFont(ofSize: 12)
-        $0.textColor = .font
+        $0.textColor = .white
     }
     
     // 추가
@@ -76,14 +76,14 @@ class DetailViewController: UIViewController {
     var locationLabel = UILabel().then {
         $0.text = "---"
         $0.font = UIFont.systemFont(ofSize: 40)
-        $0.textColor = .font
+        $0.textColor = .white
         $0.numberOfLines = 2
     }
     
     var dateDaysLabel = UILabel().then {
         $0.text = "0 Days"
         $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = .font
+        $0.textColor = .white
     }
     
     let locationStackView = UIStackView().then {
@@ -95,18 +95,18 @@ class DetailViewController: UIViewController {
     var dateStartLabel = UILabel().then {
         $0.text = "2024.08.13"
         $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = .font
+        $0.textColor = .white
     }
     
     let dateLineLabel = UILabel().then {
         $0.text = "-"
-        $0.textColor = .font
+        $0.textColor = .white
     }
     
     var dateEndLabel = UILabel().then {
         $0.text = "2024.08.15"
         $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = .font
+        $0.textColor = .white
     }
     
     let dateStackView = UIStackView().then {
@@ -151,7 +151,7 @@ class DetailViewController: UIViewController {
     }
     
     let textLabelLine = UILabel().then {
-        $0.backgroundColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+        $0.backgroundColor = .lightgray
     }
     
     let segmentControl: UISegmentedControl = {
@@ -192,16 +192,16 @@ class DetailViewController: UIViewController {
     
     let mapAllButton = UIButton().then {
         $0.setTitle("전체 지도 보기", for: .normal)
-        $0.setTitleColor(#colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1), for: .normal)
-        $0.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
+        $0.setTitleColor(UIColor.lightgray, for: .normal)
         $0.backgroundColor = UIColor(named: "textColor")
         $0.isHidden = false
     }
     
     let albumAllButton = UIButton().then {
         $0.setTitle("전체 앨범 보기", for: .normal)
-        $0.setTitleColor(#colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1), for: .normal)
-        $0.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
+        $0.setTitleColor(UIColor.lightgray, for: .normal)
         $0.backgroundColor = UIColor(named: "textColor")
         $0.isHidden = true
     }
@@ -220,13 +220,13 @@ class DetailViewController: UIViewController {
     let moneyCountSubTitle = UILabel().then {
         $0.text = "₩"
         $0.font = UIFont.systemFont(ofSize: 30, weight: .semibold)
-        $0.textColor = #colorLiteral(red: 0.5070941448, green: 0.5070941448, blue: 0.5070941448, alpha: 1)
+        $0.textColor = .lightgray
     }
     
     var maxConsumptionLabel = UILabel().then {
         $0.text = "최고금액 지출 : GS25 부산해운대점"
         $0.font = UIFont.systemFont(ofSize: 13)
-        $0.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+        $0.textColor = .darkgray
     }
     
     let consumStackView = UIStackView().then {
@@ -238,6 +238,7 @@ class DetailViewController: UIViewController {
     let friendTitle = UILabel().then {
         $0.text = "메이트"
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.textColor = .font
     }
     
     lazy var friendCollectionView: UICollectionView = {
@@ -280,6 +281,28 @@ class DetailViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
         
         galleryCollectionView.reloadData()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor(){
+        let textLabelLineColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        textLabelLine.backgroundColor = textLabelLineColor
+        
+        let ButtonGrayColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
+        mapAllButton.setTitleColor(ButtonGrayColor, for: .normal)
+        albumAllButton.setTitleColor(ButtonGrayColor, for: .normal)
+        
+        let textGrayColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
+        maxConsumptionLabel.textColor = textGrayColor
+        
+        let textGrayColor2 = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
+        maxConsumptionLabel.textColor = textGrayColor2
     }
     
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
@@ -560,7 +583,8 @@ class DetailViewController: UIViewController {
         dateDaysLabel.text = "\(duration) Days"
         mainTitleLabel.text = pinLog.title
         subTextLabel.text = pinLog.content
-        
+        moneyCountTitle.text = "\(pinLog.totalSpendingAmount ?? 0)"
+
         selectedImages.removeAll()
         updateSelectedImages(with: pinLog.media)
         

@@ -41,6 +41,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     var previousName: String = ""
     var ID: String = ""
     var userData: User?
+    var downloadURL: URL?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,14 +104,14 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         connectButton.setTitleColor(.font, for: .normal)
         connectButton.setImage(UIImage(named: "instagramLogo"), for: .normal)
         if let imageView = connectButton.imageView {
-                   imageView.snp.makeConstraints {
-                       $0.width.height.equalTo(24) // 이미지 크기를 24x24로 설정
-                       $0.left.equalToSuperview().offset(10)
-                       $0.centerY.equalToSuperview()
-                       let label = connectButton.titleLabel
-                       $0.right.equalTo(label!.snp.left).offset(-10)
-                   }
-               }
+            imageView.snp.makeConstraints {
+                $0.width.height.equalTo(24) // 이미지 크기를 24x24로 설정
+                $0.left.equalToSuperview().offset(10)
+                $0.centerY.equalToSuperview()
+                let label = connectButton.titleLabel
+                $0.right.equalTo(label!.snp.left).offset(-10)
+            }
+        }
         
         iconImageView.image = UIImage(systemName: "chevron.right")
         iconImageView.tintColor = .font
@@ -252,62 +253,29 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let nameToSave = myName.text?.isEmpty ?? true ? previousName : myName.text
         
         Task {
-            //네비게이션 컨트롤러로 화면전환할때 파이어베이스 유저에 저장 ->
-            await updateProfile(displayName: nameToSave, photoURL: profile.image)
-            if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
-                myPageVC.updateUserData(name: nameToSave!, image: profile.image)
-            }
-            
-            let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
-            let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-                self.navigationController?.popViewController(animated: true)
-            }
-            alert.addAction(confirm)
-            present(alert, animated: true, completion: nil)
-        }
-        
-        // Firestore에 사용자 프로필 정보 업데이트
-        func updateProfile(displayName: String?, photoURL: UIImage?) async {
-                        guard let user = Auth.auth().currentUser else {
-                            print("사용자가 로그인 되어있지 않습니다")
-                            return
-                        }
-            
-                        let changeRequest = user.createProfileChangeRequest()
-            
-                        if let displayName = displayName {
-                            changeRequest.displayName = displayName
-                        }
-            
-                        if let photoURL = photoURL, let photoData = photoURL.jpegData(compressionQuality: 0.75) {
-                            let storageRef = Storage.storage().reference().child("profileimages/\(user.uid).jpg")
-                            do {
-                                let metadata = StorageMetadata()
-                                metadata.contentType = "image/jpeg"
-                                let _ = try await storageRef.putDataAsync(photoData, metadata: metadata)
-                                let downloadURL = try await storageRef.downloadURL()
-                                changeRequest.photoURL = downloadURL
-                                print("이미지 업로드 성공")
-                            } catch {
-                                print("이미지 업로드 실패: \(error.localizedDescription)")
-                            }
-                        }
-            
-            
-                        let userEntity = UserEntity()
-                        userEntity.displayName = displayName ?? ""
-                        userEntity.photoURL = user.photoURL?.absoluteString ?? ""
-            
-                        do {
-                            try await FirestoreManager.shared.saveOrUpdateUser(user: userEntity)
-                            print("Firestore에 사용자 정보가 성공적으로 업데이트되었습니다.")
-                        } catch {
-                            print("Firestore 업데이트 실패: \(error.localizedDescription)")
-                        }
+            do {
+                let currentUserID = Auth.auth().currentUser?.uid ?? ""
+                let user = try await FirestoreManager.shared.checkUserExists(email: currentUserID)
+                
+                // 사용자 정보 로드 후 MyPageViewController로 전환
+                DispatchQueue.main.async {
+                    if let navigationController = self.navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
+                        myPageVC.updateUserData(name: nameToSave!, image: self.profile.image)
                     }
+                    
+                    let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
+                    let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                    alert.addAction(confirm)
+                    self.present(alert, animated: true, completion: nil)
+                }
+            } catch {
+                print("유저 정보를 가져오지 못했습니다")
+            }
         }
-    
-    
+    }
+
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentText = textField.text ?? ""
@@ -422,12 +390,42 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             provider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
                 DispatchQueue.main.async {
                     if let selectedImage = image as? UIImage {
-                        self?.profile.image = selectedImage
-                        self?.addImage.tintColor = UIColor.clear
+                        //이미지피커로 고른 이미지를 데이터로 변환해 파이어베이스 스토리지에 업로드 -> 업로드 된 이미지의 url 가져와 다운받기
+                        guard let imageData = selectedImage.jpegData(compressionQuality: 0.5) else { return }
+                        
+                        let storageRef = Storage.storage().reference().child("images").child(UUID().uuidString)
+                        
+                        storageRef.putData(imageData, metadata: nil) { (metadata, error) in
+                            guard let metadata = metadata else {
+                                print("이미지 업로드 에러")
+                                return
+                            }
+                            print("이미지 업로드 성공!")
+                            
+                            storageRef.downloadURL { (url, error) in
+                                guard let downLoadURL = url else {
+                                    print("다운로드 URL 받아오기 실패")
+                                    return
+                                }
+                                print("다운로드 URL 받아오기 성공")
+                                self?.downloadURL = downLoadURL //다운로드 URL을 위에서 선언한 변수에 연결해주기
+                            }
+                        }
                     }
                 }
             }
         }
+    }
+    
+    //이미지 다운로드 메서드
+    private func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else {
+                completion(nil)
+                return
+            }
+            completion(UIImage(data: data))
+        }.resume()
     }
     
     override func updateColor() {

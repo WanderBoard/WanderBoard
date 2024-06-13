@@ -6,77 +6,138 @@
 //
 
 import UIKit
+import SnapKit
 
-class PrivacyPolicyCollectionViewCell: UICollectionViewCell {
-    static let identifier = "PrivacyPolicyCollectionViewCell"
-    let scriptTitle = UILabel()
-    let scriptBackground = UIView()
-    let scrollView = UIScrollView()
-    let script = UILabel()
+protocol PrivacyPolicyTableViewCellDelegate: AnyObject {
+    func didChangeCompletionStatus(for section: Int, completed: Bool)
+}
+
+class PrivacyPolicyTableViewCell: UITableViewCell {
+    static let identifier = "PrivacyPolicyTableViewCell"
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        constraintLayout()
-        configureUI()
-        updateColor()
+    weak var delegate: PrivacyPolicyTableViewCellDelegate?
+
+    let scriptLabel = UILabel()
+    private let agreeCheckBox = UIButton(type: .custom)
+    private let disagreeCheckBox = UIButton(type: .custom)
+    private var section: Int = 0
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupViews()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func configureUI(){
-        scriptTitle.text = "----------"
-        scriptTitle.font = UIFont.boldSystemFont(ofSize: 15)
-        scriptTitle.textColor = .font
+
+    private func setupViews() {
+        contentView.backgroundColor = .white
+        scriptLabel.numberOfLines = 0
+        scriptLabel.font = UIFont.systemFont(ofSize: 13)
+        scriptLabel.textColor = .label
+        scriptLabel.lineBreakMode = .byWordWrapping
+
+        contentView.addSubview(scriptLabel)
+        contentView.addSubview(agreeCheckBox)
+        contentView.addSubview(disagreeCheckBox)
+
+        scriptLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(16)
+            $0.left.equalToSuperview().inset(16)
+            $0.right.equalToSuperview().inset(16)
+        }
+
+        agreeCheckBox.setTitle("동의함", for: .normal)
+        agreeCheckBox.setTitleColor(.black, for: .normal)
+        agreeCheckBox.setImage(UIImage(systemName: "square"), for: .normal)
+        agreeCheckBox.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+//        agreeCheckBox.semanticContentAttribute = .forceRightToLeft
+        agreeCheckBox.addTarget(self, action: #selector(agreeTapped), for: .touchUpInside)
         
-        scriptBackground.backgroundColor = .babygray
-        scriptBackground.layer.cornerRadius = 10
+        agreeCheckBox.snp.makeConstraints {
+            $0.top.equalTo(scriptLabel.snp.bottom).offset(16)
+            $0.right.equalToSuperview().inset(16)
+            $0.bottom.equalToSuperview().inset(16)
+        }
         
-        script.text = "신용 제35조 제2항에 따라 신용정보주체가 신용정보회사등에게 자신의 개인신용정보를 이용하거나 제공한 내용에 대하여 정기적인 통지를 요청할 수 있음을 알려주는 것은 인터넷 홈페이지의 개인정보처리방침 등에 게시하여 알릴 수 있습니다. 신용정보법 제35조 제2항에 따라 신용정보주체가 신용정보회사등에게 자신의 개인신용정보를 이용하거나 제공한 내용에 대하여 정기적인 통지를 요청할 수 있음을 알려주는 것은 인터넷 홈페이지의 개인정보처리방침 등에 게시하여 알릴 수 있습니다. 신용정보법 제35조 제2항에 따라 신용정보주체가 신용정보회사등에게 자신의 개인신용정보를 이용하거나 제공한 내용에 대하여 정기적인 통지를 요청할 수 있음을 알려주는 것은 인터넷 홈페이지의 개인정보처리방침 등에 게시하여 알릴 수 있습니다. 신용정보법 제35조 제2항에 따라 신용정보주체가 신용정보회사등에게 자신의 개인신용정보를 이용하거나 제공한 내용에 대하여 정기적인 통지를 요청할 수 있음을 알려주는 것은 인터넷 홈페이지의 개인정보처리방침 등에 게시하여 알릴 수 있습니다.신용정보법 제35조 제2항에 따라 신용정보주체가 신용정보회사등에게 자신의 개인신용정보를 이용하거나 제공한 내용에 대하여 정기적인 통지를 요청할 수 있음을 알려주는 것은 인터넷 홈페이지의 개인정보처리방침 등에 게시하여 알릴 수 있습니다."
-        script.font = UIFont.systemFont(ofSize: 13)
-        script.textColor = .font
-        script.numberOfLines = 0
+        disagreeCheckBox.setTitle("동의안함", for: .normal)
+        disagreeCheckBox.setTitleColor(.black, for: .normal)
+        disagreeCheckBox.setImage(UIImage(systemName: "square"), for: .normal)
+        disagreeCheckBox.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+//        agreeCheckBox.semanticContentAttribute = .forceRightToLeft
+        disagreeCheckBox.addTarget(self, action: #selector(disagreeTapped), for: .touchUpInside)
+        
+        disagreeCheckBox.snp.makeConstraints {
+            $0.centerY.equalTo(agreeCheckBox)
+            $0.right.equalTo(agreeCheckBox.snp.left).offset(-8)
+        }
+        
+        disagreeCheckBox.isHidden = true
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        scriptLabel.preferredMaxLayoutWidth = contentView.frame.width - 32
+        super.layoutSubviews()
+        contentView.layoutIfNeeded()
+        scriptLabel.layoutIfNeeded()
+    }
+
+    func configure(for section: Int, delegate: PrivacyPolicyTableViewCellDelegate?, agreeStatus: Bool, disagreeStatus: Bool) {
+        self.section = section
+        self.delegate = delegate
+        
+        let scripts = [
+            PrivacyPolicyScripts.termsOfService,
+            PrivacyPolicyScripts.privacyPolicy,
+            PrivacyPolicyScripts.marketingConsent,
+            PrivacyPolicyScripts.thirdPartySharing
+        ]
+        
+        scriptLabel.text = scripts[section]
+
+        agreeCheckBox.isSelected = agreeStatus
+        disagreeCheckBox.isSelected = disagreeStatus
+        
+        if section == 2 || section == 3 {
+            agreeCheckBox.setTitle("동의함", for: .normal)
+            disagreeCheckBox.setTitle("동의안함", for: .normal)
+            disagreeCheckBox.isHidden = false
+        } else {
+            agreeCheckBox.setTitle("동의함", for: .normal)
+            disagreeCheckBox.isHidden = true
+        }
     }
     
-    func constraintLayout(){
-        [scriptTitle, scriptBackground, scrollView].forEach(){
-            contentView.addSubview($0)
-        }
-        
-        scriptTitle.snp.makeConstraints(){
-            $0.top.equalToSuperview().offset(8)
-            $0.left.equalToSuperview().offset(8)
-        }
-        scriptBackground.snp.makeConstraints(){
-            $0.top.equalTo(scriptTitle.snp.bottom).offset(7)
-            $0.left.right.equalToSuperview()
-            $0.height.equalToSuperview().inset(12)
-        }
-        scrollView.snp.makeConstraints(){
-            $0.top.equalTo(scriptBackground.snp.top).offset(20)
-            $0.left.equalTo(scriptBackground.snp.left).offset(20)
-            $0.right.equalTo(scriptBackground.snp.right).offset(-20)
-            $0.bottom.equalTo(scriptBackground.snp.bottom).offset(-22)
-        }
-        scrollView.addSubview(script)
-        script.snp.makeConstraints(){
-            $0.edges.equalTo(scrollView)
-            $0.width.equalTo(scrollView.snp.width)
+    private func getScriptForSection(_ section: Int) -> String {
+        switch section {
+        case 0:
+            return PrivacyPolicyScripts.termsOfService
+        case 1:
+            return PrivacyPolicyScripts.privacyPolicy
+        case 2:
+            return PrivacyPolicyScripts.marketingConsent
+        case 3:
+            return PrivacyPolicyScripts.thirdPartySharing
+        default:
+            return ""
         }
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        
-        // 이전 trait collection과 현재 trait collection이 다를 경우 업데이트
-        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            updateColor()
+    @objc private func agreeTapped() {
+        agreeCheckBox.isSelected = !agreeCheckBox.isSelected
+        if section < 2 {
+            delegate?.didChangeCompletionStatus(for: section, completed: agreeCheckBox.isSelected)
+        } else {
+            disagreeCheckBox.isSelected = false
+            delegate?.didChangeCompletionStatus(for: section, completed: true)
         }
     }
     
-    func updateColor(){
-        let scriptBackgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
-        scriptBackground.backgroundColor = scriptBackgroundColor
+    @objc private func disagreeTapped() {
+        disagreeCheckBox.isSelected = !disagreeCheckBox.isSelected
+        agreeCheckBox.isSelected = false
+        delegate?.didChangeCompletionStatus(for: section, completed: false)
     }
 }

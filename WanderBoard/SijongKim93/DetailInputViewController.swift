@@ -306,6 +306,10 @@ class DetailInputViewController: UIViewController {
             configureView(with: pinLog)
         }
         
+        // Delegate 설정
+                mainTextField.delegate = self
+                subTextField.delegate = self
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -1131,7 +1135,7 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
 
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1) {
+        if textView.textColor == UIColor.lightgray {
             textView.text = nil
             textView.textColor = .black
         }

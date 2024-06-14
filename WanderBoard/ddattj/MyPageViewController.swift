@@ -93,7 +93,33 @@ class MyPageViewController: BaseViewController, PageIndexed {
             }
         }
     }
-  
+
+    
+    func fetchAndDisplayAverageExpenditure() {
+        guard let userData = userData else {
+            print("유저 데이터를 불러오지 못했습니다.")
+            return
+        }
+        Task {
+            do {
+                //사용자 핀로그 불러오기
+                let pinLogs = try await PinLogManager.shared.fetchPinLogs(forUserId: userData.uid)
+                let totalSpendingAmount = pinLogs.reduce(0) { $0 + ($1.totalSpendingAmount ?? 0.0)}
+                let averageSpendingAmount = pinLogs.isEmpty ? 0 : totalSpendingAmount / Double(pinLogs.count)
+                
+                DispatchQueue.main.async {
+                    self.myExpend.text = pinLogs.isEmpty ? "0₩" : "\(averageSpendingAmount)₩"
+                    print("평균지출금액 불러오기 성공")
+                }
+            }
+            catch {
+                print("핀로그를 불러오는데에 실패했습니다")
+            }
+        }
+    }
+    
+    //페이지 컨트롤러 때문에 추가했습니다 -한빛
+
     override func viewWillAppear(_ animated: Bool) {
         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": false])
         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": true])
@@ -149,7 +175,9 @@ class MyPageViewController: BaseViewController, PageIndexed {
         tableView.snp.makeConstraints(){
             $0.top.equalTo(statusB.snp.bottom).offset(33)
             $0.horizontalEdges.equalToSuperview().inset(32)
-            $0.bottom.equalTo(view).offset(-169)
+
+            $0.bottom.equalTo(view).offset(-134)
+
         }
     }
     
@@ -271,7 +299,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
 
 extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return 5
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -302,43 +330,51 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             }, completion: { _ in
                 // 애니메이션이 완료된 후에 ViewController를 푸시
                 switch indexPath.row {
-                case 0:
-                    NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
-                    NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
-                    let settingVC = SettingViewController()
-                    self.navigationController?.pushViewController(settingVC, animated: true)
-                    settingVC.navigationItem.title = "환경설정"
-                case 1:
-                    NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
-                    NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
-                    let policyVC = PrivacyPolicyViewController()
-                    self.navigationController?.pushViewController(policyVC, animated: true)
-                    policyVC.navigationItem.title = "개인정보처리방침"
-                case 2:
-                    NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
-                    NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
-                    let blockVC = BlockViewController()
-                    self.navigationController?.pushViewController(blockVC, animated: true)
-                    blockVC.navigationItem.title = "차단관리"
-                case 3:
-                    NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
-                    NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
-                    let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
-                    let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-                        let logOutVC = AuthenticationVC()
-                        if let transition = self.transition {
-                            self.navigationController?.view.layer.add(transition, forKey: kCATransition)
+
+                    case 0:
+                        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
+                        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                        let settingVC = SettingViewController()
+                        self.navigationController?.pushViewController(settingVC, animated: true)
+                        settingVC.navigationItem.title = "환경설정"
+                    case 1:
+                        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
+                        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                        let policyVC = ConsentStatusViewController()
+                        self.navigationController?.pushViewController(policyVC, animated: true)
+                        policyVC.navigationItem.title = "이용약관 및 개인정보처리방침"
+                    case 2:
+                        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
+                        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                        let policyVC = ConsentStatusViewController()
+                        self.navigationController?.pushViewController(policyVC, animated: true)
+                        policyVC.navigationItem.title = "마케팅활용동의 및 광고수신동의"
+                     case 3:
+                         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
+                         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                         let blockVC = BlockViewController()
+                         self.navigationController?.pushViewController(blockVC, animated: true)
+                         blockVC.navigationItem.title = "차단관리"
+                    case 4:
+                        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
+                        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                        let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
+                        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                            let logOutVC = AuthenticationVC()
+                            if let transition = self.transition {
+                                self.navigationController?.view.layer.add(transition, forKey: kCATransition)
+                            }
+                            self.navigationController?.pushViewController(logOutVC, animated: false)
+                            self.navigationController?.navigationBar.isHidden = true
+
                         }
-                        self.navigationController?.pushViewController(logOutVC, animated: false)
-                        self.navigationController?.navigationBar.isHidden = true
-                    }
-                    let close = UIAlertAction(title: "취소", style: .destructive, handler: nil)
-                    
-                    alert.addAction(close)
-                    alert.addAction(confirm)
-                    self.present(alert, animated: true, completion: nil)
-                default:
-                    print("Wrong Way!")
+                        let close = UIAlertAction(title: "취소", style: .destructive, handler: nil)
+                        
+                        alert.addAction(close)
+                        alert.addAction(confirm)
+                        self.present(alert, animated: true, completion: nil)
+                    default:
+                        print("Wrong Way!")
                 }
             })
         })

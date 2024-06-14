@@ -75,7 +75,8 @@ class PinLogManager {
             "createdAt": Timestamp(date: pinLog.createdAt ?? Date()),
             "pinCount": pinLog.pinCount ?? 0,  // 추가된 필드
             "pinnedBy": pinLog.pinnedBy ?? [],  // 추가된 필드
-            "totalSpendingAmount": pinLog.totalSpendingAmount ?? 0.0 //추가
+            "totalSpendingAmount": pinLog.totalSpendingAmount ?? 0.0, //추가
+            "isSpendingPublic": pinLog.isSpendingPublic
         ]
         
         if pinLog.id == nil {

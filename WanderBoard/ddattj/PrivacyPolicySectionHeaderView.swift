@@ -45,7 +45,7 @@ class PrivacyPolicySectionHeaderView: UITableViewHeaderFooterView {
     func configure(for section: Int, isCompleted: Bool) {
         self.section = section
         self.isCompleted = isCompleted
-        let titles = ["이용약관*", "*개인정보처리방침*", "마케팅활용동의 및 광고수신동의", "개인정보 제3자 제공동의"]
+        let titles = ["이용약관*", "개인정보처리방침*", "마케팅활용동의 및 광고수신동의", "개인정보 제3자 제공동의"]
         titleLabel.text = titles[section]
     }
 

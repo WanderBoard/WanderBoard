@@ -14,20 +14,20 @@ import FirebaseStorage
 
 class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UITextFieldDelegate {
     
-    private let topBar: UIView = {
-        let view = UIView()
-        view.backgroundColor = .black
-        view.layer.cornerRadius = 2
-        return view
-    }()
+//    private let topBar: UIView = {
+//        let view = UIView()
+//        view.backgroundColor = .black
+//        view.layer.cornerRadius = 2
+//        return view
+//    }()
     
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "회원가입"
-        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        label.textAlignment = .center
-        return label
-    }()
+//    private let titleLabel: UILabel = {
+//        let label = UILabel()
+//        label.text = "회원가입asdads"
+//        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+//        label.textAlignment = .center
+//        return label
+//    }()
     
     private let subtitleLabel: UILabel = {
         let label = UILabel()
@@ -175,7 +175,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         button.isEnabled = false
         
         let titleText = NSMutableAttributedString(
-            string: " 개인정보 수집 및 이용",
+            string: " 이용약관 및 개인정보처리방침 ",
             attributes: [
                 .font: UIFont.systemFont(ofSize: 12),
                 .foregroundColor: UIColor.black
@@ -227,12 +227,20 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private var interestTags: [String] = []
     var activeTextField: UITextField?
     
+    var agreedToTerms: Bool = false
+    var agreedToPrivacyPolicy: Bool = false
+    var agreedToMarketing: Bool = false
+    var agreedToThirdParty: Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupViews()
         checkProfileCompletion()
         interestsTextField.delegate = self
+        
+        self.title = "회원가입"
+        setupNavigationBar()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
         profileImageView.addGestureRecognizer(tapGesture)
@@ -250,8 +258,18 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    @objc private func dismissViewController() {
-        self.dismiss(animated: true, completion: nil)
+    func setupNavigationBar() {
+        self.navigationController?.setNavigationBarHidden(false, animated: false)
+        self.navigationController?.navigationBar.tintColor = .black
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        
+        let backButton = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(backButtonTapped))
+//        backButton.title = "Back"
+        self.navigationItem.leftBarButtonItem = backButton
+    }
+    
+    @objc private func backButtonTapped() {
+        dismiss(animated: true, completion: nil)
     }
     
     @objc private func keyboardWillShow(notification: NSNotification) {
@@ -290,8 +308,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         signUpButton.isEnabled = false
         signUpButton.backgroundColor = .babygray
         
-        view.addSubview(topBar)
-        view.addSubview(titleLabel)
+//        view.addSubview(topBar)
+//        view.addSubview(titleLabel)
         view.addSubview(subtitleLabel)
         view.addSubview(profileImageView)
         view.addSubview(nickNameLabel)
@@ -308,21 +326,21 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         view.addSubview(privacyPolicyButton)
         view.addSubview(signUpButton)
         
-        topBar.snp.makeConstraints { make in
-            make.top.equalTo(view.snp.top).offset(16)
-            make.centerX.equalToSuperview()
-            make.width.equalTo(80)
-            make.height.equalTo(4)
-        }
-        
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(topBar.snp.bottom).offset(20)
-            make.centerX.equalToSuperview()
-            make.height.equalTo(20)
-        }
+//        topBar.snp.makeConstraints { make in
+//            make.top.equalTo(view.snp.top).offset(16)
+//            make.centerX.equalToSuperview()
+//            make.width.equalTo(80)
+//            make.height.equalTo(4)
+//        }
+//        
+//        titleLabel.snp.makeConstraints { make in
+//            make.top.equalTo(topBar.snp.bottom).offset(20)
+//            make.centerX.equalToSuperview()
+//            make.height.equalTo(20)
+//        }
         
         subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(30)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(30)
             make.centerX.equalToSuperview()
         }
         
@@ -620,14 +638,19 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     @objc private func privacyPolicyTapped() {
         let privacyVC = PrivacyPolicyViewController()
-        privacyVC.completionHandler = { [weak self] in
+        privacyVC.completionHandler = { [weak self] agreedToTerms, agreedToPrivacyPolicy, agreedToMarketing, agreedToThirdParty in
             guard let self = self else { return }
-            self.privacyCheckBox.isSelected = true
+            self.agreedToTerms = agreedToTerms
+            self.agreedToPrivacyPolicy = agreedToPrivacyPolicy
+            self.agreedToMarketing = agreedToMarketing
+            self.agreedToThirdParty = agreedToThirdParty
+            self.privacyCheckBox.isSelected = agreedToTerms && agreedToPrivacyPolicy
             self.updateSignUpButtonState()
         }
         privacyVC.modalPresentationStyle = .formSheet
         present(privacyVC, animated: true, completion: nil)
     }
+
     
     private func updateSignUpButtonState() {
         let isFormValid = nicknameTextField.isEnabled == false && privacyCheckBox.isSelected
@@ -674,7 +697,12 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
                     "gender": self.gender,
                     "interests": self.interestTags,
                     "isProfileComplete": true,
-                    "isLoggedIn": true
+                    "isLoggedIn": true,
+                    "agreedToTerms": self.agreedToTerms,
+                    "agreedToPrivacyPolicy": self.agreedToPrivacyPolicy,
+                    "agreedToMarketing": self.agreedToMarketing,
+                    "agreedToThirdParty": self.agreedToThirdParty,
+                    "joinedDate": FieldValue.serverTimestamp()
                 ]) { error in
                     if let error = error {
                         print("Error updating user data: \(error)")

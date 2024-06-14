@@ -90,6 +90,7 @@ class MateViewController: UIViewController {
         super.viewWillAppear(animated)
         
         navigationController?.navigationBar.tintColor = .black
+        navigationItem.largeTitleDisplayMode = .never
     }
     
     func setupUI() {

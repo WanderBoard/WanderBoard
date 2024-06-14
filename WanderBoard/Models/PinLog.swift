@@ -44,7 +44,7 @@ struct Media: Codable {
         latitude = try container.decodeIfPresent(Double.self, forKey: .latitude)
         longitude = try container.decodeIfPresent(Double.self, forKey: .longitude)
         dateTaken = try container.decodeIfPresent(Date.self, forKey: .dateTaken)
-        isRepresentative = try container.decodeIfPresent(Bool.self, forKey: .isRepresentative) ?? false // 기본 값을 false로 설정
+        isRepresentative = try container.decodeIfPresent(Bool.self, forKey: .isRepresentative) ?? false 
     }
     
     init(url: String, latitude: Double?, longitude: Double?, dateTaken: Date?, isRepresentative: Bool = false) {
@@ -55,6 +55,7 @@ struct Media: Codable {
         self.isRepresentative = isRepresentative
     }
 }
+
 
 
 struct PinLog: Identifiable, Codable {
@@ -76,7 +77,7 @@ struct PinLog: Identifiable, Codable {
     var pinCount: Int? //핀 갯수 추가 - 한빛
     var pinnedBy: [String]? // 핀 상태 확인 - 한빛
     var totalSpendingAmount: Double? //핀로그당 사용한 최종금액 - 시안
-    
+
     init(id: String? = nil, location: String, address: String, latitude: Double, longitude: Double, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?, pinCount:Int?, pinnedBy: [String]? = [],  totalSpendingAmount: Double?) {
         
         self.id = id
@@ -94,9 +95,9 @@ struct PinLog: Identifiable, Codable {
         self.attendeeIds = attendeeIds
         self.isPublic = isPublic
         self.createdAt = createdAt
-        self.pinCount = pinCount //핀 갯수 추가 - 한빛
-        self.pinnedBy = pinnedBy // 핀 상태 확인 - 한빛
-        self.totalSpendingAmount = totalSpendingAmount //핀로그당 사용한 최종금액 - 시안
+        self.pinCount = pinCount
+        self.pinnedBy = pinnedBy
+        self.totalSpendingAmount = totalSpendingAmount
     }
 }
 

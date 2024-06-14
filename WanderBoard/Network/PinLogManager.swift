@@ -73,9 +73,10 @@ class PinLogManager {
             "attendeeIds": pinLog.attendeeIds,
             "isPublic": pinLog.isPublic,
             "createdAt": Timestamp(date: pinLog.createdAt ?? Date()),
-            "pinCount": pinLog.pinCount ?? 0,  // 추가된 필드
-            "pinnedBy": pinLog.pinnedBy ?? [],  // 추가된 필드
-            "totalSpendingAmount": pinLog.totalSpendingAmount ?? 0.0 //추가
+            "pinCount": pinLog.pinCount ?? 0,
+            "pinnedBy": pinLog.pinnedBy ?? [],
+            "totalSpendingAmount": pinLog.totalSpendingAmount ?? 0.0,
+            
         ]
         
         if pinLog.id == nil {
@@ -97,7 +98,9 @@ class PinLogManager {
         let snapshot = try await db.collection("pinLogs").whereField("authorId", isEqualTo: userId).getDocuments()
         let pinLogs = snapshot.documents.compactMap { document -> PinLog? in
             do {
-                return try document.data(as: PinLog.self)
+                let pinLog = try document.data(as: PinLog.self)
+                print("Fetched pinLog: \(pinLog)")
+                return pinLog
             } catch {
                 print("Error decoding document: \(document.documentID), error: \(error)")
                 return nil
@@ -110,6 +113,13 @@ class PinLogManager {
     func fetchPublicPinLogs() async throws -> [PinLog] {
         let snapshot = try await db.collection("pinLogs")
             .whereField("isPublic", isEqualTo: true)
+            .getDocuments()
+        return snapshot.documents.compactMap { try? $0.data(as: PinLog.self) }
+    }
+    
+    func fetchSpendingPublicPinLogs() async throws -> [PinLog] {
+        let snapshot = try await db.collection("pinLogs")
+            .whereField("isSpendingPublic", isEqualTo: true)
             .getDocuments()
         return snapshot.documents.compactMap { try? $0.data(as: PinLog.self) }
     }

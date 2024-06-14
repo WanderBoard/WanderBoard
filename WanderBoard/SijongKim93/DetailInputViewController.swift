@@ -547,7 +547,8 @@ class DetailInputViewController: UIViewController {
     
     @objc func consumButtonTapped() {
         let spendVC = SpendingListViewController()
-        navigationController?.pushViewController(spendVC, animated: true)
+        spendVC.modalPresentationStyle = .automatic
+        self.present(spendVC, animated: true)
     }
     
     @objc func showDatePicker(_ sender: UIButton) {

@@ -9,11 +9,21 @@ import UIKit
 import SnapKit
 
 class SpendingListViewController: UIViewController {
+ 
+    
     
 // MARK: Components
     var dailyExpenses: [DailyExpenses] = []
-//    var tripTotalSpendingAmount = Int.self
 
+    lazy var plusButton = UIButton(type: .system).then {
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
+        let image = UIImage(systemName: "pencil.circle.fill", withConfiguration: imageConfig)
+        $0.setImage(image, for: .normal)
+        $0.tintColor = UIColor(named: "textColor")
+        $0.backgroundColor = .font
+        $0.layer.cornerRadius = 15
+        $0.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
+    }
     
     let spendingCardbutton: UIButton = {
         var spendingCardbutton = UIButton()
@@ -25,7 +35,7 @@ class SpendingListViewController: UIViewController {
     
     let totalSpendingText: UILabel = {
         var totalSpendingText = UILabel()
-        totalSpendingText.text = "총 지출금액"
+        totalSpendingText.text = "총 지출 금액"
         totalSpendingText.font = UIFont.systemFont(ofSize: 15)
         totalSpendingText.textColor = .white //나중에 878787로 변경
         
@@ -52,10 +62,18 @@ class SpendingListViewController: UIViewController {
         return labelStackView
     }()
     
-    var tableView : UITableView = {
+   lazy var tableView: UITableView = {
         let tableView = UITableView()
 
         return tableView
+    }()
+    
+    lazy var spendingEmptyView: SpendingEmptyView = {
+        let spendingEmptyView = SpendingEmptyView()
+        spendingEmptyView.delegate = self
+        spendingEmptyView.isHidden = true
+        
+        return spendingEmptyView
     }()
     
     override func viewDidLoad() {
@@ -67,7 +85,7 @@ class SpendingListViewController: UIViewController {
         
         configureUI()
         makeConstraints()
-        setupNavi()
+//        setupNavi()
         updateTotalSpendingAmount()
   
 // MARK: TableView Delegate, DataSource. Header, Cell 등록. Notification Observer
@@ -78,9 +96,43 @@ class SpendingListViewController: UIViewController {
         tableView.register(SpendingTableViewHeaderView.self, forHeaderFooterViewReuseIdentifier: SpendingTableViewHeaderView.identifier)
         NotificationCenter.default.addObserver(self, selector: #selector(didReceiveNewExpenseData(_:)), name: .newExpenseData, object: nil)
 
+        updateView()
         tableView.reloadData()
+        
     }
  
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        updateView()
+    
+    }
+ 
+
+// MARK: 지출 리스트 없을 때 뜨는 화면
+    private func updateView() {
+        if dailyExpenses.isEmpty {
+            tableView.isHidden = true
+            spendingEmptyView.isHidden = false
+            plusButton.isHidden = true
+        } else {
+            tableView.isHidden = false
+            spendingEmptyView.isHidden = true
+            plusButton.isHidden = false
+
+        }
+        tableView.reloadData()
+    }
+    
+// MARK: 지출 입력페이지로 이동
+    @objc func addButtonTapped() {
+        NotificationHelper.changePage(hidden: true, isEnabled: false)
+        plusButton.isHidden = true
+        let inputVC = InsertSpendingViewController()
+        inputVC.delegate = self
+        inputVC.modalPresentationStyle = .automatic
+        self.present(inputVC, animated: true, completion: nil)
+    }
     
 // MARK: InsertSpendingVC에 입력되어 전달된 데이터 받기
     @objc func didReceiveNewExpenseData(_ notification: Notification) {
@@ -97,6 +149,7 @@ class SpendingListViewController: UIViewController {
         
         tableView.reloadData()
         updateTotalSpendingAmount()
+        updateView()
     }
     
 // MARK: 천 단위 컴마 표기
@@ -111,6 +164,8 @@ class SpendingListViewController: UIViewController {
         dailyExpenses.sort { $0.date > $1.date }
     }
   
+    
+  
 // MARK: Components Set up
     func configureUI() {
 
@@ -118,6 +173,7 @@ class SpendingListViewController: UIViewController {
         spendingCardbutton.addSubview(totalSpendingText)
         spendingCardbutton.addSubview(totalSpendingAmount)
         self.view.addSubview(tableView)
+        self.view.addSubview(spendingEmptyView)
         
         
     }
@@ -151,13 +207,18 @@ class SpendingListViewController: UIViewController {
             $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
         }
         
+        spendingEmptyView.snp.makeConstraints {
+            $0.top.equalTo(spendingCardbutton.snp.bottom)
+            $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+        
     }
 
-// MARK: NavigationBar
-    func setupNavi() {
-        navigationController?.navigationBar.tintColor = .black
-        navigationItem.rightBarButtonItem = .init(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(insertButtonTapped))
-    }
+//// MARK: NavigationBar
+//    func setupNavi() {
+//        navigationController?.navigationBar.tintColor = .black
+//        navigationItem.rightBarButtonItem = .init(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(insertButtonTapped))
+//    }
 
 // MARK: 추가 버튼 클릭시 InsertSpendingVC 보여줌
     @objc func insertButtonTapped() {
@@ -295,4 +356,17 @@ extension SpendingListViewController: UITableViewDelegate {
         return 60
     }
     
+}
+
+
+// MARK: 비어있는 화면일 때
+extension SpendingListViewController: EmptyViewDelegate {
+    func didTapAddButton() {
+        NotificationHelper.changePage(hidden: true, isEnabled: false)
+        plusButton.isHidden = true
+        let inputVC = InsertSpendingViewController()
+        inputVC.delegate = self
+        inputVC.modalPresentationStyle = .automatic
+        self.present(inputVC, animated: true, completion: nil)
+    }
 }

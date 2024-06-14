@@ -54,6 +54,9 @@ class ExploreViewController: UIViewController, PageIndexed {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .automatic
+        
         NotificationHelper.changePage(hidden: false, isEnabled: true)
         searchButton.isHidden = false
         
@@ -79,7 +82,6 @@ class ExploreViewController: UIViewController, PageIndexed {
     
     private func setupNV() {
         navigationItem.title = pageText
-        navigationItem.largeTitleDisplayMode = .always
         
         if let navigationBarSuperview = navigationController?.navigationBar.superview {
             navigationBarSuperview.addSubview(searchButton)
@@ -251,7 +253,7 @@ extension ExploreViewController: RecentTableViewCellDelegate {
         let selectedPinLog = cell.recentLogs[indexPath.item]
         detailVC.pinLog = selectedPinLog
         detailVC.delegate = self
-        navigationController?.pushViewController(detailVC, animated: true)
+        navigationController?.pushViewController(detailVC, animated: false)
     }
     
     func loadMoreRecentLogs() {
@@ -277,6 +279,13 @@ extension ExploreViewController: RecentTableViewCellDelegate {
 }
 
 extension ExploreViewController: DetailViewControllerDelegate {
+    func didHidePinLog(_ hiddenPinLogId: String) {
+        self.recentLogs = self.recentLogs.filter { $0.id != hiddenPinLogId }
+        self.hotLogs = self.hotLogs.filter { $0.id != hiddenPinLogId }
+        
+        self.tableView.reloadData()
+    }
+    
     func didUpdatePinButton(_ updatedPinLog: PinLog) {
         print("Received updated pin log via delegate")
         if let index = recentLogs.firstIndex(where: { $0.id == updatedPinLog.id }) {

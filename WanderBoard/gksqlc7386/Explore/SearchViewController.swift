@@ -134,7 +134,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
                 print("Initial data fetched: \(logs.count) logs")
                 self.allTripLogs = self.filterBlockedAuthors(from: logs)
                 self.searchedLogs = self.allTripLogs
-                self.allTripLogs.sort { ($0.createdAt ?? Date.distantPast) > ($1.createdAt ?? Date.distantPast) }
+                self.allTripLogs.sort { ($0.pinCount ?? 0) > ($1.pinCount ?? 0) }
                 self.applyFilterAndReload()
                 self.lastDocumentSnapshot = lastSnapshot
             case .failure(let error):
@@ -271,6 +271,13 @@ extension String {
 }
 
 extension SearchViewController: DetailViewControllerDelegate {
+    func didHidePinLog(_ hiddenPinLogId: String) {
+        func didHidePinLog(_ hiddenPinLogId: String) {
+            self.searchedLogs = self.searchedLogs.filter { $0.id != hiddenPinLogId }
+            self.collectionView.reloadData()
+        }
+    }
+    
     func didUpdatePinButton(_ updatedPinLog: PinLog) {
         print("Received updated pin log via delegate")
         if let index = searchedLogs.firstIndex(where: { $0.id == updatedPinLog.id }) {

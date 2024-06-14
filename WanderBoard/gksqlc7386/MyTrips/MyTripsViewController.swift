@@ -62,6 +62,9 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .automatic
+        
         NotificationHelper.changePage(hidden: false, isEnabled: true)
         updateView()
         plusButton.isHidden = false
@@ -75,7 +78,6 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     
     private func setupNV() {
         navigationItem.title = pageText
-        navigationItem.largeTitleDisplayMode = .always
         
         if let navigationBarSuperview = navigationController?.navigationBar.superview {
             navigationBarSuperview.addSubview(plusButton)
@@ -132,7 +134,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         plusButton.isHidden = true
         let inputVC = DetailInputViewController()
         inputVC.delegate = self
-        navigationController?.pushViewController(inputVC, animated: true)
+        navigationController?.pushViewController(inputVC, animated: false)
     }
     
     @objc func filterButtonTapped(sender: UIButton) {
@@ -252,7 +254,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
         let selectedTripLog = filteredTripLogs[indexPath.item]
         
         detailVC.pinLog = selectedTripLog
-        navigationController?.pushViewController(detailVC, animated: true)
+        navigationController?.pushViewController(detailVC, animated: false)
     }
 }
 

@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		2A18AB122C147D6C00E88171 /* PlaceInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A18AB112C147D6C00E88171 /* PlaceInfoView.swift */; };
+		2A1D31EC2C1C108800288C71 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1D31EB2C1C108800288C71 /* CalendarView.swift */; };
+		2A1D31EF2C1C10BB00288C71 /* HorizonCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 2A1D31EE2C1C10BB00288C71 /* HorizonCalendar */; };
+		2A1D31F12C1C7ED400288C71 /* ConsentStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1D31F02C1C7ED400288C71 /* ConsentStatusViewController.swift */; };
 		2A5D471D2C0A2742005C0F76 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D471C2C0A2742005C0F76 /* MapViewModel.swift */; };
 		2A5D471F2C0A2771005C0F76 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D471E2C0A2771005C0F76 /* LocationManager.swift */; };
 		2A5D47232C0A27EF005C0F76 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D47222C0A27EF005C0F76 /* MapViewController.swift */; };
@@ -73,7 +76,6 @@
 		4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37622C077122001B03F8 /* DetailViewController.swift */; };
 		4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */; };
 		4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */; };
-		4DFA376B2C09AA49001B03F8 /* MapDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */; };
 		6BBE4B822C19950100A7A793 /* ExpenseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7C2C19950100A7A793 /* ExpenseModel.swift */; };
 		6BBE4B832C19950100A7A793 /* InsertSpendingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7D2C19950100A7A793 /* InsertSpendingViewController.swift */; };
 		6BBE4B842C19950100A7A793 /* SpendingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7E2C19950100A7A793 /* SpendingListViewController.swift */; };
@@ -109,6 +111,8 @@
 
 /* Begin PBXFileReference section */
 		2A18AB112C147D6C00E88171 /* PlaceInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceInfoView.swift; sourceTree = "<group>"; };
+		2A1D31EB2C1C108800288C71 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		2A1D31F02C1C7ED400288C71 /* ConsentStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentStatusViewController.swift; sourceTree = "<group>"; };
 		2A5D471C2C0A2742005C0F76 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		2A5D471E2C0A2771005C0F76 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		2A5D47222C0A27EF005C0F76 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -158,7 +162,6 @@
 		4DFA37622C077122001B03F8 /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryCollectionViewCell.swift; sourceTree = "<group>"; };
 		4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendCollectionViewCell.swift; sourceTree = "<group>"; };
-		4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapDetailViewController.swift; sourceTree = "<group>"; };
 		6BBE4B7C2C19950100A7A793 /* ExpenseModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseModel.swift; sourceTree = "<group>"; };
 		6BBE4B7D2C19950100A7A793 /* InsertSpendingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertSpendingViewController.swift; sourceTree = "<group>"; };
 		6BBE4B7E2C19950100A7A793 /* SpendingListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpendingListViewController.swift; sourceTree = "<group>"; };
@@ -210,6 +213,7 @@
 				2A7654F32C060A3500D8A098 /* FirebaseFirestoreCombine-Community in Frameworks */,
 				2A7654E72C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
 				2A7654EB2C060A3500D8A098 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
+				2A1D31EF2C1C10BB00288C71 /* HorizonCalendar in Frameworks */,
 				2A7654F92C060A3500D8A098 /* FirebaseStorageCombine-Community in Frameworks */,
 				2A7654F72C060A3500D8A098 /* FirebaseStorage in Frameworks */,
 				2A7654E52C060A3500D8A098 /* FirebaseAnalytics in Frameworks */,
@@ -271,6 +275,7 @@
 			isa = PBXGroup;
 			children = (
 				2A9BED292C08A4330032C403 /* PageControlButton.swift */,
+				2A1D31EB2C1C108800288C71 /* CalendarView.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -362,7 +367,6 @@
 				4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */,
 				4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */,
 				4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */,
-				4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */,
 				4D21E8562C1AB932002FDBC9 /* MateViewController.swift */,
 				4D21E85E2C1B4C8A002FDBC9 /* AddedMateCell.swift */,
 				4D21E8582C1AB960002FDBC9 /* MateTableViewCell.swift */,
@@ -395,6 +399,7 @@
 				956ED78E2C0852B90001BAC6 /* SettingViewController.swift */,
 				956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */,
 				2AF299D72C1AF25A0021D231 /* PrivacyPolicySectionHeaderView.swift */,
+				2A1D31F02C1C7ED400288C71 /* ConsentStatusViewController.swift */,
 				9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */,
 				2AF29A052C1B68310021D231 /* PrivacyPolicyScripts.swift */,
 				9561FFF82C186B440072B065 /* OnboardingPage.swift */,
@@ -476,6 +481,7 @@
 				2A7655272C073E4900D8A098 /* KakaoSDKAuth */,
 				2A7655292C073E4900D8A098 /* KakaoSDKUser */,
 				2A76552D2C07407500D8A098 /* KakaoSDKCommon */,
+				2A1D31EE2C1C10BB00288C71 /* HorizonCalendar */,
 			);
 			productName = WanderBoard;
 			productReference = 4D9D8B4C2C05B1BD0043E7DF /* WanderBoard.app */;
@@ -512,6 +518,7 @@
 				2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				2A7654FE2C060FFA00D8A098 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+				2A1D31ED2C1C10BB00288C71 /* XCRemoteSwiftPackageReference "HorizonCalendar" */,
 			);
 			productRefGroup = 4D9D8B4D2C05B1BD0043E7DF /* Products */;
 			projectDirPath = "";
@@ -580,6 +587,7 @@
 				2A76550B2C06175B00D8A098 /* AuthenticationManager.swift in Sources */,
 				4D21E85D2C1B3A4E002FDBC9 /* MateManager.swift in Sources */,
 				2A7654FD2C060FB500D8A098 /* SignInWithGoogle.swift in Sources */,
+				2A1D31F12C1C7ED400288C71 /* ConsentStatusViewController.swift in Sources */,
 				9530E4A42C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift in Sources */,
 				FB9A3ADE2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift in Sources */,
 				956ED7932C0852B90001BAC6 /* MyPageTableViewCell.swift in Sources */,
@@ -592,7 +600,7 @@
 				956ED7962C0852B90001BAC6 /* PrivacyPolicyViewController.swift in Sources */,
 				2A76551D2C06EE1000D8A098 /* ErrorUtility.swift in Sources */,
 				2A18AB122C147D6C00E88171 /* PlaceInfoView.swift in Sources */,
-				4DFA376B2C09AA49001B03F8 /* MapDetailViewController.swift in Sources */,
+				2A1D31EC2C1C108800288C71 /* CalendarView.swift in Sources */,
 				4DB75A052C13416E001813C3 /* GalleryDetailViewController.swift in Sources */,
 				2A76552C2C073F2F00D8A098 /* SignInWithKakao.swift in Sources */,
 				FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */,
@@ -851,6 +859,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2A1D31ED2C1C10BB00288C71 /* XCRemoteSwiftPackageReference "HorizonCalendar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/HorizonCalendar.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
@@ -902,6 +918,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2A1D31EE2C1C10BB00288C71 /* HorizonCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A1D31ED2C1C10BB00288C71 /* XCRemoteSwiftPackageReference "HorizonCalendar" */;
+			productName = HorizonCalendar;
+		};
 		2A7654E42C060A3500D8A098 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

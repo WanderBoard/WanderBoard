@@ -20,6 +20,11 @@ struct User: Codable {
     var isProfileComplete: Bool?
     var blockedAuthors: [String]?
     var myPinCount: Int?
+    var agreedToTerms: Bool?
+    var agreedToPrivacyPolicy: Bool?
+    var agreedToMarketing: Bool?
+    var agreedToThirdParty: Bool?
+    var joinedDate: Date?
 
     init(entity: UserEntity) {
         self.uid = entity.uid ?? ""
@@ -33,6 +38,12 @@ struct User: Codable {
         self.isProfileComplete = entity.isProfileComplete
         self.blockedAuthors = (entity.blockedAuthors?.jsonArray() as? [String]) ?? []
         self.myPinCount = Int(entity.myPinCount)
+
+        self.agreedToTerms = entity.agreedToTerms
+        self.agreedToPrivacyPolicy = entity.agreedToPrivacyPolicy
+        self.agreedToMarketing = entity.agreedToMarketing
+        self.agreedToThirdParty = entity.agreedToThirdParty
+        self.joinedDate = entity.joinedDate
     }
 
     func toUserEntity(context: NSManagedObjectContext) -> UserEntity {
@@ -50,6 +61,11 @@ struct User: Codable {
         }
         userEntity.blockedAuthors = self.blockedAuthors?.jsonString() ?? "[]"
         userEntity.myPinCount = Int64(self.myPinCount ?? 0)
+        userEntity.agreedToTerms = self.agreedToTerms ?? false
+        userEntity.agreedToPrivacyPolicy = self.agreedToPrivacyPolicy ?? false
+        userEntity.agreedToMarketing = self.agreedToMarketing ?? false
+        userEntity.agreedToThirdParty = self.agreedToThirdParty ?? false
+        userEntity.joinedDate = self.joinedDate
         return userEntity
     }
 

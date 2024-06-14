@@ -47,6 +47,7 @@ class DetailInputViewController: UIViewController {
     
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
+    var publicViewHeightConstraint: Constraint?
     
     let topContainarView = UIView().then {
         $0.backgroundColor = .font
@@ -64,9 +65,32 @@ class DetailInputViewController: UIViewController {
         $0.backgroundColor = UIColor(named: "textColor")
     }
     
-    let publicLabel = UILabel().then {
+    let publicView = UIView().then {
+        $0.backgroundColor = .clear
+        $0.isHidden = true
+    }
+    
+    let publicMainLabel = UILabel().then {
         $0.text = "공개 여부"
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.textColor = .font
+        $0.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+    }
+    
+    let publicOpenButton = UIButton().then {
+        $0.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        $0.tintColor = .font
+    }
+    
+    let publicOpenStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.distribution = .equalSpacing
+        $0.spacing = 10
+    }
+    
+    let publicLabel = UILabel().then {
+        $0.text = "게시물 공개 여부"
+        $0.font = UIFont.systemFont(ofSize: 15)
         $0.textColor = .font
     }
     
@@ -80,6 +104,32 @@ class DetailInputViewController: UIViewController {
         $0.alignment = .center
         $0.distribution = .equalSpacing
         $0.spacing = 10
+    }
+    
+    let spendingPublicSwitch = UISwitch().then {
+        $0.isOn = true
+        $0.onTintColor = .black
+    }
+    
+    let spendingPublicLabel = UILabel().then {
+        $0.text = "지출 공개 여부"
+        $0.font = UIFont.systemFont(ofSize: 15)
+        $0.textColor = .font
+    }
+    
+    let spendingPublicStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.distribution = .equalSpacing
+        $0.spacing = 10
+        
+    }
+    
+    let toggleSwitchStackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.alignment = .center
+        $0.distribution = .equalSpacing
+        $0.spacing = 16
     }
     
     let topLine = UIView().then {
@@ -263,6 +313,12 @@ class DetailInputViewController: UIViewController {
         return collectionView
     }()
     
+
+    
+    // MARK: 토글토글
+
+//    let isSpendingPublic =
+
     let mateCountButton = UIButton(type: .system).then {
         var configuration = UIButton.Configuration.filled()
         configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
@@ -272,24 +328,25 @@ class DetailInputViewController: UIViewController {
         $0.layer.cornerRadius = 8
         $0.isHidden = true
     }
-
+    
     let mateCountLabel = UILabel().then {
         $0.text = "0"
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
     }
-
+    
     let mateIconImageView = UIImageView().then {
         $0.image = UIImage(systemName: "person")
         $0.tintColor = .black
     }
-
+    
     let mateCountStackView = UIStackView().then {
         $0.axis = .horizontal
         $0.alignment = .center
         $0.spacing = 4
         $0.isUserInteractionEnabled = false
     }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -306,9 +363,8 @@ class DetailInputViewController: UIViewController {
             configureView(with: pinLog)
         }
         
-        // Delegate 설정
-                mainTextField.delegate = self
-                subTextField.delegate = self
+        mainTextField.delegate = self
+        subTextField.delegate = self
         
     }
     
@@ -316,19 +372,29 @@ class DetailInputViewController: UIViewController {
         super.viewWillAppear(animated)
         
         navigationController?.navigationBar.tintColor = .white
+        navigationItem.largeTitleDisplayMode = .never
     }
     
     func setupUI() {
         view.addSubview(topContainarView)
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-        contentView.addSubview(publicStackView)
+        contentView.addSubview(publicOpenStackView)
+        contentView.addSubview(publicView)
+        publicView.addSubview(toggleSwitchStackView)
         contentView.addSubview(topLine)
         
+        publicOpenStackView.addArrangedSubview(publicMainLabel)
+        publicOpenStackView.addArrangedSubview(publicOpenButton)
         publicStackView.addArrangedSubview(publicLabel)
         publicStackView.addArrangedSubview(publicSwitch)
+        spendingPublicStackView.addArrangedSubview(spendingPublicLabel)
+        spendingPublicStackView.addArrangedSubview(spendingPublicSwitch)
+        toggleSwitchStackView.addArrangedSubview(publicStackView)
+        toggleSwitchStackView.addArrangedSubview(spendingPublicStackView)
         
         contentView.addSubview(dateContainerView)
+        
         dateContainerView.addSubview(dateLabel)
         dateContainerView.addSubview(startDateButton)
         dateContainerView.addSubview(endDateLabel)
@@ -383,13 +449,32 @@ class DetailInputViewController: UIViewController {
             $0.bottom.equalTo(mateCountButton.snp.bottom).offset(30)
         }
         
-        publicStackView.snp.makeConstraints {
+        publicOpenStackView.snp.makeConstraints {
             $0.top.equalTo(contentView).offset(40)
             $0.leading.trailing.equalTo(contentView).inset(32)
         }
         
+        publicView.snp.makeConstraints {
+            $0.top.equalTo(publicOpenStackView.snp.bottom).offset(16)
+            $0.leading.trailing.equalTo(contentView).inset(32)
+            self.publicViewHeightConstraint = $0.height.equalTo(0).constraint
+        }
+        
+        toggleSwitchStackView.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
+        }
+        
+        publicStackView.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview()
+        }
+        
+        spendingPublicStackView.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview()
+        }
+        
         topLine.snp.makeConstraints {
-            $0.top.equalTo(publicStackView.snp.bottom).offset(16)
+            $0.top.equalTo(publicView.snp.bottom).offset(16)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(1)
         }
@@ -495,14 +580,14 @@ class DetailInputViewController: UIViewController {
         }
         
         mateCountButton.snp.makeConstraints {
-               $0.top.equalTo(mateCollectionView.snp.bottom).offset(10)
-               $0.trailing.equalTo(contentView).inset(32)
-               $0.height.equalTo(44)
-           }
-
-           mateCountStackView.snp.makeConstraints {
-               $0.center.equalToSuperview()
-           }
+            $0.top.equalTo(mateCollectionView.snp.bottom).offset(10)
+            $0.trailing.equalTo(contentView).inset(32)
+            $0.height.equalTo(44)
+        }
+        
+        mateCountStackView.snp.makeConstraints {
+            $0.center.equalToSuperview()
+        }
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -549,6 +634,7 @@ class DetailInputViewController: UIViewController {
     }
     
     func actionButton() {
+        publicOpenButton.addTarget(self, action: #selector(publicOpenButtonTapped), for: .touchUpInside)
         startDateButton.addTarget(self, action: #selector(showDatePicker(_:)), for: .touchUpInside)
         endDateButton.addTarget(self, action: #selector(showDatePicker(_:)), for: .touchUpInside)
         galleryCountButton.addTarget(self, action: #selector(showPHPicker), for: .touchUpInside)
@@ -557,6 +643,17 @@ class DetailInputViewController: UIViewController {
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
         
         mateCountButton.addTarget(self, action: #selector(showMatePicker), for: .touchUpInside)
+    }
+    
+    @objc func publicOpenButtonTapped() {
+        let isHidden = publicView.isHidden
+        let newHeight: CGFloat = isHidden ? 90 : 0
+        
+        self.publicView.isHidden = !isHidden
+        self.publicViewHeightConstraint?.update(offset: newHeight)
+        let imageName = newHeight == 0 ? "chevron.down" : "chevron.up"
+        self.publicOpenButton.setImage(UIImage(systemName: imageName), for: .normal)
+        self.view.layoutIfNeeded()
     }
     
     @objc func showMatePicker() {
@@ -643,13 +740,14 @@ class DetailInputViewController: UIViewController {
     }
     
     func configureView(with pinLog: PinLog) {
+        print("Configuring view with pinLog: \(pinLog)")
         locationLeftLabel.text = pinLog.location
         mainTextField.text = pinLog.title
         mainTextField.textColor = .black
         subTextField.text = pinLog.content
         subTextField.textColor = .black
         publicSwitch.isOn = pinLog.isPublic
-        
+        //spendingPublicSwitch.isOn = pinLog.isSpendingPublic // 새로 추가한 필드
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         startDateButton.setTitle(dateFormatter.string(from: pinLog.startDate), for: .normal)
@@ -786,6 +884,7 @@ class DetailInputViewController: UIViewController {
         let title = mainTextField.text ?? ""
         let content = subTextField.text ?? ""
         let isPublic = publicSwitch.isOn
+        let isSpendingPublic = spendingPublicSwitch.isOn
         let address = savedAddress ?? "Unknown Address"
         let latitude = savedLocation?.latitude ?? 0.0
         let longitude = savedLocation?.longitude ?? 0.0
@@ -793,28 +892,31 @@ class DetailInputViewController: UIViewController {
         Task {
             do {
                 var pinLog: PinLog
-                
-                if let existingPinLog = self.pinLog {
-                    pinLog = existingPinLog
-                    pinLog.location = locationTitle
-                    pinLog.address = address
-                    pinLog.latitude = latitude
-                    pinLog.longitude = longitude
-                    pinLog.startDate = startDate
-                    pinLog.endDate = endDate
-                    pinLog.title = title
-                    pinLog.content = content
-                    pinLog.isPublic = isPublic
-                    pinLog.attendeeIds = selectedFriends.map { $0.uid }
-                } else {
-                    pinLog = PinLog(location: locationTitle,
-                                    address: address,
-                                    latitude: latitude,
-                                    longitude: longitude,
-                                    startDate: startDate,
-                                    endDate: endDate,
-                                    title: title,
-                                    content: content,
+           
+                  if let existingPinLog = self.pinLog {
+                  pinLog = existingPinLog
+                  pinLog.location = locationTitle
+                  pinLog.address = address
+                  pinLog.latitude = latitude
+                  pinLog.longitude = longitude
+                  pinLog.startDate = startDate
+                  pinLog.endDate = endDate
+                  pinLog.title = title
+                  pinLog.content = content
+                  pinLog.isPublic = isPublic
+                  pinLog.isSpendingPublic = isSpendingPublic
+                  pinLog.attendeeIds = selectedFriends.map { $0.uid }
+                    
+                  } else {
+                    
+                      pinLog = PinLog(location: locationTitle,
+                                  address: address,
+                                  latitude: latitude,
+                                  longitude: longitude,
+                                  startDate: startDate,
+                                  endDate: endDate,
+                                  title: title,
+                                  content: content,
                                     media: [],
                                     authorId: Auth.auth().currentUser?.uid ?? "",
                                     attendeeIds: selectedFriends.map { $0.uid },
@@ -822,13 +924,25 @@ class DetailInputViewController: UIViewController {
                                     createdAt: Date(),
                                     pinCount: 0,
                                     pinnedBy: [],
-                                    totalSpendingAmount: 0.0)
+                                        totalSpendingAmount: 0.0,
+                                        isSpendingPublic: isSpendingPublic))
+                    }
+                    
+                    // 선택된 대표 이미지가 있으면 설정
+                    if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
+                        for i in 0..<selectedImages.count {
+                            selectedImages[i].1 = (i == representativeIndex)
+                        }
+                  } else if !selectedImages.isEmpty {
+                      selectedImages[0].1 = true
+                      totalSpendingAmount: 0.0
                 }
                 
                 // 선택된 대표 이미지가 있으면 설정
                 if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
                     for i in 0..<selectedImages.count {
                         selectedImages[i].1 = (i == representativeIndex)
+
                     }
                 } else if !selectedImages.isEmpty {
                     selectedImages[0].1 = true
@@ -889,6 +1003,7 @@ class DetailInputViewController: UIViewController {
             if let document = document, document.exists, let data = document.data() {
                 let userSummary = UserSummary(
                     uid: userId,
+                    email: data["email"] as? String ?? "",
                     displayName: data["displayName"] as? String ?? "",
                     photoURL: data["photoURL"] as? String,
                     isMate: false

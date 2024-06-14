@@ -83,12 +83,14 @@ class MateViewController: UIViewController {
         setupNavigationBar()
         fetchUsers()
         
+        updateNoDataView(isEmpty: true)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         navigationController?.navigationBar.tintColor = .black
+        navigationItem.largeTitleDisplayMode = .never
     }
     
     func setupUI() {
@@ -186,17 +188,24 @@ class MateViewController: UIViewController {
             switch result {
             case .success(let userSummaries):
                 self?.users = userSummaries
-                self?.filteredUsers = userSummaries
-                self?.updateNoDataView()
+                self?.filteredUsers = []
+                self?.updateNoDataView(isEmpty: true)
                 self?.tableView.reloadData()
             case .failure(let error):
                 print("Error fetching users: \(error)")
             }
         }
     }
+
+    func searchFriends(with query: String) {
+        let filteredByName = users.filter { $0.displayName.lowercased().contains(query.lowercased()) }
+        let filteredByEmail = users.filter { $0.email.lowercased().contains(query.lowercased()) }
+        filteredUsers = Array(Set(filteredByName + filteredByEmail))
+        updateNoDataView(isEmpty: filteredUsers.isEmpty)
+        tableView.reloadData()
+    }
     
-    func updateNoDataView() {
-        let isEmpty = filteredUsers.isEmpty
+    func updateNoDataView(isEmpty: Bool) {
         noDataMainTitle.isHidden = !isEmpty
         noDataSubTitle.isHidden = !isEmpty
         imageView.isHidden = !isEmpty
@@ -227,8 +236,12 @@ extension MateViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension MateViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        filteredUsers = searchText.isEmpty ? users : users.filter { $0.displayName.lowercased().contains(searchText.lowercased()) }
-        updateNoDataView()
+        if searchText.isEmpty {
+            filteredUsers = []
+            updateNoDataView(isEmpty: true)
+        } else {
+            searchFriends(with: searchText)
+        }
         tableView.reloadData()
     }
 }

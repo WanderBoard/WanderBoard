@@ -151,9 +151,9 @@ class MyPageViewController: BaseViewController, PageIndexed {
             $0.right.equalTo(statusB.snp.right).offset(-28)
         }
         tableView.snp.makeConstraints(){
-            $0.top.equalTo(statusB.snp.bottom).offset(33)
+            $0.top.equalTo(statusB.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview().inset(32)
-            $0.bottom.equalTo(view).offset(-173)
+            $0.bottom.equalTo(view).offset(-110)
 
         }
     }

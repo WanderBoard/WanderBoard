@@ -28,6 +28,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     let status3 = UILabel()
     let tableView = UITableView().then(){
         $0.backgroundColor = .clear
+        $0.isScrollEnabled = false //스크롤 비활성화
     }
     var userData: User?
     
@@ -138,22 +139,21 @@ class MyPageViewController: BaseViewController, PageIndexed {
             $0.centerX.equalTo(status3.snp.centerX)
         }
         status1.snp.makeConstraints(){
-            $0.bottom.equalTo(statusB.snp.bottom).inset(23)
-            $0.left.equalTo(statusB.snp.left).offset(31)
+            $0.bottom.equalTo(statusB.snp.bottom).inset(24)
+            $0.left.equalTo(statusB.snp.left).offset(46)
         }
         status2.snp.makeConstraints(){
-            $0.bottom.equalTo(statusB.snp.bottom).inset(23)
+            $0.bottom.equalTo(statusB.snp.bottom).inset(24)
             $0.centerX.equalTo(view)
         }
         status3.snp.makeConstraints(){
-            $0.bottom.equalTo(statusB.snp.bottom).inset(23)
-            $0.right.equalTo(statusB.snp.right).offset(-31)
+            $0.bottom.equalTo(statusB.snp.bottom).inset(24)
+            $0.right.equalTo(statusB.snp.right).offset(-28)
         }
         tableView.snp.makeConstraints(){
             $0.top.equalTo(statusB.snp.bottom).offset(33)
             $0.horizontalEdges.equalToSuperview().inset(32)
-
-            $0.bottom.equalTo(view).offset(-134)
+            $0.bottom.equalTo(view).offset(-173)
 
         }
     }
@@ -163,7 +163,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         editButton.setImage(UIImage(systemName: "pencil.circle"), for: .normal)
         editButton.tintColor = .font
         editButton.imageView?.snp.makeConstraints(){
-            $0.width.height.equalTo(26)
+            $0.width.height.equalTo(30)
         }
         editButton.addTarget(self, action: #selector(edit), for: .touchUpInside)
         let barButtonItem = UIBarButtonItem(customView: editButton)
@@ -173,7 +173,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         profile.clipsToBounds = true
         profile.backgroundColor = .lightgray
         
-        myName.font = UIFont.boldSystemFont(ofSize: 22)
+        myName.font = UIFont.boldSystemFont(ofSize: 20)
         myName.textColor = .font
         
         myID.font = UIFont.systemFont(ofSize: 13)
@@ -186,11 +186,11 @@ class MyPageViewController: BaseViewController, PageIndexed {
         statusB.layer.shadowOpacity = 0.25
         
         myPin.text = "\(MyTripsViewController.tripLogs.count)"
-        myPin.font = UIFont.systemFont(ofSize: 13)
+        myPin.font = UIFont.boldSystemFont(ofSize: 15)
         myPin.textColor = .white
-        tagPin.font = UIFont.systemFont(ofSize: 13)
+        tagPin.font = UIFont.boldSystemFont(ofSize: 15)
         tagPin.textColor = .white
-        wanderPin.font =  UIFont.systemFont(ofSize: 13)
+        wanderPin.font =  UIFont.boldSystemFont(ofSize: 15)
         wanderPin.textColor = .white
         
         status1.text = "My Pin"
@@ -356,4 +356,5 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             })
         })
     }
+    
 }

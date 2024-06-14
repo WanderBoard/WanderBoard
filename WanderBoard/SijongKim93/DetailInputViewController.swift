@@ -927,6 +927,7 @@ class DetailInputViewController: UIViewController {
                     )
                 }
                 
+                
                 // 선택된 대표 이미지가 있으면 설정
                 if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
                     for i in 0..<selectedImages.count {
@@ -959,6 +960,7 @@ class DetailInputViewController: UIViewController {
             }
         }
     }
+    
     
     func loadSelectedFriends(pinLog: PinLog) {
         let group = DispatchGroup()

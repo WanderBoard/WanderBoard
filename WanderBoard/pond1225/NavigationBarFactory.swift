@@ -51,6 +51,7 @@ class ButtonFactory {
     
     static func createPinButton(target: Any?, action: Selector) -> UIButton {
         return createButton(withImageName: "pin.circle", target: target, action: action)
+
     }
     
     private static func createButton(withImageName imageName: String, target: Any?, action: Selector) -> UIButton {

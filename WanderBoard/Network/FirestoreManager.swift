@@ -126,7 +126,6 @@ class FirestoreManager {
             dataToUpdate["agreedToThirdParty"] = agreedToThirdParty
         }
         try await userRef.updateData(dataToUpdate)
-    }
 
     // 이메일 가져오기 애플을 위해서...;
     private func fetchEmailFromFirestore(uid: String) async throws -> String? {

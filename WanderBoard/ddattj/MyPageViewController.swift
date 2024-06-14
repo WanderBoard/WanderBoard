@@ -95,6 +95,29 @@ class MyPageViewController: BaseViewController, PageIndexed {
     }
 
     
+    func fetchAndDisplayAverageExpenditure() {
+        guard let userData = userData else {
+            print("유저 데이터를 불러오지 못했습니다.")
+            return
+        }
+        Task {
+            do {
+                //사용자 핀로그 불러오기
+                let pinLogs = try await PinLogManager.shared.fetchPinLogs(forUserId: userData.uid)
+                let totalSpendingAmount = pinLogs.reduce(0) { $0 + ($1.totalSpendingAmount ?? 0.0)}
+                let averageSpendingAmount = pinLogs.isEmpty ? 0 : totalSpendingAmount / Double(pinLogs.count)
+                
+                DispatchQueue.main.async {
+                    self.myExpend.text = pinLogs.isEmpty ? "0₩" : "\(averageSpendingAmount)₩"
+                    print("평균지출금액 불러오기 성공")
+                }
+            }
+            catch {
+                print("핀로그를 불러오는데에 실패했습니다")
+            }
+        }
+    }
+    
     //페이지 컨트롤러 때문에 추가했습니다 -한빛
 
     override func viewWillAppear(_ animated: Bool) {
@@ -329,9 +352,9 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                      case 3:
                          NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
                          NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
-//                         let blockVC = BlockViewController()
-//                         self.navigationController?.pushViewController(blockVC, animated: true)
-//                         blockVC.navigationItem.title = "차단관리"
+                         let blockVC = BlockViewController()
+                         self.navigationController?.pushViewController(blockVC, animated: true)
+                         blockVC.navigationItem.title = "차단관리"
                     case 4:
                         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
                         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛

@@ -12,7 +12,7 @@ import CoreLocation
 
 class PageViewController: UIViewController, CLLocationManagerDelegate {
     var pageViewController: UIPageViewController!
-    let pageContent = ["Explore", "My trips", "My page"]
+    let pageContent = ["Wander Board", "My Board", ""]
     let locationManager = CLLocationManager()
     
     var pageControlButton: UIHostingController<PageControlButton>!

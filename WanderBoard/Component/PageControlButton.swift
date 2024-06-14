@@ -22,17 +22,17 @@ struct PageControlButton: View {
                     if selectedIndex == index {
                         RoundedRectangle(cornerRadius: 30)
                             .fill(Color("PageCtrlSelectedBG"))
-                            .opacity(0.9)
-                            .frame(height: 32)
-                            .padding(EdgeInsets(top: -4, leading: 4, bottom: -4, trailing: 4))
+                            .opacity(1)
+                            .frame(height: 38)
+                            .padding(EdgeInsets(top: -3, leading: 4, bottom: -3, trailing: 4))
                         
                         HStack {
                             Image(systemName: iconName(for: index))
                                 .foregroundColor(Color("PageCtrlSelectedText"))
-                                .font(.system(size: 14))
+                                .font(.system(size: 16))
                             Text(title(for: index))
                                 .foregroundColor(Color("PageCtrlSelectedText"))
-                                .font(.system(size: 8.5))
+                                .font(.system(size: 8))
                         }
                         .padding(.horizontal)
                     } else {
@@ -40,7 +40,7 @@ struct PageControlButton: View {
                             .foregroundColor(Color("PageCtrlUnselectedText"))
                     }
                 }
-                .frame(maxWidth: selectedIndex == index ? 120 : 44, maxHeight: 44) //사이즈 수정 - 한빛 //사이즈 수정(높이 조절) - 시안
+                .frame(maxWidth: selectedIndex == index ? widthForIndex(index) : 44, maxHeight: 44)
                 .background(Color("PageCtrlUnselectedBG"))
                 
                 .clipShape(Capsule())
@@ -80,6 +80,15 @@ struct PageControlButton: View {
         }
     }
     
+    private func widthForIndex(_ index: Int) -> CGFloat {
+           switch index {
+               case 0: return 93
+               case 1: return 88
+               case 2: return 93
+               default: return 93
+           }
+       }
+    
     private func iconName(for index: Int) -> String {
         switch index {
             case 0: return "globe.americas"
@@ -91,8 +100,8 @@ struct PageControlButton: View {
     
     private func title(for index: Int) -> String {
         switch index {
-            case 0: return "Exploer"
-            case 1: return "My trips"
+            case 0: return "Wander Board"
+            case 1: return "My Board"
             case 2: return "Settins"
             default: return ""
         }

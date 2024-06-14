@@ -55,6 +55,9 @@
 		2AF29A062C1B68320021D231 /* PrivacyPolicyScripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF29A052C1B68310021D231 /* PrivacyPolicyScripts.swift */; };
 		4D21E8572C1AB932002FDBC9 /* MateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E8562C1AB932002FDBC9 /* MateViewController.swift */; };
 		4D21E8592C1AB960002FDBC9 /* MateTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E8582C1AB960002FDBC9 /* MateTableViewCell.swift */; };
+		4D21E85B2C1B39E7002FDBC9 /* UserSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E85A2C1B39E7002FDBC9 /* UserSummary.swift */; };
+		4D21E85D2C1B3A4E002FDBC9 /* MateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E85C2C1B3A4E002FDBC9 /* MateManager.swift */; };
+		4D21E85F2C1B4C8A002FDBC9 /* AddedMateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E85E2C1B4C8A002FDBC9 /* AddedMateCell.swift */; };
 		4D8947312C0F33C30057F083 /* DetailInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947302C0F33C30057F083 /* DetailInputViewController.swift */; };
 		4D8947332C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */; };
 		4D8947352C0F357C0057F083 /* FriendInputCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */; };
@@ -87,6 +90,7 @@
 		956ED7942C0852B90001BAC6 /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78B2C0852B90001BAC6 /* MyPageViewController.swift */; };
 		956ED7962C0852B90001BAC6 /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */; };
 		956ED7972C0852B90001BAC6 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78E2C0852B90001BAC6 /* SettingViewController.swift */; };
+		95E4B1102C1B113D000D1E51 /* BlockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E4B10F2C1B113D000D1E51 /* BlockViewController.swift */; };
 		FB0C32442C14C2D000DD2F00 /* WanderBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FB0C32422C14C2D000DD2F00 /* WanderBoard.xcdatamodeld */; };
 		FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */; };
 		FB9A3AD62C1984A200E1EAA2 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */; };
@@ -136,6 +140,9 @@
 		2AF29A052C1B68310021D231 /* PrivacyPolicyScripts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyScripts.swift; sourceTree = "<group>"; };
 		4D21E8562C1AB932002FDBC9 /* MateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MateViewController.swift; sourceTree = "<group>"; };
 		4D21E8582C1AB960002FDBC9 /* MateTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MateTableViewCell.swift; sourceTree = "<group>"; };
+		4D21E85A2C1B39E7002FDBC9 /* UserSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSummary.swift; sourceTree = "<group>"; };
+		4D21E85C2C1B3A4E002FDBC9 /* MateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MateManager.swift; sourceTree = "<group>"; };
+		4D21E85E2C1B4C8A002FDBC9 /* AddedMateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddedMateCell.swift; sourceTree = "<group>"; };
 		4D8947302C0F33C30057F083 /* DetailInputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailInputViewController.swift; sourceTree = "<group>"; };
 		4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GallaryInPutCollectionViewCell.swift; sourceTree = "<group>"; };
 		4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendInputCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -167,6 +174,7 @@
 		956ED78B2C0852B90001BAC6 /* MyPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
 		956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyViewController.swift; sourceTree = "<group>"; };
 		956ED78E2C0852B90001BAC6 /* SettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		95E4B10F2C1B113D000D1E51 /* BlockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockViewController.swift; sourceTree = "<group>"; };
 		FB0C32432C14C2D000DD2F00 /* WanderBoard.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WanderBoard.xcdatamodel; sourceTree = "<group>"; };
 		FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
@@ -322,6 +330,7 @@
 				2A9BED2B2C08B6C60032C403 /* PinLog.swift */,
 				2A9BED2D2C08B71D0032C403 /* Invitation.swift */,
 				2A8AB1792C1240E500C5244F /* User.swift */,
+				4D21E85A2C1B39E7002FDBC9 /* UserSummary.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -331,6 +340,7 @@
 			children = (
 				4D9D8B6A2C05B2D90043E7DF /* NetworkManager.swift */,
 				2A9BED2F2C08DB200032C403 /* InvitationManager.swift */,
+				4D21E85C2C1B3A4E002FDBC9 /* MateManager.swift */,
 				2A9BED312C08E2A40032C403 /* PinLogManager.swift */,
 				2A5F47C72C0E3A0C00D289AA /* StorageManager.swift */,
 				2A8AB17B2C1241ED00C5244F /* UserProfileManager.swift */,
@@ -352,6 +362,7 @@
 				4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */,
 				4DFA376A2C09AA49001B03F8 /* MapDetailViewController.swift */,
 				4D21E8562C1AB932002FDBC9 /* MateViewController.swift */,
+				4D21E85E2C1B4C8A002FDBC9 /* AddedMateCell.swift */,
 				4D21E8582C1AB960002FDBC9 /* MateTableViewCell.swift */,
 				4DB75A042C13416E001813C3 /* GalleryDetailViewController.swift */,
 			);
@@ -385,6 +396,7 @@
 				9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */,
 				2AF29A052C1B68310021D231 /* PrivacyPolicyScripts.swift */,
 				9561FFF82C186B440072B065 /* OnboardingPage.swift */,
+				95E4B10F2C1B113D000D1E51 /* BlockViewController.swift */,
 			);
 			path = ddattj;
 			sourceTree = "<group>";
@@ -553,6 +565,7 @@
 				2AF29A062C1B68320021D231 /* PrivacyPolicyScripts.swift in Sources */,
 				4D21E8592C1AB960002FDBC9 /* MateTableViewCell.swift in Sources */,
 				FB9A3ADC2C1984B700E1EAA2 /* EmptyView.swift in Sources */,
+				4D21E85B2C1B39E7002FDBC9 /* UserSummary.swift in Sources */,
 				2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */,
 				4D8947312C0F33C30057F083 /* DetailInputViewController.swift in Sources */,
 				2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */,
@@ -562,11 +575,13 @@
 				FB9A3AE82C1984C600E1EAA2 /* HotCollectionViewCell.swift in Sources */,
 				2A5D471F2C0A2771005C0F76 /* LocationManager.swift in Sources */,
 				2A76550B2C06175B00D8A098 /* AuthenticationManager.swift in Sources */,
+				4D21E85D2C1B3A4E002FDBC9 /* MateManager.swift in Sources */,
 				2A7654FD2C060FB500D8A098 /* SignInWithGoogle.swift in Sources */,
 				9530E4A42C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift in Sources */,
 				FB9A3ADE2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift in Sources */,
 				956ED7932C0852B90001BAC6 /* MyPageTableViewCell.swift in Sources */,
 				2A7655112C0622C000D8A098 /* FirestoreManager.swift in Sources */,
+				95E4B1102C1B113D000D1E51 /* BlockViewController.swift in Sources */,
 				FB9A3AE62C1984C600E1EAA2 /* ExploreViewController.swift in Sources */,
 				2A8AB1762C12400100C5244F /* SignInViewController.swift in Sources */,
 				4D9D8B502C05B1BD0043E7DF /* AppDelegate.swift in Sources */,
@@ -593,6 +608,7 @@
 				4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */,
 				4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */,
 				4D9D8B522C05B1BD0043E7DF /* SceneDelegate.swift in Sources */,
+				4D21E85F2C1B4C8A002FDBC9 /* AddedMateCell.swift in Sources */,
 				2A7655192C063A0100D8A098 /* AuthenticationVC.swift in Sources */,
 				2A8AB17A2C1240E500C5244F /* User.swift in Sources */,
 			);

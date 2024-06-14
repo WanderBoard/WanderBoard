@@ -110,6 +110,15 @@ class FirestoreManager {
             try await userRef.setData(dataToUpdate, merge: true)
         }
     }
+    
+    // 이메일 가져오기 애플을 위해서...;
+    private func fetchEmailFromFirestore(uid: String) async throws -> String? {
+        let userRef = Firestore.firestore().collection("users").document(uid)
+        let document = try await userRef.getDocument()
+        let email = document.data()?["email"] as? String
+        return email
+    }
+    
     //내가 핀 얼만큼 찍었는가 계산
     func fetchUserPinCount(userId: String) async throws -> Int {
         let pinLogRef = db.collection("pinLogs")
@@ -121,14 +130,22 @@ class FirestoreManager {
         let userRef = db.collection("users").document(userId)
         try await userRef.updateData(["totalPins": pinCount])
     }
-    
-    // 이메일 가져오기 애플을 위해서...;
-    private func fetchEmailFromFirestore(uid: String) async throws -> String? {
-        let userRef = Firestore.firestore().collection("users").document(uid)
-        let document = try await userRef.getDocument()
-        let email = document.data()?["email"] as? String
-        return email
-    }
+    //내가 태그된 게시글 수를 가져오기
+    func fetchInvitations(for userId: String, completion: @escaping (Result<[Invitation], Error>) -> Void) {
+           db.collection("invitations")
+               .whereField("inviteeId", isEqualTo: userId)
+               .whereField("status", isEqualTo: InvitationStatus.accepted.rawValue)
+               .getDocuments { snapshot, error in
+                   if let error = error {
+                       completion(.failure(error))
+                   } else {
+                       let invitations = snapshot?.documents.compactMap { document -> Invitation? in
+                           return try? document.data(as: Invitation.self)
+                       } ?? []
+                       completion(.success(invitations))
+                   }
+               }
+       }
     
     // 사용자가 차단한 작성자 목록을 업데이트하는 함수
     func blockAuthor(userId: String, authorId: String) async throws {

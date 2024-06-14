@@ -33,7 +33,6 @@ struct User: Codable {
         self.isProfileComplete = entity.isProfileComplete
         self.blockedAuthors = (entity.blockedAuthors?.jsonArray() as? [String]) ?? []
         self.myPinCount = Int(entity.myPinCount)
-
     }
 
     func toUserEntity(context: NSManagedObjectContext) -> UserEntity {

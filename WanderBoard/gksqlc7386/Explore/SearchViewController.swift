@@ -103,27 +103,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             self.collectionView.reloadData()
         }
     }
-    
-//    func loadAllData() async {
-//        isLoading = true
-//        pinLogManager.fetchInitialData(pageSize: pageSize) { [weak self] result in
-//            guard let self = self else { return }
-//            self.isLoading = false
-//            switch result {
-//            case .success(let (logs, lastSnapshot)):
-//                print("Initial data fetched: \(logs.count) logs")
-//                self.allTripLogs = logs
-//                self.searchedLogs = self.filterBlockedAuthors(from: self.allTripLogs)
-//                self.applyFilterAndReload()
-//                self.lastDocumentSnapshot = lastSnapshot
-//                DispatchQueue.main.async {
-//                    self.collectionView.reloadData()
-//                }
-//            case .failure(let error):
-//                print("Error getting documents: \(error)")
-//            }
-//        }
-//    }
+
     func loadAllData() async {
         isLoading = true
         pinLogManager.fetchInitialData(pageSize: pageSize) { [weak self] result in
@@ -134,7 +114,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
                 print("Initial data fetched: \(logs.count) logs")
                 self.allTripLogs = self.filterBlockedAuthors(from: logs)
                 self.searchedLogs = self.allTripLogs
-                self.allTripLogs.sort { ($0.createdAt ?? Date.distantPast) > ($1.createdAt ?? Date.distantPast) }
+                self.allTripLogs.sort { ($0.pinCount ?? 0) > ($1.pinCount ?? 0) }
                 self.applyFilterAndReload()
                 self.lastDocumentSnapshot = lastSnapshot
             case .failure(let error):
@@ -153,8 +133,8 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             switch result {
             case .success(let (logs, lastSnapshot)):
                 print("More data fetched: \(logs.count) logs")
-                self.allTripLogs.append(contentsOf: self.filterBlockedAuthors(from: logs))
-                self.searchedLogs = self.allTripLogs
+                self.allTripLogs.append(contentsOf: self.filterBlockedAuthors(from: logs)) // 추가 데이터 `allTripLogs`에 저장
+                self.searchedLogs = self.allTripLogs // 초기 검색 결과에 모든 데이터를 포함
                 self.applyFilterAndReload()
                 self.lastDocumentSnapshot = lastSnapshot
             case .failure(let error):
@@ -163,29 +143,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         }
     }
 
-    
-//    private func fetchMoreData() {
-//        guard !isLoading, let lastSnapshot = lastDocumentSnapshot else { return }
-//
-//        isLoading = true
-//        pinLogManager.fetchMoreData(pageSize: pageSize, lastSnapshot: lastSnapshot) { [weak self] result in
-//            guard let self = self else { return }
-//            self.isLoading = false
-//            switch result {
-//            case .success(let (logs, lastSnapshot)):
-//                print("More data fetched: \(logs.count) logs")
-//                self.allTripLogs.append(contentsOf: logs)
-//                self.searchedLogs = self.filterBlockedAuthors(from: self.allTripLogs)
-//                self.lastDocumentSnapshot = lastSnapshot
-//                DispatchQueue.main.async {
-//                    self.collectionView.reloadData()
-//                }
-//            case .failure(let error):
-//                print("Error getting documents: \(error)")
-//            }
-//        }
-//    }
-    
     private func setupSearchBar() {
         navigationItem.titleView = searchBar
     }
@@ -214,7 +171,7 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentCollectionViewCell.identifier, for: indexPath) as? RecentCollectionViewCell else { return UICollectionViewCell() }
-        cell.configure(with: searchedLogs[indexPath.item])
+        cell.configure(with: searchedLogs[indexPath.item]) // UI 업데이트 시 `searchedLogs` 사용
         return cell
     }
 
@@ -271,6 +228,11 @@ extension String {
 }
 
 extension SearchViewController: DetailViewControllerDelegate {
+    func didHidePinLog(_ hiddenPinLogId: String) {
+        self.searchedLogs = self.searchedLogs.filter { $0.id != hiddenPinLogId }
+        self.collectionView.reloadData()
+    }
+    
     func didUpdatePinButton(_ updatedPinLog: PinLog) {
         print("Received updated pin log via delegate")
         if let index = searchedLogs.firstIndex(where: { $0.id == updatedPinLog.id }) {
@@ -290,10 +252,8 @@ extension SearchViewController: DetailViewControllerDelegate {
         self.blockedAuthors.append(authorId)
         
         // 차단된 작성자의 로그를 숨기기 위해 필터링
-//        self.allTripLogs.filter { !self.blockedAuthors.contains($0.authorId) }
         self.searchedLogs = self.searchedLogs.filter { !self.blockedAuthors.contains($0.authorId) }
         
         self.collectionView.reloadData()
     }
 }
-

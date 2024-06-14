@@ -132,20 +132,20 @@ class FirestoreManager {
     }
     //내가 태그된 게시글 수를 가져오기
     func fetchInvitations(for userId: String, completion: @escaping (Result<[Invitation], Error>) -> Void) {
-           db.collection("invitations")
-               .whereField("inviteeId", isEqualTo: userId)
-               .whereField("status", isEqualTo: InvitationStatus.accepted.rawValue)
-               .getDocuments { snapshot, error in
-                   if let error = error {
-                       completion(.failure(error))
-                   } else {
-                       let invitations = snapshot?.documents.compactMap { document -> Invitation? in
-                           return try? document.data(as: Invitation.self)
-                       } ?? []
-                       completion(.success(invitations))
-                   }
-               }
-       }
+        db.collection("invitations")
+            .whereField("inviteeId", isEqualTo: userId)
+            .whereField("status", isEqualTo: InvitationStatus.accepted.rawValue)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    let invitations = snapshot?.documents.compactMap { document -> Invitation? in
+                        return try? document.data(as: Invitation.self)
+                    } ?? []
+                    completion(.success(invitations))
+                }
+            }
+    }
     
     // 사용자가 차단한 작성자 목록을 업데이트하는 함수
     func blockAuthor(userId: String, authorId: String) async throws {
@@ -153,7 +153,7 @@ class FirestoreManager {
         try await userRef.updateData(["blockedAuthors": FieldValue.arrayUnion([authorId])])
     }
 
-    // 사용자가 차단한 작성자 목록을 가져오는 함수
+    // 사용자가 차단한 작성자 목록을 가져오는 함수 (이거 차단목록 페이지에서 쓰시라고 만들었습니당)
     func getBlockedAuthors(userId: String) async throws -> [String] {
         let userRef = db.collection("users").document(userId)
         let document = try await userRef.getDocument()
@@ -161,6 +161,12 @@ class FirestoreManager {
             return []
         }
         return blockedAuthors
+    }
+    
+    // 게시글 숨기기
+    func hidePost(forUser userId: String, postId: String) async throws {
+        let userRef = db.collection("users").document(userId)
+        try await userRef.updateData(["hiddenPosts": FieldValue.arrayUnion([postId])])
     }
     
     //프로필 사진 가져오기

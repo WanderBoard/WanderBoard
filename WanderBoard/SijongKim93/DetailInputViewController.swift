@@ -307,8 +307,8 @@ class DetailInputViewController: UIViewController {
         }
         
         // Delegate 설정
-                mainTextField.delegate = self
-                subTextField.delegate = self
+        mainTextField.delegate = self
+        subTextField.delegate = self
         
     }
     
@@ -891,7 +891,8 @@ class DetailInputViewController: UIViewController {
                     uid: userId,
                     displayName: data["displayName"] as? String ?? "",
                     photoURL: data["photoURL"] as? String,
-                    isMate: false
+                    isMate: false,
+                    isBlocked: true
                 )
                 completion(userSummary)
             } else {

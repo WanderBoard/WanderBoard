@@ -62,11 +62,11 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .automatic
+        
         NotificationHelper.changePage(hidden: false, isEnabled: true)
         updateView()
-        plusButton.isHidden = false
-        
-        print("MyTripsViewController: viewWillAppear called")
         
         Task {
             await loadData()
@@ -75,7 +75,6 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     
     private func setupNV() {
         navigationItem.title = pageText
-        navigationItem.largeTitleDisplayMode = .always
         
         if let navigationBarSuperview = navigationController?.navigationBar.superview {
             navigationBarSuperview.addSubview(plusButton)
@@ -132,7 +131,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         plusButton.isHidden = true
         let inputVC = DetailInputViewController()
         inputVC.delegate = self
-        navigationController?.pushViewController(inputVC, animated: true)
+        navigationController?.pushViewController(inputVC, animated: false)
     }
     
     @objc func filterButtonTapped(sender: UIButton) {
@@ -166,9 +165,11 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         if MyTripsViewController.tripLogs.isEmpty {
             collectionView.isHidden = true
             emptyView.isHidden = false
+            plusButton.isHidden = true
         } else {
             collectionView.isHidden = false
             emptyView.isHidden = true
+            plusButton.isHidden = false
         }
         collectionView.reloadData()
     }
@@ -252,7 +253,17 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
         let selectedTripLog = filteredTripLogs[indexPath.item]
         
         detailVC.pinLog = selectedTripLog
-        navigationController?.pushViewController(detailVC, animated: true)
+        self.navigationController?.pushViewController(detailVC, animated: false)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        // DetailViewController로 이동할 때 large title 설정
+        if let navigationController = navigationController, navigationController.viewControllers.last is DetailViewController {
+            navigationItem.largeTitleDisplayMode = .never
+            navigationController.navigationBar.prefersLargeTitles = false
+        }
     }
 }
 

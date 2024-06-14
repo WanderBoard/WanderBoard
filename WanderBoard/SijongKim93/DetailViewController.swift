@@ -804,9 +804,19 @@ class DetailViewController: UIViewController {
     }
     
     func hidePinLog() {
-        print("이 글 숨기기 기능이 실행되었습니다.")
+        guard let pinLog = pinLog, let postId = pinLog.id, let userId = Auth.auth().currentUser?.uid else { return }
+
+        Task {
+            do {
+                try await FirestoreManager.shared.hidePost(forUser: userId, postId: postId)
+                delegate?.didHidePinLog(postId)
+                self.navigationController?.popViewController(animated: true)
+            } catch {
+                print("Failed to hide pinLog: \(error.localizedDescription)")
+            }
+        }
     }
-    
+
     func updateSelectedImages(with mediaItems: [Media]) {
         selectedImages.removeAll() // selectedImages 배열 초기화
         
@@ -1079,6 +1089,7 @@ protocol DetailViewControllerDelegate: AnyObject {
     func didUpdatePinLog()
     func didUpdatePinButton(_ updatedPinLog: PinLog)
     func didBlockAuthor(_ authorId: String)
+    func didHidePinLog(_ hiddenPinLogId: String)
 }
 
 extension DetailViewController: DetailInputViewControllerDelegate {

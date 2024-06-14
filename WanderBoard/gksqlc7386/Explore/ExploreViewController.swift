@@ -54,6 +54,9 @@ class ExploreViewController: UIViewController, PageIndexed {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .automatic
+        
         NotificationHelper.changePage(hidden: false, isEnabled: true)
         searchButton.isHidden = false
         
@@ -79,7 +82,6 @@ class ExploreViewController: UIViewController, PageIndexed {
     
     private func setupNV() {
         navigationItem.title = pageText
-        navigationItem.largeTitleDisplayMode = .always
         
         if let navigationBarSuperview = navigationController?.navigationBar.superview {
             navigationBarSuperview.addSubview(searchButton)
@@ -90,24 +92,6 @@ class ExploreViewController: UIViewController, PageIndexed {
                 $0.size.equalTo(CGSize(width: 30, height: 30))
             }
         }
-        
-//        if let navigationBarSuperview = navigationController?.navigationBar.superview {
-//            let customView = UIView()
-//            customView.backgroundColor = .clear
-//            customView.addSubview(searchButton)
-//            
-//            navigationBarSuperview.addSubview(customView)
-//            
-//            customView.snp.makeConstraints {
-//                $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-30)
-//                $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
-//                $0.size.equalTo(CGSize(width: 30, height: 30))
-//            }
-//            
-//            searchButton.snp.makeConstraints {
-//                $0.edges.equalToSuperview()
-//            }
-//        }
     }
     
     private func setupConstraints() {
@@ -239,7 +223,7 @@ extension ExploreViewController: HotTableViewCellDelegate {
         let hotPinLog = cell.hotPinLogs[indexPath.item]
         detailVC.pinLog = hotPinLog
         detailVC.delegate = self
-        navigationController?.pushViewController(detailVC, animated: true)
+        navigationController?.pushViewController(detailVC, animated: false)
     }
 }
 
@@ -251,7 +235,7 @@ extension ExploreViewController: RecentTableViewCellDelegate {
         let selectedPinLog = cell.recentLogs[indexPath.item]
         detailVC.pinLog = selectedPinLog
         detailVC.delegate = self
-        navigationController?.pushViewController(detailVC, animated: true)
+        navigationController?.pushViewController(detailVC, animated: false)
     }
     
     func loadMoreRecentLogs() {
@@ -304,6 +288,13 @@ extension ExploreViewController: DetailViewControllerDelegate {
         // 차단된 작성자의 로그를 숨기기 위해 필터링
         self.recentLogs = self.recentLogs.filter { !self.blockedAuthors.contains($0.authorId) }
         self.hotLogs = self.hotLogs.filter { !self.blockedAuthors.contains($0.authorId) }
+        
+        self.tableView.reloadData()
+    }
+    
+    func didHidePinLog(_ hiddenPinLogId: String) {
+        self.recentLogs = self.recentLogs.filter { $0.id != hiddenPinLogId }
+        self.hotLogs = self.hotLogs.filter { $0.id != hiddenPinLogId }
         
         self.tableView.reloadData()
     }

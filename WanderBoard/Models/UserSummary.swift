@@ -12,4 +12,5 @@ struct UserSummary: Codable {
     let displayName: String
     let photoURL: String?
     var isMate: Bool
+    var isBlocked: Bool
 }

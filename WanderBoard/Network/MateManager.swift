@@ -27,7 +27,7 @@ class MateManager {
                 let displayName = data["displayName"] as? String ?? ""
                 let photoURL = data["photoURL"] as? String
                 let isMate = data["isMate"] as? Bool ?? false
-                return UserSummary(uid: uid, displayName: displayName, photoURL: photoURL, isMate: isMate)
+                return UserSummary(uid: uid, displayName: displayName, photoURL: photoURL, isMate: isMate, isBlocked: true)
             } ?? []
             
             completion(.success(userSummaries))

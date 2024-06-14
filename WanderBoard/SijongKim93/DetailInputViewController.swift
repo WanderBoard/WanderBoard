@@ -251,7 +251,7 @@ class DetailInputViewController: UIViewController {
     
     let galleryLabel = UILabel().then {
         $0.text = "앨범 추가"
-        $0.textColor = .darkgray
+        $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
@@ -313,6 +313,12 @@ class DetailInputViewController: UIViewController {
         return collectionView
     }()
     
+
+    
+    // MARK: 토글토글
+
+//    let isSpendingPublic =
+
     let mateCountButton = UIButton(type: .system).then {
         var configuration = UIButton.Configuration.filled()
         configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
@@ -340,6 +346,7 @@ class DetailInputViewController: UIViewController {
         $0.spacing = 4
         $0.isUserInteractionEnabled = false
     }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -608,9 +615,6 @@ class DetailInputViewController: UIViewController {
         endDateButton.configuration?.baseBackgroundColor = buttonBackground
         locationButton.backgroundColor = buttonBackground
         consumButton.backgroundColor = buttonBackground
-        
-        let textGrayColor = traitCollection.userInterfaceStyle == .dark ? UIColor.lightgray : UIColor.darkgray
-        galleryLabel.textColor = textGrayColor
     }
     
     func setupCollectionView() {
@@ -888,29 +892,31 @@ class DetailInputViewController: UIViewController {
         Task {
             do {
                 var pinLog: PinLog
-                
-                if let existingPinLog = self.pinLog {
-                    pinLog = existingPinLog
-                    pinLog.location = locationTitle
-                    pinLog.address = address
-                    pinLog.latitude = latitude
-                    pinLog.longitude = longitude
-                    pinLog.startDate = startDate
-                    pinLog.endDate = endDate
-                    pinLog.title = title
-                    pinLog.content = content
-                    pinLog.isPublic = isPublic
-                    //pinLog.isSpendingPublic = isSpendingPublic
-                    pinLog.attendeeIds = selectedFriends.map { $0.uid }
-                } else {
-                    pinLog = PinLog(location: locationTitle,
-                                    address: address,
-                                    latitude: latitude,
-                                    longitude: longitude,
-                                    startDate: startDate,
-                                    endDate: endDate,
-                                    title: title,
-                                    content: content,
+           
+                  if let existingPinLog = self.pinLog {
+                  pinLog = existingPinLog
+                  pinLog.location = locationTitle
+                  pinLog.address = address
+                  pinLog.latitude = latitude
+                  pinLog.longitude = longitude
+                  pinLog.startDate = startDate
+                  pinLog.endDate = endDate
+                  pinLog.title = title
+                  pinLog.content = content
+                  pinLog.isPublic = isPublic
+                  pinLog.isSpendingPublic = isSpendingPublic
+                  pinLog.attendeeIds = selectedFriends.map { $0.uid }
+                    
+                  } else {
+                    
+                      pinLog = PinLog(location: locationTitle,
+                                  address: address,
+                                  latitude: latitude,
+                                  longitude: longitude,
+                                  startDate: startDate,
+                                  endDate: endDate,
+                                  title: title,
+                                  content: content,
                                     media: [],
                                     authorId: Auth.auth().currentUser?.uid ?? "",
                                     attendeeIds: selectedFriends.map { $0.uid },
@@ -918,15 +924,25 @@ class DetailInputViewController: UIViewController {
                                     createdAt: Date(),
                                     pinCount: 0,
                                     pinnedBy: [],
-                                    totalSpendingAmount: 0.0
-                                    //isSpendingPublic: isSpendingPublic
-                    )
+                                        totalSpendingAmount: 0.0,
+                                        isSpendingPublic: isSpendingPublic))
+                    }
+                    
+                    // 선택된 대표 이미지가 있으면 설정
+                    if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
+                        for i in 0..<selectedImages.count {
+                            selectedImages[i].1 = (i == representativeIndex)
+                        }
+                  } else if !selectedImages.isEmpty {
+                      selectedImages[0].1 = true
+                      totalSpendingAmount: 0.0
                 }
                 
                 // 선택된 대표 이미지가 있으면 설정
                 if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
                     for i in 0..<selectedImages.count {
                         selectedImages[i].1 = (i == representativeIndex)
+
                     }
                 } else if !selectedImages.isEmpty {
                     selectedImages[0].1 = true

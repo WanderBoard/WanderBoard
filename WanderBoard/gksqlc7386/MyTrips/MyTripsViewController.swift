@@ -21,17 +21,19 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     
     let filters = ["My Logs", "Our Logs", "Pin Logs"]
     var currentFilterIndex = 0
-
-    lazy var plusButton = UIButton(type: .system).then {
+    
+    lazy var plusButton: UIButton = {
+        let button = UIButton(type: .system)
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
         let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
-        $0.setImage(image, for: .normal)
-        $0.tintColor = UIColor(named: "textColor")
-        $0.backgroundColor = .font
-        $0.layer.cornerRadius = 15
-        $0.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
-    }
-
+        button.setImage(image, for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = .black
+        button.layer.cornerRadius = 15
+        button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
     lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.dataSource = self
         $0.delegate = self
@@ -54,11 +56,6 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         setupNV()
         updateNavigationBarColor()
         
-        print("MyTripsViewController: viewDidLoad called")
-        Task {
-            await loadData()
-        }
-        
         currentFilterIndex = 0
     }
     
@@ -67,6 +64,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         
         NotificationHelper.changePage(hidden: false, isEnabled: true)
         updateView()
+        plusButton.isHidden = false
         
         print("MyTripsViewController: viewWillAppear called")
         
@@ -80,20 +78,12 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         navigationItem.largeTitleDisplayMode = .always
         
         if let navigationBarSuperview = navigationController?.navigationBar.superview {
-            let customView = UIView()
-            customView.backgroundColor = .clear
-            customView.addSubview(plusButton)
-            
-            navigationBarSuperview.addSubview(customView)
-            
-            customView.snp.makeConstraints {
-                $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-30)
-                $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
-                $0.size.equalTo(CGSize(width: 30, height: 30))
-            }
+            navigationBarSuperview.addSubview(plusButton)
             
             plusButton.snp.makeConstraints {
-                $0.edges.equalToSuperview()
+                $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-16)
+                $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
+                $0.size.equalTo(CGSize(width: 30, height: 30))
             }
         }
     }

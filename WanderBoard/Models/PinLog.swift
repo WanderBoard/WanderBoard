@@ -78,7 +78,10 @@ struct PinLog: Identifiable, Codable {
     var pinnedBy: [String]? // 핀 상태 확인 - 한빛
     var totalSpendingAmount: Double? //핀로그당 사용한 최종금액 - 시안
 
-    init(id: String? = nil, location: String, address: String, latitude: Double, longitude: Double, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?, pinCount:Int?, pinnedBy: [String]? = [],  totalSpendingAmount: Double?) {
+    var isSpendingPublic: Bool
+    
+    init(id: String? = nil, location: String, address: String, latitude: Double, longitude: Double, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?, pinCount:Int?, pinnedBy: [String]? = [],  totalSpendingAmount: Double?, isSpendingPublic: Bool = true) {
+
         
         self.id = id
         self.location = location
@@ -95,9 +98,12 @@ struct PinLog: Identifiable, Codable {
         self.attendeeIds = attendeeIds
         self.isPublic = isPublic
         self.createdAt = createdAt
-        self.pinCount = pinCount
-        self.pinnedBy = pinnedBy
-        self.totalSpendingAmount = totalSpendingAmount
+
+        self.pinCount = pinCount //핀 갯수 추가 - 한빛
+        self.pinnedBy = pinnedBy // 핀 상태 확인 - 한빛
+        self.totalSpendingAmount = totalSpendingAmount //핀로그당 사용한 최종금액 - 시안
+        self.isSpendingPublic = isSpendingPublic
+
     }
 }
 

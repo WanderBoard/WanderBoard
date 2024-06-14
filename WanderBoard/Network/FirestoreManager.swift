@@ -42,7 +42,7 @@ class FirestoreManager {
             "email": email,
             "authProvider": authProvider,
             "isProfileComplete": isProfileComplete,
-            "blockedAuthors": blockedAuthors // 초기값 설정
+            "blockedAuthors": blockedAuthors
         ]
         
         if let displayName = displayName {
@@ -67,7 +67,6 @@ class FirestoreManager {
             }
             try await userRef.updateData(dataToSave)
         } else {
-            // 새 문서 생성
             dataToSave["gender"] = gender
             try await userRef.setData(dataToSave, merge: true)
         }
@@ -102,21 +101,39 @@ class FirestoreManager {
         }
 
         dataToUpdate["isProfileComplete"] = user.isProfileComplete
+        dataToUpdate["joinedDate"] = FieldValue.serverTimestamp()  // 가입일 설정
 
         if document.exists {
             try await userRef.updateData(dataToUpdate)
         } else {
-            dataToUpdate["blockedAuthors"] = [] // 차단 배열 초기값 설정
+            dataToUpdate["blockedAuthors"] = []
             try await userRef.setData(dataToUpdate, merge: true)
         }
     }
     
+
+    // 유저 동의 상태 저장 메서드
+    func updateUserConsent(uid: String, agreedToTerms: Bool, agreedToPrivacyPolicy: Bool, agreedToMarketing: Bool?, agreedToThirdParty: Bool?) async throws {
+        let userRef = db.collection("users").document(uid)
+        var dataToUpdate: [String: Any] = [
+            "agreedToTerms": agreedToTerms,
+            "agreedToPrivacyPolicy": agreedToPrivacyPolicy
+        ]
+        if let agreedToMarketing = agreedToMarketing {
+            dataToUpdate["agreedToMarketing"] = agreedToMarketing
+        }
+        if let agreedToThirdParty = agreedToThirdParty {
+            dataToUpdate["agreedToThirdParty"] = agreedToThirdParty
+        }
+        try await userRef.updateData(dataToUpdate)
+
     // 이메일 가져오기 애플을 위해서...;
     private func fetchEmailFromFirestore(uid: String) async throws -> String? {
         let userRef = Firestore.firestore().collection("users").document(uid)
         let document = try await userRef.getDocument()
         let email = document.data()?["email"] as? String
         return email
+
     }
     
     //내가 핀 얼만큼 찍었는가 계산
@@ -171,6 +188,19 @@ class FirestoreManager {
                 let data = document.data()
                 let photoURL = data?["photoURL"] as? String
                 completion(photoURL)
+            } else {
+                completion(nil)
+            }
+        }
+    }
+    
+    func fetchUserDisplayName(userId: String, completion: @escaping (String?) -> Void) {
+        let userRef = db.collection("users").document(userId)
+        userRef.getDocument { document, error in
+            if let document = document, document.exists {
+                let data = document.data()
+                let displayName = data?["displayName"] as? String
+                completion(displayName)
             } else {
                 completion(nil)
             }

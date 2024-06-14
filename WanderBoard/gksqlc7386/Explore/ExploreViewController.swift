@@ -82,22 +82,32 @@ class ExploreViewController: UIViewController, PageIndexed {
         navigationItem.largeTitleDisplayMode = .always
         
         if let navigationBarSuperview = navigationController?.navigationBar.superview {
-            let customView = UIView()
-            customView.backgroundColor = .clear
-            customView.addSubview(searchButton)
+            navigationBarSuperview.addSubview(searchButton)
             
-            navigationBarSuperview.addSubview(customView)
-            
-            customView.snp.makeConstraints {
-                $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-30)
+            searchButton.snp.makeConstraints {
+                $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-16)
                 $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
                 $0.size.equalTo(CGSize(width: 30, height: 30))
             }
-            
-            searchButton.snp.makeConstraints {
-                $0.edges.equalToSuperview()
-            }
         }
+        
+//        if let navigationBarSuperview = navigationController?.navigationBar.superview {
+//            let customView = UIView()
+//            customView.backgroundColor = .clear
+//            customView.addSubview(searchButton)
+//            
+//            navigationBarSuperview.addSubview(customView)
+//            
+//            customView.snp.makeConstraints {
+//                $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-30)
+//                $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
+//                $0.size.equalTo(CGSize(width: 30, height: 30))
+//            }
+//            
+//            searchButton.snp.makeConstraints {
+//                $0.edges.equalToSuperview()
+//            }
+//        }
     }
     
     private func setupConstraints() {
@@ -229,7 +239,7 @@ extension ExploreViewController: HotTableViewCellDelegate {
         let hotPinLog = cell.hotPinLogs[indexPath.item]
         detailVC.pinLog = hotPinLog
         detailVC.delegate = self
-        navigationController?.pushViewController(detailVC, animated: true)
+        navigationController?.pushViewController(detailVC, animated: false)
     }
 }
 

@@ -34,6 +34,7 @@ class NavigationBarFactory {
 class ButtonFactory {
     
     static func createXButton(target: Any?, action: Selector) -> UIButton {
+
             return createButton(withImageName: "x.circle", target: target, action: action)
         }
         
@@ -63,8 +64,25 @@ class ButtonFactory {
             button.addTarget(target, action: action, for: .touchUpInside)
             return button
         }
+
     }
     
+    static func createSearchButton(target: Any?, action: Selector) -> UIButton {
+        return createButton(withImageName: "magnifyingglass", target: target, action: action)
+    }
+    
+    private static func createButton(withImageName imageName: String, target: Any?, action: Selector) -> UIButton {
+        let button = UIButton()
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .light)
+        let image = UIImage(systemName: imageName, withConfiguration: imageConfig)
+        
+        button.setImage(image, for: .normal)
+        button.tintColor = .black
+        button.addTarget(target, action: action, for: .touchUpInside)
+        return button
+    }
+}
+
     
 
 

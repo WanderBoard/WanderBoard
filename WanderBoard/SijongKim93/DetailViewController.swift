@@ -326,10 +326,12 @@ class DetailViewController: UIViewController {
             if isCurrentUser(pinLog: pinLog) {
                 configureView(with: pinLog)
                 updatePinButtonState()
+                profileStackView.isHidden = true
             } else {
                 hideAppearUIElements()
                 configureView(with: pinLog)
                 updatePinButtonState()
+                profileStackView.isHidden = false
             }
             // 현재 사용자가 작성자인지 여부에 따라 메뉴 설정
             setupMenu()
@@ -601,6 +603,40 @@ class DetailViewController: UIViewController {
         }
         galleryCollectionView.reloadData()
         updateSelectedFriends(with: pinLog.attendeeIds)
+        
+        // 닉네임 설정
+        FirestoreManager.shared.fetchUserDisplayName(userId: pinLog.authorId) { [weak self] displayName in
+            DispatchQueue.main.async {
+                self?.nicknameLabel.text = displayName ?? "No Name"
+            }
+        }
+        
+        //프로필 이미지 불러오기
+        FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId) { [weak self] photoURL in
+            if let photoURL = photoURL, let url = URL(string: photoURL) {
+                self?.loadImage(from: url) { image in
+                    DispatchQueue.main.async {
+                        guard self?.locationLabel.text == pinLog.location else {
+                            return
+                        }
+                        self?.profileImageView.image = image
+                    }
+                }
+            } else {
+                self?.profileImageView.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
+            }
+        }
+    }
+    
+    //프로필 이미지
+    func loadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        AF.request(url).response { response in
+            if let data = response.data, let image = UIImage(data: data) {
+                completion(image)
+            } else {
+                completion(nil)
+            }
+        }
     }
     
     func updateSelectedFriends(with attendeeIds: [String]) {
@@ -707,15 +743,19 @@ class DetailViewController: UIViewController {
                 self.sharePinLog()
             }
             
-            let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "exclamationmark.triangle")) { _ in
+            let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "person.slash.fill")) { _ in
                 self.reportPinLog()
             }
             
-            let hideAction = UIAction(title: "게시글 차단하기", image: UIImage(systemName: "eye.slash.circle")) { _ in
+            let hideAction = UIAction(title: "게시글 숨기기", image: UIImage(systemName: "eye.slash.circle")) { _ in
                 self.hidePinLog()
             }
             
-            optionsButton.menu = UIMenu(title: "", children: [shareAction, blockAction, hideAction])
+            let reportAction = UIAction(title: "신고하기", image: UIImage(systemName: "exclamationmark.triangle"), attributes: .destructive) { _ in
+                self.reportPinLog() //또 얼럿창.. ?
+            }
+            
+            optionsButton.menu = UIMenu(title: "", children: [shareAction, blockAction, hideAction, reportAction])
         }
     }
     
@@ -756,7 +796,7 @@ class DetailViewController: UIViewController {
             do {
                 try await AuthenticationManager.shared.blockAuthor(authorId: authorId)
                 delegate?.didBlockAuthor(authorId)
-                //dismiss
+                self.navigationController?.popViewController(animated: true)
             } catch {
                 print("Failed to block author: \(error)")
             }

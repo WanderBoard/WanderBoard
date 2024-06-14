@@ -49,9 +49,9 @@ class FriendInputCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func configure(with image: UIImage?) {
-        if let image = image {
-            imageView.image = image
+    func configure(with imageURL: URL?) {
+        if let imageURL = imageURL {
+            imageView.kf.setImage(with: imageURL)
             imageView.isHidden = false
             addButton.isHidden = true
         } else {

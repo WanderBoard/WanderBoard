@@ -26,4 +26,5 @@ class UserProfileManager {
             throw NSError(domain: "UserProfileManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve user data from Firestore"])
         }
     }
+    
 }

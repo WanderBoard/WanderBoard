@@ -23,6 +23,7 @@ class RecentTableViewCell: UITableViewCell {
     lazy var recentCollectionView = UICollectionView(frame: .zero, collectionViewLayout: recentCollectionViewLayout).then {
         $0.dataSource = self
         $0.delegate = self
+                
         $0.register(RecentCollectionViewCell.self, forCellWithReuseIdentifier: RecentCollectionViewCell.identifier)
         $0.isScrollEnabled = false
     }
@@ -98,6 +99,9 @@ extension RecentTableViewCell: UICollectionViewDataSource, UICollectionViewDeleg
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentCollectionViewCell.identifier, for: indexPath) as! RecentCollectionViewCell
         cell.configure(with: recentLogs[indexPath.item])
+        if indexPath.item == logCount - 1 && logCount >= 30 {
+            delegate?.loadMoreRecentLogs()
+        }
         return cell
     }
     
@@ -108,5 +112,6 @@ extension RecentTableViewCell: UICollectionViewDataSource, UICollectionViewDeleg
 
 protocol RecentTableViewCellDelegate: AnyObject {
     func recentTableViewCell(_ cell: RecentTableViewCell, didSelectItemAt indexPath: IndexPath)
+    func loadMoreRecentLogs()
 }
 

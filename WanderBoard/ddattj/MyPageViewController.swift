@@ -13,7 +13,6 @@ import FirebaseAuth
 import FirebaseFirestore
 
 class MyPageViewController: BaseViewController, PageIndexed {
-    //페이지 이동하려고 추가했습니다 ! - 한빛
     var pageIndex: Int?
     
     let editButton = UIButton()
@@ -42,8 +41,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
         
         configureUI()
         fetchUserData()
-        fetchAndDisplayUserPinCount() // 핀 개수 가져오기 및 UI 업데이트
-        fetchAndDisplayAverageExpenditure()
     }
     
     
@@ -51,11 +48,9 @@ class MyPageViewController: BaseViewController, PageIndexed {
         Task {
             do {
                 if let authUser = try? AuthenticationManager.shared.getAuthenticatedUser(), let email = authUser.email {
-                    if let user = try await FirestoreManager.shared.checkUserExists(email: email) {
-                        DispatchQueue.main.async {
-                            self.myName.text = user.displayName
-                            self.profile.image = UIImage(named: user.photoURL ?? "")
-                        }
+                    userData = try await FirestoreManager.shared.checkUserExists(email: email)
+                    DispatchQueue.main.async {
+                        self.updateUI()
                     }
                 }
             } catch {
@@ -64,47 +59,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
         }
     }
     
-    //파이어스토어 -> 아이디 확인 -> 내가 핀 한 게시글 수 구하는 함수를 거친 myPinCount의 정보 가져옥 -> 마이핀에 저장
-    func fetchAndDisplayUserPinCount() {
-        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
-        
-        Task {
-            do {
-                let pinCount = try await FirestoreManager.shared.fetchUserPinCount(userId: currentUserId)
-                DispatchQueue.main.async {
-                    self.myPin.text = "\(pinCount)"
-                }
-                try await FirestoreManager.shared.updateUserPinCount(userId: currentUserId, pinCount: pinCount)
-            } catch {
-                print("핀 개수를 가져오거나 업데이트하는 데 실패했습니다: \(error)")
-            }
-        }
-    }
-    
-    func fetchAndDisplayAverageExpenditure() {
-        guard let userData = userData else {
-                   print("유저 데이터를 불러오지 못했습니다.")
-                   return
-               }
-        Task {
-            do {
-                //사용자 핀로그 불러오기
-                let pinLogs = try await PinLogManager.shared.fetchPinLogs(forUserId: userData.uid)
-                let totalSpendingAmount = pinLogs.reduce(0) { $0 + ($1.totalSpendingAmount ?? 0.0)}
-                let averageSpendingAmount = pinLogs.isEmpty ? 0 : totalSpendingAmount / Double(pinLogs.count)
-                
-                DispatchQueue.main.async {
-                    self.myExpend.text = pinLogs.isEmpty ? "0₩" : "\(averageSpendingAmount)₩"
-                    print("평균지출금액 불러오기 성공")
-                }
-            }
-                catch {
-                    print("핀로그를 불러오는데에 실패했습니다")
-            }
-        }
-    }
-    
-    //페이지 컨트롤러 때문에 추가했습니다 -한빛
     override func viewWillAppear(_ animated: Bool) {
         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": false])
         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": true])
@@ -194,8 +148,10 @@ class MyPageViewController: BaseViewController, PageIndexed {
         myWrite.text = "\(MyTripsViewController.tripLogs.count)"
         myWrite.font = UIFont.systemFont(ofSize: 13)
         myWrite.textColor = .white
+        myPin.text = "\(1)"
         myPin.font = UIFont.systemFont(ofSize: 13)
         myPin.textColor = .white
+        myExpend.text = "\(1)"
         myExpend.font =  UIFont.systemFont(ofSize: 13)
         myExpend.textColor = .white
         
@@ -220,6 +176,34 @@ class MyPageViewController: BaseViewController, PageIndexed {
         }
     }
     
+    
+    func updateUI() {
+        guard let userData = userData else { return }
+        myName.text = userData.displayName
+        myID.text = userData.email
+        
+        //URLSession 사용해서 URL 이미지 다운로드 후 프로필 이미지에 설정해준다.
+        if let photoURLString = userData.photoURL, let photoURL = URL(string: photoURLString) {
+            downloadImage(from: photoURL) { [weak self] image in
+                DispatchQueue.main.async {
+                    self?.profile.image = image
+                }
+            }
+        } else {
+            profile.image = UIImage(named: "defaultProfileImage")
+        }
+    }
+    
+    //이미지 다운로드 메서드
+    private func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else {
+                completion(nil)
+                return
+            }
+            completion(UIImage(data: data))
+        }.resume()
+    }
     
     
     @objc func edit(){

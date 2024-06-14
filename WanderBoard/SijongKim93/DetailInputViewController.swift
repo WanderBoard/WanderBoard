@@ -263,6 +263,34 @@ class DetailInputViewController: UIViewController {
         return collectionView
     }()
     
+    let mateCountButton = UIButton(type: .system).then {
+        var configuration = UIButton.Configuration.filled()
+        configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        configuration.cornerStyle = .medium
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 40, bottom: 8, trailing: 40)
+        $0.configuration = configuration
+        $0.layer.cornerRadius = 8
+        $0.isHidden = true
+    }
+
+    let mateCountLabel = UILabel().then {
+        $0.text = "0"
+        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
+    }
+
+    let mateIconImageView = UIImageView().then {
+        $0.image = UIImage(systemName: "person")
+        $0.tintColor = .black
+    }
+
+    let mateCountStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.spacing = 4
+        $0.isUserInteractionEnabled = false
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -325,6 +353,10 @@ class DetailInputViewController: UIViewController {
         
         contentView.addSubview(mateLabel)
         contentView.addSubview(mateCollectionView)
+        contentView.addSubview(mateCountButton)
+        mateCountButton.addSubview(mateCountStackView)
+        mateCountStackView.addArrangedSubview(mateIconImageView)
+        mateCountStackView.addArrangedSubview(mateCountLabel)
         
     }
     
@@ -344,7 +376,7 @@ class DetailInputViewController: UIViewController {
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.bottom.equalTo(mateCollectionView.snp.bottom).offset(50)
+            $0.bottom.equalTo(mateCountButton.snp.bottom).offset(30)
         }
         
         publicStackView.snp.makeConstraints {
@@ -438,7 +470,7 @@ class DetailInputViewController: UIViewController {
         }
         
         galleryCountButton.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(5)
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(10)
             $0.trailing.equalTo(contentView).inset(32)
             $0.height.equalTo(44)
         }
@@ -457,6 +489,16 @@ class DetailInputViewController: UIViewController {
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(100)
         }
+        
+        mateCountButton.snp.makeConstraints {
+               $0.top.equalTo(mateCollectionView.snp.bottom).offset(10)
+               $0.trailing.equalTo(contentView).inset(32)
+               $0.height.equalTo(44)
+           }
+
+           mateCountStackView.snp.makeConstraints {
+               $0.center.equalToSuperview()
+           }
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -513,8 +555,14 @@ class DetailInputViewController: UIViewController {
         locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
         
+        mateCountButton.addTarget(self, action: #selector(showMatePicker), for: .touchUpInside)
     }
     
+    @objc func showMatePicker() {
+        let mateVC = MateViewController()
+        mateVC.delegate = self
+        navigationController?.pushViewController(mateVC, animated: true)
+    }
     
     @objc func locationButtonTapped() {
         Task {
@@ -634,6 +682,7 @@ class DetailInputViewController: UIViewController {
             self.galleryCollectionView.reloadData()
             self.updateGalleryCountButton()
         }
+        
         loadSelectedFriends(pinLog: pinLog)
     }
     
@@ -755,7 +804,7 @@ class DetailInputViewController: UIViewController {
                     pinLog.title = title
                     pinLog.content = content
                     pinLog.isPublic = isPublic
-                    pinLog.attendeeIds = selectedFriends.map { $0.uid } // 메이트 정보 추가
+                    pinLog.attendeeIds = selectedFriends.map { $0.uid }
                 } else {
                     pinLog = PinLog(location: locationTitle,
                                     address: address,
@@ -767,7 +816,7 @@ class DetailInputViewController: UIViewController {
                                     content: content,
                                     media: [],
                                     authorId: Auth.auth().currentUser?.uid ?? "",
-                                    attendeeIds: selectedFriends.map { $0.uid }, // 메이트 정보 추가
+                                    attendeeIds: selectedFriends.map { $0.uid },
                                     isPublic: isPublic,
                                     createdAt: Date(),
                                     pinCount: 0,
@@ -829,6 +878,7 @@ class DetailInputViewController: UIViewController {
         
         group.notify(queue: .main) {
             self.mateCollectionView.reloadData()
+            self.updateMateCountButton()
         }
     }
     
@@ -855,6 +905,11 @@ class DetailInputViewController: UIViewController {
         galleryCountButton.isHidden = count == 0
     }
     
+    func updateMateCountButton() {
+        let count = selectedFriends.count
+        mateCountLabel.text = "\(count)"
+        mateCountButton.isHidden = count == 0
+    }
     
     func createCollectionViewFlowLayout(for collectionView: UICollectionView) -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
@@ -1004,6 +1059,7 @@ extension DetailInputViewController: MateViewControllerDelegate {
     func didSelectMates(_ mates: [UserSummary]) {
         selectedFriends = mates
         mateCollectionView.reloadData()
+        updateMateCountButton()
     }
 }
 

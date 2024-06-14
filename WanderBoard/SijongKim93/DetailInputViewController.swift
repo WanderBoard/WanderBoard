@@ -547,7 +547,7 @@ class DetailInputViewController: UIViewController {
     
     @objc func consumButtonTapped() {
         let spendVC = SpendingListViewController()
-        spendVC.modalPresentationStyle = .automatic
+        spendVC.modalPresentationStyle = .fullScreen
         self.present(spendVC, animated: true)
     }
     

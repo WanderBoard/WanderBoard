@@ -14,27 +14,37 @@ class SpendingListViewController: UIViewController {
     
 // MARK: Components
     var dailyExpenses: [DailyExpenses] = []
-
-    lazy var plusButton = UIButton(type: .system).then {
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
-        let image = UIImage(systemName: "pencil.circle.fill", withConfiguration: imageConfig)
-        $0.setImage(image, for: .normal)
-        $0.tintColor = UIColor(named: "textColor")
-        $0.backgroundColor = .font
-        $0.layer.cornerRadius = 15
-        $0.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
-    }
     
-    let spendingCardbutton: UIButton = {
-        var spendingCardbutton = UIButton()
+    lazy var backButton: UIButton = {
+        
+        return ButtonFactory.createBackButton(target: self, action: #selector(handleBackButtonTapped))
+    }()
+    
+    lazy var penButton: UIButton = {
+
+        return ButtonFactory.createPenButton(target: self, action: #selector(handlePenButtonTapped))
+    }()
+    
+    lazy var navigationBar: UINavigationBar = {
+        
+        return NavigationBarFactory.createNavigationBar(
+            withTitle: "",
+            target: self,
+            leftButtons: [backButton],
+            rightButtons: [penButton])
+    }()
+    
+    
+    lazy var spendingCardbutton: UIButton = {
+        let spendingCardbutton = UIButton()
         spendingCardbutton.backgroundColor = .black // 나중에 앨범에서 선택된 사진으로 변경되도록 수정
         spendingCardbutton.layer.cornerRadius = 25
         
         return spendingCardbutton
     }()
     
-    let totalSpendingText: UILabel = {
-        var totalSpendingText = UILabel()
+    lazy var totalSpendingText: UILabel = {
+        let totalSpendingText = UILabel()
         totalSpendingText.text = "총 지출 금액"
         totalSpendingText.font = UIFont.systemFont(ofSize: 15)
         totalSpendingText.textColor = .white //나중에 878787로 변경
@@ -42,8 +52,8 @@ class SpendingListViewController: UIViewController {
         return totalSpendingText
     }()
     
-    let totalSpendingAmount: UILabel = {
-        var totalSpendingAmount = UILabel()
+    lazy var totalSpendingAmount: UILabel = {
+        let totalSpendingAmount = UILabel()
         totalSpendingAmount.adjustsFontSizeToFitWidth = true
         totalSpendingAmount.text = ""
         totalSpendingAmount.font = UIFont.systemFont(ofSize: 34)
@@ -85,7 +95,6 @@ class SpendingListViewController: UIViewController {
         
         configureUI()
         makeConstraints()
-//        setupNavi()
         updateTotalSpendingAmount()
   
 // MARK: TableView Delegate, DataSource. Header, Cell 등록. Notification Observer
@@ -114,25 +123,28 @@ class SpendingListViewController: UIViewController {
         if dailyExpenses.isEmpty {
             tableView.isHidden = true
             spendingEmptyView.isHidden = false
-            plusButton.isHidden = true
+        penButton.isHidden = true
         } else {
             tableView.isHidden = false
             spendingEmptyView.isHidden = true
-            plusButton.isHidden = false
+            penButton.isHidden = false
 
         }
         tableView.reloadData()
     }
     
-// MARK: 지출 입력페이지로 이동
-    @objc func addButtonTapped() {
-        NotificationHelper.changePage(hidden: true, isEnabled: false)
-        plusButton.isHidden = true
+// MARK: 네비게이션바 Back버튼 클릭시
+    @objc func handleBackButtonTapped() {
+        dismiss(animated: true, completion: nil)
+    }
+    
+// MARK: 네비게이션바 Pen버튼 클릭시
+    @objc func handlePenButtonTapped() {
         let inputVC = InsertSpendingViewController()
         inputVC.delegate = self
         inputVC.modalPresentationStyle = .automatic
         self.present(inputVC, animated: true, completion: nil)
-    }
+        }
     
 // MARK: InsertSpendingVC에 입력되어 전달된 데이터 받기
     @objc func didReceiveNewExpenseData(_ notification: Notification) {
@@ -169,6 +181,7 @@ class SpendingListViewController: UIViewController {
 // MARK: Components Set up
     func configureUI() {
 
+        self.view.addSubview(navigationBar)
         self.view.addSubview(spendingCardbutton)
         spendingCardbutton.addSubview(totalSpendingText)
         spendingCardbutton.addSubview(totalSpendingAmount)
@@ -181,8 +194,13 @@ class SpendingListViewController: UIViewController {
 //MARK: Components Layout
     func makeConstraints() {
         
+        navigationBar.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.leading.trailing.equalTo(view)
+        }
+        
         spendingCardbutton.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(115)
+            $0.top.equalTo(navigationBar.snp.bottom).offset(30)
             $0.width.equalTo(344)
             $0.height.equalTo(203)
             $0.leading.equalTo(view.safeAreaLayoutGuide).inset(25)
@@ -214,20 +232,7 @@ class SpendingListViewController: UIViewController {
         
     }
 
-//// MARK: NavigationBar
-//    func setupNavi() {
-//        navigationController?.navigationBar.tintColor = .black
-//        navigationItem.rightBarButtonItem = .init(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(insertButtonTapped))
-//    }
 
-// MARK: 추가 버튼 클릭시 InsertSpendingVC 보여줌
-    @objc func insertButtonTapped() {
-        let insertSpendingViewController = InsertSpendingViewController()
-        insertSpendingViewController.modalPresentationStyle = .automatic
-        insertSpendingViewController.delegate = self
-        self.present(insertSpendingViewController, animated: true, completion: nil)
-    }
-    
     // MARK: TableViewCell 스와이프 삭제, 편집
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
@@ -284,7 +289,8 @@ class SpendingListViewController: UIViewController {
             updateTotalSpendingAmount()
         }
     }
-    
+   
+// MARK: 총 지출금액 업데이트
     func updateTotalSpendingAmount() {
         var totalAmount: Int = 0
         
@@ -362,8 +368,7 @@ extension SpendingListViewController: UITableViewDelegate {
 // MARK: 비어있는 화면일 때
 extension SpendingListViewController: EmptyViewDelegate {
     func didTapAddButton() {
-        NotificationHelper.changePage(hidden: true, isEnabled: false)
-        plusButton.isHidden = true
+        penButton.isHidden = true
         let inputVC = InsertSpendingViewController()
         inputVC.delegate = self
         inputVC.modalPresentationStyle = .automatic

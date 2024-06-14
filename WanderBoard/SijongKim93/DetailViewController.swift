@@ -584,7 +584,7 @@ class DetailViewController: UIViewController {
         mainTitleLabel.text = pinLog.title
         subTextLabel.text = pinLog.content
         moneyCountTitle.text = "\(pinLog.totalSpendingAmount ?? 0)"
-
+        
         selectedImages.removeAll()
         updateSelectedImages(with: pinLog.media)
         
@@ -600,9 +600,50 @@ class DetailViewController: UIViewController {
             }
         }
         galleryCollectionView.reloadData()
+        updateSelectedFriends(with: pinLog.attendeeIds)
     }
     
+    func updateSelectedFriends(with attendeeIds: [String]) {
+            selectedFriends.removeAll()
+            
+            let group = DispatchGroup()
+            
+            for userId in attendeeIds {
+                group.enter()
+                fetchUserImage(userId: userId) { [weak self] image in
+                    guard let self = self else {
+                        group.leave()
+                        return
+                    }
+                    if let image = image {
+                        self.selectedFriends.append(image)
+                    }
+                    group.leave()
+                }
+            }
+        
+        group.notify(queue: .main) {
+            self.friendCollectionView.reloadData()
+        }
+    }
     
+    func fetchUserImage(userId: String, completion: @escaping (UIImage?) -> Void) {
+        let db = Firestore.firestore()
+        db.collection("users").document(userId).getDocument { document, error in
+            if let document = document, document.exists, let data = document.data(),
+               let photoURL = data["photoURL"] as? String, let url = URL(string: photoURL) {
+                AF.request(url).response { response in
+                    if let data = response.data, let image = UIImage(data: data) {
+                        completion(image)
+                    } else {
+                        completion(nil)
+                    }
+                }
+            } else {
+                completion(nil)
+            }
+        }
+    }
     
     @objc func showGalleryDetail() {
         let galleryDetailVC = GalleryDetailViewController()
@@ -962,7 +1003,7 @@ extension DetailViewController: UIScrollViewDelegate {
             }
         }
     }
-
+    
     
     func applyDarkOverlayToBackgroundImage() {
         backgroundImageView.subviews.forEach { subview in

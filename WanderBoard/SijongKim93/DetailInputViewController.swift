@@ -201,7 +201,7 @@ class DetailInputViewController: UIViewController {
     
     let galleryLabel = UILabel().then {
         $0.text = "앨범 추가"
-        $0.textColor = .darkgray
+        $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
@@ -530,9 +530,6 @@ class DetailInputViewController: UIViewController {
         endDateButton.configuration?.baseBackgroundColor = buttonBackground
         locationButton.backgroundColor = buttonBackground
         consumButton.backgroundColor = buttonBackground
-        
-        let textGrayColor = traitCollection.userInterfaceStyle == .dark ? UIColor.lightgray : UIColor.darkgray
-        galleryLabel.textColor = textGrayColor
     }
     
     func setupCollectionView() {

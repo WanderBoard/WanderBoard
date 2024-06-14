@@ -38,12 +38,12 @@ struct User: Codable {
         self.isProfileComplete = entity.isProfileComplete
         self.blockedAuthors = (entity.blockedAuthors?.jsonArray() as? [String]) ?? []
         self.myPinCount = Int(entity.myPinCount)
+
         self.agreedToTerms = entity.agreedToTerms
         self.agreedToPrivacyPolicy = entity.agreedToPrivacyPolicy
         self.agreedToMarketing = entity.agreedToMarketing
         self.agreedToThirdParty = entity.agreedToThirdParty
         self.joinedDate = entity.joinedDate
-
     }
 
     func toUserEntity(context: NSManagedObjectContext) -> UserEntity {

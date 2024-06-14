@@ -111,6 +111,7 @@ class FirestoreManager {
         }
     }
     
+
     // 유저 동의 상태 저장 메서드
     func updateUserConsent(uid: String, agreedToTerms: Bool, agreedToPrivacyPolicy: Bool, agreedToMarketing: Bool?, agreedToThirdParty: Bool?) async throws {
         let userRef = db.collection("users").document(uid)
@@ -125,6 +126,14 @@ class FirestoreManager {
             dataToUpdate["agreedToThirdParty"] = agreedToThirdParty
         }
         try await userRef.updateData(dataToUpdate)
+
+    // 이메일 가져오기 애플을 위해서...;
+    private func fetchEmailFromFirestore(uid: String) async throws -> String? {
+        let userRef = Firestore.firestore().collection("users").document(uid)
+        let document = try await userRef.getDocument()
+        let email = document.data()?["email"] as? String
+        return email
+
     }
     
     //내가 핀 얼만큼 찍었는가 계산
@@ -138,14 +147,22 @@ class FirestoreManager {
         let userRef = db.collection("users").document(userId)
         try await userRef.updateData(["totalPins": pinCount])
     }
-    
-    // 이메일 가져오기 애플을 위해서...;
-    private func fetchEmailFromFirestore(uid: String) async throws -> String? {
-        let userRef = Firestore.firestore().collection("users").document(uid)
-        let document = try await userRef.getDocument()
-        let email = document.data()?["email"] as? String
-        return email
-    }
+    //내가 태그된 게시글 수를 가져오기
+    func fetchInvitations(for userId: String, completion: @escaping (Result<[Invitation], Error>) -> Void) {
+           db.collection("invitations")
+               .whereField("inviteeId", isEqualTo: userId)
+               .whereField("status", isEqualTo: InvitationStatus.accepted.rawValue)
+               .getDocuments { snapshot, error in
+                   if let error = error {
+                       completion(.failure(error))
+                   } else {
+                       let invitations = snapshot?.documents.compactMap { document -> Invitation? in
+                           return try? document.data(as: Invitation.self)
+                       } ?? []
+                       completion(.success(invitations))
+                   }
+               }
+       }
     
     // 사용자가 차단한 작성자 목록을 업데이트하는 함수
     func blockAuthor(userId: String, authorId: String) async throws {
@@ -161,6 +178,39 @@ class FirestoreManager {
             return []
         }
         return blockedAuthors
+    }
+    
+    //프로필 사진 가져오기
+    func fetchUserProfileImageURL(userId: String, completion: @escaping (String?) -> Void) {
+        let userRef = db.collection("users").document(userId)
+        userRef.getDocument { document, error in
+            if let document = document, document.exists {
+                let data = document.data()
+                let photoURL = data?["photoURL"] as? String
+                completion(photoURL)
+            } else {
+                completion(nil)
+            }
+        }
+    }
+    
+    func fetchUserDisplayName(userId: String, completion: @escaping (String?) -> Void) {
+        let userRef = db.collection("users").document(userId)
+        userRef.getDocument { document, error in
+            if let document = document, document.exists {
+                let data = document.data()
+                let displayName = data?["displayName"] as? String
+                completion(displayName)
+            } else {
+                completion(nil)
+            }
+        }
+    }
+    
+    // 사용자의 데이터를 Firestore에서 삭제하는 함수 (회원 탈퇴)
+    func deleteUserData(uid: String) async throws {
+        let userRef = db.collection("users").document(uid)
+        try await userRef.delete()
     }
 }
 

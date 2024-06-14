@@ -28,6 +28,8 @@ protocol DetailInputViewControllerDelegate: AnyObject {
 
 class DetailInputViewController: UIViewController {
     
+    
+    
     private let locationManager = LocationManager()
     var savedLocation: CLLocationCoordinate2D?
     var savedPinLogId: String?
@@ -36,7 +38,7 @@ class DetailInputViewController: UIViewController {
     weak var delegate: DetailInputViewControllerDelegate?
     
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
-    var selectedFriends: [UIImage] = []
+    var selectedFriends: [UserSummary] = []
     var representativeImageIndex: Int? = 0
     
     var imageLocations: [CLLocationCoordinate2D] = []
@@ -199,7 +201,7 @@ class DetailInputViewController: UIViewController {
     
     let galleryLabel = UILabel().then {
         $0.text = "앨범 추가"
-        $0.textColor = .darkgray
+        $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
     }
     
@@ -261,10 +263,40 @@ class DetailInputViewController: UIViewController {
         return collectionView
     }()
     
+
     
     // MARK: 토글토글
 
 //    let isSpendingPublic =
+
+    let mateCountButton = UIButton(type: .system).then {
+        var configuration = UIButton.Configuration.filled()
+        configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        configuration.cornerStyle = .medium
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 40, bottom: 8, trailing: 40)
+        $0.configuration = configuration
+        $0.layer.cornerRadius = 8
+        $0.isHidden = true
+    }
+
+    let mateCountLabel = UILabel().then {
+        $0.text = "0"
+        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
+    }
+
+    let mateIconImageView = UIImageView().then {
+        $0.image = UIImage(systemName: "person")
+        $0.tintColor = .black
+    }
+
+    let mateCountStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.spacing = 4
+        $0.isUserInteractionEnabled = false
+    }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -280,6 +312,10 @@ class DetailInputViewController: UIViewController {
         if let pinLog = pinLog {
             configureView(with: pinLog)
         }
+        
+        // Delegate 설정
+                mainTextField.delegate = self
+                subTextField.delegate = self
         
     }
     
@@ -328,6 +364,10 @@ class DetailInputViewController: UIViewController {
         
         contentView.addSubview(mateLabel)
         contentView.addSubview(mateCollectionView)
+        contentView.addSubview(mateCountButton)
+        mateCountButton.addSubview(mateCountStackView)
+        mateCountStackView.addArrangedSubview(mateIconImageView)
+        mateCountStackView.addArrangedSubview(mateCountLabel)
         
     }
     
@@ -347,7 +387,7 @@ class DetailInputViewController: UIViewController {
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.bottom.equalTo(mateCollectionView.snp.bottom).offset(50)
+            $0.bottom.equalTo(mateCountButton.snp.bottom).offset(30)
         }
         
         publicStackView.snp.makeConstraints {
@@ -441,7 +481,7 @@ class DetailInputViewController: UIViewController {
         }
         
         galleryCountButton.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(5)
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(10)
             $0.trailing.equalTo(contentView).inset(32)
             $0.height.equalTo(44)
         }
@@ -460,6 +500,16 @@ class DetailInputViewController: UIViewController {
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(100)
         }
+        
+        mateCountButton.snp.makeConstraints {
+               $0.top.equalTo(mateCollectionView.snp.bottom).offset(10)
+               $0.trailing.equalTo(contentView).inset(32)
+               $0.height.equalTo(44)
+           }
+
+           mateCountStackView.snp.makeConstraints {
+               $0.center.equalToSuperview()
+           }
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -487,9 +537,6 @@ class DetailInputViewController: UIViewController {
         endDateButton.configuration?.baseBackgroundColor = buttonBackground
         locationButton.backgroundColor = buttonBackground
         consumButton.backgroundColor = buttonBackground
-        
-        let textGrayColor = traitCollection.userInterfaceStyle == .dark ? UIColor.lightgray : UIColor.darkgray
-        galleryLabel.textColor = textGrayColor
     }
     
     func setupCollectionView() {
@@ -501,7 +548,6 @@ class DetailInputViewController: UIViewController {
         
         galleryCollectionView.register(GallaryInPutCollectionViewCell.self, forCellWithReuseIdentifier: GallaryInPutCollectionViewCell.identifier)
         mateCollectionView.register(FriendInputCollectionViewCell.self, forCellWithReuseIdentifier: FriendInputCollectionViewCell.identifier)
-        
     }
     
     func setupTextView() {
@@ -517,8 +563,14 @@ class DetailInputViewController: UIViewController {
         locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
         
+        mateCountButton.addTarget(self, action: #selector(showMatePicker), for: .touchUpInside)
     }
     
+    @objc func showMatePicker() {
+        let mateVC = MateViewController()
+        mateVC.delegate = self
+        navigationController?.pushViewController(mateVC, animated: true)
+    }
     
     @objc func locationButtonTapped() {
         Task {
@@ -590,7 +642,6 @@ class DetailInputViewController: UIViewController {
     func setupNavigationBar() {
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = doneButton
-        
         navigationController?.navigationBar.tintColor = .white
     }
     
@@ -599,7 +650,6 @@ class DetailInputViewController: UIViewController {
     }
     
     func configureView(with pinLog: PinLog) {
-        representativeImageIndex = pinLog.media.firstIndex { $0.isRepresentative } ?? 0
         locationLeftLabel.text = pinLog.location
         mainTextField.text = pinLog.title
         mainTextField.textColor = .black
@@ -635,11 +685,15 @@ class DetailInputViewController: UIViewController {
         }
         
         dispatchGroup.notify(queue: .main) {
+            self.representativeImageIndex = self.selectedImages.firstIndex { $0.1 }
             self.updateRepresentativeImage()
             self.galleryCollectionView.reloadData()
             self.updateGalleryCountButton()
         }
+        
+        loadSelectedFriends(pinLog: pinLog)
     }
+    
     
     func loadSavedLocation() {
         let userId = Auth.auth().currentUser?.uid ?? ""
@@ -746,12 +800,21 @@ class DetailInputViewController: UIViewController {
         Task {
             do {
                 var pinLog: PinLog
-                var createdAt: Date?
                 
-                if let pinLogId = self.savedPinLogId {
-                    // 핀로그가 이미 존재하는 경우 업데이트
-                    pinLog = PinLog(id: pinLogId,
-                                    location: locationTitle,
+                if let existingPinLog = self.pinLog {
+                    pinLog = existingPinLog
+                    pinLog.location = locationTitle
+                    pinLog.address = address
+                    pinLog.latitude = latitude
+                    pinLog.longitude = longitude
+                    pinLog.startDate = startDate
+                    pinLog.endDate = endDate
+                    pinLog.title = title
+                    pinLog.content = content
+                    pinLog.isPublic = isPublic
+                    pinLog.attendeeIds = selectedFriends.map { $0.uid }
+                } else {
+                    pinLog = PinLog(location: locationTitle,
                                     address: address,
                                     latitude: latitude,
                                     longitude: longitude,
@@ -761,9 +824,9 @@ class DetailInputViewController: UIViewController {
                                     content: content,
                                     media: [],
                                     authorId: Auth.auth().currentUser?.uid ?? "",
-                                    attendeeIds: [],
+                                    attendeeIds: selectedFriends.map { $0.uid },
                                     isPublic: isPublic,
-                                    createdAt: createdAt,
+                                    createdAt: Date(),
                                     pinCount: 0,
                                     pinnedBy: [],
                                     totalSpendingAmount: 0.0,
@@ -809,29 +872,82 @@ class DetailInputViewController: UIViewController {
                         }
                     } else if !selectedImages.isEmpty {
                         selectedImages[0].1 = true
+
+                                    totalSpendingAmount: 0.0)
+                }
+                
+                // 선택된 대표 이미지가 있으면 설정
+                if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
+                    for i in 0..<selectedImages.count {
+                        selectedImages[i].1 = (i == representativeIndex)
+
                     }
-                    
-                    let isRepresentativeFlags = selectedImages.map { $0.1 }
-                    
-                    let savedPinLog = try await pinLogManager.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations, isRepresentativeFlags: isRepresentativeFlags)
-                    self.savedPinLogId = savedPinLog.id
-                    self.pinLog = savedPinLog
-                    delegate?.didSavePinLog(savedPinLog)
-                    
-                    if let navigationController = self.navigationController {
-                        for viewController in navigationController.viewControllers {
-                            if viewController is MyTripsViewController {
-                                navigationController.popToViewController(viewController, animated: true)
-                                return
-                            }
+                } else if !selectedImages.isEmpty {
+                    selectedImages[0].1 = true
+                }
+                
+                let isRepresentativeFlags = selectedImages.map { $0.1 }
+                
+                let savedPinLog = try await pinLogManager.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations, isRepresentativeFlags: isRepresentativeFlags)
+                self.savedPinLogId = savedPinLog.id
+                self.pinLog = savedPinLog
+                delegate?.didSavePinLog(savedPinLog)
+                
+                if let navigationController = self.navigationController {
+                    for viewController in navigationController.viewControllers {
+                        if viewController is MyTripsViewController {
+                            navigationController.popToViewController(viewController, animated: true)
+                            return
                         }
-                        navigationController.popToRootViewController(animated: true)
                     }
+                    navigationController.popToRootViewController(animated: true)
                 }
             } catch {
                 let alert = UIAlertController(title: "오류", message: "데이터 저장에 실패했습니다.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "확인", style: .default))
                 present(alert, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    func loadSelectedFriends(pinLog: PinLog) {
+        let group = DispatchGroup()
+        selectedFriends.removeAll()
+        
+        for userId in pinLog.attendeeIds {
+            group.enter()
+            fetchUserSummary(userId: userId) { [weak self] userSummary in
+                guard let self = self else {
+                    group.leave()
+                    return
+                }
+                if var userSummary = userSummary {
+                    userSummary.isMate = true
+                    self.selectedFriends.append(userSummary)
+                }
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: .main) {
+            self.mateCollectionView.reloadData()
+            self.updateMateCountButton()
+        }
+    }
+    
+    func fetchUserSummary(userId: String, completion: @escaping (UserSummary?) -> Void) {
+        let db = Firestore.firestore()
+        db.collection("users").document(userId).getDocument { document, error in
+            if let document = document, document.exists, let data = document.data() {
+                let userSummary = UserSummary(
+                    uid: userId,
+                    displayName: data["displayName"] as? String ?? "",
+                    photoURL: data["photoURL"] as? String,
+                    isMate: false
+                )
+                completion(userSummary)
+            } else {
+                completion(nil)
             }
         }
     }
@@ -842,6 +958,11 @@ class DetailInputViewController: UIViewController {
         galleryCountButton.isHidden = count == 0
     }
     
+    func updateMateCountButton() {
+        let count = selectedFriends.count
+        mateCountLabel.text = "\(count)"
+        mateCountButton.isHidden = count == 0
+    }
     
     func createCollectionViewFlowLayout(for collectionView: UICollectionView) -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
@@ -957,7 +1078,12 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
             if selectedFriends.isEmpty {
                 cell.configure(with: nil)
             } else {
-                cell.configure(with: selectedFriends[indexPath.row])
+                let friend = selectedFriends[indexPath.row]
+                if let photoURL = friend.photoURL, let url = URL(string: photoURL) {
+                    cell.configure(with: url)
+                } else {
+                    cell.configure(with: nil)
+                }
             }
             return cell
         }
@@ -972,7 +1098,21 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
                 representativeImageIndex = indexPath.row
                 updateRepresentativeImage()
             }
+        } else if collectionView == mateCollectionView {
+            if selectedFriends.isEmpty {
+                let mateVC = MateViewController()
+                mateVC.delegate = self
+                navigationController?.pushViewController(mateVC, animated: true)
+            }
         }
+    }
+}
+
+extension DetailInputViewController: MateViewControllerDelegate {
+    func didSelectMates(_ mates: [UserSummary]) {
+        selectedFriends = mates
+        mateCollectionView.reloadData()
+        updateMateCountButton()
     }
 }
 
@@ -1040,9 +1180,11 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
 }
 
 
+
+
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1) {
+        if textView.textColor == UIColor.lightgray {
             textView.text = nil
             textView.textColor = .black
         }

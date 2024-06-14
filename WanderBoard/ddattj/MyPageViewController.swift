@@ -13,7 +13,6 @@ import FirebaseAuth
 import FirebaseFirestore
 
 class MyPageViewController: BaseViewController, PageIndexed {
-    //페이지 이동하려고 추가했습니다 ! - 한빛
     var pageIndex: Int?
     
     let editButton = UIButton()
@@ -21,9 +20,9 @@ class MyPageViewController: BaseViewController, PageIndexed {
     var myName = UILabel()
     var myID = UILabel()
     let statusB = UIView()
-    var myWrite = UILabel()
     var myPin = UILabel()
-    var myExpend = UILabel()
+    var tagPin = UILabel()
+    var wanderPin = UILabel()
     let status1 = UILabel()
     let status2 = UILabel()
     let status3 = UILabel()
@@ -43,7 +42,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         configureUI()
         fetchUserData()
         fetchAndDisplayUserPinCount() // 핀 개수 가져오기 및 UI 업데이트
-        fetchAndDisplayAverageExpenditure()
+        fetchInvitationCount()
     }
     
     
@@ -51,11 +50,9 @@ class MyPageViewController: BaseViewController, PageIndexed {
         Task {
             do {
                 if let authUser = try? AuthenticationManager.shared.getAuthenticatedUser(), let email = authUser.email {
-                    if let user = try await FirestoreManager.shared.checkUserExists(email: email) {
-                        DispatchQueue.main.async {
-                            self.myName.text = user.displayName
-                            self.profile.image = UIImage(named: user.photoURL ?? "")
-                        }
+                    userData = try await FirestoreManager.shared.checkUserExists(email: email)
+                    DispatchQueue.main.async {
+                        self.updateUI()
                     }
                 }
             } catch {
@@ -63,6 +60,22 @@ class MyPageViewController: BaseViewController, PageIndexed {
             }
         }
     }
+    
+    func fetchInvitationCount() {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        FirestoreManager.shared.fetchInvitations(for: userId) { [weak self] result in
+            switch result {
+            case .success(let invitations):
+                DispatchQueue.main.async {
+                    self?.tagPin.text = "\(invitations.count)"
+                }
+            case .failure(_):
+                print("태그된 게시물을 받아오지 못했습니다.")
+            }
+        }
+    }
+    
     
     //파이어스토어 -> 아이디 확인 -> 내가 핀 한 게시글 수 구하는 함수를 거친 myPinCount의 정보 가져옥 -> 마이핀에 저장
     func fetchAndDisplayUserPinCount() {
@@ -72,7 +85,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
             do {
                 let pinCount = try await FirestoreManager.shared.fetchUserPinCount(userId: currentUserId)
                 DispatchQueue.main.async {
-                    self.myPin.text = "\(pinCount)"
+                    self.wanderPin.text = "\(pinCount)"
                 }
                 try await FirestoreManager.shared.updateUserPinCount(userId: currentUserId, pinCount: pinCount)
             } catch {
@@ -80,6 +93,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
             }
         }
     }
+
     
     func fetchAndDisplayAverageExpenditure() {
         guard let userData = userData else {
@@ -105,13 +119,14 @@ class MyPageViewController: BaseViewController, PageIndexed {
     }
     
     //페이지 컨트롤러 때문에 추가했습니다 -한빛
+
     override func viewWillAppear(_ animated: Bool) {
         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": false])
         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": true])
     }
     
     override func constraintLayout() {
-        [profile, myName, myID, statusB, myWrite, myPin, myExpend, status1, status2, status3, tableView].forEach(){
+        [profile, myName, myID, statusB, myPin, tagPin, wanderPin, status1, status2, status3, tableView].forEach(){
             view.addSubview($0)
         }
         profile.snp.makeConstraints(){
@@ -133,15 +148,15 @@ class MyPageViewController: BaseViewController, PageIndexed {
             $0.width.equalTo(360)
             $0.height.equalTo(91)
         }
-        myWrite.snp.makeConstraints(){
+        myPin.snp.makeConstraints(){
             $0.top.equalTo(statusB.snp.top).offset(23)
             $0.centerX.equalTo(status1.snp.centerX)
         }
-        myPin.snp.makeConstraints(){
+        tagPin.snp.makeConstraints(){
             $0.top.equalTo(statusB.snp.top).offset(23)
             $0.centerX.equalTo(view)
         }
-        myExpend.snp.makeConstraints(){
+        wanderPin.snp.makeConstraints(){
             $0.top.equalTo(statusB.snp.top).offset(23)
             $0.centerX.equalTo(status3.snp.centerX)
         }
@@ -160,7 +175,9 @@ class MyPageViewController: BaseViewController, PageIndexed {
         tableView.snp.makeConstraints(){
             $0.top.equalTo(statusB.snp.bottom).offset(33)
             $0.horizontalEdges.equalToSuperview().inset(32)
+
             $0.bottom.equalTo(view).offset(-134)
+
         }
     }
     
@@ -191,21 +208,21 @@ class MyPageViewController: BaseViewController, PageIndexed {
         statusB.layer.shadowRadius = 4
         statusB.layer.shadowOpacity = 0.25
         
-        myWrite.text = "\(MyTripsViewController.tripLogs.count)"
-        myWrite.font = UIFont.systemFont(ofSize: 13)
-        myWrite.textColor = .white
+        myPin.text = "\(MyTripsViewController.tripLogs.count)"
         myPin.font = UIFont.systemFont(ofSize: 13)
         myPin.textColor = .white
-        myExpend.font =  UIFont.systemFont(ofSize: 13)
-        myExpend.textColor = .white
+        tagPin.font = UIFont.systemFont(ofSize: 13)
+        tagPin.textColor = .white
+        wanderPin.font =  UIFont.systemFont(ofSize: 13)
+        wanderPin.textColor = .white
         
-        status1.text = "작성한 글"
+        status1.text = "My Pin"
         status1.font = UIFont.systemFont(ofSize: 13)
         status1.textColor = .white
-        status2.text = "핀 개수"
+        status2.text = "Tag Pin"
         status2.font = UIFont.systemFont(ofSize: 13)
         status2.textColor = .white
-        status3.text = "평균사용금액"
+        status3.text = "Wander Pin"
         status3.font = UIFont.systemFont(ofSize: 13)
         status3.textColor = .white
         
@@ -220,6 +237,34 @@ class MyPageViewController: BaseViewController, PageIndexed {
         }
     }
     
+    
+    func updateUI() {
+        guard let userData = userData else { return }
+        myName.text = userData.displayName
+        myID.text = userData.email
+        
+        //URLSession 사용해서 URL 이미지 다운로드 후 프로필 이미지에 설정해준다.
+        if let photoURLString = userData.photoURL, let photoURL = URL(string: photoURLString) {
+            downloadImage(from: photoURL) { [weak self] image in
+                DispatchQueue.main.async {
+                    self?.profile.image = image
+                }
+            }
+        } else {
+            profile.image = UIImage(named: "defaultProfileImage")
+        }
+    }
+    
+    //이미지 다운로드 메서드
+    private func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else {
+                completion(nil)
+                return
+            }
+            completion(UIImage(data: data))
+        }.resume()
+    }
     
     
     @objc func edit(){
@@ -254,7 +299,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
 
 extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return 5
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -267,7 +312,7 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        63
+        64
     }
     
     //각 셀마다 이동할 화면 지정
@@ -285,6 +330,7 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             }, completion: { _ in
                 // 애니메이션이 완료된 후에 ViewController를 푸시
                 switch indexPath.row {
+
                     case 0:
                         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
                         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
@@ -303,7 +349,13 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                         let policyVC = ConsentStatusViewController()
                         self.navigationController?.pushViewController(policyVC, animated: true)
                         policyVC.navigationItem.title = "마케팅활용동의 및 광고수신동의"
-                    case 3:
+                     case 3:
+                         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
+                         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                         let blockVC = BlockViewController()
+                         self.navigationController?.pushViewController(blockVC, animated: true)
+                         blockVC.navigationItem.title = "차단관리"
+                    case 4:
                         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
                         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
                         let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
@@ -314,6 +366,7 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                             }
                             self.navigationController?.pushViewController(logOutVC, animated: false)
                             self.navigationController?.navigationBar.isHidden = true
+
                         }
                         let close = UIAlertAction(title: "취소", style: .destructive, handler: nil)
                         

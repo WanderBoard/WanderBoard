@@ -1,22 +1,23 @@
 //
-//  MateTableViewCell.swift
+//  BlockTableViewCell.swift
 //  WanderBoard
 //
-//  Created by 김시종 on 6/13/24.
+//  Created by 이시안 on 6/14/24.
 //
 
 import UIKit
 
-protocol MateTableViewCellDelegate: AnyObject {
+protocol BlockTableViewCellDelegate: AnyObject {
     func didTapAddButton(for user: UserSummary)
 }
 
-class MateTableViewCell: UITableViewCell {
+
+class BlockTableViewCell: UITableViewCell {
+
+    static let identifier = "BlockTableViewCell"
     
-    static let identifier = "MateTableViewCell"
-    
-    weak var delegate: MateTableViewCellDelegate?
     private var user: UserSummary?
+    weak var delegate: BlockTableViewCellDelegate?
     
     
     let profileImageView = UIImageView().then {
@@ -26,13 +27,13 @@ class MateTableViewCell: UITableViewCell {
     }
     
     let nicknameLabel = UILabel().then {
-        $0.textColor = .black
+        $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
         $0.numberOfLines = 2
     }
     
     lazy var addButton = UIButton(type: .system).then {
-        $0.setTitle("추가", for: .normal)
+        $0.setTitle("차단", for: .normal)
         $0.setTitleColor(.black, for: .normal)
         $0.backgroundColor = .lightgray
         $0.layer.cornerRadius = 22
@@ -90,10 +91,10 @@ class MateTableViewCell: UITableViewCell {
     
     func updateAddButton() {
         guard var user = user else { return }
-        let buttonTitle = user.isMate ? "제거" : "추가"
+        let buttonTitle = user.isBlocked ? "해제" : "차단"
         addButton.setTitle(buttonTitle, for: .normal)
-        addButton.backgroundColor = user.isMate ? .black : .lightgray
-        addButton.setTitleColor(user.isMate ? .white : .black, for: .normal)
+        addButton.backgroundColor = user.isBlocked ? .black : .lightgray
+        addButton.setTitleColor(user.isBlocked ? .white : .black, for: .normal)
     }
     
     @objc private func didTapAddButton() {

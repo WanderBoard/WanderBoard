@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import Then
+import FirebaseFirestore
 
 class ExploreViewController: UIViewController, PageIndexed {
     
@@ -19,8 +20,9 @@ class ExploreViewController: UIViewController, PageIndexed {
     var blockedAuthors: [String] = []
     
     let pinLogManager = PinLogManager()
-    
     var recentCellHeight: CGFloat = 0
+    
+    var lastSnapshot: DocumentSnapshot?
     
     lazy var searchButton = UIButton(type: .system).then {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
@@ -45,11 +47,10 @@ class ExploreViewController: UIViewController, PageIndexed {
         setupConstraints()
         setGradient()
         setupNV()
-        updateNavigationBarColor()
         
         loadData()
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -81,22 +82,32 @@ class ExploreViewController: UIViewController, PageIndexed {
         navigationItem.largeTitleDisplayMode = .always
         
         if let navigationBarSuperview = navigationController?.navigationBar.superview {
-            let customView = UIView()
-            customView.backgroundColor = .clear
-            customView.addSubview(searchButton)
+            navigationBarSuperview.addSubview(searchButton)
             
-            navigationBarSuperview.addSubview(customView)
-            
-            customView.snp.makeConstraints {
-                $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-30)
+            searchButton.snp.makeConstraints {
+                $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-16)
                 $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
                 $0.size.equalTo(CGSize(width: 30, height: 30))
             }
-            
-            searchButton.snp.makeConstraints {
-                $0.edges.equalToSuperview()
-            }
         }
+        
+//        if let navigationBarSuperview = navigationController?.navigationBar.superview {
+//            let customView = UIView()
+//            customView.backgroundColor = .clear
+//            customView.addSubview(searchButton)
+//            
+//            navigationBarSuperview.addSubview(customView)
+//            
+//            customView.snp.makeConstraints {
+//                $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-30)
+//                $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
+//                $0.size.equalTo(CGSize(width: 30, height: 30))
+//            }
+//            
+//            searchButton.snp.makeConstraints {
+//                $0.edges.equalToSuperview()
+//            }
+//        }
     }
     
     private func setupConstraints() {
@@ -115,9 +126,8 @@ class ExploreViewController: UIViewController, PageIndexed {
         do {
             let logs = try await pinLogManager.fetchPublicPinLogs()
             await MainActor.run {
-                //self.recentLogs = logs
                 self.recentLogs = filterBlockedAuthors(from: logs)
-                self.recentLogs.sort { $0.startDate > $1.startDate }
+                self.recentLogs.sort { ($0.createdAt ?? Date.distantPast) > ($1.createdAt ?? Date.distantPast) }
                 self.calculateRecentCellHeight()
                 self.tableView.reloadData()
             }
@@ -125,6 +135,23 @@ class ExploreViewController: UIViewController, PageIndexed {
             print("Failed to fetch pin logs: \(error.localizedDescription)")
         }
     }
+    
+//    // 무한스크롤 시도 중
+//    func loadRecentData() {
+//        pinLogManager.fetchInitialData(pageSize: 30) { result in
+//            switch result {
+//            case .success(let (logs, snapshot)):
+//                DispatchQueue.main.async {
+//                    self.recentLogs = self.filterBlockedAuthors(from: logs)
+//                    self.calculateRecentCellHeight()
+//                    self.lastSnapshot = snapshot
+//                    self.reloadRecentCell()
+//                }
+//            case .failure(let error):
+//                print("Failed to fetch pin logs: \(error.localizedDescription)")
+//            }
+//        }
+//    }
     
     func loadHotData() async {
         do {
@@ -226,6 +253,27 @@ extension ExploreViewController: RecentTableViewCellDelegate {
         detailVC.delegate = self
         navigationController?.pushViewController(detailVC, animated: true)
     }
+    
+    func loadMoreRecentLogs() {
+        guard let lastSnapshot = lastSnapshot else {
+            print("Last snapshot is nil")
+            return
+        }
+        
+        pinLogManager.fetchMoreData(pageSize: 30, lastSnapshot: lastSnapshot) { result in
+            switch result {
+            case .success(let (newLogs, newSnapshot)):
+                let filteredNewLogs = self.filterBlockedAuthors(from: newLogs)
+                self.recentLogs.append(contentsOf: filteredNewLogs)
+                self.recentLogs.sort { ($0.createdAt ?? Date.distantPast) > ($1.createdAt ?? Date.distantPast) }
+                self.calculateRecentCellHeight()
+                self.lastSnapshot = newSnapshot
+                self.tableView.reloadData()
+            case .failure(let error):
+                print("Failed to fetch more pin logs: \(error.localizedDescription)")
+            }
+        }
+    }
 }
 
 extension ExploreViewController: DetailViewControllerDelegate {
@@ -258,15 +306,5 @@ extension ExploreViewController: DetailViewControllerDelegate {
         self.hotLogs = self.hotLogs.filter { !self.blockedAuthors.contains($0.authorId) }
         
         self.tableView.reloadData()
-    }
-}
-
-extension ExploreViewController {
-    func updateNavigationBarColor() {
-        let navbarAppearance = UINavigationBarAppearance()
-        navbarAppearance.configureWithOpaqueBackground()
-        let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.clear
-        navbarAppearance.backgroundColor = navBarColor
-        navigationController?.navigationBar.standardAppearance = navbarAppearance
     }
 }

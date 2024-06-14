@@ -108,6 +108,22 @@ class HotCollectionViewCell: UICollectionViewCell {
         } else {
             backImg.image = UIImage(systemName: "photo") // 임시 기본 이미지
         }
+        
+        //프로필 사진
+        FirestoreManager.shared.fetchUserProfileImageURL(userId: hotLog.authorId) { [weak self] photoURL in
+            if let photoURL = photoURL, let url = URL(string: photoURL) {
+                self?.loadImage(from: url) { image in
+                    DispatchQueue.main.async {
+                        guard self?.locationLabel.text == hotLog.location else {
+                            return
+                        }
+                        self?.profile.image = image
+                    }
+                }
+            } else {
+                self?.profile.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
+            }
+        }
     }
     
     private func formatDate(_ date: Date) -> String? {

@@ -9,6 +9,7 @@ import UIKit
 import PhotosUI
 import FirebaseAuth
 import FirebaseStorage
+import FirebaseFirestore
 
 class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewControllerDelegate {
     
@@ -41,7 +42,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     var previousName: String = ""
     var ID: String = ""
     var userData: User?
-    var downloadURL: URL?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -104,14 +104,14 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         connectButton.setTitleColor(.font, for: .normal)
         connectButton.setImage(UIImage(named: "instagramLogo"), for: .normal)
         if let imageView = connectButton.imageView {
-            imageView.snp.makeConstraints {
-                $0.width.height.equalTo(24) // 이미지 크기를 24x24로 설정
-                $0.left.equalToSuperview().offset(10)
-                $0.centerY.equalToSuperview()
-                let label = connectButton.titleLabel
-                $0.right.equalTo(label!.snp.left).offset(-10)
-            }
-        }
+                   imageView.snp.makeConstraints {
+                       $0.width.height.equalTo(24) // 이미지 크기를 24x24로 설정
+                       $0.left.equalToSuperview().offset(10)
+                       $0.centerY.equalToSuperview()
+                       let label = connectButton.titleLabel
+                       $0.right.equalTo(label!.snp.left).offset(-10)
+                   }
+               }
         
         iconImageView.image = UIImage(systemName: "chevron.right")
         iconImageView.tintColor = .font
@@ -123,6 +123,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         withdrawalB.setTitle("회원탈퇴", for: .normal)
         withdrawalB.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         withdrawalB.setTitleColor(UIColor(named: "lightgray"), for: .normal)
+        withdrawalB.addTarget(self, action: #selector(TappedWithdrawalB), for: .touchUpInside)
     }
     
     func getUserLogin() -> AuthDataResultModel? {
@@ -248,34 +249,88 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         }
     }
     
-    @objc func moveToMyPage(){
+    @objc func moveToMyPage() {
         // 이미지와 이름 저장
         let nameToSave = myName.text?.isEmpty ?? true ? previousName : myName.text
         
         Task {
             do {
-                let currentUserID = Auth.auth().currentUser?.uid ?? ""
-                let user = try await FirestoreManager.shared.checkUserExists(email: currentUserID)
+                // Firebase 사용자 프로필 업데이트
+                try await updateProfile(displayName: nameToSave, photoURL: profile.image)
                 
-                // 사용자 정보 로드 후 MyPageViewController로 전환
-                DispatchQueue.main.async {
-                    if let navigationController = self.navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
-                        myPageVC.updateUserData(name: nameToSave!, image: self.profile.image)
-                    }
-                    
-                    let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
-                    let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-                        self.navigationController?.popViewController(animated: true)
-                    }
-                    alert.addAction(confirm)
-                    self.present(alert, animated: true, completion: nil)
+                // 사용자 정보를 Firestore에 저장
+                guard let user = Auth.auth().currentUser else {
+                    throw NSError(domain: "UserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인 되어있지 않습니다"])
                 }
+                
+                var dataToSave: [String: Any] = [
+                    "email": user.email ?? "",
+                    "displayName": nameToSave ?? "",
+                    "authProvider": user.providerData.first?.providerID ?? "",
+                    "isProfileComplete": true
+                ]
+                
+                if let photoURL = user.photoURL?.absoluteString {
+                    dataToSave["photoURL"] = photoURL
+                }
+                
+                let userRef = Firestore.firestore().collection("users").document(user.uid)
+                try await userRef.setData(dataToSave, merge: true)
+                
+                // MyPageViewController에 업데이트된 정보 반영
+                if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
+                    myPageVC.updateUserData(name: nameToSave!, image: profile.image)
+                }
+                
+                let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
+                let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                    self.navigationController?.popViewController(animated: true)
+                }
+                alert.addAction(confirm)
+                present(alert, animated: true, completion: nil)
             } catch {
-                print("유저 정보를 가져오지 못했습니다")
+                print("프로필 업데이트 실패: \(error.localizedDescription)")
+                let alert = UIAlertController(title: "오류", message: "프로필 업데이트 중 오류가 발생했습니다. 다시 시도해주세요.", preferredStyle: .alert)
+                let confirm = UIAlertAction(title: "확인", style: .default)
+                alert.addAction(confirm)
+                present(alert, animated: true, completion: nil)
             }
         }
     }
 
+    // Firestore에 사용자 프로필 정보 업데이트
+    func updateProfile(displayName: String?, photoURL: UIImage?) async throws {
+        guard let user = Auth.auth().currentUser else {
+            throw NSError(domain: "UserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인 되어있지 않습니다"])
+        }
+
+        let changeRequest = user.createProfileChangeRequest()
+
+        if let displayName = displayName {
+            changeRequest.displayName = displayName
+        }
+
+        if let photoURL = photoURL, let photoData = photoURL.jpegData(compressionQuality: 0.75) {
+            let storageRef = Storage.storage().reference().child("profileimages/\(user.uid).jpg")
+            do {
+                let metadata = StorageMetadata()
+                metadata.contentType = "image/jpeg"
+                let _ = try await storageRef.putDataAsync(photoData, metadata: metadata)
+                let downloadURL = try await storageRef.downloadURL()
+                changeRequest.photoURL = downloadURL
+                print("이미지 업로드 성공")
+            } catch {
+                throw NSError(domain: "StorageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "이미지 업로드 실패: \(error.localizedDescription)"])
+            }
+        }
+
+        do {
+            try await changeRequest.commitChanges()
+            print("사용자 프로필 업데이트 성공")
+        } catch {
+            throw NSError(domain: "ProfileError", code: -1, userInfo: [NSLocalizedDescriptionKey: "프로필 업데이트 실패: \(error.localizedDescription)"])
+        }
+    }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentText = textField.text ?? ""
@@ -390,42 +445,12 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             provider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
                 DispatchQueue.main.async {
                     if let selectedImage = image as? UIImage {
-                        //이미지피커로 고른 이미지를 데이터로 변환해 파이어베이스 스토리지에 업로드 -> 업로드 된 이미지의 url 가져와 다운받기
-                        guard let imageData = selectedImage.jpegData(compressionQuality: 0.5) else { return }
-                        
-                        let storageRef = Storage.storage().reference().child("images").child(UUID().uuidString)
-                        
-                        storageRef.putData(imageData, metadata: nil) { (metadata, error) in
-                            guard let metadata = metadata else {
-                                print("이미지 업로드 에러")
-                                return
-                            }
-                            print("이미지 업로드 성공!")
-                            
-                            storageRef.downloadURL { (url, error) in
-                                guard let downLoadURL = url else {
-                                    print("다운로드 URL 받아오기 실패")
-                                    return
-                                }
-                                print("다운로드 URL 받아오기 성공")
-                                self?.downloadURL = downLoadURL //다운로드 URL을 위에서 선언한 변수에 연결해주기
-                            }
-                        }
+                        self?.profile.image = selectedImage
+                        self?.addImage.tintColor = UIColor.clear
                     }
                 }
             }
         }
-    }
-    
-    //이미지 다운로드 메서드
-    private func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data, error == nil else {
-                completion(nil)
-                return
-            }
-            completion(UIImage(data: data))
-        }.resume()
     }
     
     override func updateColor() {
@@ -453,5 +478,114 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         let withdrawalColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
         withdrawalB.setTitleColor(withdrawalColor, for: .normal)
+    }
+    
+    //회원 탈퇴 액션
+    @objc func TappedWithdrawalB(_ sender: UIButton) {
+        // 첫 번째 alert 창
+        let alert = UIAlertController(title: "", message: "정말 탈퇴를 하시겠습니까? 지금까지의 여행은 삭제됩니다.", preferredStyle: .alert)
+        
+        let confirmAction = UIAlertAction(title: "확인", style: .destructive) { _ in
+            // 회원 탈퇴 로직 처리
+            self.reauthenticateAndDeleteUser()
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        alert.addAction(confirmAction)
+        alert.addAction(cancelAction)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func reauthenticateAndDeleteUser() {
+        guard let user = Auth.auth().currentUser else {
+            print("사용자가 로그인 되어있지 않습니다")
+            return
+        }
+        
+        // 로그인 방법에 따라 Credential 생성
+        if let email = user.email {
+            // 이메일과 비밀번호로 로그인한 경우
+            let alert = UIAlertController(title: "비밀번호 재입력", message: "계정을 삭제하려면 비밀번호를 다시 입력해주세요.", preferredStyle: .alert)
+            
+            alert.addTextField { textField in
+                textField.placeholder = "비밀번호"
+                textField.isSecureTextEntry = true
+            }
+            
+            let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+                if let password = alert.textFields?.first?.text {
+                    let credential = EmailAuthProvider.credential(withEmail: email, password: password)
+                    self.reauthenticate(user: user, with: credential)
+                }
+            }
+            
+            let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+            
+            alert.addAction(confirmAction)
+            alert.addAction(cancelAction)
+            
+            self.present(alert, animated: true, completion: nil)
+        } else {
+            // 다른 로그인 방법 (예: Google, Facebook 등)
+            // 여기서는 간단히 사용자에게 다시 로그인하도록 안내하는 방법을 사용합니다.
+            let alert = UIAlertController(title: "재인증 필요", message: "계정을 삭제하려면 다시 로그인해주세요.", preferredStyle: .alert)
+            let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                // 로그아웃하고 로그인 화면으로 이동
+                try? Auth.auth().signOut()
+                self.navigationController?.popToRootViewController(animated: true)
+            }
+            alert.addAction(confirm)
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+
+    func reauthenticate(user: FirebaseAuth.User, with credential: AuthCredential) {
+        user.reauthenticate(with: credential) { result, error in
+            if let error = error {
+                print("재인증 실패: \(error.localizedDescription)")
+                let alert = UIAlertController(title: "오류", message: "재인증에 실패했습니다. 다시 시도해주세요.", preferredStyle: .alert)
+                let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
+                alert.addAction(confirm)
+                self.present(alert, animated: true, completion: nil)
+            } else {
+                self.deleteUserAccount()
+            }
+        }
+    }
+
+    func deleteUserAccount() {
+        guard let user = Auth.auth().currentUser else {
+            print("사용자가 로그인 되어있지 않습니다")
+            return
+        }
+        
+        Task {
+            do {
+                // Firestore에서 사용자 데이터 삭제
+                try await FirestoreManager.shared.deleteUserData(uid: user.uid)
+                
+                // Firebase Authentication에서 사용자 계정 삭제
+                try await user.delete()
+                
+                print("회원 탈퇴 성공")
+                // 성공 알림 창
+                let successAlert = UIAlertController(title: "탈퇴 완료", message: "탈퇴가 완료되었습니다.", preferredStyle: .alert)
+                let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                    // 탈퇴 후 로그아웃 및 초기 화면으로 이동
+                    self.navigationController?.popToRootViewController(animated: true)
+                }
+                successAlert.addAction(confirm)
+                self.present(successAlert, animated: true, completion: nil)
+            } catch {
+                print("회원 탈퇴 실패: \(error.localizedDescription)")
+                // 오류 알림 창
+                let errorAlert = UIAlertController(title: "오류", message: "회원 탈퇴 중 오류가 발생했습니다. 다시 시도해주세요.", preferredStyle: .alert)
+                let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
+                errorAlert.addAction(confirm)
+                self.present(errorAlert, animated: true, completion: nil)
+            }
+        }
     }
 }

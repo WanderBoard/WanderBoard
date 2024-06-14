@@ -29,6 +29,7 @@ class MyPageTableViewCell: UITableViewCell {
     
     func configureContent(for index: Int) {
         switch index {
+
             case 0:
                 icon.image = UIImage(systemName: "gearshape.fill")
                 icon.tintColor = .font
@@ -56,7 +57,17 @@ class MyPageTableViewCell: UITableViewCell {
                 arrow.image = UIImage(systemName: "chevron.right")
                 arrow.tintColor = .font
                 
+          
             case 3:
+                icon.image = UIImage(systemName: "nosign")
+                icon.tintColor = .font
+                label.font = UIFont.systemFont(ofSize: 15)
+                label.textColor = .font
+                label.text = "차단관리"
+                arrow.image = UIImage(systemName: "chevron.right")
+                arrow.tintColor = .font
+          
+            case 4:
                 icon.image = UIImage(systemName: "door.left.hand.open")
                 icon.snp.remakeConstraints(){ //오토레이아웃 리메이크
                     $0.centerY.equalToSuperview()
@@ -73,6 +84,7 @@ class MyPageTableViewCell: UITableViewCell {
                 
             default:
                 print("셀의 내용이 없습니다")
+
         }
     }
     

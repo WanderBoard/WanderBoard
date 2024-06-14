@@ -261,6 +261,11 @@ class DetailInputViewController: UIViewController {
         return collectionView
     }()
     
+    
+    // MARK: 토글토글
+
+//    let isSpendingPublic =
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -761,7 +766,8 @@ class DetailInputViewController: UIViewController {
                                     createdAt: createdAt,
                                     pinCount: 0,
                                     pinnedBy: [],
-                                    totalSpendingAmount: 0.0)
+                                    totalSpendingAmount: 0.0,
+                                    isSpendingPublic: isSpendingPublic)
                     
                     if let existingPinLog = self.pinLog {
                         pinLog = existingPinLog
@@ -774,6 +780,7 @@ class DetailInputViewController: UIViewController {
                         pinLog.title = title
                         pinLog.content = content
                         pinLog.isPublic = isPublic
+                        pinLog.isSpendingPublic = isSpendingPublic
                         
                     } else {
                         pinLog = PinLog(location: locationTitle,
@@ -791,7 +798,8 @@ class DetailInputViewController: UIViewController {
                                         createdAt: Date(),
                                         pinCount: 0,
                                         pinnedBy: [],
-                                        totalSpendingAmount: 0.0)
+                                        totalSpendingAmount: 0.0,
+                                        isSpendingPublic: isSpendingPublic))
                     }
                     
                     // 선택된 대표 이미지가 있으면 설정

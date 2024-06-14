@@ -42,7 +42,7 @@ class FirestoreManager {
             "email": email,
             "authProvider": authProvider,
             "isProfileComplete": isProfileComplete,
-            "blockedAuthors": blockedAuthors // 초기값 설정
+            "blockedAuthors": blockedAuthors
         ]
         
         if let displayName = displayName {
@@ -67,7 +67,6 @@ class FirestoreManager {
             }
             try await userRef.updateData(dataToSave)
         } else {
-            // 새 문서 생성
             dataToSave["gender"] = gender
             try await userRef.setData(dataToSave, merge: true)
         }
@@ -102,14 +101,32 @@ class FirestoreManager {
         }
 
         dataToUpdate["isProfileComplete"] = user.isProfileComplete
+        dataToUpdate["joinedDate"] = FieldValue.serverTimestamp()  // 가입일 설정
 
         if document.exists {
             try await userRef.updateData(dataToUpdate)
         } else {
-            dataToUpdate["blockedAuthors"] = [] // 차단 배열 초기값 설정
+            dataToUpdate["blockedAuthors"] = []
             try await userRef.setData(dataToUpdate, merge: true)
         }
     }
+    
+    // 유저 동의 상태 저장 메서드
+    func updateUserConsent(uid: String, agreedToTerms: Bool, agreedToPrivacyPolicy: Bool, agreedToMarketing: Bool?, agreedToThirdParty: Bool?) async throws {
+        let userRef = db.collection("users").document(uid)
+        var dataToUpdate: [String: Any] = [
+            "agreedToTerms": agreedToTerms,
+            "agreedToPrivacyPolicy": agreedToPrivacyPolicy
+        ]
+        if let agreedToMarketing = agreedToMarketing {
+            dataToUpdate["agreedToMarketing"] = agreedToMarketing
+        }
+        if let agreedToThirdParty = agreedToThirdParty {
+            dataToUpdate["agreedToThirdParty"] = agreedToThirdParty
+        }
+        try await userRef.updateData(dataToUpdate)
+    }
+    
     //내가 핀 얼만큼 찍었는가 계산
     func fetchUserPinCount(userId: String) async throws -> Int {
         let pinLogRef = db.collection("pinLogs")

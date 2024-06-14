@@ -212,7 +212,7 @@ extension ExploreViewController: HotTableViewCellDelegate {
         let hotPinLog = cell.hotPinLogs[indexPath.item]
         detailVC.pinLog = hotPinLog
         detailVC.delegate = self
-        navigationController?.pushViewController(detailVC, animated: true)
+        navigationController?.pushViewController(detailVC, animated: false)
     }
 }
 

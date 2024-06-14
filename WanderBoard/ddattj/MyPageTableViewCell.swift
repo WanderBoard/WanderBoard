@@ -29,41 +29,50 @@ class MyPageTableViewCell: UITableViewCell {
     
     func configureContent(for index: Int) {
         switch index {
-        case 0:
-            icon.image = UIImage(systemName: "gearshape.fill")
-            icon.tintColor = .font
-            label.text = "환경설정"
-            label.font = UIFont.systemFont(ofSize: 15)
-            label.textColor = .font
-            arrow.image = UIImage(systemName: "chevron.right")
-            arrow.tintColor = .font
-            
-        case 1:
-            icon.image = UIImage(systemName: "info.circle.fill")
-            icon.tintColor = .font
-            label.font = UIFont.systemFont(ofSize: 15)
-            label.textColor = .font
-            label.text = "개인정보처리방침"
-            arrow.image = UIImage(systemName: "chevron.right")
-            arrow.tintColor = .font
-
-        case 2:
-            icon.image = UIImage(systemName: "door.left.hand.open")
-            icon.snp.remakeConstraints(){ //오토레이아웃 리메이크
-                $0.centerY.equalToSuperview()
-                $0.width.equalTo(16)
-                $0.height.equalTo(22.59)
-                $0.left.equalToSuperview().offset(19)
-            }
-            icon.tintColor = .font
-            label.font = UIFont.systemFont(ofSize: 15)
-            label.textColor = .font
-            label.text = "로그아웃"
-            arrow.image = UIImage(systemName: "chevron.right")?.withTintColor(UIColor.font)
-            arrow.tintColor = .font
-            
-        default:
-            print("셀의 내용이 없습니다")
+            case 0:
+                icon.image = UIImage(systemName: "gearshape.fill")
+                icon.tintColor = .font
+                label.text = "환경설정"
+                label.font = UIFont.systemFont(ofSize: 15)
+                label.textColor = .font
+                arrow.image = UIImage(systemName: "chevron.right")
+                arrow.tintColor = .font
+                
+            case 1:
+                icon.image = UIImage(systemName: "info.circle.fill")
+                icon.tintColor = .font
+                label.font = UIFont.systemFont(ofSize: 15)
+                label.textColor = .font
+                label.text = "이용약관 및 개인정보처리방침"
+                arrow.image = UIImage(systemName: "chevron.right")
+                arrow.tintColor = .font
+                
+            case 2:
+                icon.image = UIImage(systemName: "info.circle.fill")
+                icon.tintColor = .font
+                label.font = UIFont.systemFont(ofSize: 15)
+                label.textColor = .font
+                label.text = "마케팅활용동의 및 광고수신동의"
+                arrow.image = UIImage(systemName: "chevron.right")
+                arrow.tintColor = .font
+                
+            case 3:
+                icon.image = UIImage(systemName: "door.left.hand.open")
+                icon.snp.remakeConstraints(){ //오토레이아웃 리메이크
+                    $0.centerY.equalToSuperview()
+                    $0.width.equalTo(16)
+                    $0.height.equalTo(22.59)
+                    $0.left.equalToSuperview().offset(19)
+                }
+                icon.tintColor = .font
+                label.font = UIFont.systemFont(ofSize: 15)
+                label.textColor = .font
+                label.text = "로그아웃"
+                arrow.image = UIImage(systemName: "chevron.right")?.withTintColor(UIColor.font)
+                arrow.tintColor = .font
+                
+            default:
+                print("셀의 내용이 없습니다")
         }
     }
     

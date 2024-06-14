@@ -10,7 +10,12 @@ import SnapKit
 import Then
 
 class PrivacyPolicyViewController: BaseViewController {
-    var completionHandler: (() -> Void)?
+    var completionHandler: ((Bool, Bool, Bool, Bool) -> Void)?
+    
+    private var agreedToTerms = false
+    private var agreedToPrivacyPolicy = false
+    private var agreedToMarketing = false
+    private var agreedToThirdParty = false
 
     private var sectionCompletionStatus = [true, false, false, false]
     private var sectionAgreeStatus = [false, false, false, false]
@@ -25,7 +30,7 @@ class PrivacyPolicyViewController: BaseViewController {
 
     private let agreeButton: UIButton = {
         let button = UIButton(type: .system).then {
-            $0.setTitle("동의함", for: .normal)
+            $0.setTitle("확인", for: .normal)
             $0.setTitleColor(UIColor.white, for: .normal)
             $0.backgroundColor = .lightGray
             $0.layer.cornerRadius = 10
@@ -48,7 +53,7 @@ class PrivacyPolicyViewController: BaseViewController {
         tableView.showsVerticalScrollIndicator = false
 
         tableView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(32)
             $0.left.equalTo(view).offset(32)
             $0.right.equalTo(view).offset(-32)
             $0.bottom.equalTo(view).offset(-100)
@@ -65,7 +70,7 @@ class PrivacyPolicyViewController: BaseViewController {
     }
 
     @objc private func agreeButtonTapped() {
-        completionHandler?()
+        completionHandler?(sectionAgreeStatus[0], sectionAgreeStatus[1], sectionAgreeStatus[2], sectionAgreeStatus[3])
         dismiss(animated: true, completion: nil)
     }
 

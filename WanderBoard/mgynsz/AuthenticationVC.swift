@@ -350,8 +350,9 @@ class AuthenticationVC: UIViewController {
     
     private func presentSignUpViewController() {
         let signUpVC = SignUpViewController()
-        signUpVC.modalPresentationStyle = .formSheet
-        present(signUpVC, animated: true, completion: nil)
+        let navController = UINavigationController(rootViewController: signUpVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true, completion: nil)
     }
     
     private func switchRootView(to viewController: UIViewController) {

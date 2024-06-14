@@ -48,7 +48,6 @@ class BlockViewController: BaseViewController, UISearchBarDelegate {
         view.backgroundColor = .clear
         
         constraintLayout()
-//        fetchBlockedUsers()
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -59,8 +58,6 @@ class BlockViewController: BaseViewController, UISearchBarDelegate {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.tintColor = .clear
     }
-    
-    //func fetchBlocked
     
     
     override func constraintLayout() {

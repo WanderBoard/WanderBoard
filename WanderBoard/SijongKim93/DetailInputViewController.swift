@@ -925,7 +925,7 @@ class DetailInputViewController: UIViewController {
                                     pinCount: 0,
                                     pinnedBy: [],
                                         totalSpendingAmount: 0.0,
-                                        isSpendingPublic: isSpendingPublic))
+                                        isSpendingPublic: isSpendingPublic)
                     }
                     
                     // 선택된 대표 이미지가 있으면 설정
@@ -937,6 +937,7 @@ class DetailInputViewController: UIViewController {
                       selectedImages[0].1 = true
                       totalSpendingAmount: 0.0
                 }
+                
                 
                 // 선택된 대표 이미지가 있으면 설정
                 if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
@@ -971,6 +972,7 @@ class DetailInputViewController: UIViewController {
             }
         }
     }
+    
     
     func loadSelectedFriends(pinLog: PinLog) {
         let group = DispatchGroup()

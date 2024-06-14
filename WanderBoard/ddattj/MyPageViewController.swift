@@ -43,6 +43,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         configureUI()
         fetchUserData()
         fetchAndDisplayUserPinCount() // 핀 개수 가져오기 및 UI 업데이트
+        fetchInvitationCount()
     }
     
     
@@ -63,9 +64,21 @@ class MyPageViewController: BaseViewController, PageIndexed {
         }
     }
     
-    func fetchAndDisplayUserTagCount() {
+    func fetchInvitationCount() {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
         
+        FirestoreManager.shared.fetchInvitations(for: userId) { [weak self] result in
+            switch result {
+            case .success(let invitations):
+                DispatchQueue.main.async {
+                    self?.tagPin.text = "\(invitations.count)"
+                }
+            case .failure(let error):
+                print("태그된 게시물을 받아오지 못했습니다.")
+            }
+        }
     }
+    
     
     //파이어스토어 -> 아이디 확인 -> 내가 핀 한 게시글 수 구하는 함수를 거친 myPinCount의 정보 가져옥 -> 마이핀에 저장
     func fetchAndDisplayUserPinCount() {

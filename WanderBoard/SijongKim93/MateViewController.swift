@@ -85,6 +85,12 @@ class MateViewController: UIViewController {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.navigationBar.tintColor = .black
+    }
+    
     func setupUI() {
         view.addSubview(searchBar)
         view.addSubview(addedMatesView)

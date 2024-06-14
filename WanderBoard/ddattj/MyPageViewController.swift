@@ -96,11 +96,8 @@ class MyPageViewController: BaseViewController, PageIndexed {
     }
 
     
-    //페이지 컨트롤러 때문에 추가했습니다 -한빛
-
     override func viewWillAppear(_ animated: Bool) {
-        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": false])
-        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": true])
+        NotificationHelper.changePage(hidden: false, isEnabled: true)
     }
     
     override func constraintLayout() {
@@ -245,8 +242,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     
     
     @objc func edit(){
-        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러 때문에.. - 한빛
-        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면 전환 스크롤 제거 - 한빛
+        NotificationHelper.changePage(hidden: true, isEnabled: false)
         let editVC = EditViewController()
         editVC.previousName = myName.text ?? "no Name"
         editVC.ID = myID.text ?? "No ID"
@@ -309,32 +305,27 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                 switch indexPath.row {
 
                     case 0:
-                        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
-                        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                    NotificationHelper.changePage(hidden: true, isEnabled: false)
                         let settingVC = SettingViewController()
                         self.navigationController?.pushViewController(settingVC, animated: true)
                         settingVC.navigationItem.title = "환경설정"
                     case 1:
-                        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
-                        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                    NotificationHelper.changePage(hidden: true, isEnabled: false)
                         let policyVC = ConsentStatusViewController()
                         self.navigationController?.pushViewController(policyVC, animated: true)
                         policyVC.navigationItem.title = "이용약관 및 개인정보처리방침"
                     case 2:
-                        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
-                        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                    NotificationHelper.changePage(hidden: true, isEnabled: false)
                         let policyVC = ConsentStatusViewController()
                         self.navigationController?.pushViewController(policyVC, animated: true)
                         policyVC.navigationItem.title = "마케팅활용동의 및 광고수신동의"
                      case 3:
-                         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
-                         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                    NotificationHelper.changePage(hidden: true, isEnabled: false)
 //                         let blockVC = BlockViewController()
 //                         self.navigationController?.pushViewController(blockVC, animated: true)
 //                         blockVC.navigationItem.title = "차단관리"
                     case 4:
-                        NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
-                        NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
+                    NotificationHelper.changePage(hidden: true, isEnabled: false)
                         let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
                         let confirm = UIAlertAction(title: "확인", style: .default) { _ in
                             let logOutVC = AuthenticationVC()

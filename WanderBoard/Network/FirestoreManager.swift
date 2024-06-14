@@ -181,6 +181,12 @@ class FirestoreManager {
         return blockedAuthors
     }
     
+    // 게시글 숨기기
+    func hidePost(forUser userId: String, postId: String) async throws {
+        let userRef = db.collection("users").document(userId)
+        try await userRef.updateData(["hiddenPosts": FieldValue.arrayUnion([postId])])
+    }
+    
     //프로필 사진 가져오기
     func fetchUserProfileImageURL(userId: String, completion: @escaping (String?) -> Void) {
         let userRef = db.collection("users").document(userId)

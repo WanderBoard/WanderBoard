@@ -89,7 +89,7 @@ class MateTableViewCell: UITableViewCell {
     }
     
     func updateAddButton() {
-        guard var user = user else { return }
+        guard let user = user else { return }
         let buttonTitle = user.isMate ? "제거" : "추가"
         addButton.setTitle(buttonTitle, for: .normal)
         addButton.backgroundColor = user.isMate ? .black : .lightgray

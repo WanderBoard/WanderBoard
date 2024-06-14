@@ -892,6 +892,7 @@ class DetailInputViewController: UIViewController {
             if let document = document, document.exists, let data = document.data() {
                 let userSummary = UserSummary(
                     uid: userId,
+                    email: data["email"] as? String ?? "",
                     displayName: data["displayName"] as? String ?? "",
                     photoURL: data["photoURL"] as? String,
                     isMate: false

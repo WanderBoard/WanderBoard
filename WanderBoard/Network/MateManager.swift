@@ -24,10 +24,11 @@ class MateManager {
             let userSummaries: [UserSummary] = snapshot?.documents.compactMap { document in
                 let data = document.data()
                 let uid = data["uid"] as? String ?? ""
+                let email = data["email"] as? String ?? ""
                 let displayName = data["displayName"] as? String ?? ""
                 let photoURL = data["photoURL"] as? String
                 let isMate = data["isMate"] as? Bool ?? false
-                return UserSummary(uid: uid, displayName: displayName, photoURL: photoURL, isMate: isMate)
+                return UserSummary(uid: uid, email: email, displayName: displayName, photoURL: photoURL, isMate: isMate)
             } ?? []
             
             completion(.success(userSummaries))

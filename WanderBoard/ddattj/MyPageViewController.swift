@@ -329,9 +329,9 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                      case 3:
                          NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
                          NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛
-                         let blockVC = BlockViewController()
-                         self.navigationController?.pushViewController(blockVC, animated: true)
-                         blockVC.navigationItem.title = "차단관리"
+//                         let blockVC = BlockViewController()
+//                         self.navigationController?.pushViewController(blockVC, animated: true)
+//                         blockVC.navigationItem.title = "차단관리"
                     case 4:
                         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": true]) // 페이지 컨트롤러.. -한빛
                         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": false]) // 화면전환 스크롤 false - 한빛

@@ -60,7 +60,7 @@ class BlockViewController: BaseViewController, UISearchBarDelegate {
         navigationController?.navigationBar.tintColor = .clear
     }
     
-    func fetchBlocked
+    //func fetchBlocked
     
     
     override func constraintLayout() {

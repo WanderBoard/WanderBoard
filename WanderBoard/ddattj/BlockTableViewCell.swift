@@ -13,7 +13,7 @@ protocol BlockTableViewCellDelegate: AnyObject {
 
 
 class BlockTableViewCell: UITableViewCell {
-
+    
     static let identifier = "BlockTableViewCell"
     
     private var user: UserSummary?
@@ -37,7 +37,7 @@ class BlockTableViewCell: UITableViewCell {
         $0.setTitleColor(.black, for: .normal)
         $0.backgroundColor = .lightgray
         $0.layer.cornerRadius = 22
-        $0.addTarget(self, action: #selector(didTapAddButton), for: .touchUpInside)
+//        $0.addTarget(self, action: #selector(didTapAddButton), for: .touchUpInside)
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -75,32 +75,32 @@ class BlockTableViewCell: UITableViewCell {
             $0.height.equalTo(44)
         }
     }
-    
-    
-    func configure(with user: UserSummary) {
-        self.user = user
-        nicknameLabel.text = user.displayName
-        if let photoURL = user.photoURL, let url = URL(string: photoURL) {
-            profileImageView.kf.setImage(with: url)
-        } else {
-            profileImageView.image = UIImage(named: "defaultProfileImage")
-        }
-        
-        updateAddButton()
-    }
-    
-    func updateAddButton() {
-        guard var user = user else { return }
-        let buttonTitle = user.isBlocked ? "해제" : "차단"
-        addButton.setTitle(buttonTitle, for: .normal)
-        addButton.backgroundColor = user.isBlocked ? .black : .lightgray
-        addButton.setTitleColor(user.isBlocked ? .white : .black, for: .normal)
-    }
-    
-    @objc private func didTapAddButton() {
-        guard var user = user else { return }
-        user.isMate.toggle()
-        updateAddButton()
-        delegate?.didTapAddButton(for: user)
-    }
 }
+//
+//    func configure(with user: UserSummary) {
+//        self.user = user
+//        nicknameLabel.text = user.displayName
+//        if let photoURL = user.photoURL, let url = URL(string: photoURL) {
+//            profileImageView.kf.setImage(with: url)
+//        } else {
+//            profileImageView.image = UIImage(named: "defaultProfileImage")
+//        }
+//        
+//        updateAddButton()
+//    }
+//    
+////    func updateAddButton() {
+////        guard var user = user else { return }
+////        let buttonTitle = user.isBlocked ? "해제" : "차단"
+////        addButton.setTitle(buttonTitle, for: .normal)
+////        addButton.backgroundColor = user.isBlocked ? .black : .lightgray
+////        addButton.setTitleColor(user.isBlocked ? .white : .black, for: .normal)
+////    }
+//    
+//    @objc private func didTapAddButton() {
+//        guard var user = user else { return }
+//        user.isMate.toggle()
+//        updateAddButton()
+//        delegate?.didTapAddButton(for: user)
+//    }
+//}

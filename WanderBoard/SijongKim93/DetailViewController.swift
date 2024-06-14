@@ -813,7 +813,7 @@ class DetailViewController: UIViewController {
         let group = DispatchGroup()
         
         for media in mediaItems {
-            guard let url = URL(string: media.url) else { continue }
+            guard URL(string: media.url) != nil else { continue }
             group.enter()
             loadImage(from: media.url) { [weak self] image in
                 guard let self = self else {

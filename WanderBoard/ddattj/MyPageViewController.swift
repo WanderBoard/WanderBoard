@@ -70,7 +70,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 DispatchQueue.main.async {
                     self?.tagPin.text = "\(invitations.count)"
                 }
-            case .failure(let error):
+            case .failure(_):
                 print("태그된 게시물을 받아오지 못했습니다.")
             }
         }

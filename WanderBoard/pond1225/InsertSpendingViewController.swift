@@ -24,7 +24,7 @@ class InsertSpendingViewController: UIViewController {
     var titleLabel: UILabel = {
         var titleLabel = UILabel()
         titleLabel.font = UIFont.systemFont(ofSize: 17)
-        titleLabel.text = "소비내역 직접 입력"
+        titleLabel.text = "지출 내역 직접 입력"
         
         return titleLabel
     }()
@@ -103,7 +103,7 @@ class InsertSpendingViewController: UIViewController {
     var contentTextField: UITextField = {
         var contentTextField = UITextField()
         contentTextField.backgroundColor = .lightGray
-        contentTextField.attributedPlaceholder = NSAttributedString(string: "소비 내역을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.black])
+        contentTextField.attributedPlaceholder = NSAttributedString(string: "지출 내역을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.black])
         
         return contentTextField
     }()
@@ -130,7 +130,7 @@ class InsertSpendingViewController: UIViewController {
     var expenseAmountTextField: UITextField = {
         var expenseAmountTextField = UITextField()
         expenseAmountTextField.backgroundColor = .lightGray
-        expenseAmountTextField.attributedPlaceholder = NSAttributedString(string: "소비 금액을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.black])
+        expenseAmountTextField.attributedPlaceholder = NSAttributedString(string: "지출 금액을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.black])
         
         return expenseAmountTextField
     }()

@@ -77,7 +77,7 @@ class PinLogManager {
             "pinCount": pinLog.pinCount ?? 0,  // 추가된 필드
             "pinnedBy": pinLog.pinnedBy ?? [],  // 추가된 필드
             "totalSpendingAmount": pinLog.totalSpendingAmount ?? 0.0, //추가
-            "isSpendingPublic": pinLog.isSpendingPublic
+            //"isSpendingPublic": pinLog.isSpendingPublic
 
         ]
         

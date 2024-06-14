@@ -177,6 +177,19 @@ class FirestoreManager {
         }
     }
     
+    func fetchUserDisplayName(userId: String, completion: @escaping (String?) -> Void) {
+        let userRef = db.collection("users").document(userId)
+        userRef.getDocument { document, error in
+            if let document = document, document.exists {
+                let data = document.data()
+                let displayName = data?["displayName"] as? String
+                completion(displayName)
+            } else {
+                completion(nil)
+            }
+        }
+    }
+    
     // 사용자의 데이터를 Firestore에서 삭제하는 함수 (회원 탈퇴)
     func deleteUserData(uid: String) async throws {
         let userRef = db.collection("users").document(uid)

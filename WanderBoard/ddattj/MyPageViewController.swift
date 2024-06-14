@@ -13,7 +13,6 @@ import FirebaseAuth
 import FirebaseFirestore
 
 class MyPageViewController: BaseViewController, PageIndexed {
-    //페이지 이동하려고 추가했습니다 ! - 한빛
     var pageIndex: Int?
     
     let editButton = UIButton()
@@ -51,11 +50,9 @@ class MyPageViewController: BaseViewController, PageIndexed {
         Task {
             do {
                 if let authUser = try? AuthenticationManager.shared.getAuthenticatedUser(), let email = authUser.email {
-                    if let user = try await FirestoreManager.shared.checkUserExists(email: email) {
-                        DispatchQueue.main.async {
-                            self.myName.text = user.displayName
-                            self.profile.image = UIImage(named: user.photoURL ?? "")
-                        }
+                    userData = try await FirestoreManager.shared.checkUserExists(email: email)
+                    DispatchQueue.main.async {
+                        self.updateUI()
                     }
                 }
             } catch {
@@ -96,8 +93,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
             }
         }
     }
-    
-    //페이지 컨트롤러 때문에 추가했습니다 -한빛
+  
     override func viewWillAppear(_ animated: Bool) {
         NotificationCenter.default.post(name: .setPageControlButtonVisibility, object: nil, userInfo: ["hidden": false])
         NotificationCenter.default.post(name: .setScrollEnabled, object: nil, userInfo: ["isEnabled": true])
@@ -213,6 +209,34 @@ class MyPageViewController: BaseViewController, PageIndexed {
         }
     }
     
+    
+    func updateUI() {
+        guard let userData = userData else { return }
+        myName.text = userData.displayName
+        myID.text = userData.email
+        
+        //URLSession 사용해서 URL 이미지 다운로드 후 프로필 이미지에 설정해준다.
+        if let photoURLString = userData.photoURL, let photoURL = URL(string: photoURLString) {
+            downloadImage(from: photoURL) { [weak self] image in
+                DispatchQueue.main.async {
+                    self?.profile.image = image
+                }
+            }
+        } else {
+            profile.image = UIImage(named: "defaultProfileImage")
+        }
+    }
+    
+    //이미지 다운로드 메서드
+    private func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else {
+                completion(nil)
+                return
+            }
+            completion(UIImage(data: data))
+        }.resume()
+    }
     
     
     @objc func edit(){

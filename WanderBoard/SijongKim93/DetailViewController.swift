@@ -707,11 +707,15 @@ class DetailViewController: UIViewController {
                 self.sharePinLog()
             }
             
-            let reportAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "exclamationmark.triangle"), attributes: .destructive) { _ in
+            let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "exclamationmark.triangle")) { _ in
                 self.reportPinLog()
             }
             
-            optionsButton.menu = UIMenu(title: "", children: [shareAction, reportAction])
+            let hideAction = UIAction(title: "게시글 차단하기", image: UIImage(systemName: "eye.slash.circle")) { _ in
+                self.hidePinLog()
+            }
+            
+            optionsButton.menu = UIMenu(title: "", children: [shareAction, blockAction, hideAction])
         }
     }
     
@@ -752,10 +756,15 @@ class DetailViewController: UIViewController {
             do {
                 try await AuthenticationManager.shared.blockAuthor(authorId: authorId)
                 delegate?.didBlockAuthor(authorId)
+                //dismiss
             } catch {
                 print("Failed to block author: \(error)")
             }
         }
+    }
+    
+    func hidePinLog() {
+        print("이 글 숨기기 기능이 실행되었습니다.")
     }
     
     func updateSelectedImages(with mediaItems: [Media]) {

@@ -162,5 +162,25 @@ class FirestoreManager {
         }
         return blockedAuthors
     }
+    
+    //프로필 사진 가져오기
+    func fetchUserProfileImageURL(userId: String, completion: @escaping (String?) -> Void) {
+        let userRef = db.collection("users").document(userId)
+        userRef.getDocument { document, error in
+            if let document = document, document.exists {
+                let data = document.data()
+                let photoURL = data?["photoURL"] as? String
+                completion(photoURL)
+            } else {
+                completion(nil)
+            }
+        }
+    }
+    
+    // 사용자의 데이터를 Firestore에서 삭제하는 함수 (회원 탈퇴)
+    func deleteUserData(uid: String) async throws {
+        let userRef = db.collection("users").document(uid)
+        try await userRef.delete()
+    }
 }
 

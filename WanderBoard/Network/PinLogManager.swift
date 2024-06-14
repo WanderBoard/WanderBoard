@@ -141,4 +141,50 @@ class PinLogManager {
         }
         return pinLogs
     }
+    
+    //무한스크롤 검색뷰
+    func fetchInitialData(pageSize: Int, completion: @escaping (Result<([PinLog], DocumentSnapshot?), Error>) -> Void) {
+        db.collection("pinLogs")
+            .whereField("isPublic", isEqualTo: true)
+            .limit(to: pageSize)
+            .getDocuments { (querySnapshot, error) in
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    guard let snapshot = querySnapshot else { return }
+                    let logs = snapshot.documents.compactMap { document -> PinLog? in
+                        try? document.data(as: PinLog.self)
+                    }
+                    let lastSnapshot = snapshot.documents.last
+                    completion(.success((logs, lastSnapshot)))
+                }
+            }
+    }
+    
+    func fetchMoreData(pageSize: Int, lastSnapshot: DocumentSnapshot, completion: @escaping (Result<([PinLog], DocumentSnapshot?), Error>) -> Void) {
+        db.collection("pinLogs")
+            .whereField("isPublic", isEqualTo: true)
+            .start(afterDocument: lastSnapshot)
+            .limit(to: pageSize)
+            .getDocuments { (querySnapshot, error) in
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    guard let snapshot = querySnapshot else { return }
+                    let logs = snapshot.documents.compactMap { document -> PinLog? in
+                        try? document.data(as: PinLog.self)
+                    }
+                    let lastSnapshot = snapshot.documents.last
+                    completion(.success((logs, lastSnapshot)))
+                }
+            }
+    }
+    
+    // 회원 탈퇴 시 특정 사용자의 모든 PinLog 데이터를 삭제하는 함수
+    func deletePinLogsForUser(userId: String) async throws {
+        let snapshot = try await db.collection("pinLogs").whereField("authorId", isEqualTo: userId).getDocuments()
+        for document in snapshot.documents {
+            try await document.reference.delete()
+        }
+    }
 }

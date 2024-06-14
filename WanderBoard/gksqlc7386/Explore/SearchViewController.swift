@@ -8,14 +8,20 @@
 import UIKit
 import SnapKit
 import Then
+import FirebaseFirestore
 
 class SearchViewController: UIViewController, UISearchBarDelegate {
     
+    var searchKeyword: String?
+    
     var allTripLogs: [PinLog] = []
     var searchedLogs: [PinLog] = []
-    
     var blockedAuthors: [String] = []
-    
+        
+    var lastDocumentSnapshot: DocumentSnapshot?
+    var isLoading = false
+    let pageSize = 30
+        
     let pinLogManager = PinLogManager()
     
     lazy var searchBar = UISearchBar().then {
@@ -55,7 +61,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         
         setupConstraints()
         setupSearchBar()
-        updateNavigationBarColor()
         
         Task {
             self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
@@ -74,20 +79,112 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         return logs.filter { !blockedAuthors.contains($0.authorId) }
     }
     
-    func loadAllData() async {
-        do {
-            let logs = try await pinLogManager.fetchPublicPinLogs()
-            await MainActor.run {
-                //self?.allTripLogs = logs
-                self.allTripLogs = filterBlockedAuthors(from: logs)
-                //self?.searchedLogs = logs
-                self.searchedLogs = filterBlockedAuthors(from: logs)
-                self.collectionView.reloadData()
+    private func applyFilterAndReload() {
+        DispatchQueue.main.async {
+            if let keyword = self.searchKeyword, !keyword.isEmpty {
+                let lowercasedSearchText = keyword.lowercased()
+                self.searchedLogs = self.allTripLogs.filter {
+                    $0.location.containsIgnoringCase(lowercasedSearchText) || $0.location.containsInitials(keyword)
+                }.sorted {
+                    let firstContainsInitials = $0.location.hasPrefixInitial(keyword)
+                    let secondContainsInitials = $1.location.hasPrefixInitial(keyword)
+                    
+                    if firstContainsInitials && !secondContainsInitials {
+                        return true
+                    } else if !firstContainsInitials && secondContainsInitials {
+                        return false
+                    } else {
+                        return $0.location.localizedCaseInsensitiveCompare($1.location) == .orderedAscending
+                    }
+                }
+            } else {
+                self.searchedLogs = self.allTripLogs
             }
-        } catch {
-            print("Failed to fetch pin logs: \(error.localizedDescription)")
+            self.collectionView.reloadData()
         }
     }
+    
+//    func loadAllData() async {
+//        isLoading = true
+//        pinLogManager.fetchInitialData(pageSize: pageSize) { [weak self] result in
+//            guard let self = self else { return }
+//            self.isLoading = false
+//            switch result {
+//            case .success(let (logs, lastSnapshot)):
+//                print("Initial data fetched: \(logs.count) logs")
+//                self.allTripLogs = logs
+//                self.searchedLogs = self.filterBlockedAuthors(from: self.allTripLogs)
+//                self.applyFilterAndReload()
+//                self.lastDocumentSnapshot = lastSnapshot
+//                DispatchQueue.main.async {
+//                    self.collectionView.reloadData()
+//                }
+//            case .failure(let error):
+//                print("Error getting documents: \(error)")
+//            }
+//        }
+//    }
+    func loadAllData() async {
+        isLoading = true
+        pinLogManager.fetchInitialData(pageSize: pageSize) { [weak self] result in
+            guard let self = self else { return }
+            self.isLoading = false
+            switch result {
+            case .success(let (logs, lastSnapshot)):
+                print("Initial data fetched: \(logs.count) logs")
+                self.allTripLogs = self.filterBlockedAuthors(from: logs)
+                self.searchedLogs = self.allTripLogs
+                self.allTripLogs.sort { ($0.createdAt ?? Date.distantPast) > ($1.createdAt ?? Date.distantPast) }
+                self.applyFilterAndReload()
+                self.lastDocumentSnapshot = lastSnapshot
+            case .failure(let error):
+                print("Error getting documents: \(error)")
+            }
+        }
+    }
+    
+    private func fetchMoreData() {
+        guard !isLoading, let lastSnapshot = lastDocumentSnapshot else { return }
+        
+        isLoading = true
+        pinLogManager.fetchMoreData(pageSize: pageSize, lastSnapshot: lastSnapshot) { [weak self] result in
+            guard let self = self else { return }
+            self.isLoading = false
+            switch result {
+            case .success(let (logs, lastSnapshot)):
+                print("More data fetched: \(logs.count) logs")
+                self.allTripLogs.append(contentsOf: self.filterBlockedAuthors(from: logs))
+                self.searchedLogs = self.allTripLogs
+                self.applyFilterAndReload()
+                self.lastDocumentSnapshot = lastSnapshot
+            case .failure(let error):
+                print("Error getting documents: \(error)")
+            }
+        }
+    }
+
+    
+//    private func fetchMoreData() {
+//        guard !isLoading, let lastSnapshot = lastDocumentSnapshot else { return }
+//
+//        isLoading = true
+//        pinLogManager.fetchMoreData(pageSize: pageSize, lastSnapshot: lastSnapshot) { [weak self] result in
+//            guard let self = self else { return }
+//            self.isLoading = false
+//            switch result {
+//            case .success(let (logs, lastSnapshot)):
+//                print("More data fetched: \(logs.count) logs")
+//                self.allTripLogs.append(contentsOf: logs)
+//                self.searchedLogs = self.filterBlockedAuthors(from: self.allTripLogs)
+//                self.lastDocumentSnapshot = lastSnapshot
+//                DispatchQueue.main.async {
+//                    self.collectionView.reloadData()
+//                }
+//            case .failure(let error):
+//                print("Error getting documents: \(error)")
+//            }
+//        }
+//    }
     
     private func setupSearchBar() {
         navigationItem.titleView = searchBar
@@ -100,35 +197,12 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             $0.edges.equalToSuperview()
         }
     }
- 
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        searchKeyword = searchText
+        lastDocumentSnapshot = nil
         Task {
-            let lowercasedSearchText = searchText.lowercased()
-            var filteredLogs: [PinLog]
-            
-            if searchText.isEmpty {
-                filteredLogs = allTripLogs
-            } else {
-                filteredLogs = allTripLogs.filter {
-                    $0.location.containsIgnoringCase(lowercasedSearchText) || $0.location.containsInitials(searchText)
-                }.sorted {
-                    let firstContainsInitials = $0.location.hasPrefixInitial(searchText)
-                    let secondContainsInitials = $1.location.hasPrefixInitial(searchText)
-                    
-                    if firstContainsInitials && !secondContainsInitials {
-                        return true
-                    } else if !firstContainsInitials && secondContainsInitials {
-                        return false
-                    } else {
-                        return $0.location.localizedCaseInsensitiveCompare($1.location) == .orderedAscending
-                    }
-                }
-            }
-            
-            DispatchQueue.main.async {
-                self.searchedLogs = filteredLogs
-                self.collectionView.reloadData()
-            }
+            await loadAllData()
         }
     }
 }
@@ -152,7 +226,18 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         detailVC.delegate = self
         navigationController?.pushViewController(detailVC, animated: true)
     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+        
+        if offsetY > contentHeight - height {
+            fetchMoreData()
+        }
+    }
 }
+
 
 extension String {
     func containsIgnoringCase(_ find: String) -> Bool {
@@ -211,13 +296,4 @@ extension SearchViewController: DetailViewControllerDelegate {
         self.collectionView.reloadData()
     }
 }
-//스크롤 내릴때 상단에 고정된 네비게이션 바 색상 변경
-extension SearchViewController {
-    func updateNavigationBarColor() {
-        let navbarAppearance = UINavigationBarAppearance()
-        navbarAppearance.configureWithOpaqueBackground()
-        let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.clear
-        navbarAppearance.backgroundColor = navBarColor
-        navigationController?.navigationBar.standardAppearance = navbarAppearance
-    }
-}
+

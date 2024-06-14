@@ -213,4 +213,3 @@ class FirestoreManager {
         try await userRef.delete()
     }
 }
-

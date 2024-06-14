@@ -7,9 +7,18 @@
 
 import Foundation
 
-struct UserSummary: Codable {
+struct UserSummary: Codable, Hashable {
     let uid: String
+    let email: String
     let displayName: String
     let photoURL: String?
     var isMate: Bool
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(uid)
+    }
+    
+    static func == (lhs: UserSummary, rhs: UserSummary) -> Bool {
+        return lhs.uid == rhs.uid
+    }
 }

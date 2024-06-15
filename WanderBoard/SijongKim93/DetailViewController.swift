@@ -804,15 +804,14 @@ class DetailViewController: UIViewController {
     }
     
     func hidePinLog() {
-        guard let pinLog = pinLog, let postId = pinLog.id, let userId = Auth.auth().currentUser?.uid else { return }
-
+        guard let pinLogId = pinLog?.id else { return }
         Task {
             do {
-                try await FirestoreManager.shared.hidePost(forUser: userId, postId: postId)
-                delegate?.didHidePinLog(postId)
+                try await AuthenticationManager.shared.hidePinLog(pinLogId: pinLogId)
+                delegate?.didHidePinLog(pinLogId)
                 self.navigationController?.popViewController(animated: true)
             } catch {
-                print("Failed to hide pinLog: \(error.localizedDescription)")
+                print("Failed to hide pin log: \(error)")
             }
         }
     }

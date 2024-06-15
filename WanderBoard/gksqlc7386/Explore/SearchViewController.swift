@@ -16,7 +16,9 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
     
     var allTripLogs: [PinLog] = []
     var searchedLogs: [PinLog] = []
+    
     var blockedAuthors: [String] = []
+    var hiddenPinLogs: [String] = []
         
     var lastDocumentSnapshot: DocumentSnapshot?
     var isLoading = false
@@ -61,11 +63,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         
         setupConstraints()
         setupSearchBar()
-        
-        Task {
-            self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
-            await loadAllData()
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -73,6 +70,12 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         
         navigationItem.largeTitleDisplayMode = .never
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        
+        Task {
+            self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
+            self.hiddenPinLogs = try await AuthenticationManager.shared.getHiddenPinLogs()
+            await loadAllData()
+        }
     }
     
     private func filterBlockedAuthors(from logs: [PinLog]) -> [PinLog] {
@@ -81,9 +84,11 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
     
     private func applyFilterAndReload() {
         DispatchQueue.main.async {
+            var filteredLogs = self.allTripLogs.filter { !self.blockedAuthors.contains($0.authorId) && !self.hiddenPinLogs.contains($0.id ?? "") }
+
             if let keyword = self.searchKeyword, !keyword.isEmpty {
                 let lowercasedSearchText = keyword.lowercased()
-                self.searchedLogs = self.allTripLogs.filter {
+                filteredLogs = filteredLogs.filter {
                     $0.location.containsIgnoringCase(lowercasedSearchText) || $0.location.containsInitials(keyword)
                 }.sorted {
                     let firstContainsInitials = $0.location.hasPrefixInitial(keyword)
@@ -97,33 +102,13 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
                         return $0.location.localizedCaseInsensitiveCompare($1.location) == .orderedAscending
                     }
                 }
-            } else {
-                self.searchedLogs = self.allTripLogs
             }
+
+            self.searchedLogs = filteredLogs
             self.collectionView.reloadData()
         }
     }
     
-//    func loadAllData() async {
-//        isLoading = true
-//        pinLogManager.fetchInitialData(pageSize: pageSize) { [weak self] result in
-//            guard let self = self else { return }
-//            self.isLoading = false
-//            switch result {
-//            case .success(let (logs, lastSnapshot)):
-//                print("Initial data fetched: \(logs.count) logs")
-//                self.allTripLogs = logs
-//                self.searchedLogs = self.filterBlockedAuthors(from: self.allTripLogs)
-//                self.applyFilterAndReload()
-//                self.lastDocumentSnapshot = lastSnapshot
-//                DispatchQueue.main.async {
-//                    self.collectionView.reloadData()
-//                }
-//            case .failure(let error):
-//                print("Error getting documents: \(error)")
-//            }
-//        }
-//    }
     func loadAllData() async {
         isLoading = true
         pinLogManager.fetchInitialData(pageSize: pageSize) { [weak self] result in
@@ -163,29 +148,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         }
     }
 
-    
-//    private func fetchMoreData() {
-//        guard !isLoading, let lastSnapshot = lastDocumentSnapshot else { return }
-//
-//        isLoading = true
-//        pinLogManager.fetchMoreData(pageSize: pageSize, lastSnapshot: lastSnapshot) { [weak self] result in
-//            guard let self = self else { return }
-//            self.isLoading = false
-//            switch result {
-//            case .success(let (logs, lastSnapshot)):
-//                print("More data fetched: \(logs.count) logs")
-//                self.allTripLogs.append(contentsOf: logs)
-//                self.searchedLogs = self.filterBlockedAuthors(from: self.allTripLogs)
-//                self.lastDocumentSnapshot = lastSnapshot
-//                DispatchQueue.main.async {
-//                    self.collectionView.reloadData()
-//                }
-//            case .failure(let error):
-//                print("Error getting documents: \(error)")
-//            }
-//        }
-//    }
-    
     private func setupSearchBar() {
         navigationItem.titleView = searchBar
     }
@@ -238,7 +200,6 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
 }
 
-
 extension String {
     func containsIgnoringCase(_ find: String) -> Bool {
         return self.range(of: find, options: .caseInsensitive, locale: .current) != nil
@@ -272,10 +233,8 @@ extension String {
 
 extension SearchViewController: DetailViewControllerDelegate {
     func didHidePinLog(_ hiddenPinLogId: String) {
-        func didHidePinLog(_ hiddenPinLogId: String) {
-            self.searchedLogs = self.searchedLogs.filter { $0.id != hiddenPinLogId }
-            self.collectionView.reloadData()
-        }
+        self.hiddenPinLogs.append(hiddenPinLogId)
+        applyFilterAndReload()
     }
     
     func didUpdatePinButton(_ updatedPinLog: PinLog) {
@@ -289,18 +248,13 @@ extension SearchViewController: DetailViewControllerDelegate {
     func didUpdatePinLog() {
         Task {
             self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
+            self.hiddenPinLogs = try await AuthenticationManager.shared.getHiddenPinLogs()
             await loadAllData()
         }
     }
     
     func didBlockAuthor(_ authorId: String) {
         self.blockedAuthors.append(authorId)
-        
-        // 차단된 작성자의 로그를 숨기기 위해 필터링
-//        self.allTripLogs.filter { !self.blockedAuthors.contains($0.authorId) }
-        self.searchedLogs = self.searchedLogs.filter { !self.blockedAuthors.contains($0.authorId) }
-        
-        self.collectionView.reloadData()
+        applyFilterAndReload()
     }
 }
-

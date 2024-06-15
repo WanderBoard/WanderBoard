@@ -25,6 +25,7 @@ struct User: Codable {
     var agreedToMarketing: Bool?
     var agreedToThirdParty: Bool?
     var joinedDate: Date?
+    var hiddenPinLogs: [String]?
 
     init(entity: UserEntity) {
         self.uid = entity.uid ?? ""
@@ -44,6 +45,7 @@ struct User: Codable {
         self.agreedToMarketing = entity.agreedToMarketing
         self.agreedToThirdParty = entity.agreedToThirdParty
         self.joinedDate = entity.joinedDate
+        self.hiddenPinLogs = (entity.hiddenPinLogs?.jsonArray() as? [String]) ?? []
     }
 
     func toUserEntity(context: NSManagedObjectContext) -> UserEntity {
@@ -66,9 +68,9 @@ struct User: Codable {
         userEntity.agreedToMarketing = self.agreedToMarketing ?? false
         userEntity.agreedToThirdParty = self.agreedToThirdParty ?? false
         userEntity.joinedDate = self.joinedDate
+        userEntity.hiddenPinLogs = self.hiddenPinLogs?.jsonString() ?? "[]"
         return userEntity
     }
-
 }
 
 extension Array where Element == String {

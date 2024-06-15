@@ -709,8 +709,7 @@ class DetailInputViewController: UIViewController {
     
     @objc func consumButtonTapped() {
         let spendVC = SpendingListViewController()
-        spendVC.modalPresentationStyle = .fullScreen
-        self.present(spendVC, animated: true)
+        self.navigationController?.pushViewController(spendVC, animated: true)
     }
     
     @objc func showDatePicker(_ sender: UIButton) {
@@ -942,7 +941,7 @@ class DetailInputViewController: UIViewController {
                     pinLog.title = title
                     pinLog.content = content
                     pinLog.isPublic = isPublic
-                    //pinLog.isSpendingPublic = isSpendingPublic
+                    pinLog.isSpendingPublic = isSpendingPublic
                     pinLog.attendeeIds = selectedFriends.map { $0.uid }
                 } else {
                     pinLog = PinLog(location: locationTitle,

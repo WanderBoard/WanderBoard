@@ -35,10 +35,29 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         return button
     }()
     
+    lazy var filterStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 8
+        stackView.distribution = .fillProportionally
+        filters.enumerated().forEach { index, filter in
+            let button = UIButton(type: .system)
+            button.setTitle(filter, for: .normal)
+            button.setTitleColor(.darkgray, for: .normal)
+            button.titleLabel?.font = .systemFont(ofSize: 12, weight: .medium)
+            button.layer.cornerRadius = 15
+            button.layer.borderColor = UIColor.babygray.cgColor
+            button.layer.borderWidth = 1
+            button.tag = index
+            button.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
+            stackView.addArrangedSubview(button)
+        }
+        return stackView
+    }()
+    
     lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.dataSource = self
         $0.delegate = self
-        $0.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: FilterCollectionViewCell.identifier)
         $0.register(MyTripsCollectionViewCell.self, forCellWithReuseIdentifier: MyTripsCollectionViewCell.identifier)
     }
     
@@ -53,13 +72,13 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
         
     private let mainLabel = UILabel().then {
-        $0.text = "여행 기록을 추가하세요"
+        $0.text = ""
         $0.font = .boldSystemFont(ofSize: 20)
         $0.textAlignment = .center
     }
         
     private let subLabel = UILabel().then {
-        $0.text = "입력된 글이 없습니다. \n 상단에 버튼을 클릭하여 여행을 기록해보세요"
+        $0.text = ""
         $0.font = .systemFont(ofSize: 16)
         $0.textColor = .darkgray
         $0.textAlignment = .center
@@ -92,6 +111,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         updateNavigationBarColor()
         
         currentFilterIndex = 0
+        updateFilterButtonColors()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -126,18 +146,28 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
 
     private func setupConstraints() {
+        view.addSubview(filterStackView)
         view.addSubview(collectionView)
 
-        collectionView.snp.makeConstraints {
+        filterStackView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.equalToSuperview().offset(16)
+            $0.trailing.equalToSuperview().offset(-136)
+            $0.height.equalTo(30) // 필터 버튼 높이
+        }
+        
+        collectionView.snp.makeConstraints {
+            $0.top.equalTo(filterStackView.snp.bottom).offset(8)
             $0.leading.trailing.bottom.equalToSuperview()
         }
 
         collectionView.addSubview(emptyView)
         
         emptyView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(300)
+            $0.top.equalToSuperview().offset(120)
             $0.centerX.equalToSuperview()
+            $0.height.equalTo(300)
+            $0.width.equalTo(300)
         }
         
         emptyView.addSubview(stackView)
@@ -160,8 +190,8 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         }
         
         emptyImg.snp.makeConstraints {
-            $0.height.equalTo(45)
-            $0.width.equalTo(65)
+            $0.height.equalTo(35)
+            $0.width.equalTo(55)
         }
     }
 
@@ -193,6 +223,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
     
     @objc func addButtonTapped() {
+        print("buttonTapped")
         NotificationHelper.changePage(hidden: true, isEnabled: false)
         plusButton.isHidden = true
         let inputVC = DetailInputViewController()
@@ -202,12 +233,12 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     
     @objc func filterButtonTapped(sender: UIButton) {
         currentFilterIndex = sender.tag
+        updateFilterButtonColors()
         Task {
             if currentFilterIndex == 2 { // Wander Pin 필터가 선택되었을 때
                 await loadPinnedData()
             }
             updateView()
-            printFilteredLogs() // 필터링된 로그를 콘솔에 출력
         }
     }
     
@@ -241,13 +272,6 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         }
     }
     
-    func printFilteredLogs() {
-        let filteredLogs = filterTripLogs()
-        for log in filteredLogs {
-            print("Title: \(log.title), Author: \(log.authorId), Pinned By: \(log.pinnedBy ?? [])")
-        }
-    }
-    
     func addNewTripLog(_ log: PinLog) {
         MyTripsViewController.tripLogs.insert(log, at: 0)
         updateView()
@@ -258,81 +282,105 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
 
         if filteredLogs.isEmpty {
             emptyView.isHidden = false
+            collectionView.bringSubviewToFront(emptyView)
+            
+            // 현재 필터에 따라 텍스트 업데이트
+            switch currentFilterIndex {
+            case 0:
+                mainLabel.text = "나만의 핀 기록을 추가해보세요"
+                subLabel.text = "아직 핀 기록이 없습니다.\n WanderBoard에 소중한 순간들을 기록해보세요."
+                addButton.isHidden = false
+                plusButton.isHidden = true
+            case 1:
+                mainLabel.text = "함께한 추억을 공유해보세요"
+                subLabel.text = "메이트를 추가하거나 추가된 여행 기록이 \n 이곳에 표시됩니다."
+                addButton.isHidden = true
+                plusButton.isHidden = false
+            case 2:
+                mainLabel.text = "다른 사람의 여행을 저장해보세요"
+                subLabel.text = "Wander Pin 버튼을 눌러 저장한 핀이 \n 이곳에 표시됩니다."
+                addButton.isHidden = true
+                plusButton.isHidden = false
+            default:
+                mainLabel.text = "나의 핀 기록을 추가하세요"
+                subLabel.text = "입력된 나의 핀 기록이 없습니다.\n WanderBoard에 당신의 기록을 남겨보세요."
+                plusButton.isHidden = true
+            }
         } else {
             emptyView.isHidden = true
         }
 
         collectionView.reloadData()
     }
+    
+    private func updateFilterButtonColors() {
+        for (index, view) in filterStackView.arrangedSubviews.enumerated() {
+            if let button = view as? UIButton {
+                if index == currentFilterIndex {
+                    button.backgroundColor = .babygray
+                    button.setTitleColor(.darkgray, for: .normal)
+                } else {
+                    button.backgroundColor = .clear
+                    button.setTitleColor(.darkgray, for: .normal)
+                }
+            }
+        }
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor() {
+        let lineColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        filterStackView.arrangedSubviews.forEach { view in
+            if let button = view as? UIButton {
+                button.layer.borderColor = lineColor?.cgColor
+            }
+        }
+    }
 }
 
 extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 2
+        return 1
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if section == 0 {
-            return filters.count
-        } else {
-            return filterTripLogs().count
-        }
+        return filterTripLogs().count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.section == 0 {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilterCollectionViewCell.identifier, for: indexPath) as! FilterCollectionViewCell
-            cell.filterButton.setTitle(filters[indexPath.item], for: .normal)
-            cell.filterButton.tag = indexPath.item
-            cell.filterButton.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
-            return cell
-        } else {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyTripsCollectionViewCell.identifier, for: indexPath) as? MyTripsCollectionViewCell else {
-                fatalError("컬렉션 뷰 오류")
-            }
-            
-            let tripLog = filterTripLogs()[indexPath.item]
-            cell.configure(with: tripLog)
-            
-            return cell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyTripsCollectionViewCell.identifier, for: indexPath) as? MyTripsCollectionViewCell else {
+            fatalError("컬렉션 뷰 오류")
         }
+        
+        let tripLog = filterTripLogs()[indexPath.item]
+        cell.configure(with: tripLog)
+        
+        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let screenWidth = UIScreen.main.bounds.width
-        if indexPath.section == 0 {
-            let itemWidth = screenWidth / 4 - 16
-            let itemHeight = itemWidth * 1/3
-            return CGSize(width: itemWidth, height: itemHeight)
-        } else {
-            let itemWidth = screenWidth - 32
-            let itemHeight = itemWidth * 9/16
-            return CGSize(width: itemWidth, height: itemHeight)
-        }
+        let itemWidth = screenWidth - 32
+        let itemHeight = itemWidth * 9/16
+        return CGSize(width: itemWidth, height: itemHeight)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        if section == 0 {
-            return 8
-        } else {
-            return 16
-        }
+        return 16
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        if section == 0 {
-            return 8
-        } else {
-            return 0
-        }
+        return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        if section == 0 {
-            return UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
-        } else {
-            return UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
-        }
+        return UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

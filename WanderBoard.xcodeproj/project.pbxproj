@@ -17,6 +17,7 @@
 		2A5F47C42C0E0AFF00D289AA /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F47C32C0E0AFF00D289AA /* MapView.swift */; };
 		2A5F47C62C0E276500D289AA /* ImageUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F47C52C0E276500D289AA /* ImageUploader.swift */; };
 		2A5F47C82C0E3A0C00D289AA /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F47C72C0E3A0C00D289AA /* StorageManager.swift */; };
+		2A7623BB2C1DE9310044CF05 /* TermsOfServiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7623BA2C1DE9310044CF05 /* TermsOfServiceViewController.swift */; };
 		2A7654E52C060A3500D8A098 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7654E42C060A3500D8A098 /* FirebaseAnalytics */; };
 		2A7654E72C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7654E62C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion */; };
 		2A7654E92C060A3500D8A098 /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7654E82C060A3500D8A098 /* FirebaseAnalyticsSwift */; };
@@ -75,7 +76,6 @@
 		4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37622C077122001B03F8 /* DetailViewController.swift */; };
 		4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */; };
 		4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */; };
-		6BBE4B822C19950100A7A793 /* ExpenseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7C2C19950100A7A793 /* ExpenseModel.swift */; };
 		6BBE4B832C19950100A7A793 /* InsertSpendingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7D2C19950100A7A793 /* InsertSpendingViewController.swift */; };
 		6BBE4B842C19950100A7A793 /* SpendingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7E2C19950100A7A793 /* SpendingListViewController.swift */; };
 		6BBE4B852C19950100A7A793 /* SpendingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7F2C19950100A7A793 /* SpendingTableViewCell.swift */; };
@@ -83,10 +83,7 @@
 		6BBE4B882C1AEE6200A7A793 /* SpendingEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B872C1AEE6200A7A793 /* SpendingEmptyView.swift */; };
 		6BBE4B8A2C1BD93100A7A793 /* NavigationBarFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B892C1BD93100A7A793 /* NavigationBarFactory.swift */; };
 		9530E4A42C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */; };
-<<<<<<< Updated upstream
-=======
-		95562D0B2C1CB75000A2C844 /* DetailInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95562D0A2C1CB75000A2C844 /* DetailInputViewController.swift */; };
->>>>>>> Stashed changes
+
 		955A2B762C1989320008A1CB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 955A2B752C1989320008A1CB /* GoogleService-Info.plist */; };
 		9561FFF92C186B440072B065 /* OnboardingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9561FFF82C186B440072B065 /* OnboardingPage.swift */; };
 		956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED7872C0852B90001BAC6 /* BaseViewController.swift */; };
@@ -96,15 +93,12 @@
 		956ED7962C0852B90001BAC6 /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */; };
 		956ED7972C0852B90001BAC6 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78E2C0852B90001BAC6 /* SettingViewController.swift */; };
 		FB0C32442C14C2D000DD2F00 /* WanderBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FB0C32422C14C2D000DD2F00 /* WanderBoard.xcdatamodeld */; };
-<<<<<<< Updated upstream
 		FB3793AB2C1D660B009C1268 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */; };
 		FB3793AD2C1D6854009C1268 /* AccountDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */; };
-=======
->>>>>>> Stashed changes
+
 		FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */; };
 		FB9A3AD62C1984A200E1EAA2 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */; };
 		FB9A3ADB2C1984B700E1EAA2 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */; };
-		FB9A3ADC2C1984B700E1EAA2 /* EmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD82C1984B600E1EAA2 /* EmptyView.swift */; };
 		FB9A3ADD2C1984B700E1EAA2 /* MyTripsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */; };
 		FB9A3ADE2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */; };
 		FB9A3AE52C1984C600E1EAA2 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3ADF2C1984C600E1EAA2 /* SearchViewController.swift */; };
@@ -125,6 +119,7 @@
 		2A5F47C32C0E0AFF00D289AA /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		2A5F47C52C0E276500D289AA /* ImageUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUploader.swift; sourceTree = "<group>"; };
 		2A5F47C72C0E3A0C00D289AA /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
+		2A7623BA2C1DE9310044CF05 /* TermsOfServiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsOfServiceViewController.swift; sourceTree = "<group>"; };
 		2A7654E12C06097400D8A098 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2A7654FC2C060FB500D8A098 /* SignInWithGoogle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithGoogle.swift; sourceTree = "<group>"; };
 		2A7655032C0610BA00D8A098 /* SignInWithApple.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithApple.swift; sourceTree = "<group>"; };
@@ -167,7 +162,6 @@
 		4DFA37622C077122001B03F8 /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryCollectionViewCell.swift; sourceTree = "<group>"; };
 		4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendCollectionViewCell.swift; sourceTree = "<group>"; };
-		6BBE4B7C2C19950100A7A793 /* ExpenseModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseModel.swift; sourceTree = "<group>"; };
 		6BBE4B7D2C19950100A7A793 /* InsertSpendingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertSpendingViewController.swift; sourceTree = "<group>"; };
 		6BBE4B7E2C19950100A7A793 /* SpendingListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpendingListViewController.swift; sourceTree = "<group>"; };
 		6BBE4B7F2C19950100A7A793 /* SpendingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpendingTableViewCell.swift; sourceTree = "<group>"; };
@@ -175,10 +169,6 @@
 		6BBE4B872C1AEE6200A7A793 /* SpendingEmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendingEmptyView.swift; sourceTree = "<group>"; };
 		6BBE4B892C1BD93100A7A793 /* NavigationBarFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarFactory.swift; sourceTree = "<group>"; };
 		9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyCollectionViewCell.swift; sourceTree = "<group>"; };
-<<<<<<< Updated upstream
-=======
-		95562D0A2C1CB75000A2C844 /* DetailInputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DetailInputViewController.swift; path = ../../../../../../Downloads/DetailInputViewController.swift; sourceTree = "<group>"; };
->>>>>>> Stashed changes
 		955A2B752C1989320008A1CB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9561FFF82C186B440072B065 /* OnboardingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPage.swift; sourceTree = "<group>"; };
 		956ED7872C0852B90001BAC6 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
@@ -188,15 +178,13 @@
 		956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyViewController.swift; sourceTree = "<group>"; };
 		956ED78E2C0852B90001BAC6 /* SettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		FB0C32432C14C2D000DD2F00 /* WanderBoard.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WanderBoard.xcdatamodel; sourceTree = "<group>"; };
-<<<<<<< Updated upstream
+ a019773edfbf2022769e39a24ed145d2cdb1cd02
 		FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionManager.swift; sourceTree = "<group>"; };
-=======
->>>>>>> Stashed changes
+
 		FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
 		FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterCollectionViewCell.swift; sourceTree = "<group>"; };
-		FB9A3AD82C1984B600E1EAA2 /* EmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyView.swift; sourceTree = "<group>"; };
 		FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTripsViewController.swift; sourceTree = "<group>"; };
 		FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTripsCollectionViewCell.swift; sourceTree = "<group>"; };
 		FB9A3ADF2C1984C600E1EAA2 /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -375,11 +363,7 @@
 			isa = PBXGroup;
 			children = (
 				4DFA37622C077122001B03F8 /* DetailViewController.swift */,
-<<<<<<< Updated upstream
 				4D37AF242C1D4640005DADEA /* DetailInputViewController.swift */,
-=======
-				95562D0A2C1CB75000A2C844 /* DetailInputViewController.swift */,
->>>>>>> Stashed changes
 				4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */,
 				4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */,
 				4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */,
@@ -396,7 +380,6 @@
 			isa = PBXGroup;
 			children = (
 				6BBE4B892C1BD93100A7A793 /* NavigationBarFactory.swift */,
-				6BBE4B7C2C19950100A7A793 /* ExpenseModel.swift */,
 				6BBE4B7D2C19950100A7A793 /* InsertSpendingViewController.swift */,
 				6BBE4B7E2C19950100A7A793 /* SpendingListViewController.swift */,
 				6BBE4B7F2C19950100A7A793 /* SpendingTableViewCell.swift */,
@@ -417,6 +400,7 @@
 				956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */,
 				2AF299D72C1AF25A0021D231 /* PrivacyPolicySectionHeaderView.swift */,
 				2A1D31F02C1C7ED400288C71 /* ConsentStatusViewController.swift */,
+				2A7623BA2C1DE9310044CF05 /* TermsOfServiceViewController.swift */,
 				9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */,
 				2AF29A052C1B68310021D231 /* PrivacyPolicyScripts.swift */,
 				9561FFF82C186B440072B065 /* OnboardingPage.swift */,
@@ -451,7 +435,6 @@
 		FB72E7422C0F3EE7002AADBD /* MyTrips */ = {
 			isa = PBXGroup;
 			children = (
-				FB9A3AD82C1984B600E1EAA2 /* EmptyView.swift */,
 				FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */,
 				FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */,
 				FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */,
@@ -574,10 +557,8 @@
 				2A7655232C070B1700D8A098 /* Numeric.swift in Sources */,
 				6BBE4B882C1AEE6200A7A793 /* SpendingEmptyView.swift in Sources */,
 				6BBE4B8A2C1BD93100A7A793 /* NavigationBarFactory.swift in Sources */,
-<<<<<<< Updated upstream
 				4D37AF252C1D4640005DADEA /* DetailInputViewController.swift in Sources */,
-=======
->>>>>>> Stashed changes
+
 				2A9BED2E2C08B71D0032C403 /* Invitation.swift in Sources */,
 				2A5F47C42C0E0AFF00D289AA /* MapView.swift in Sources */,
 				2A9BED322C08E2A40032C403 /* PinLogManager.swift in Sources */,
@@ -591,11 +572,12 @@
 				6BBE4B862C19950100A7A793 /* SpendingTableViewHeaderView.swift in Sources */,
 				FB9A3AE52C1984C600E1EAA2 /* SearchViewController.swift in Sources */,
 				956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */,
-				6BBE4B822C19950100A7A793 /* ExpenseModel.swift in Sources */,
+
+				2A7623BB2C1DE9310044CF05 /* TermsOfServiceViewController.swift in Sources */,
+
 				6BBE4B852C19950100A7A793 /* SpendingTableViewCell.swift in Sources */,
 				2AF29A062C1B68320021D231 /* PrivacyPolicyScripts.swift in Sources */,
 				4D21E8592C1AB960002FDBC9 /* MateTableViewCell.swift in Sources */,
-				FB9A3ADC2C1984B700E1EAA2 /* EmptyView.swift in Sources */,
 				4D21E85B2C1B39E7002FDBC9 /* UserSummary.swift in Sources */,
 				2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */,
 				2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */,

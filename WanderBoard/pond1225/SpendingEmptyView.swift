@@ -10,7 +10,7 @@ import SnapKit
 
 class SpendingEmptyView: UIView {
     
-    weak var delegate: EmptyViewDelegate?
+    weak var delegate: SpendingEmptyViewDelegate?
     
     private let emptyImg = UIImageView().then {
         $0.image = UIImage(named: "emptyImg")

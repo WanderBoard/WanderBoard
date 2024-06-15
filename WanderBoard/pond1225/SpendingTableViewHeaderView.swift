@@ -8,6 +8,16 @@
 import Foundation
 import UIKit
 
+//
+//  TableViewHeaderView.swift
+//  WanderBoard
+//
+//  Created by t2023-m0049 on 6/3/24.
+//
+
+import Foundation
+import UIKit
+
 class SpendingTableViewHeaderView: UITableViewHeaderFooterView {
     static let identifier = "SpendingTableViewHeaderView"
     
@@ -37,30 +47,23 @@ class SpendingTableViewHeaderView: UITableViewHeaderFooterView {
         
         configureUI()
         makeConstraints()
-        
     }
     
     func configureUI() {
-        
         contentView.addSubview(dateLabel)
         contentView.addSubview(dailyTotalAmountLabel)
-        
     }
     
     func makeConstraints() {
-        
         dateLabel.snp.makeConstraints {
             $0.centerY.equalTo(contentView.snp.centerY)
             $0.leading.equalTo(contentView.safeAreaLayoutGuide).inset(32)
         }
         
-        
         dailyTotalAmountLabel.snp.makeConstraints {
             $0.centerY.equalTo(contentView.snp.centerY)
             $0.trailing.equalTo(contentView.safeAreaLayoutGuide).inset(32)
-            
         }
-        
     }
     
     required init?(coder: NSCoder) {
@@ -77,15 +80,6 @@ class SpendingTableViewHeaderView: UITableViewHeaderFooterView {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
         dateLabel.text = dateFormatter.string(from: date)
-        dailyTotalAmountLabel.text =  "\(formatCurrency(dailyTotalAmount))원"}
-}
-
-
-// MARK: TableViewCell 수정시 수정데이터 반영 Delegate
-extension SpendingListViewController: InsertspendingviewcontrollerDelegate {
-    func didUpdateExpense(_ expense: Expense, at indexPath: IndexPath) {
-        dailyExpenses[indexPath.section].expenses[indexPath.row] = expense
-        tableView.reloadRows(at: [indexPath], with: .automatic)
-        updateHeaderView(forSection: indexPath.section, withDeletedExpense: expense)
+        dailyTotalAmountLabel.text =  "\(formatCurrency(dailyTotalAmount))원"
     }
 }

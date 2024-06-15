@@ -200,4 +200,14 @@ class PinLogManager {
             try? document.data(as: PinLog.self)
         }
     }
+    
+    func fetchTaggedPinLogs(forUserId userId: String) async throws -> [PinLog] {
+        let querySnapshot = try await db.collection("pinLogs")
+            .whereField("attendeeIds", arrayContains: userId)
+            .getDocuments()
+        
+        return querySnapshot.documents.compactMap { document in
+            try? document.data(as: PinLog.self)
+        }
+    }
 }

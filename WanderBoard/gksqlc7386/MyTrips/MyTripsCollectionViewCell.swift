@@ -85,14 +85,15 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         }
     
         stackView.snp.makeConstraints {
-            $0.leading.equalTo(contentView.snp.leading).offset(30)
+            $0.leading.equalTo(contentView.snp.leading).offset(32)
             $0.bottom.equalTo(contentView.snp.bottom).inset(30)
         }
         
         privateButton.snp.makeConstraints{
             $0.leading.equalTo(stackView.snp.trailing).offset(30)
-            $0.trailing.equalTo(contentView.snp.trailing).inset(30)
-            $0.bottom.equalTo(contentView.snp.bottom).inset(30)
+            $0.trailing.equalTo(contentView.snp.trailing).inset(32)
+            $0.bottom.equalTo(contentView.snp.bottom).inset(29)
+            $0.width.height.equalTo(22)
         }
     }
     
@@ -105,11 +106,11 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         
         titleLabel.text = tripLog.location
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.dateFormat = "yyyy.MM.dd"
         let startDate = dateFormatter.string(from: tripLog.startDate)
         let endDate = dateFormatter.string(from: tripLog.endDate)
         let duration = Calendar.current.dateComponents([.day], from: tripLog.startDate, to: tripLog.endDate).day ?? 0
-        subTitle.text = "\(startDate) - \(endDate) \(duration) days"
+        subTitle.text = "\(startDate) - \(endDate) ・ \(duration) days"
         
         privateButton.isHidden = tripLog.isPublic
     }

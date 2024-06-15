@@ -91,7 +91,7 @@ class PageViewController: UIViewController, CLLocationManagerDelegate {
         ]
         
         navigationController.navigationBar.titleTextAttributes = [
-            NSAttributedString.Key.font: UIFont.systemFont(ofSize: 20, weight: .regular)
+            NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17, weight: .regular)
         ]
         
         // 하단 선 제거
@@ -100,9 +100,15 @@ class PageViewController: UIViewController, CLLocationManagerDelegate {
         
         let appearance = UINavigationBarAppearance()
         
-        appearance.backgroundColor = .white.withAlphaComponent(0.9)
+        appearance.backgroundColor = UIColor(named: "textColor")
         appearance.backgroundEffect = nil
         navigationController.navigationBar.standardAppearance = appearance
+        
+        // 특정 페이지의 네비게이션 백버튼 타이틀을 빈 문자열로 설정
+        if index == 0 {
+            let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+            contentViewController.navigationItem.backBarButtonItem = backButton
+        }
         
         return navigationController
     }
@@ -119,9 +125,9 @@ class PageViewController: UIViewController, CLLocationManagerDelegate {
         pageControlButton.view.backgroundColor = .clear
         
         pageControlButton.view.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(90)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
-            $0.height.equalTo(70)
+            $0.leading.trailing.equalTo(view).inset(90)
+            $0.bottom.equalTo(view).inset(33)
+            $0.height.equalTo(44)
         }
     }
     
@@ -192,7 +198,7 @@ class PageViewController: UIViewController, CLLocationManagerDelegate {
     func updateColor(){
         let navbarAppearance = UINavigationBarAppearance()
         navbarAppearance.configureWithOpaqueBackground()
-        let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.clear
+        let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.white
         navbarAppearance.backgroundColor = navBarColor
         navigationController?.navigationBar.standardAppearance = navbarAppearance
     }

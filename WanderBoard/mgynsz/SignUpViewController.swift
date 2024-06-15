@@ -14,29 +14,7 @@ import FirebaseStorage
 
 class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UITextFieldDelegate {
     
-//    private let topBar: UIView = {
-//        let view = UIView()
-//        view.backgroundColor = .black
-//        view.layer.cornerRadius = 2
-//        return view
-//    }()
-    
-//    private let titleLabel: UILabel = {
-//        let label = UILabel()
-//        label.text = "회원가입asdads"
-//        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-//        label.textAlignment = .center
-//        return label
-//    }()
-    
-    private let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "프로필 설정"
-        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        label.textAlignment = .center
-        return label
-    }()
-    
+    private var userData: User?
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
 
@@ -48,18 +26,25 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         imageView.contentMode = .center
         imageView.tintColor = UIColor(named: "ButtonColor")
         imageView.isUserInteractionEnabled = true
-//        imageView.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         imageView.layer.cornerRadius = 50
         imageView.layer.borderColor = UIColor(named: "ButtonColor")?.cgColor
         imageView.clipsToBounds = true
         imageView.layer.borderWidth = 1
         return imageView
     }()
+    var IDArea = UIView()
+    private var IDIcon = UIImageView().then(){
+        $0.contentMode = .scaleAspectFit
+    }
+    private var myID = UILabel().then(){
+        $0.font = UIFont.systemFont(ofSize: 13)
+        $0.textColor = .font
+    }
     
     private let nickNameLabel: UILabel = {
         let label = UILabel()
         label.text = "닉네임"
-        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        label.font = UIFont.systemFont(ofSize: 15, weight: .regular)
         return label
     }()
     
@@ -100,7 +85,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let genderLabel: UILabel = {
         let label = UILabel()
         label.text = "성별"
-        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        label.font = UIFont.systemFont(ofSize: 15, weight: .regular)
         return label
     }()
     
@@ -135,7 +120,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let interestsLabel: UILabel = {
         let label = UILabel()
         label.text = "관심 여행지"
-        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        label.font = UIFont.systemFont(ofSize: 15, weight: .regular)
         return label
     }()
     
@@ -258,6 +243,50 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
+    func fetchUserData() {
+        Task {
+            do {
+                if let authUser = try? AuthenticationManager.shared.getAuthenticatedUser(), let email = authUser.email {
+                    userData = try await FirestoreManager.shared.checkUserExists(email: email)
+                    DispatchQueue.main.async {
+                        self.setIcon()
+                    }
+                }
+            } catch {
+                print("유저데이터를 받아오는데 실패했습니다")
+            }
+        }
+    }
+    
+    func setIcon() {
+        let iconColor: UIColor
+        if traitCollection.userInterfaceStyle == .dark {
+            iconColor = UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1)
+        } else {
+            iconColor = UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
+        }
+        
+        guard let userData = self.userData else {
+            print("등록된 로그인 정보가 없습니다")
+            return
+        }
+        
+        switch userData.authProvider {
+        case AuthProviderOption.google.rawValue:
+            self.IDIcon.image = UIImage(named: "googleLogo")
+        case AuthProviderOption.apple.rawValue:
+            self.IDIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
+        case AuthProviderOption.kakao.rawValue:
+            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+            self.IDIcon.tintColor = iconColor
+        case AuthProviderOption.email.rawValue:
+            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+            self.IDIcon.tintColor = iconColor // 이메일 로그인은 추가 안함, 카카오랑 같은 아이콘 뜨도록 설정
+        default:
+            print("등록된 로그인 정보가 없습니다")
+        }
+    }
+    
     func setupNavigationBar() {
         self.navigationController?.setNavigationBarHidden(false, animated: false)
         self.navigationController?.navigationBar.tintColor = .black
@@ -308,10 +337,10 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         signUpButton.isEnabled = false
         signUpButton.backgroundColor = .babygray
         
-//        view.addSubview(topBar)
-//        view.addSubview(titleLabel)
-        view.addSubview(subtitleLabel)
         view.addSubview(profileImageView)
+        view.addSubview(IDArea)
+        IDArea.addSubview(IDIcon)
+        IDArea.addSubview(myID)
         view.addSubview(nickNameLabel)
         view.addSubview(nicknameTextField)
         view.addSubview(nicknameHintLabel)
@@ -326,59 +355,58 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         view.addSubview(privacyPolicyButton)
         view.addSubview(signUpButton)
         
-//        topBar.snp.makeConstraints { make in
-//            make.top.equalTo(view.snp.top).offset(16)
-//            make.centerX.equalToSuperview()
-//            make.width.equalTo(80)
-//            make.height.equalTo(4)
-//        }
-//        
-//        titleLabel.snp.makeConstraints { make in
-//            make.top.equalTo(topBar.snp.bottom).offset(20)
-//            make.centerX.equalToSuperview()
-//            make.height.equalTo(20)
-//        }
-        
-        subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(30)
-            make.centerX.equalToSuperview()
-        }
-        
         profileImageView.snp.makeConstraints { make in
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(20)
+            make.top.equalTo(view).offset(135)
             make.centerX.equalToSuperview()
             make.width.equalTo(100)
             make.height.equalTo(100)
         }
         
+        IDArea.snp.makeConstraints(){
+            $0.top.equalTo(profileImageView.snp.bottom).offset(16)
+            $0.centerX.equalTo(view)
+            $0.width.lessThanOrEqualTo(view).inset(48)
+        }
+        
+        IDIcon.snp.makeConstraints(){
+            $0.left.equalTo(IDArea)
+            $0.centerY.equalTo(IDArea)
+            $0.width.height.equalTo(18)
+        }
+        myID.snp.makeConstraints(){
+            $0.centerY.equalTo(IDArea)
+            $0.left.equalTo(IDIcon.snp.right).offset(10)
+            $0.right.equalTo(IDArea)
+        }
+        
         nickNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(profileImageView.snp.bottom).offset(30)
-            make.left.equalToSuperview().inset(34)
+            make.top.equalTo(IDArea.snp.bottom).offset(45)
+            make.left.equalTo(view).inset(48)
         }
         
         nicknameTextField.snp.makeConstraints { make in
             make.top.equalTo(nickNameLabel.snp.bottom).offset(10)
-            make.left.equalToSuperview().inset(30)
+            make.left.equalTo(view).inset(32)
             make.right.equalTo(duplicateCheckButton.snp.left).offset(-10)
-            make.height.equalTo(43)
+            make.height.equalTo(44)
         }
         
         
         duplicateCheckButton.snp.makeConstraints { make in
             make.centerY.equalTo(nicknameTextField.snp.centerY)
-            make.right.equalToSuperview().inset(30)
-            make.height.equalTo(45)
-            make.width.equalTo(100)
+            make.right.equalToSuperview().inset(32)
+            make.height.equalTo(44)
+            make.width.equalTo(107)
         }
         
         nicknameHintLabel.snp.makeConstraints { make in
             make.top.equalTo(nicknameTextField.snp.bottom).offset(8)
-            make.left.equalToSuperview().inset(34)
+            make.left.equalToSuperview().inset(32)
         }
         
         genderLabel.snp.makeConstraints { make in
-            make.top.equalTo(nicknameHintLabel.snp.bottom).offset(50)
-            make.left.equalToSuperview().inset(34)
+            make.top.equalTo(nicknameHintLabel.snp.bottom).offset(41)
+            make.left.equalToSuperview().inset(48)
         }
         
         var lastButton: UIButton?
@@ -393,31 +421,31 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
                     make.centerY.equalTo(genderLabel.snp.centerY)
                 }
                 if index == genderButtons.count - 1 {
-                    make.right.equalToSuperview().inset(30)
+                    make.right.equalToSuperview().inset(32)
                 }
-                make.height.equalTo(45)
+                make.height.equalTo(44)
             }
             lastButton = button
             button.addTarget(self, action: #selector(selectGender(_:)), for: .touchUpInside)
         }
         
         interestsLabel.snp.makeConstraints { make in
-            make.top.equalTo(lastButton!.snp.bottom).offset(40)
-            make.left.equalToSuperview().inset(34)
+            make.top.equalTo(lastButton!.snp.bottom).offset(30)
+            make.left.equalToSuperview().inset(32)
         }
         
         interestsTextField.snp.makeConstraints { make in
             make.top.equalTo(interestsLabel.snp.bottom).offset(10)
-            make.left.equalToSuperview().inset(30)
-            make.right.equalToSuperview().inset(30)
-            make.height.equalTo(43)
+            make.left.equalToSuperview().inset(32)
+            make.right.equalToSuperview().inset(32)
+            make.height.equalTo(44)
         }
         
         tagScrollView.snp.makeConstraints { make in
-            make.top.equalTo(interestsTextField.snp.bottom).offset(16)
-            make.left.equalToSuperview()//.inset(30)
-            make.right.equalToSuperview()//.inset(30)
-            make.height.equalTo(50)
+            make.top.equalTo(interestsTextField.snp.bottom).offset(10)
+            make.left.equalTo(view).inset(32)
+            make.right.equalTo(view).inset(32)
+            make.height.equalTo(44)
         }
         
         tagContainerView.snp.makeConstraints { make in
@@ -427,21 +455,20 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         }
 
         privacyCheckBox.snp.makeConstraints { make in
-            make.bottom.equalTo(signUpButton.snp.top).offset(-20)
-            make.left.equalToSuperview().inset(30)
+            make.bottom.equalTo(signUpButton.snp.top).offset(-30)
+            make.left.equalTo(view).inset(48)
         }
         
         privacyPolicyButton.snp.makeConstraints { make in
-            make.bottom.equalTo(signUpButton.snp.top).offset(-20)
-            make.right.equalToSuperview().inset(30)
+            make.bottom.equalTo(signUpButton.snp.top).offset(-30)
+            make.right.equalToSuperview().inset(48)
         }
         
         signUpButton.snp.makeConstraints { make in
-//            make.top.equalTo(privacyCheckBox.snp.bottom).offset(20)
-            make.left.equalToSuperview().inset(30)
-            make.right.equalToSuperview().inset(30)
+            make.left.equalTo(view).inset(32)
+            make.right.equalTo(view).inset(32)
             make.height.equalTo(50)
-            make.bottom.equalToSuperview().inset(48)
+            make.bottom.equalTo(view).inset(40)
         }
         
         privacyCheckBox.addTarget(self, action: #selector(privacyPolicyTapped), for: .touchUpInside)
@@ -489,7 +516,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     @objc private func duplicateCheckTapped() {
         guard let nickname = nicknameTextField.text, !nickname.isEmpty else {
-            showAlert(title: "😗", message: "닉네임을 입력해주세요. \n입력하신 닉네임은 다른 사용자에게 노출됩니다.🤭")
+            showAlert(title: "😗", message: "닉네임을 입력해주세요\n입력하신 닉네임은 다른 사용자에게 노출됩니다")
             return
         }
         
@@ -497,7 +524,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         let nicknamePattern = "^[a-zA-Z0-9가-힣]+$"
         let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
         if !nicknamePredicate.evaluate(with: nickname) {
-            showAlert(title: "🤬", message: "닉네임에 특수문자를 포함할 수 없습니다.")
+            showAlert(title: "🤬", message: "닉네임에 특수문자나 공백을 포함할 수 없습니다")
             return
         }
         
@@ -505,7 +532,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             do {
                 let isDuplicate = try await FirestoreManager.shared.checkDisplayNameExists(displayName: nickname)
                 if isDuplicate {
-                    showAlert(title: "😱", message: "아쉽네요. 다른 사용자가 먼저 등록했어요")
+                    showAlert(title: "😱", message: "아쉬워요.. 다른 사용자가 먼저 등록했어요")
                 } else {
                     showConfirmationAlert(title: "😁\n\(nickname)", message: "당신만의 멋진 닉네임이네요. \n이 닉네임을 사용하시겠습니까?", nickname: nickname)
                 }

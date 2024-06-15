@@ -81,6 +81,8 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         myName.placeholder = previousName
         myName.clearButtonMode = .never // x 버튼 비활성화
         myName.delegate = self
+        myName.autocorrectionType = .no
+        myName.spellCheckingType = .no
         
         IDIcon.contentMode = .scaleAspectFit
         
@@ -211,7 +213,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         IDIcon.snp.makeConstraints(){
             $0.left.equalTo(IDArea)
             $0.centerY.equalTo(IDArea)
-            $0.width.height.equalTo(22)
+            $0.width.height.equalTo(18)
         }
         myID.snp.makeConstraints(){
             $0.centerY.equalTo(IDArea)
@@ -373,6 +375,23 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         let nickname = textField.text ?? ""
+        
+//        func initials() -> String {
+//            let initialConsonants: [Character] = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
+//            
+//            return self.compactMap { char -> Character? in
+//                guard let scalar = char.unicodeScalars.first else { return char }
+//                let value = scalar.value
+//                
+//                // 한글 음절 범위 내에서만 처리
+//                if value >= 0xAC00 && value <= 0xD7A3 {
+//                    let index = (value - 0xAC00) / 28 / 21
+//                    return initialConsonants[Int(index)]
+//                } else {
+//                    return char
+//                }
+//            }.reduce("") { $0 + String($1) }
+//        }
         
         // 글자 수 및 특수문자 체크 통과한 후 Firestore에서 닉네임 중복 체크
         if nickname.count >= 2 && nickname.count <= 16 {

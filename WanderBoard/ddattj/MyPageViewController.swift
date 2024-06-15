@@ -150,7 +150,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         tableView.snp.makeConstraints(){
             $0.top.equalTo(statusB.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview().inset(32)
-            $0.bottom.equalTo(view).offset(-110)
+            $0.bottom.equalTo(view).offset(-121)
 
         }
     }

@@ -12,9 +12,8 @@ class EmptyView: UIView {
     
     weak var delegate: EmptyViewDelegate?
     
-    private let emptyImg = UIImageView().then {
-        $0.image = UIImage(named: "emptyImg")
-        $0.tintColor = .black
+    private var emptyImg = UIImageView().then {
+        $0.image = UIImage(named: "emptyImg")?.withTintColor(.customblack)
         $0.contentMode = .scaleAspectFill
     }
     
@@ -40,10 +39,10 @@ class EmptyView: UIView {
     
     lazy var addButton = UIButton().then {
         $0.setTitle("여행 추가하기", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
+        $0.titleLabel?.font = .systemFont(ofSize: 14, weight: .bold)
         $0.setTitleColor(.black, for: .normal)
         $0.backgroundColor = .babygray
-        $0.layer.cornerRadius = 26
+        $0.layer.cornerRadius = 23
         $0.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
     
@@ -52,8 +51,9 @@ class EmptyView: UIView {
         backgroundColor = .systemBackground
         
         setupConstraints()
+        updateColor()
     }
-        
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
@@ -74,21 +74,34 @@ class EmptyView: UIView {
         addButton.snp.makeConstraints {
             $0.top.equalTo(stackView.snp.bottom).offset(40)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(240)
-            $0.height.equalTo(50)
+            $0.width.equalTo(234)
+            $0.height.equalTo(46)
         }
         
         emptyImg.snp.makeConstraints {
-            $0.height.equalTo(45)
-            $0.width.equalTo(65)
+            $0.height.equalTo(44)
+            $0.width.equalTo(66)
         }
     }
     
     @objc private func addButtonTapped() {
         delegate?.didTapAddButton()
     }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor(){
+        let imageColor = traitCollection.userInterfaceStyle == .dark ? UIColor.babygray : UIColor.customblack
+        emptyImg.image = UIImage(named: "emptyImg")?.withTintColor(imageColor)
+    }
 }
-
-protocol EmptyViewDelegate: AnyObject {
-    func didTapAddButton()
-}
+    
+    protocol EmptyViewDelegate: AnyObject {
+        func didTapAddButton()
+    }
+    

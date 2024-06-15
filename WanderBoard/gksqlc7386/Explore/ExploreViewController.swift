@@ -26,7 +26,7 @@ class ExploreViewController: UIViewController, PageIndexed {
     var lastSnapshot: DocumentSnapshot?
     
     lazy var searchButton = UIButton(type: .system).then {
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .regular)
         let image = UIImage(systemName: "magnifyingglass", withConfiguration: imageConfig)
         $0.setImage(image, for: .normal)
         $0.tintColor = .font
@@ -65,7 +65,7 @@ class ExploreViewController: UIViewController, PageIndexed {
         
         reloadRecentCell()
     }
-
+    
     private func loadData() {
         Task {
             self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
@@ -88,28 +88,10 @@ class ExploreViewController: UIViewController, PageIndexed {
             
             searchButton.snp.makeConstraints {
                 $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-16)
-                $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
-                $0.size.equalTo(CGSize(width: 30, height: 30))
+                $0.bottom.equalTo(navigationController!.navigationBar).offset(-13)
+                $0.size.equalTo(CGSize(width: 25, height: 25))
             }
         }
-        
-//        if let navigationBarSuperview = navigationController?.navigationBar.superview {
-//            let customView = UIView()
-//            customView.backgroundColor = .clear
-//            customView.addSubview(searchButton)
-//            
-//            navigationBarSuperview.addSubview(customView)
-//            
-//            customView.snp.makeConstraints {
-//                $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-30)
-//                $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
-//                $0.size.equalTo(CGSize(width: 30, height: 30))
-//            }
-//            
-//            searchButton.snp.makeConstraints {
-//                $0.edges.equalToSuperview()
-//            }
-//        }
     }
     
     private func setupConstraints() {
@@ -138,22 +120,22 @@ class ExploreViewController: UIViewController, PageIndexed {
         }
     }
     
-//    // 무한스크롤 시도 중
-//    func loadRecentData() {
-//        pinLogManager.fetchInitialData(pageSize: 30) { result in
-//            switch result {
-//            case .success(let (logs, snapshot)):
-//                DispatchQueue.main.async {
-//                    self.recentLogs = self.filterBlockedAuthors(from: logs)
-//                    self.calculateRecentCellHeight()
-//                    self.lastSnapshot = snapshot
-//                    self.reloadRecentCell()
-//                }
-//            case .failure(let error):
-//                print("Failed to fetch pin logs: \(error.localizedDescription)")
-//            }
-//        }
-//    }
+    //    // 무한스크롤 시도 중
+    //    func loadRecentData() {
+    //        pinLogManager.fetchInitialData(pageSize: 30) { result in
+    //            switch result {
+    //            case .success(let (logs, snapshot)):
+    //                DispatchQueue.main.async {
+    //                    self.recentLogs = self.filterBlockedAuthors(from: logs)
+    //                    self.calculateRecentCellHeight()
+    //                    self.lastSnapshot = snapshot
+    //                    self.reloadRecentCell()
+    //                }
+    //            case .failure(let error):
+    //                print("Failed to fetch pin logs: \(error.localizedDescription)")
+    //            }
+    //        }
+    //    }
     
     func loadHotData() async {
         do {

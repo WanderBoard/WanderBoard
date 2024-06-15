@@ -14,8 +14,8 @@ class RecentCollectionViewCell: UICollectionViewCell {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 20
-        $0.backgroundColor = .black
-        $0.tintColor = .black
+        $0.backgroundColor = .font
+        $0.tintColor = .font
     }
     
     private let blackView = UIImageView().then {

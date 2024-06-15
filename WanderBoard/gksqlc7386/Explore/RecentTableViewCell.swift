@@ -23,24 +23,24 @@ class RecentTableViewCell: UITableViewCell {
     lazy var recentCollectionView = UICollectionView(frame: .zero, collectionViewLayout: recentCollectionViewLayout).then {
         $0.dataSource = self
         $0.delegate = self
-                
+        
         $0.register(RecentCollectionViewCell.self, forCellWithReuseIdentifier: RecentCollectionViewCell.identifier)
         $0.isScrollEnabled = false
     }
     
     let recentCollectionViewLayout = UICollectionViewFlowLayout().then {
         $0.scrollDirection = .vertical
-        $0.minimumLineSpacing = 10
-        $0.sectionInset = .init(top: 0, left: 30, bottom: 0, right: 30)
+        $0.minimumLineSpacing = 16
+        $0.sectionInset = .init(top: 0, left: 16, bottom: 0, right: 16)
         
         let screenWidth = UIScreen.main.bounds.width
-        let inset: CGFloat = 30
+        let inset: CGFloat = 21
         let spacing: CGFloat = 10
         let numberOfItemsPerRow: CGFloat = 2
-            
+        
         let itemWidth = (screenWidth - 2 * inset - (numberOfItemsPerRow - 1) * spacing) / numberOfItemsPerRow
-        let itemHeight = itemWidth * 110 / 160
-            
+        let itemHeight = itemWidth * 117 / 170
+        
         $0.itemSize = CGSize(width: itemWidth, height: itemHeight)
     }
     
@@ -61,11 +61,11 @@ class RecentTableViewCell: UITableViewCell {
         
         recentLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(30)
-            $0.leading.equalToSuperview().inset(30)
+            $0.leading.equalToSuperview().inset(32)
         }
         
         recentCollectionView.snp.makeConstraints {
-            $0.top.equalTo(recentLabel.snp.bottom).offset(10)
+            $0.top.equalTo(recentLabel.snp.bottom).offset(15)
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalToSuperview()
         }

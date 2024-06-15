@@ -15,20 +15,20 @@ class HotTableViewCell: UITableViewCell {
     
     let hotView = UIView().then {
         $0.backgroundColor = UIColor(named: "textColor")
-    
+        
         $0.layer.shadowOffset = CGSize(width: 5, height: 5)
-        $0.layer.shadowOpacity = 0.3
+        $0.layer.shadowOpacity = 0.4
         $0.layer.shadowRadius = 10
         $0.layer.shadowColor = UIColor.black.cgColor
         $0.layer.masksToBounds = false
-  
+        
         $0.layer.cornerRadius = 30
         $0.layer.maskedCorners = CACornerMask(arrayLiteral: .layerMinXMinYCorner, .layerMinXMaxYCorner)
     }
     
     let hotLabel = UILabel().then {
         $0.text = "Hot"
-        $0.font = UIFont.boldSystemFont(ofSize: 17)
+        $0.font = UIFont.boldSystemFont(ofSize: 20)
     }
     
     lazy var hotCollectionView = UICollectionView(frame: .zero, collectionViewLayout: hotCollectionViewLayout).then {
@@ -40,8 +40,8 @@ class HotTableViewCell: UITableViewCell {
     let hotCollectionViewLayout = UICollectionViewFlowLayout().then {
         $0.scrollDirection = .horizontal
         $0.minimumLineSpacing = 20
-        $0.itemSize = .init(width: 240, height: 320)
-        $0.sectionInset = .init(top: 0, left: 30, bottom: 5, right: 0)
+        $0.itemSize = .init(width: 253, height: 332)
+        $0.sectionInset = .init(top: 0, left: 26, bottom: 5, right: 0)
     }
     
     var hotPinLogs: [PinLog] = [] {
@@ -49,7 +49,7 @@ class HotTableViewCell: UITableViewCell {
             hotCollectionView.reloadData()
         }
     }
-
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -71,21 +71,21 @@ class HotTableViewCell: UITableViewCell {
         
         hotView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(20)
-            $0.leading.equalToSuperview().inset(30)
+            $0.leading.equalToSuperview().inset(32)
             $0.trailing.equalToSuperview()
-            $0.height.equalTo(400)
+            $0.height.equalTo(442)
         }
         
         hotLabel.snp.makeConstraints {
             $0.top.equalToSuperview().inset(20)
-            $0.leading.equalToSuperview().inset(40)
+            $0.leading.equalToSuperview().inset(38)
         }
         
         hotCollectionView.snp.makeConstraints {
-            $0.top.equalTo(hotLabel.snp.bottom).offset(10)
+            $0.top.equalTo(hotLabel.snp.bottom).offset(5)
             $0.leading.equalToSuperview()
             $0.trailing.equalToSuperview()
-            $0.height.equalTo(325)
+            $0.height.equalTo(360)
         }
     }
     
@@ -103,7 +103,7 @@ class HotTableViewCell: UITableViewCell {
     }
     
     func updateColor(){
-        let shadowColor = traitCollection.userInterfaceStyle == .dark ? UIColor.lightgray : UIColor.black
+        let shadowColor = traitCollection.userInterfaceStyle == .dark ? UIColor.babygray : UIColor.black
         hotView.layer.shadowColor = shadowColor.cgColor
     }
 }

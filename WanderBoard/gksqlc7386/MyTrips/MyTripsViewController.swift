@@ -110,7 +110,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         maskedView.backgroundColor = view.backgroundColor
         gradientLayer.frame = maskedView.bounds
         gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98), UIColor.white.cgColor, UIColor.white.cgColor]
-        gradientLayer.locations = [0, 0.05, 0.5, 1]
+        gradientLayer.locations = [0, 0.05, 0.8, 1]
         maskedView.layer.mask = gradientLayer
         view.addSubview(maskedView)
     }

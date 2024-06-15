@@ -136,10 +136,39 @@ class DetailInputViewController: UIViewController {
         $0.backgroundColor = .lightgray
     }
     
-    let dateLabel = UILabel().then {
-        $0.text = "날짜"
+    let locationLeftLabel = UILabel().then {
+        $0.text = "지역을 선택하세요"
+        $0.font = UIFont.systemFont(ofSize: 15)
         $0.textColor = .font
+    }
+    
+    let locationRightLabel = UIImageView().then {
+        $0.image = UIImage(systemName: "chevron.right")
+        $0.tintColor = .font
+    }
+    
+    let locationStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.distribution = .equalSpacing
+        $0.spacing = 10
+        $0.isUserInteractionEnabled = false
+    }
+    
+    let dateLabel = UILabel().then {
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.textColor = .font
+        
+        let imageAttachment = NSTextAttachment()
+        let systemImage = UIImage(systemName: "calendar")?.withTintColor(.font, renderingMode: .alwaysOriginal)
+        imageAttachment.image = systemImage
+        imageAttachment.bounds = CGRect(x: 0, y: -6, width: 30, height: 24)
+        
+        let fullString = NSMutableAttributedString(string: "")
+        fullString.append(NSAttributedString(attachment: imageAttachment))
+        fullString.append(NSAttributedString(string: " 날짜", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .bold)]))
+        
+        $0.attributedText = fullString
     }
     
     let startDateButton = UIButton(type: .system).then {
@@ -171,7 +200,12 @@ class DetailInputViewController: UIViewController {
         $0.tintColor = .font
     }
     
-    let dateContainerView = UIView()
+    let dateStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.distribution = .fill
+        $0.spacing = 10
+    }
     
     let mainTextField = UITextView().then {
         $0.text = "여행 제목을 입력해주세요."
@@ -200,25 +234,6 @@ class DetailInputViewController: UIViewController {
     let locationButton = UIButton().then {
         $0.backgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
         $0.layer.cornerRadius = 8
-    }
-    
-    let locationLeftLabel = UILabel().then {
-        $0.text = "지역을 선택하세요"
-        $0.font = UIFont.systemFont(ofSize: 15)
-        $0.textColor = .font
-    }
-    
-    let locationRightLabel = UIImageView().then {
-        $0.image = UIImage(systemName: "chevron.right")
-        $0.tintColor = .font
-    }
-    
-    let locationStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.alignment = .center
-        $0.distribution = .equalSpacing
-        $0.spacing = 10
-        $0.isUserInteractionEnabled = false
     }
     
     let consumButton = UIButton().then {
@@ -250,9 +265,19 @@ class DetailInputViewController: UIViewController {
     }
     
     let galleryLabel = UILabel().then {
-        $0.text = "앨범 추가"
-        $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.textColor = .font
+        
+        let imageAttachment = NSTextAttachment()
+        let systemImage = UIImage(systemName: "photo")?.withTintColor(.font, renderingMode: .alwaysOriginal)
+        imageAttachment.image = systemImage
+        imageAttachment.bounds = CGRect(x: 0, y: -6, width: 30, height: 24)
+        
+        let fullString = NSMutableAttributedString(string: "")
+        fullString.append(NSAttributedString(attachment: imageAttachment))
+        fullString.append(NSAttributedString(string: " 앨범 추가", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .bold)]))
+        
+        $0.attributedText = fullString
     }
     
     lazy var galleryCollectionView: UICollectionView = {
@@ -296,9 +321,19 @@ class DetailInputViewController: UIViewController {
     }
     
     let mateLabel = UILabel().then {
-        $0.text = "메이트"
-        $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.textColor = .font
+        
+        let imageAttachment = NSTextAttachment()
+        let systemImage = UIImage(systemName: "person.2")?.withTintColor(.font, renderingMode: .alwaysOriginal)
+        imageAttachment.image = systemImage
+        imageAttachment.bounds = CGRect(x: 0, y: -6, width: 30, height: 24)
+        
+        let fullString = NSMutableAttributedString(string: "")
+        fullString.append(NSAttributedString(attachment: imageAttachment))
+        fullString.append(NSAttributedString(string: " 메이트", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .bold)]))
+        
+        $0.attributedText = fullString
     }
     
     lazy var mateCollectionView: UICollectionView = {
@@ -317,7 +352,6 @@ class DetailInputViewController: UIViewController {
     
     // MARK: 토글토글
     
-    //    let isSpendingPublic =
     
     let mateCountButton = UIButton(type: .system).then {
         var configuration = UIButton.Configuration.filled()
@@ -393,12 +427,11 @@ class DetailInputViewController: UIViewController {
         toggleSwitchStackView.addArrangedSubview(publicStackView)
         toggleSwitchStackView.addArrangedSubview(spendingPublicStackView)
         
-        contentView.addSubview(dateContainerView)
-        
-        dateContainerView.addSubview(dateLabel)
-        dateContainerView.addSubview(startDateButton)
-        dateContainerView.addSubview(endDateLabel)
-        dateContainerView.addSubview(endDateButton)
+        contentView.addSubview(dateLabel)
+        contentView.addSubview(dateStackView)
+        dateStackView.addArrangedSubview(startDateButton)
+        dateStackView.addArrangedSubview(endDateLabel)
+        dateStackView.addArrangedSubview(endDateButton)
         
         contentView.addSubview(mainTextField)
         contentView.addSubview(subTextField)
@@ -479,36 +512,29 @@ class DetailInputViewController: UIViewController {
             $0.height.equalTo(1)
         }
         
-        dateContainerView.snp.makeConstraints {
-            $0.top.equalTo(topLine.snp.bottom).offset(16)
+        locationButton.snp.makeConstraints {
+            $0.top.equalTo(topLine.snp.bottom).offset(24)
             $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(44)
+            $0.height.equalTo(46)
+        }
+        
+        locationStackView.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(16)
         }
         
         dateLabel.snp.makeConstraints {
-            $0.leading.equalTo(dateContainerView.snp.leading)
-            $0.centerY.equalTo(dateContainerView.snp.centerY)
+            $0.top.equalTo(locationButton.snp.bottom).offset(24)
+            $0.leading.equalTo(contentView).inset(32)
         }
         
-        endDateButton.snp.makeConstraints {
-            $0.trailing.equalTo(dateContainerView.snp.trailing)
-            $0.centerY.equalTo(dateContainerView.snp.centerY)
-            $0.height.equalTo(44)
-        }
-        
-        endDateLabel.snp.makeConstraints {
-            $0.trailing.equalTo(endDateButton.snp.leading).offset(-10)
-            $0.centerY.equalTo(dateContainerView.snp.centerY)
-        }
-        
-        startDateButton.snp.makeConstraints {
-            $0.trailing.equalTo(endDateLabel.snp.leading).offset(-10)
-            $0.centerY.equalTo(dateContainerView.snp.centerY)
-            $0.height.equalTo(44)
+        dateStackView.snp.makeConstraints {
+            $0.top.equalTo(dateLabel.snp.bottom).offset(10)
+            $0.leading.trailing.equalTo(contentView).inset(32)
         }
         
         mainTextField.snp.makeConstraints {
-            $0.top.equalTo(dateContainerView.snp.bottom).offset(32)
+            $0.top.equalTo(dateStackView.snp.bottom).offset(24)
             $0.leading.trailing.equalTo(contentView).inset(32)
             $0.height.equalTo(37)
         }
@@ -519,19 +545,8 @@ class DetailInputViewController: UIViewController {
             self.subTextFieldHeightConstraint = $0.height.greaterThanOrEqualTo(subTextFieldMinHeight).constraint
         }
         
-        locationButton.snp.makeConstraints {
-            $0.top.equalTo(subTextField.snp.bottom).offset(32)
-            $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(46)
-        }
-        
-        locationStackView.snp.makeConstraints {
-            $0.centerY.equalToSuperview()
-            $0.leading.trailing.equalToSuperview().inset(16)
-        }
-        
         consumButton.snp.makeConstraints {
-            $0.top.equalTo(locationButton.snp.bottom).offset(16)
+            $0.top.equalTo(subTextField.snp.bottom).offset(24)
             $0.leading.trailing.equalTo(contentView).inset(32)
             $0.height.equalTo(46)
         }
@@ -542,18 +557,18 @@ class DetailInputViewController: UIViewController {
         }
         
         bodyLine.snp.makeConstraints {
-            $0.top.equalTo(consumButton.snp.bottom).offset(16)
+            $0.top.equalTo(consumButton.snp.bottom).offset(24)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(1)
         }
         
         galleryLabel.snp.makeConstraints {
-            $0.top.equalTo(bodyLine.snp.bottom).offset(16)
+            $0.top.equalTo(bodyLine.snp.bottom).offset(24)
             $0.leading.equalTo(contentView).inset(32)
         }
         
         galleryCollectionView.snp.makeConstraints {
-            $0.top.equalTo(galleryLabel.snp.bottom).offset(16)
+            $0.top.equalTo(galleryLabel.snp.bottom)
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(100)
         }
@@ -574,7 +589,7 @@ class DetailInputViewController: UIViewController {
         }
         
         mateCollectionView.snp.makeConstraints {
-            $0.top.equalTo(mateLabel.snp.bottom).offset(16)
+            $0.top.equalTo(mateLabel.snp.bottom)
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(100)
         }
@@ -862,11 +877,34 @@ class DetailInputViewController: UIViewController {
     
     @objc func doneButtonTapped() {
         guard let locationTitle = locationLeftLabel.text, locationTitle != "지역을 선택하세요" else {
-            let alert = UIAlertController(title: "오류", message: "지역을 선택해주세요.", preferredStyle: .alert)
+            let alert = UIAlertController(title: "지역 선택", message: "지역을 선택해주세요.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "확인", style: .default))
             present(alert, animated: true, completion: nil)
             return
         }
+        
+        guard let startDateString = startDateButton.title(for: .normal), startDateString != "시작일자",
+              let endDateString = endDateButton.title(for: .normal), endDateString != "종료일자" else {
+            let alert = UIAlertController(title: "날짜 선택", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "확인", style: .default))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+        
+        guard let mainTitle = mainTextField.text, !mainTitle.isEmpty, mainTextField.textColor != .lightgray else {
+            let alert = UIAlertController(title: "제목 입력", message: "여행 제목을 입력해주세요.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "확인", style: .default))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+        
+        guard !selectedImages.isEmpty else {
+            let alert = UIAlertController(title: "앨범 추가", message: "최소한 하나의 이미지를 선택해주세요.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "확인", style: .default))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+        
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -927,7 +965,6 @@ class DetailInputViewController: UIViewController {
                     )
                 }
                 
-                
                 // 선택된 대표 이미지가 있으면 설정
                 if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
                     for i in 0..<selectedImages.count {
@@ -960,7 +997,6 @@ class DetailInputViewController: UIViewController {
             }
         }
     }
-    
     
     func loadSelectedFriends(pinLog: PinLog) {
         let group = DispatchGroup()

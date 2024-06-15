@@ -40,7 +40,7 @@ class MyPageTableViewCell: UITableViewCell {
                 arrow.tintColor = .font
                 
             case 1:
-                icon.image = UIImage(systemName: "info.circle.fill")
+                icon.image = UIImage(systemName: "info.circle")
                 icon.tintColor = .font
                 label.font = UIFont.systemFont(ofSize: 15)
                 label.textColor = .font

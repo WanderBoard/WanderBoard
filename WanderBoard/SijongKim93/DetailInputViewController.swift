@@ -980,10 +980,14 @@ class DetailInputViewController: UIViewController {
                                     createdAt: Date(),
                                     pinCount: 0,
                                     pinnedBy: [],
+
                                     totalSpendingAmount: totalSpendingAmount,
                                     isSpendingPublic: isSpendingPublic,
                                     maxSpendingAmount: maxSpendingAmount,
                                     expenses: expenses)
+            
+                    )
+
                 }
                 
                 // 선택된 대표 이미지가 있으면 설정

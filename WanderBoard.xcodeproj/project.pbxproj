@@ -61,7 +61,7 @@
 		4D21E85B2C1B39E7002FDBC9 /* UserSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E85A2C1B39E7002FDBC9 /* UserSummary.swift */; };
 		4D21E85D2C1B3A4E002FDBC9 /* MateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E85C2C1B3A4E002FDBC9 /* MateManager.swift */; };
 		4D21E85F2C1B4C8A002FDBC9 /* AddedMateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E85E2C1B4C8A002FDBC9 /* AddedMateCell.swift */; };
-    4D37AF252C1D4640005DADEA /* DetailInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D37AF242C1D4640005DADEA /* DetailInputViewController.swift */; };
+		4D37AF252C1D4640005DADEA /* DetailInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D37AF242C1D4640005DADEA /* DetailInputViewController.swift */; };
 		4D8947332C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */; };
 		4D8947352C0F357C0057F083 /* FriendInputCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */; };
 		4D9D8B502C05B1BD0043E7DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9D8B4F2C05B1BD0043E7DF /* AppDelegate.swift */; };
@@ -98,7 +98,6 @@
 		FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */; };
 		FB9A3AD62C1984A200E1EAA2 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */; };
 		FB9A3ADB2C1984B700E1EAA2 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */; };
-		FB9A3ADC2C1984B700E1EAA2 /* EmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD82C1984B600E1EAA2 /* EmptyView.swift */; };
 		FB9A3ADD2C1984B700E1EAA2 /* MyTripsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */; };
 		FB9A3ADE2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */; };
 		FB9A3AE52C1984C600E1EAA2 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3ADF2C1984C600E1EAA2 /* SearchViewController.swift */; };
@@ -179,12 +178,11 @@
 		956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyViewController.swift; sourceTree = "<group>"; };
 		956ED78E2C0852B90001BAC6 /* SettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		FB0C32432C14C2D000DD2F00 /* WanderBoard.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WanderBoard.xcdatamodel; sourceTree = "<group>"; };
-    FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionManager.swift; sourceTree = "<group>"; };
 		FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
 		FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterCollectionViewCell.swift; sourceTree = "<group>"; };
-		FB9A3AD82C1984B600E1EAA2 /* EmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyView.swift; sourceTree = "<group>"; };
 		FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTripsViewController.swift; sourceTree = "<group>"; };
 		FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTripsCollectionViewCell.swift; sourceTree = "<group>"; };
 		FB9A3ADF2C1984C600E1EAA2 /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -436,7 +434,6 @@
 		FB72E7422C0F3EE7002AADBD /* MyTrips */ = {
 			isa = PBXGroup;
 			children = (
-				FB9A3AD82C1984B600E1EAA2 /* EmptyView.swift */,
 				FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */,
 				FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */,
 				FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */,
@@ -576,7 +573,6 @@
 				6BBE4B852C19950100A7A793 /* SpendingTableViewCell.swift in Sources */,
 				2AF29A062C1B68320021D231 /* PrivacyPolicyScripts.swift in Sources */,
 				4D21E8592C1AB960002FDBC9 /* MateTableViewCell.swift in Sources */,
-				FB9A3ADC2C1984B700E1EAA2 /* EmptyView.swift in Sources */,
 				4D21E85B2C1B39E7002FDBC9 /* UserSummary.swift in Sources */,
 				2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */,
 				2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */,

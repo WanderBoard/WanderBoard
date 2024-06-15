@@ -366,7 +366,7 @@ extension SpendingListViewController: UITableViewDelegate {
 
 
 // MARK: 비어있는 화면일 때
-extension SpendingListViewController: EmptyViewDelegate {
+extension SpendingListViewController: SpendingEmptyViewDelegate {
     func didTapAddButton() {
         penButton.isHidden = true
         let inputVC = InsertSpendingViewController()

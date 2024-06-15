@@ -93,6 +93,8 @@
 		956ED7972C0852B90001BAC6 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78E2C0852B90001BAC6 /* SettingViewController.swift */; };
 		FB0C32442C14C2D000DD2F00 /* WanderBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FB0C32422C14C2D000DD2F00 /* WanderBoard.xcdatamodeld */; };
 		FB0EAE6F2C1CB2480014CDAF /* DetailInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB0EAE6E2C1CB2480014CDAF /* DetailInputViewController.swift */; };
+		FB3793AB2C1D660B009C1268 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */; };
+		FB3793AD2C1D6854009C1268 /* AccountDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */; };
 		FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */; };
 		FB9A3AD62C1984A200E1EAA2 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */; };
 		FB9A3ADB2C1984B700E1EAA2 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */; };
@@ -177,6 +179,8 @@
 		956ED78E2C0852B90001BAC6 /* SettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		FB0C32432C14C2D000DD2F00 /* WanderBoard.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WanderBoard.xcdatamodel; sourceTree = "<group>"; };
 		FB0EAE6E2C1CB2480014CDAF /* DetailInputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DetailInputViewController.swift; path = ../../../../../Downloads/DetailInputViewController.swift; sourceTree = "<group>"; };
+		FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionManager.swift; sourceTree = "<group>"; };
 		FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
 		FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -350,6 +354,8 @@
 				2A5F47C52C0E276500D289AA /* ImageUploader.swift */,
 				2A7655102C0622C000D8A098 /* FirestoreManager.swift */,
 				2A76550A2C06175B00D8A098 /* AuthenticationManager.swift */,
+				FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */,
+				FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -560,6 +566,7 @@
 				2A9BED2A2C08A4330032C403 /* PageControlButton.swift in Sources */,
 				FB9A3ADB2C1984B700E1EAA2 /* FilterCollectionViewCell.swift in Sources */,
 				2A5F47C62C0E276500D289AA /* ImageUploader.swift in Sources */,
+				FB3793AD2C1D6854009C1268 /* AccountDeletionManager.swift in Sources */,
 				FB0C32442C14C2D000DD2F00 /* WanderBoard.xcdatamodeld in Sources */,
 				4D9D8B542C05B1BD0043E7DF /* ViewController.swift in Sources */,
 				6BBE4B862C19950100A7A793 /* SpendingTableViewHeaderView.swift in Sources */,
@@ -611,6 +618,7 @@
 				4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */,
 				4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */,
 				4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */,
+				FB3793AB2C1D660B009C1268 /* CoreDataManager.swift in Sources */,
 				4D9D8B522C05B1BD0043E7DF /* SceneDelegate.swift in Sources */,
 				4D21E85F2C1B4C8A002FDBC9 /* AddedMateCell.swift in Sources */,
 				2A7655192C063A0100D8A098 /* AuthenticationVC.swift in Sources */,

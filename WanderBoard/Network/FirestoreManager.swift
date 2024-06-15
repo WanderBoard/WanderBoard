@@ -226,10 +226,4 @@ class FirestoreManager {
             }
         }
     }
-    
-    // 사용자의 데이터를 Firestore에서 삭제하는 함수 (회원 탈퇴)
-    func deleteUserData(uid: String) async throws {
-        let userRef = db.collection("users").document(uid)
-        try await userRef.delete()
-    }
 }

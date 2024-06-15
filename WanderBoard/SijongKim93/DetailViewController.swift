@@ -733,9 +733,6 @@ class DetailViewController: UIViewController {
                 attributes: .destructive) { _ in
                     self.deletePinLog()
                 }
-            
-            
-            
             optionsButton.menu = UIMenu(title: "", children: [shareAction, editAction, deleteAction])
         } else {
             // 다른 사람의 글인 경우

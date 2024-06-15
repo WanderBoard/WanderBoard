@@ -243,7 +243,8 @@ class AuthenticationVC: UIViewController {
                                 gender: "선택안함",
                                 interests: [],
                                 isProfileComplete: isProfileComplete, 
-                                blockedAuthors: authDataResult.blockedAuthors
+                                blockedAuthors: authDataResult.blockedAuthors,
+                                hiddenPinLogs: []
                             )
                         } else {
                             // 새로운 사용자라면 displayName을 포함하여 저장
@@ -257,7 +258,8 @@ class AuthenticationVC: UIViewController {
                                 gender: "선택안함",
                                 interests: [],
                                 isProfileComplete: isProfileComplete, 
-                                blockedAuthors: authDataResult.blockedAuthors
+                                blockedAuthors: authDataResult.blockedAuthors,
+                                hiddenPinLogs: []
                             )
                         }
                         // Firestore 정보 업데이트
@@ -276,7 +278,8 @@ class AuthenticationVC: UIViewController {
                             gender: "선택안함",
                             interests: [],
                             isProfileComplete: false, 
-                            blockedAuthors: authDataResult.blockedAuthors
+                            blockedAuthors: authDataResult.blockedAuthors,
+                            hiddenPinLogs: []
                         )
                         await handleSignUpResult(authDataResult, isProfileComplete: false)
                     }
@@ -301,7 +304,7 @@ class AuthenticationVC: UIViewController {
                 if let existingUser = existingUser {
                     await handleSignInResult(AuthDataResultModel(user: existingUser, authProvider: .google), isProfileComplete: isProfileComplete)
                 } else {
-                    try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: tokens.email ?? "", authProvider: AuthProviderOption.google.rawValue, gender: "선택안함", interests: [], isProfileComplete: false, blockedAuthors: authDataResult.blockedAuthors)
+                    try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: tokens.email ?? "", authProvider: AuthProviderOption.google.rawValue, gender: "선택안함", interests: [], isProfileComplete: false, blockedAuthors: authDataResult.blockedAuthors, hiddenPinLogs: [])
                     await handleSignUpResult(authDataResult, isProfileComplete: false)
                 }
             } catch {
@@ -321,7 +324,7 @@ class AuthenticationVC: UIViewController {
                 if let existingUser = existingUser {
                     await handleSignInResult(AuthDataResultModel(user: existingUser, authProvider: .apple), isProfileComplete: isProfileComplete)
                 } else {
-                    try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: result.email ?? "", authProvider: AuthProviderOption.apple.rawValue, gender: "선택안함", interests: [], isProfileComplete: false, blockedAuthors: authDataResult.blockedAuthors)
+                    try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: result.email ?? "", authProvider: AuthProviderOption.apple.rawValue, gender: "선택안함", interests: [], isProfileComplete: false, blockedAuthors: authDataResult.blockedAuthors, hiddenPinLogs: [])
                     await handleSignUpResult(authDataResult, isProfileComplete: false)
                 }
             } catch {

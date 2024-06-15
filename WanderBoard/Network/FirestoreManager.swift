@@ -29,7 +29,7 @@ class FirestoreManager {
         return !querySnapshot.documents.isEmpty
     }
 
-    func saveUser(uid: String, email: String, displayName: String? = nil, photoURL: String? = nil, socialMediaLink: String? = nil, authProvider: String, gender: String = "선택안함", interests: [String] = [], isProfileComplete: Bool, blockedAuthors: [String]) async throws {
+    func saveUser(uid: String, email: String, displayName: String? = nil, photoURL: String? = nil, socialMediaLink: String? = nil, authProvider: String, gender: String = "선택안함", interests: [String] = [], isProfileComplete: Bool, blockedAuthors: [String], hiddenPinLogs:[String]) async throws {
         
         guard !email.isEmpty else {
             throw NSError(domain: "SaveUserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Email is empty. Cannot save user data."])
@@ -42,7 +42,8 @@ class FirestoreManager {
             "email": email,
             "authProvider": authProvider,
             "isProfileComplete": isProfileComplete,
-            "blockedAuthors": blockedAuthors
+            "blockedAuthors": blockedAuthors,
+            "hiddenPinLogs" : hiddenPinLogs
         ]
         
         if let displayName = displayName {
@@ -107,6 +108,7 @@ class FirestoreManager {
             try await userRef.updateData(dataToUpdate)
         } else {
             dataToUpdate["blockedAuthors"] = []
+            dataToUpdate["hiddenPinLogs"] = []
             try await userRef.setData(dataToUpdate, merge: true)
         }
     }
@@ -181,11 +183,22 @@ class FirestoreManager {
         return blockedAuthors
     }
     
-    // 게시글 숨기기
-    func hidePost(forUser userId: String, postId: String) async throws {
+    // 게시물 숨기기
+    func hidePinLog(userId: String, pinLogId: String) async throws {
         let userRef = db.collection("users").document(userId)
-        try await userRef.updateData(["hiddenPosts": FieldValue.arrayUnion([postId])])
+        try await userRef.updateData(["hiddenPinLogs": FieldValue.arrayUnion([pinLogId])])
     }
+
+    // 숨긴 게시물 목록 가져오기
+    func getHiddenPinLogs(userId: String) async throws -> [String] {
+        let userRef = db.collection("users").document(userId)
+        let document = try await userRef.getDocument()
+        if let data = document.data(), let hiddenPinLogs = data["hiddenPinLogs"] as? [String] {
+            return hiddenPinLogs
+        }
+        return []
+    }
+
     
     //프로필 사진 가져오기
     func fetchUserProfileImageURL(userId: String, completion: @escaping (String?) -> Void) {
@@ -212,11 +225,5 @@ class FirestoreManager {
                 completion(nil)
             }
         }
-    }
-    
-    // 사용자의 데이터를 Firestore에서 삭제하는 함수 (회원 탈퇴)
-    func deleteUserData(uid: String) async throws {
-        let userRef = db.collection("users").document(uid)
-        try await userRef.delete()
     }
 }

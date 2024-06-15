@@ -63,7 +63,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         super.viewWillAppear(animated)
         
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.largeTitleDisplayMode = .automatic
+        navigationItem.largeTitleDisplayMode = .always
         
         NotificationHelper.changePage(hidden: false, isEnabled: true)
         updateView()

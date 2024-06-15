@@ -77,7 +77,7 @@ class PinLogManager {
             "pinCount": pinLog.pinCount ?? 0,  // 추가된 필드
             "pinnedBy": pinLog.pinnedBy ?? [],  // 추가된 필드
             "totalSpendingAmount": pinLog.totalSpendingAmount ?? 0.0, //추가
-
+            "isSpendingPublic": pinLog.isSpendingPublic
         ]
         
         if pinLog.id == nil {
@@ -189,13 +189,5 @@ class PinLogManager {
                     completion(.success((logs, lastSnapshot)))
                 }
             }
-    }
-    
-    // 회원 탈퇴 시 특정 사용자의 모든 PinLog 데이터를 삭제하는 함수
-    func deletePinLogsForUser(userId: String) async throws {
-        let snapshot = try await db.collection("pinLogs").whereField("authorId", isEqualTo: userId).getDocuments()
-        for document in snapshot.documents {
-            try await document.reference.delete()
-        }
     }
 }

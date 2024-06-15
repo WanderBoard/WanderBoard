@@ -1,10 +1,3 @@
-//
-//  AuthenticationManager.swift
-//  WanderBoard
-//
-//  Created by David Jang on 5/28/24.
-//
-
 import Foundation
 import FirebaseAuth
 import CoreData
@@ -13,7 +6,6 @@ import FirebaseFirestore
 import GoogleSignIn
 import KakaoSDKAuth
 import KakaoSDKUser
-
 
 // FireBase 데이터 저장 변수, 인증 로그인 후 받아오는 정보
 struct AuthDataResultModel {
@@ -27,6 +19,7 @@ struct AuthDataResultModel {
     var interests: [String]?
     var isProfileComplete: Bool?
     var blockedAuthors: [String] // 추가된 부분
+    var hiddenPinLogs: [String] // 추가된 부분
 
     init(user: FirebaseAuth.User, authProvider: AuthProviderOption) {
         self.uid = user.uid
@@ -39,6 +32,7 @@ struct AuthDataResultModel {
         self.interests = nil
         self.isProfileComplete = nil
         self.blockedAuthors = [] // 초기값 설정
+        self.hiddenPinLogs = [] // 초기값 설정
     }
     
     init(user: User, authProvider: AuthProviderOption) {
@@ -52,6 +46,7 @@ struct AuthDataResultModel {
         self.interests = user.interests
         self.isProfileComplete = user.isProfileComplete
         self.blockedAuthors = user.blockedAuthors ?? [] // 초기값 설정
+        self.hiddenPinLogs = user.hiddenPinLogs ?? [] // 초기값 설정
     }
 }
 
@@ -124,10 +119,25 @@ final class AuthenticationManager {
         }
         return try await FirestoreManager.shared.getBlockedAuthors(userId: currentUser.uid)
     }
+    
+    // 게시물 숨기기
+    func hidePinLog(pinLogId: String) async throws {
+        guard let currentUser = Auth.auth().currentUser else {
+            throw URLError(.badServerResponse)
+        }
+        try await FirestoreManager.shared.hidePinLog(userId: currentUser.uid, pinLogId: pinLogId)
+    }
+    
+    func getHiddenPinLogs() async throws -> [String] {
+        guard let currentUser = Auth.auth().currentUser else {
+            throw URLError(.badServerResponse)
+        }
+        return try await FirestoreManager.shared.getHiddenPinLogs(userId: currentUser.uid)
+    }
 
     // 코어 데이터 저장
     @MainActor
-    private func saveUserToCoreData(uid: String, email: String, displayName: String?, photoURL: String?, socialMediaLink: String?, authProvider: AuthProviderOption, gender: String, interests: [String], blockedAuthors: [String]) throws -> UserEntity {
+    private func saveUserToCoreData(uid: String, email: String, displayName: String?, photoURL: String?, socialMediaLink: String?, authProvider: AuthProviderOption, gender: String, interests: [String], blockedAuthors: [String], hiddenPinLogs: [String]) throws -> UserEntity {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             ErrorUtility.shared.presentErrorAlertAndTerminate(with: "앱 초기화 중 문제가 발생했습니다. 다시 시도해주세요.")
             throw NSError(domain: "AppDelegateError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Could not cast UIApplication delegate to AppDelegate"])
@@ -143,6 +153,7 @@ final class AuthenticationManager {
         userEntity.gender = gender
         userEntity.interests = interests.joined(separator: ",")
         userEntity.blockedAuthors = blockedAuthors.jsonString() ?? "[]"
+        userEntity.hiddenPinLogs = hiddenPinLogs.jsonString() ?? "[]"
         
         try context.save()
         
@@ -168,8 +179,8 @@ final class AuthenticationManager {
                         authProvider: .kakao,
                         gender: "선택안함",
                         interests: [],
-                        blockedAuthors: authDataResult.blockedAuthors // 추가된 부분
-
+                        blockedAuthors: authDataResult.blockedAuthors,
+                        hiddenPinLogs: authDataResult.hiddenPinLogs
                     )
                 } catch {
                     ErrorUtility.shared.presentErrorAlertAndTerminate(with: "사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
@@ -186,8 +197,9 @@ final class AuthenticationManager {
                     authProvider: AuthProviderOption.kakao.rawValue,
                     gender: "선택안함",
                     interests: [],
-                    isProfileComplete: false, 
-                    blockedAuthors: authDataResult.blockedAuthors
+                    isProfileComplete: false,
+                    blockedAuthors: authDataResult.blockedAuthors,
+                    hiddenPinLogs: authDataResult.hiddenPinLogs
                 )
             } catch {
                 print("Firestore save error: \(error)")
@@ -238,7 +250,8 @@ final class AuthenticationManager {
                         authProvider: .google,
                         gender: "선택안함",
                         interests: [],
-                        blockedAuthors: authDataResult.blockedAuthors
+                        blockedAuthors: authDataResult.blockedAuthors,
+                        hiddenPinLogs: authDataResult.hiddenPinLogs
                     )
                 } catch {
                     ErrorUtility.shared.presentErrorAlertAndTerminate(with: "사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
@@ -253,8 +266,9 @@ final class AuthenticationManager {
                     authProvider: AuthProviderOption.google.rawValue,
                     gender: "선택안함",
                     interests: [],
-                    isProfileComplete: true, 
-                    blockedAuthors: authDataResult.blockedAuthors
+                    isProfileComplete: true,
+                    blockedAuthors: authDataResult.blockedAuthors,
+                    hiddenPinLogs: authDataResult.hiddenPinLogs
                 )
             } catch {
                 await ErrorUtility.shared.presentErrorAlert(with: "서버에 사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
@@ -309,8 +323,9 @@ final class AuthenticationManager {
                     authProvider: AuthProviderOption.apple.rawValue,
                     gender: "선택안함",
                     interests: [],
-                    isProfileComplete: false, 
-                    blockedAuthors: authDataResult.blockedAuthors
+                    isProfileComplete: false,
+                    blockedAuthors: authDataResult.blockedAuthors,
+                    hiddenPinLogs: authDataResult.hiddenPinLogs
                 )
                 await MainActor.run {
                     presentSignUpViewController()

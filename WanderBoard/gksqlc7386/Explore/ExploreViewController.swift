@@ -18,6 +18,7 @@ class ExploreViewController: UIViewController, PageIndexed {
     var recentLogs: [PinLog] = []
     var hotLogs: [PinLog] = []
     var blockedAuthors: [String] = []
+    var hiddenPinLogs: [String] = []
     
     let pinLogManager = PinLogManager()
     var recentCellHeight: CGFloat = 0
@@ -47,15 +48,13 @@ class ExploreViewController: UIViewController, PageIndexed {
         setupConstraints()
         setGradient()
         setupNV()
-        
-        loadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.largeTitleDisplayMode = .automatic
+        navigationItem.largeTitleDisplayMode = .always
         
         NotificationHelper.changePage(hidden: false, isEnabled: true)
         searchButton.isHidden = false
@@ -70,6 +69,7 @@ class ExploreViewController: UIViewController, PageIndexed {
     private func loadData() {
         Task {
             self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
+            self.hiddenPinLogs = try await AuthenticationManager.shared.getHiddenPinLogs()
             await loadRecentData()
             await loadHotData()
         }
@@ -120,15 +120,15 @@ class ExploreViewController: UIViewController, PageIndexed {
         }
     }
     
-    private func filterBlockedAuthors(from logs: [PinLog]) -> [PinLog] {
-        return logs.filter { !blockedAuthors.contains($0.authorId) }
+    private func filterBlockedAndHiddenLogs(from logs: [PinLog]) -> [PinLog] {
+        return logs.filter { !blockedAuthors.contains($0.authorId) && !hiddenPinLogs.contains($0.id ?? "") }
     }
     
     func loadRecentData() async {
         do {
             let logs = try await pinLogManager.fetchPublicPinLogs()
             await MainActor.run {
-                self.recentLogs = filterBlockedAuthors(from: logs)
+                self.recentLogs = filterBlockedAndHiddenLogs(from: logs)
                 self.recentLogs.sort { ($0.createdAt ?? Date.distantPast) > ($1.createdAt ?? Date.distantPast) }
                 self.calculateRecentCellHeight()
                 self.tableView.reloadData()
@@ -160,7 +160,7 @@ class ExploreViewController: UIViewController, PageIndexed {
             let logs = try await pinLogManager.fetchHotPinLogs()
             await MainActor.run {
                 //self.recentLogs = logs
-                self.hotLogs = filterBlockedAuthors(from: logs)
+                self.hotLogs = filterBlockedAndHiddenLogs(from: logs)
                 self.tableView.reloadData()
             }
         } catch {
@@ -265,7 +265,7 @@ extension ExploreViewController: RecentTableViewCellDelegate {
         pinLogManager.fetchMoreData(pageSize: 30, lastSnapshot: lastSnapshot) { result in
             switch result {
             case .success(let (newLogs, newSnapshot)):
-                let filteredNewLogs = self.filterBlockedAuthors(from: newLogs)
+                let filteredNewLogs = self.filterBlockedAndHiddenLogs(from: newLogs)
                 self.recentLogs.append(contentsOf: filteredNewLogs)
                 self.recentLogs.sort { ($0.createdAt ?? Date.distantPast) > ($1.createdAt ?? Date.distantPast) }
                 self.calculateRecentCellHeight()
@@ -280,6 +280,8 @@ extension ExploreViewController: RecentTableViewCellDelegate {
 
 extension ExploreViewController: DetailViewControllerDelegate {
     func didHidePinLog(_ hiddenPinLogId: String) {
+        self.blockedAuthors.append(hiddenPinLogId)
+        
         self.recentLogs = self.recentLogs.filter { $0.id != hiddenPinLogId }
         self.hotLogs = self.hotLogs.filter { $0.id != hiddenPinLogId }
         
@@ -302,6 +304,7 @@ extension ExploreViewController: DetailViewControllerDelegate {
     func didUpdatePinLog() {
         Task {
             self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
+            self.hiddenPinLogs = try await AuthenticationManager.shared.getHiddenPinLogs()
             await loadRecentData()
             await loadHotData()
         }

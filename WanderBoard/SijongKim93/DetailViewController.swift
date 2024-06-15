@@ -733,9 +733,6 @@ class DetailViewController: UIViewController {
                 attributes: .destructive) { _ in
                     self.deletePinLog()
                 }
-            
-            
-            
             optionsButton.menu = UIMenu(title: "", children: [shareAction, editAction, deleteAction])
         } else {
             // 다른 사람의 글인 경우
@@ -744,15 +741,30 @@ class DetailViewController: UIViewController {
             }
             
             let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "person.slash.fill")) { _ in
-                self.reportPinLog()
+                let reportAlert = UIAlertController(title: "", message: "작성자를 차단하시겠습니까? \n 차단한 작성자의 글이 보이지 않게됩니다.", preferredStyle: .alert)
+                reportAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+                reportAlert.addAction(UIAlertAction(title: "차단", style: .destructive, handler: { [weak self] _ in
+                    self?.reportPinLog()
+                }))
+                self.present(reportAlert, animated: true, completion: nil)
             }
             
             let hideAction = UIAction(title: "게시글 숨기기", image: UIImage(systemName: "eye.slash.circle")) { _ in
-                self.hidePinLog()
+                let hideAlert = UIAlertController(title: "", message: "게시물을 숨기시겠습니까? \n 숨긴 게시글은 다시 볼 수 없습니다.", preferredStyle: .alert)
+                hideAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+                hideAlert.addAction(UIAlertAction(title: "숨기기", style: .destructive, handler: { [weak self] _ in
+                    self?.hidePinLog()
+                }))
+                self.present(hideAlert, animated: true, completion: nil)
             }
             
             let reportAction = UIAction(title: "신고하기", image: UIImage(systemName: "exclamationmark.triangle"), attributes: .destructive) { _ in
-                self.reportPinLog() //또 얼럿창.. ?
+                let reportAlert = UIAlertController(title: "", message: "작성자를 신고하시겠습니까?", preferredStyle: .alert)
+                reportAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+                reportAlert.addAction(UIAlertAction(title: "신고", style: .destructive, handler: { [weak self] _ in
+                    self?.reportPinLog()
+                }))
+                self.present(reportAlert, animated: true, completion: nil)
             }
             
             optionsButton.menu = UIMenu(title: "", children: [shareAction, blockAction, hideAction, reportAction])
@@ -804,15 +816,14 @@ class DetailViewController: UIViewController {
     }
     
     func hidePinLog() {
-        guard let pinLog = pinLog, let postId = pinLog.id, let userId = Auth.auth().currentUser?.uid else { return }
-
+        guard let pinLogId = pinLog?.id else { return }
         Task {
             do {
-                try await FirestoreManager.shared.hidePost(forUser: userId, postId: postId)
-                delegate?.didHidePinLog(postId)
+                try await AuthenticationManager.shared.hidePinLog(pinLogId: pinLogId)
+                delegate?.didHidePinLog(pinLogId)
                 self.navigationController?.popViewController(animated: true)
             } catch {
-                print("Failed to hide pinLog: \(error.localizedDescription)")
+                print("Failed to hide pin log: \(error)")
             }
         }
     }

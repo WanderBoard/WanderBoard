@@ -42,18 +42,8 @@ class PinLogManager {
             }
         }
         
-        let mediaData = mediaObjects.map { mediaItem -> [String: Any] in
-            var mediaDict: [String: Any] = ["url": mediaItem.url]
-            if let latitude = mediaItem.latitude, let longitude = mediaItem.longitude {
-                mediaDict["latitude"] = latitude
-                mediaDict["longitude"] = longitude
-            }
-            if let dateTaken = mediaItem.dateTaken {
-                mediaDict["dateTaken"] = Timestamp(date: dateTaken)
-            }
-            mediaDict["isRepresentative"] = mediaItem.isRepresentative
-            return mediaDict
-        }
+        let mediaData = mediaObjects.map { $0.toDictionary() }
+        let expensesData = pinLog.expenses?.map { $0.toDictionary() } ?? []
         
         let documentId = pinLog.id ?? UUID().uuidString
         let documentRef = db.collection("pinLogs").document(documentId)
@@ -73,11 +63,12 @@ class PinLogManager {
             "attendeeIds": pinLog.attendeeIds,
             "isPublic": pinLog.isPublic,
             "createdAt": Timestamp(date: pinLog.createdAt ?? Date()),
-
-            "pinCount": pinLog.pinCount ?? 0,  // 추가된 필드
-            "pinnedBy": pinLog.pinnedBy ?? [],  // 추가된 필드
-            "totalSpendingAmount": pinLog.totalSpendingAmount ?? 0.0, //추가
-            "isSpendingPublic": pinLog.isSpendingPublic
+            "pinCount": pinLog.pinCount ?? 0,
+            "pinnedBy": pinLog.pinnedBy ?? [],
+            "totalSpendingAmount": pinLog.totalSpendingAmount ?? 0.0,
+            "isSpendingPublic": pinLog.isSpendingPublic,
+            "maxSpendingAmount": pinLog.maxSpendingAmount ?? 0,
+            "expenses": expensesData
         ]
         
         if pinLog.id == nil {
@@ -88,6 +79,14 @@ class PinLogManager {
         }
         
         return pinLog
+    }
+    
+    func addExpenseToPinLog(pinLogId: String, expense: Expense) async throws {
+        let documentRef = db.collection("pinLogs").document(pinLogId)
+        
+        try await documentRef.updateData([
+            "expenses": FieldValue.arrayUnion([expense.toDictionary()])
+        ])
     }
     
     func deletePinLog(pinLogId: String) async throws {

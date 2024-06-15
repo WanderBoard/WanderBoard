@@ -27,7 +27,6 @@ class DetailViewController: UIViewController {
     var selectedFriends: [UIImage] = []
     
     var pinLog: PinLog?
-    
     let pinLogManager = PinLogManager()
     
     var mapViewController: MapViewController?
@@ -191,48 +190,81 @@ class DetailViewController: UIViewController {
     }()
     
     let mapAllButton = UIButton().then {
-        $0.setTitle("전체 지도 보기", for: .normal)
-        $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
-        $0.setTitleColor(UIColor.lightgray, for: .normal)
-        $0.backgroundColor = UIColor(named: "textColor")
+        var config = UIButton.Configuration.plain()
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 16, weight: .bold)
+        let symbolImage = UIImage(systemName: "arrow.down.left.and.arrow.up.right", withConfiguration: symbolConfiguration)
+        config.image = symbolImage
+        config.background.backgroundColor = UIColor(white: 1, alpha: 0.5)
+        config.imagePadding = 2
+        config.cornerStyle = .medium
+        $0.configuration = config
+        $0.tintColor = .font
         $0.isHidden = false
     }
     
     let albumAllButton = UIButton().then {
-        $0.setTitle("전체 앨범 보기", for: .normal)
-        $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
-        $0.setTitleColor(UIColor.lightgray, for: .normal)
-        $0.backgroundColor = UIColor(named: "textColor")
+        var config = UIButton.Configuration.plain()
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 16, weight: .bold)
+        let symbolImage = UIImage(systemName: "arrow.down.left.and.arrow.up.right", withConfiguration: symbolConfiguration)
+        config.image = symbolImage
+        config.background.backgroundColor = UIColor(white: 1, alpha: 0.5)
+        config.imagePadding = 5
+        config.cornerStyle = .medium
+        config.background.strokeColor = .clear
+        config.background.strokeWidth = 0
+        $0.configuration = config
+        $0.tintColor = .font
         $0.isHidden = true
     }
     
-    let moneyTitle = UILabel().then {
-        $0.text = "지출"
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+    let moneyCountainer = UIView().then {
+        $0.backgroundColor = .babygray
+        $0.layer.cornerRadius = 16
+        $0.clipsToBounds = true
     }
     
     var moneyCountTitle = UILabel().then {
         $0.text = "0000000"
-        $0.font = UIFont.systemFont(ofSize: 40)
+        $0.font = UIFont.systemFont(ofSize: 20)
         $0.textColor = .font
     }
     
     let moneyCountSubTitle = UILabel().then {
         $0.text = "₩"
-        $0.font = UIFont.systemFont(ofSize: 30, weight: .semibold)
-        $0.textColor = .lightgray
+        $0.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        $0.textColor = .darkgray
+        $0.isHidden = false
+    }
+    
+    let moneyMoveButton = UIButton().then {
+        $0.setImage(UIImage(systemName: "chevron.right"), for: .normal)
+        $0.tintColor = .darkgray
+    }
+    
+    let maxConsumView = UIView().then {
+        $0.backgroundColor = .white
+        $0.layer.cornerRadius = 8
+        $0.clipsToBounds = true
     }
     
     var maxConsumptionLabel = UILabel().then {
-        $0.text = "최고금액 지출 : GS25 부산해운대점"
+        $0.text = "최고금액 지출 : "
         $0.font = UIFont.systemFont(ofSize: 13)
         $0.textColor = .darkgray
     }
     
     let consumStackView = UIStackView().then {
-        $0.axis = .vertical
+        $0.axis = .horizontal
         $0.spacing = 0
-        $0.alignment = .leading
+        $0.alignment = .center
+        $0.distribution = .equalSpacing
+    }
+    
+    let consumMainStackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.spacing = 10
+        $0.distribution = .equalSpacing
+        $0.alignment = .center
     }
     
     let friendTitle = UILabel().then {
@@ -421,8 +453,11 @@ class DetailViewController: UIViewController {
         contentView.addSubview(galleryCollectionView)
         contentView.addSubview(mapAllButton)
         contentView.addSubview(albumAllButton)
-        contentView.addSubview(moneyCountSubTitle)
-        contentView.addSubview(consumStackView)
+        contentView.addSubview(moneyCountainer)
+        moneyCountainer.addSubview(consumStackView)
+        moneyCountainer.addSubview(consumMainStackView)
+        moneyCountainer.addSubview(moneyCountSubTitle)
+        maxConsumView.addSubview(maxConsumptionLabel)
         contentView.addSubview(friendTitle)
         contentView.addSubview(friendCollectionView)
         contentView.addSubview(bottomLogo)
@@ -434,9 +469,11 @@ class DetailViewController: UIViewController {
         dateStackView.addArrangedSubview(dateLineLabel)
         dateStackView.addArrangedSubview(dateEndLabel)
         
-        consumStackView.addArrangedSubview(moneyTitle)
         consumStackView.addArrangedSubview(moneyCountTitle)
-        consumStackView.addArrangedSubview(maxConsumptionLabel)
+        consumStackView.addArrangedSubview(moneyMoveButton)
+        
+        consumMainStackView.addArrangedSubview(consumStackView)
+        consumMainStackView.addArrangedSubview(maxConsumView)
         
         scrollView.delegate = self
     }
@@ -509,7 +546,7 @@ class DetailViewController: UIViewController {
         
         segmentControl.snp.makeConstraints {
             $0.top.equalTo(textLabelLine.snp.bottom).offset(48)
-            $0.leading.equalTo(contentView).inset(32)
+            $0.leading.equalTo(contentView).inset(16)
             $0.height.equalTo(30)
             $0.width.equalTo(123)
         }
@@ -527,34 +564,47 @@ class DetailViewController: UIViewController {
         }
         
         mapAllButton.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom)
+            $0.centerY.equalTo(segmentControl)
             $0.trailing.equalTo(contentView).inset(16)
         }
         
         albumAllButton.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom)
+            $0.centerY.equalTo(segmentControl)
             $0.trailing.equalTo(contentView).inset(16)
         }
         
-        moneyTitle.snp.makeConstraints {
-            $0.width.equalTo(80)
-            $0.height.equalTo(32)
+        moneyCountainer.snp.makeConstraints {
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(16)
+            $0.leading.trailing.equalTo(contentView).inset(16)
+            $0.height.equalTo(90)
         }
         
         moneyCountSubTitle.snp.makeConstraints {
-            $0.bottom.equalTo(moneyCountTitle).inset(3)
-            $0.leading.equalTo(moneyCountTitle.snp.trailing).offset(10)
+            $0.bottom.equalTo(moneyCountTitle).inset(2)
+            $0.leading.equalTo(moneyCountTitle.snp.trailing).offset(5)
         }
         
         consumStackView.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(48)
-            $0.leading.trailing.equalTo(contentView).offset(16)
+            $0.leading.trailing.equalToSuperview().inset(16)
         }
         
-        consumStackView.setCustomSpacing(8, after: moneyTitle)
+        maxConsumView.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.height.equalTo(30)
+        }
+        
+        maxConsumptionLabel.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.centerY.equalToSuperview()
+        }
+        
+        consumMainStackView.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
+        }
         
         friendTitle.snp.makeConstraints {
-            $0.top.equalTo(consumStackView.snp.bottom).offset(48)
+            $0.top.equalTo(moneyCountainer.snp.bottom).offset(32)
             $0.leading.equalTo(contentView).offset(16)
         }
         
@@ -565,7 +615,7 @@ class DetailViewController: UIViewController {
         }
         
         bottomLogo.snp.makeConstraints {
-            $0.top.equalTo(friendCollectionView.snp.bottom).offset(100)
+            $0.top.equalTo(friendCollectionView.snp.bottom).offset(50)
             $0.width.equalTo(135)
             $0.height.equalTo(18)
             $0.centerX.equalToSuperview()
@@ -585,7 +635,24 @@ class DetailViewController: UIViewController {
         dateDaysLabel.text = "\(duration) Days"
         mainTitleLabel.text = pinLog.title
         subTextLabel.text = pinLog.content
-        moneyCountTitle.text = "\(pinLog.totalSpendingAmount ?? 0)"
+        
+        if pinLog.isSpendingPublic {
+            moneyCountTitle.text = "\(formatCurrency(Int(pinLog.totalSpendingAmount ?? 0)))원"
+            maxConsumptionLabel.text = "최고금액 지출 : \(formatCurrency(pinLog.maxSpendingAmount ?? 0))원"
+            moneyCountainer.isHidden = false
+        } else {
+            moneyCountSubTitle.isHidden = true
+            consumMainStackView.isHidden = true
+            let privateLabel = UILabel().then {
+                $0.text = "지출 내역이 비공개입니다."
+                $0.font = UIFont.systemFont(ofSize: 15)
+                $0.textColor = .darkgray
+            }
+            moneyCountainer.addSubview(privateLabel)
+            privateLabel.snp.makeConstraints {
+                $0.center.equalToSuperview()
+            }
+        }
         
         selectedImages.removeAll()
         updateSelectedImages(with: pinLog.media)
@@ -611,7 +678,7 @@ class DetailViewController: UIViewController {
             }
         }
         
-        //프로필 이미지 불러오기
+        // 프로필 이미지 불러오기
         FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId) { [weak self] photoURL in
             if let photoURL = photoURL, let url = URL(string: photoURL) {
                 self?.loadImage(from: url) { image in
@@ -640,23 +707,23 @@ class DetailViewController: UIViewController {
     }
     
     func updateSelectedFriends(with attendeeIds: [String]) {
-            selectedFriends.removeAll()
-            
-            let group = DispatchGroup()
-            
-            for userId in attendeeIds {
-                group.enter()
-                fetchUserImage(userId: userId) { [weak self] image in
-                    guard let self = self else {
-                        group.leave()
-                        return
-                    }
-                    if let image = image {
-                        self.selectedFriends.append(image)
-                    }
+        selectedFriends.removeAll()
+        
+        let group = DispatchGroup()
+        
+        for userId in attendeeIds {
+            group.enter()
+            fetchUserImage(userId: userId) { [weak self] image in
+                guard let self = self else {
                     group.leave()
+                    return
                 }
+                if let image = image {
+                    self.selectedFriends.append(image)
+                }
+                group.leave()
             }
+        }
         
         group.notify(queue: .main) {
             self.friendCollectionView.reloadData()
@@ -690,6 +757,7 @@ class DetailViewController: UIViewController {
     
     func setupActionButton() {
         albumAllButton.addTarget(self, action: #selector(showGalleryDetail), for: .touchUpInside)
+        moneyMoveButton.addTarget(self, action: #selector(moneyMoveButtonTapped), for: .touchUpInside)
     }
     
     func fetchImagesFromFirestore(completion: @escaping ([Media]) -> Void) {
@@ -713,6 +781,12 @@ class DetailViewController: UIViewController {
                 completion(mediaItems)
             }
         }
+    }
+    
+    @objc func moneyMoveButtonTapped() {
+        let spendVC = SpendingListViewController()
+        spendVC.pinLog = self.pinLog
+        navigationController?.pushViewController(spendVC, animated: true)
     }
     
     @objc func setupMenu() {
@@ -877,6 +951,12 @@ class DetailViewController: UIViewController {
                 completion(nil)
             }
         }
+    }
+    
+    func formatCurrency(_ amount: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
     
     // 이미지 정보 저장

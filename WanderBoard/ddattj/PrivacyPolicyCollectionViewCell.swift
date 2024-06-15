@@ -18,9 +18,10 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
     weak var delegate: PrivacyPolicyTableViewCellDelegate?
 
     let scriptLabel = UILabel()
-    private let agreeCheckBox = UIButton(type: .custom)
-    private let disagreeCheckBox = UIButton(type: .custom)
+    let agreeCheckBox = UIButton(type: .custom)
+    let disagreeCheckBox = UIButton(type: .custom)
     private var section: Int = 0
+    private var isEnabled: Bool = false
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -84,22 +85,42 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
         scriptLabel.layoutIfNeeded()
     }
 
-    func configure(for section: Int, delegate: PrivacyPolicyTableViewCellDelegate?, agreeStatus: Bool, disagreeStatus: Bool) {
+    func configure(for section: Int, delegate: PrivacyPolicyTableViewCellDelegate?, agreeStatus: Bool, disagreeStatus: Bool, isEnabled: Bool) {
         self.section = section
         self.delegate = delegate
-        
+        self.isEnabled = isEnabled
+
         let scripts = [
             PrivacyPolicyScripts.termsOfService,
             PrivacyPolicyScripts.privacyPolicy,
             PrivacyPolicyScripts.marketingConsent,
             PrivacyPolicyScripts.thirdPartySharing
         ]
-        
+
         scriptLabel.text = scripts[section]
 
         agreeCheckBox.isSelected = agreeStatus
         disagreeCheckBox.isSelected = disagreeStatus
-        
+
+        agreeCheckBox.isUserInteractionEnabled = isEnabled
+        disagreeCheckBox.isUserInteractionEnabled = isEnabled
+
+        if isEnabled {
+            agreeCheckBox.setTitleColor(.black, for: .normal)
+            disagreeCheckBox.setTitleColor(.black, for: .normal)
+            agreeCheckBox.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+            agreeCheckBox.setImage(UIImage(systemName: "square"), for: .normal)
+            disagreeCheckBox.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+            disagreeCheckBox.setImage(UIImage(systemName: "square"), for: .normal)
+        } else {
+            agreeCheckBox.setTitleColor(.black, for: .normal)
+            disagreeCheckBox.setTitleColor(.black, for: .normal)
+            agreeCheckBox.setImage(UIImage(systemName: "checkmark.square.fill")?.withTintColor(UIColor.lightGray, renderingMode: .alwaysOriginal), for: .selected)
+            agreeCheckBox.setImage(UIImage(systemName: "square")?.withTintColor(UIColor.lightGray, renderingMode: .alwaysOriginal), for: .normal)
+            disagreeCheckBox.setImage(UIImage(systemName: "checkmark.square.fill")?.withTintColor(UIColor.lightGray, renderingMode: .alwaysOriginal), for: .selected)
+            disagreeCheckBox.setImage(UIImage(systemName: "square")?.withTintColor(UIColor.lightGray, renderingMode: .alwaysOriginal), for: .normal)
+        }
+
         if section == 2 || section == 3 {
             agreeCheckBox.setTitle("동의함", for: .normal)
             disagreeCheckBox.setTitle("동의안함", for: .normal)
@@ -109,6 +130,7 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
             disagreeCheckBox.isHidden = true
         }
     }
+
     
     private func getScriptForSection(_ section: Int) -> String {
         switch section {
@@ -126,18 +148,48 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
     }
     
     @objc private func agreeTapped() {
-        agreeCheckBox.isSelected = !agreeCheckBox.isSelected
-        if section < 2 {
-            delegate?.didChangeCompletionStatus(for: section, completed: agreeCheckBox.isSelected)
-        } else {
-            disagreeCheckBox.isSelected = false
-            delegate?.didChangeCompletionStatus(for: section, completed: true)
+        if !isEnabled { return }
+
+        if agreeCheckBox.isSelected {
+            return
         }
+
+        agreeCheckBox.isSelected = true
+        disagreeCheckBox.isSelected = false
+
+        UIView.animate(withDuration: 0.2, animations: {
+            self.agreeCheckBox.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.2, animations: {
+                self.agreeCheckBox.transform = CGAffineTransform.identity
+            }, completion: { _ in
+                if self.section < 2 {
+                    self.delegate?.didChangeCompletionStatus(for: self.section, completed: true)
+                } else {
+                    self.delegate?.didChangeCompletionStatus(for: self.section, completed: true)
+                }
+            })
+        })
     }
-    
+
     @objc private func disagreeTapped() {
-        disagreeCheckBox.isSelected = !disagreeCheckBox.isSelected
+        if !isEnabled { return }
+
+        if disagreeCheckBox.isSelected {
+            return
+        }
+
+        disagreeCheckBox.isSelected = true
         agreeCheckBox.isSelected = false
-        delegate?.didChangeCompletionStatus(for: section, completed: false)
+
+        UIView.animate(withDuration: 0.2, animations: {
+            self.disagreeCheckBox.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.2, animations: {
+                self.disagreeCheckBox.transform = CGAffineTransform.identity
+            }, completion: { _ in
+                self.delegate?.didChangeCompletionStatus(for: self.section, completed: false)
+            })
+        })
     }
 }

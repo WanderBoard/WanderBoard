@@ -986,8 +986,6 @@ class DetailInputViewController: UIViewController {
                                     maxSpendingAmount: maxSpendingAmount,
                                     expenses: expenses)
             
-                    )
-
                 }
                 
                 // 선택된 대표 이미지가 있으면 설정

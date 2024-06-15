@@ -44,6 +44,9 @@ class MyPageViewController: BaseViewController, PageIndexed {
         fetchUserData()
         fetchAndDisplayUserPinCount() // 핀 개수 가져오기 및 UI 업데이트
         fetchInvitationCount()
+        
+        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem = backButton
     }
     
     
@@ -311,7 +314,7 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                         settingVC.navigationItem.title = "환경설정"
                     case 1:
                     NotificationHelper.changePage(hidden: true, isEnabled: false)
-                        let policyVC = ConsentStatusViewController()
+                        let policyVC = TermsOfServiceViewController()
                         self.navigationController?.pushViewController(policyVC, animated: true)
                         policyVC.navigationItem.title = "이용약관 및 개인정보처리방침"
                     case 2:

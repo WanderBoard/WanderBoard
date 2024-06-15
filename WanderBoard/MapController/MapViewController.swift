@@ -64,14 +64,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         placeInfoView.savePinButton.addTarget(self, action: #selector(savePinTapped), for: .touchUpInside)
 
     }
-    
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//            self.savePinTapped()
-//        }
-//    }
 
     private func setupMapView() {
         mapView.delegate = self
@@ -118,13 +110,11 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         annotation.coordinate = location
         annotation.title = address
         mapView.addAnnotation(annotation)
-//        print("Annotation added at \(location.latitude), \(location.longitude) with title: \(address)")
 
     }
     
     func animatePin(at coordinate: CLLocationCoordinate2D) {
         guard let annotation = mapView.annotations.first(where: { $0.coordinate.latitude == coordinate.latitude && $0.coordinate.longitude == coordinate.longitude }) else {
-            print("No annotation found at given coordinates")
             return
         }
 
@@ -234,7 +224,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         viewModel.searchQuery = searchText
-//        viewModel.updateSearchResults(query: searchText)
         viewModel.startSearchDelay()
     }
     
@@ -251,6 +240,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         tableView.reloadData()
         tableView.isHidden = false
     }
+    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.showsCancelButton = false
         searchBar.resignFirstResponder()

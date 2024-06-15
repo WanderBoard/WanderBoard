@@ -92,7 +92,7 @@ extension PrivacyPolicyViewController: UITableViewDelegate, UITableViewDataSourc
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: PrivacyPolicyTableViewCell.identifier, for: indexPath) as! PrivacyPolicyTableViewCell
-        cell.configure(for: indexPath.section, delegate: self, agreeStatus: sectionAgreeStatus[indexPath.section], disagreeStatus: sectionDisagreeStatus[indexPath.section])
+        cell.configure(for: indexPath.section, delegate: self, agreeStatus: sectionAgreeStatus[indexPath.section], disagreeStatus: sectionDisagreeStatus[indexPath.section], isEnabled: true)
         return cell
     }
 

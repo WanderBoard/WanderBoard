@@ -190,4 +190,15 @@ class PinLogManager {
                 }
             }
     }
+    
+    // 핀 찍은 데이터만 가져오기
+    func fetchPinnedPinLogs(forUserId userId: String) async throws -> [PinLog] {
+        let querySnapshot = try await db.collection("pinLogs")
+            .whereField("pinnedBy", arrayContains: userId)
+            .getDocuments()
+        
+        return querySnapshot.documents.compactMap { document in
+            try? document.data(as: PinLog.self)
+        }
+    }
 }

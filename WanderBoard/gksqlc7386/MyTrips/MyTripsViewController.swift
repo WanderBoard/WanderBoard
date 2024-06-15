@@ -19,8 +19,9 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     var pageIndex: Int?
     var pageText: String?
     
-    let filters = ["My Logs", "Our Logs", "Pin Logs"]
+    let filters = ["My Pin", "Tag Pin", "Wander Pin"]
     var currentFilterIndex = 0
+    static var pinnedTripLogs: [PinLog] = [] // 핀 찍은 로그를 저장할 새로운 배열 추가
     
     lazy var plusButton: UIButton = {
         let button = UIButton(type: .system)
@@ -68,11 +69,11 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         NotificationHelper.changePage(hidden: false, isEnabled: true)
         updateView()
         plusButton.isHidden = false
-        
-        print("MyTripsViewController: viewWillAppear called")
-        
+
         Task {
             await loadData()
+            await loadPinnedData() // 핀 찍은 데이터도 로드
+            updateView()
         }
     }
     
@@ -116,14 +117,15 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
     
     func filterTripLogs() -> [PinLog] {
+        guard let userId = Auth.auth().currentUser?.uid else { return [] }
+        
         switch currentFilterIndex {
         case 0:
-            guard let userId = Auth.auth().currentUser?.uid else { return [] }
             return MyTripsViewController.tripLogs.filter { $0.authorId == userId }
         case 1:
-            return []
+            return [] // 다른 필터 로직 추가
         case 2:
-            return []
+            return MyTripsViewController.pinnedTripLogs
         default:
             return []
         }
@@ -138,9 +140,14 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
     
     @objc func filterButtonTapped(sender: UIButton) {
-        let filterIndex = sender.tag
-        let filterTitle = filters[filterIndex]
-        print("Filter button tapped: \(filterTitle)")
+        currentFilterIndex = sender.tag
+        Task {
+            if currentFilterIndex == 2 { // Wander Pin 필터가 선택되었을 때
+                await loadPinnedData()
+            }
+            updateView()
+            printFilteredLogs() // 필터링된 로그를 콘솔에 출력
+        }
     }
     
     func loadData() async {
@@ -159,6 +166,27 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         }
     }
     
+    func loadPinnedData() async {
+        do {
+            guard let userId = Auth.auth().currentUser?.uid else {
+                print("No user ID found")
+                return
+            }
+            let pinnedLogs = try await pinLogManager.fetchPinnedPinLogs(forUserId: userId)
+            MyTripsViewController.pinnedTripLogs = pinnedLogs
+            print("Fetched pinned pinLogs: \(pinnedLogs)")
+        } catch {
+            print("Failed to fetch pinned pin logs: \(error.localizedDescription)")
+        }
+    }
+    
+    func printFilteredLogs() {
+        let filteredLogs = filterTripLogs()
+        for log in filteredLogs {
+            print("Title: \(log.title), Author: \(log.authorId), Pinned By: \(log.pinnedBy ?? [])")
+        }
+    }
+    
     func addNewTripLog(_ log: PinLog) {
         MyTripsViewController.tripLogs.insert(log, at: 0)
         updateView()
@@ -168,6 +196,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         if MyTripsViewController.tripLogs.isEmpty {
             collectionView.isHidden = true
             emptyView.isHidden = false
+            plusButton.isHidden = true
         } else {
             collectionView.isHidden = false
             emptyView.isHidden = true

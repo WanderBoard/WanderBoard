@@ -922,7 +922,7 @@ class DetailInputViewController: UIViewController {
         let title = mainTextField.text ?? ""
         let content = subTextField.text ?? ""
         let isPublic = publicSwitch.isOn
-        //let isSpendingPublic = spendingPublicSwitch.isOn
+        let isSpendingPublic = spendingPublicSwitch.isOn
         let address = savedAddress ?? "Unknown Address"
         let latitude = savedLocation?.latitude ?? 0.0
         let longitude = savedLocation?.longitude ?? 0.0
@@ -960,8 +960,8 @@ class DetailInputViewController: UIViewController {
                                     createdAt: Date(),
                                     pinCount: 0,
                                     pinnedBy: [],
-                                    totalSpendingAmount: 0.0
-                                    //isSpendingPublic: isSpendingPublic
+                                    totalSpendingAmount: 0.0,
+                                    isSpendingPublic: isSpendingPublic
                     )
                 }
                 

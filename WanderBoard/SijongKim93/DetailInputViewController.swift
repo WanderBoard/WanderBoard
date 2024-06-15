@@ -715,6 +715,7 @@ class DetailInputViewController: UIViewController {
     
     @objc func consumButtonTapped() {
         let spendVC = SpendingListViewController()
+
         spendVC.pinLog = pinLog
         navigationController?.pushViewController(spendVC, animated: true)
     }

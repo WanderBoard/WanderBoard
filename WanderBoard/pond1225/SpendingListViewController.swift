@@ -396,8 +396,7 @@ extension SpendingListViewController: UITableViewDelegate {
     }
 }
 
-// MARK: EmptyViewDelegate
-extension SpendingListViewController: EmptyViewDelegate {
+extension SpendingListViewController: SpendingEmptyViewDelegate {
     func didTapAddButton() {
         penButton.isEnabled = false
         let inputVC = InsertSpendingViewController()

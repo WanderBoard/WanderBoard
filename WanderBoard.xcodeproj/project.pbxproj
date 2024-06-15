@@ -97,7 +97,6 @@
 		FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */; };
 		FB9A3AD62C1984A200E1EAA2 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */; };
 		FB9A3ADB2C1984B700E1EAA2 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */; };
-		FB9A3ADC2C1984B700E1EAA2 /* EmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD82C1984B600E1EAA2 /* EmptyView.swift */; };
 		FB9A3ADD2C1984B700E1EAA2 /* MyTripsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */; };
 		FB9A3ADE2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */; };
 		FB9A3AE52C1984C600E1EAA2 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3ADF2C1984C600E1EAA2 /* SearchViewController.swift */; };
@@ -182,7 +181,6 @@
 		FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
 		FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterCollectionViewCell.swift; sourceTree = "<group>"; };
-		FB9A3AD82C1984B600E1EAA2 /* EmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyView.swift; sourceTree = "<group>"; };
 		FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTripsViewController.swift; sourceTree = "<group>"; };
 		FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTripsCollectionViewCell.swift; sourceTree = "<group>"; };
 		FB9A3ADF2C1984C600E1EAA2 /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -433,7 +431,6 @@
 		FB72E7422C0F3EE7002AADBD /* MyTrips */ = {
 			isa = PBXGroup;
 			children = (
-				FB9A3AD82C1984B600E1EAA2 /* EmptyView.swift */,
 				FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */,
 				FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */,
 				FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */,
@@ -572,7 +569,6 @@
 				6BBE4B852C19950100A7A793 /* SpendingTableViewCell.swift in Sources */,
 				2AF29A062C1B68320021D231 /* PrivacyPolicyScripts.swift in Sources */,
 				4D21E8592C1AB960002FDBC9 /* MateTableViewCell.swift in Sources */,
-				FB9A3ADC2C1984B700E1EAA2 /* EmptyView.swift in Sources */,
 				4D21E85B2C1B39E7002FDBC9 /* UserSummary.swift in Sources */,
 				2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */,
 				2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */,

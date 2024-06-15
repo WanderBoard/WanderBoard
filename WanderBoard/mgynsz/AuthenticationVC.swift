@@ -158,6 +158,7 @@ class AuthenticationVC: UIViewController {
         
         label.textAlignment = .center
         label.numberOfLines = 0
+        label.isUserInteractionEnabled = true
         return label
     }()
     
@@ -166,6 +167,7 @@ class AuthenticationVC: UIViewController {
         
         view.backgroundColor = .systemBackground
         setupViews()
+        addGestureRecognizers()
     }
     
     private func setupViews() {
@@ -217,6 +219,28 @@ class AuthenticationVC: UIViewController {
         appleSignInButton.addTarget(self, action: #selector(signInAppleTapped), for: .touchUpInside)
         googleSignInButton.addTarget(self, action: #selector(signInGoogleTapped), for: .touchUpInside)
     }
+    
+    private func addGestureRecognizers() {
+        let termsRange = (termsLabel.text! as NSString).range(of: "Terms of Service")
+        let privacyRange = (termsLabel.text! as NSString).range(of: "Privacy Policy")
+
+        let termsTapGesture = UITapGestureRecognizer(target: self, action: #selector(termsOfServiceTapped))
+        termsLabel.addGestureRecognizer(termsTapGesture)
+
+        let privacyTapGesture = UITapGestureRecognizer(target: self, action: #selector(privacyPolicyTapped))
+        termsLabel.addGestureRecognizer(privacyTapGesture)
+    }
+    
+    @objc private func termsOfServiceTapped() {
+        let termsVC = TermsOfServiceViewController()
+        termsVC.modalPresentationStyle = .formSheet
+        present(termsVC, animated: true, completion: nil)
+    }
+
+    @objc private func privacyPolicyTapped() {
+        let termsVC = TermsOfServiceViewController()
+        termsVC.modalPresentationStyle = .formSheet
+        present(termsVC, animated: true, completion: nil)    }
     
     @objc private func signInKakaoTapped() {
         Task {

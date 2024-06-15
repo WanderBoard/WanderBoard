@@ -82,7 +82,6 @@ class PlaceInfoView: UIView {
 
         addSubview(iconImageView)
         addSubview(nameLabel)
-//        addSubview(postalCodeLabel)
         addSubview(addressLabel)
         addSubview(websiteButton)
         addSubview(callButton)
@@ -94,16 +93,11 @@ class PlaceInfoView: UIView {
         }
 
         nameLabel.snp.makeConstraints { make in
-//            make.top.equalToSuperview().offset(16)
             make.centerY.equalTo(iconImageView.snp.centerY)
             make.leading.equalTo(iconImageView.snp.trailing).offset(10)
             make.trailing.equalToSuperview().inset(16)
         }
 
-//        postalCodeLabel.snp.makeConstraints { make in
-//            make.top.equalTo(nameLabel.snp.bottom).offset(8)
-//            make.leading.trailing.equalToSuperview().inset(16)
-//        }
 
         addressLabel.snp.makeConstraints { make in
             make.top.equalTo(nameLabel.snp.bottom).offset(8)
@@ -138,9 +132,6 @@ class PlaceInfoView: UIView {
         callButton.addTarget(self, action: #selector(callPhoneNumber), for: .touchUpInside)
         callButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
         callButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside])
-//        savePinButton.addTarget(self, action: #selector(savePinTapped), for: .touchUpInside)
-//        savePinButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
-//        savePinButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside])
     }
 
     func configure(name: String, address: String, postalCode: String, phone: String, website: String) {

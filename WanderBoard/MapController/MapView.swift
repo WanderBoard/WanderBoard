@@ -10,6 +10,7 @@ import SwiftUI
 import MapKit
 
 struct MapView: UIViewRepresentable {
+    
     @ObservedObject var viewModel: MapViewModel
     var onMapTap: (() -> Void)?
 

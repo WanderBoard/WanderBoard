@@ -31,6 +31,11 @@ import CoreLocation
 //    }
 //}
 
+import Foundation
+import FirebaseFirestore
+import FirebaseFirestoreSwift
+import CoreLocation
+
 struct Media: Codable {
     var url: String
     var latitude: Double?
@@ -44,7 +49,7 @@ struct Media: Codable {
         latitude = try container.decodeIfPresent(Double.self, forKey: .latitude)
         longitude = try container.decodeIfPresent(Double.self, forKey: .longitude)
         dateTaken = try container.decodeIfPresent(Date.self, forKey: .dateTaken)
-        isRepresentative = try container.decodeIfPresent(Bool.self, forKey: .isRepresentative) ?? false 
+        isRepresentative = try container.decodeIfPresent(Bool.self, forKey: .isRepresentative) ?? false
     }
     
     init(url: String, latitude: Double?, longitude: Double?, dateTaken: Date?, isRepresentative: Bool = false) {
@@ -54,9 +59,53 @@ struct Media: Codable {
         self.dateTaken = dateTaken
         self.isRepresentative = isRepresentative
     }
+    
+    func toDictionary() -> [String: Any] {
+        var dict: [String: Any] = ["url": url, "isRepresentative": isRepresentative]
+        if let latitude = latitude {
+            dict["latitude"] = latitude
+        }
+        if let longitude = longitude {
+            dict["longitude"] = longitude
+        }
+        if let dateTaken = dateTaken {
+            dict["dateTaken"] = Timestamp(date: dateTaken)
+        }
+        return dict
+    }
 }
 
+struct Expense: Codable, Equatable {
+    var date: Date
+    var expenseContent: String
+    var expenseAmount: Int
+    var category: String
+    var memo: String
+    var imageName: String
+    
+    func toDictionary() -> [String: Any] {
+        return [
+            "date": Timestamp(date: self.date),
+            "expenseContent": self.expenseContent,
+            "expenseAmount": self.expenseAmount,
+            "category": self.category,
+            "memo": self.memo,
+            "imageName": self.imageName
+        ]
+    }
+}
 
+struct DailyExpenses: Codable {
+    var date: Date
+    var expenses: [Expense]
+    
+    func toDictionary() -> [String: Any] {
+        return [
+            "date": Timestamp(date: self.date),
+            "expenses": self.expenses.map { $0.toDictionary() }
+        ]
+    }
+}
 
 struct PinLog: Identifiable, Codable {
     @DocumentID var id: String?
@@ -76,11 +125,12 @@ struct PinLog: Identifiable, Codable {
     var createdAt: Date?
     var pinCount: Int? //핀 갯수 추가 - 한빛
     var pinnedBy: [String]? // 핀 찍은 유저id 배열 - 한빛
-    var totalSpendingAmount: Double? //핀로그당 사용한 최종금액 - 시안
+    var totalSpendingAmount: Int? //핀로그당 사용한 최종금액 - 시안
     var isSpendingPublic: Bool
+    var maxSpendingAmount: Int?
+    var expenses: [DailyExpenses]? // 지출 데이터 추가 (옵셔널)
     
-    init(id: String? = nil, location: String, address: String, latitude: Double, longitude: Double, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?, pinCount:Int?, pinnedBy: [String]? = [],  totalSpendingAmount: Double?, isSpendingPublic: Bool ) {
-
+    init(id: String? = nil, location: String, address: String, latitude: Double, longitude: Double, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?, pinCount:Int?, pinnedBy: [String]? = [],  totalSpendingAmount: Int?, isSpendingPublic: Bool, maxSpendingAmount: Int?, expenses: [DailyExpenses]? = nil) {
         
         self.id = id
         self.location = location
@@ -99,10 +149,13 @@ struct PinLog: Identifiable, Codable {
         self.createdAt = createdAt
         self.pinCount = pinCount //핀 갯수 추가 - 한빛
         self.pinnedBy = pinnedBy // 핀 상태 확인 - 한빛
-        self.totalSpendingAmount = totalSpendingAmount //핀로그당 사용한 최종금액 - 시안
+        self.totalSpendingAmount = totalSpendingAmount ?? 0//핀로그당 사용한 최종금액 - 시안
         self.isSpendingPublic = isSpendingPublic
+        self.maxSpendingAmount = maxSpendingAmount ?? 0
+        self.expenses = expenses // 지출 데이터 추가 (옵셔널)
     }
 }
+
 
 //
 //import Foundation

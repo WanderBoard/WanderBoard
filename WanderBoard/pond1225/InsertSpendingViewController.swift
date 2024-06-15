@@ -8,18 +8,21 @@
 import Foundation
 import UIKit
 import SnapKit
+import FirebaseFirestore
+import FirebaseAuth
 
-protocol InsertspendingviewcontrollerDelegate: AnyObject {
-    func didUpdateExpense(_ expense: Expense, at indextPath: IndexPath)
+protocol InsertSpendingViewControllerDelegate: AnyObject {
+    func didUpdateExpense(_ expense: Expense, at indexPath: IndexPath?)
 }
 
 class InsertSpendingViewController: UIViewController {
    
 // MARK: Components
     var expenses: [Expense] = []
+    var pinLog: PinLog?
     var expenseToEdit: Expense?
     var editingIndexPath: IndexPath?
-    weak var delegate: InsertspendingviewcontrollerDelegate?
+    weak var delegate: InsertSpendingViewControllerDelegate?
     
     var titleLabel: UILabel = {
         var titleLabel = UILabel()
@@ -369,35 +372,69 @@ class InsertSpendingViewController: UIViewController {
 // MARK: 저장Done 버튼 클릭시 SpendingListVC로 data 전달
     @objc func saveExpenseData() {
         guard saveDoneButton.isEnabled else { return }
-        
+
         let content = contentTextField.text ?? ""
         let amount = expenseAmountTextField.text ?? ""
         let category = insertedCategoryLabel.text ?? ""
         let imageName = categoryImageMapping[category] ?? ""
-        
-            let expense = Expense(
-                date: datePicker.date,
-                expenseContent: content,
-                expenseAmount: Int(amount) ?? 0,
-                category: category,
-                memo: memoTextField.text ?? "",
-                imageName: imageName
-            )
-            
-//        if let originalExpense = expenseToEdit {
-//            if originalExpense == expense {
-//                showAlert(title: "알림", message: "변경된 내용이 없습니다")
-//                return
-//            }
-//        }
-        if let indexPath = editingIndexPath {
-            delegate?.didUpdateExpense(expense, at: indexPath)
-        } else {
-            NotificationCenter.default.post(name: .newExpenseData, object: nil, userInfo: ["expense" : expense])
-        }
-            self.dismiss(animated: true)
-    }
 
+        let expense = Expense(
+            date: datePicker.date,
+            expenseContent: content,
+            expenseAmount: Int(amount) ?? 0,
+            category: category,
+            memo: memoTextField.text ?? "",
+            imageName: imageName
+        )
+
+        delegate?.didUpdateExpense(expense, at: editingIndexPath)
+
+        // Firestore 저장 코드 추가
+        guard let pinLogId = pinLog?.id else {
+            self.dismiss(animated: true)
+            return
+        }
+
+        Task {
+            do {
+                try await PinLogManager.shared.addExpenseToPinLog(pinLogId: pinLogId, expense: expense)
+                print("Expense successfully added to pin log")
+                self.dismiss(animated: true)
+                NotificationCenter.default.post(name: .newExpenseData, object: nil, userInfo: ["expense": expense])
+            } catch {
+                print("Error saving expense: \(error)")
+                self.dismiss(animated: true)
+            }
+        }
+    }
+    
+    func saveExpenseToFirestore(_ expense: Expense) {
+        let db = Firestore.firestore()
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let pinLogRef = db.collection("pinLogs").document(userId)
+        
+        let expenseData: [String: Any] = [
+            "date": Timestamp(date: expense.date),
+            "expenseContent": expense.expenseContent,
+            "expenseAmount": expense.expenseAmount,
+            "category": expense.category,
+            "memo": expense.memo,
+            "imageName": expense.imageName
+        ]
+        
+        pinLogRef.updateData([
+            "expenses": FieldValue.arrayUnion([expenseData])
+        ]) { error in
+            if let error = error {
+                print("Error saving expense: \(error)")
+            } else {
+                NotificationCenter.default.post(name: .newExpenseData, object: nil, userInfo: ["expense" : expense])
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
+    }
+    
     
 // MARK: Components Set up
     func configureUI() {

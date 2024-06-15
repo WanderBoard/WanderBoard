@@ -11,6 +11,7 @@ import CoreLocation
 import Contacts
 
 class MapViewModel: NSObject, ObservableObject {
+    
     @Published var region: MKCoordinateRegion
     @Published var annotations: [MKPointAnnotation] = []
     @Published var searchQuery: String = ""
@@ -55,7 +56,6 @@ class MapViewModel: NSObject, ObservableObject {
                 }
             } else {
                 DispatchQueue.main.async {
-                    print("Location services are not enabled")
                     self.setDefaultRegion()
                 }
             }
@@ -87,7 +87,7 @@ class MapViewModel: NSObject, ObservableObject {
     func startSearchDelay() {
         isLoading = true
         searchResults = []
-        searchResultsHandler?(searchResults) // 빈 검색 결과를 전달하여 로딩 셀을 표시
+        searchResultsHandler?(searchResults)
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 0.7, repeats: false) { _ in
             guard !self.searchQuery.isEmpty else {
@@ -123,7 +123,6 @@ class MapViewModel: NSObject, ObservableObject {
             addressString = addressString.replacingOccurrences(of: "\n", with: ", ")
             addressString = addressString.replacingOccurrences(of: "대한민국", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
 
-            // subtitle을 사용하지 않고 사용자 정의 속성을 활용합니다.
             let annotation = MKPointAnnotation()
             annotation.coordinate = mapItem.placemark.coordinate
             annotation.title = mapItem.name

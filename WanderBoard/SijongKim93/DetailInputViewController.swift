@@ -41,10 +41,16 @@ class DetailInputViewController: UIViewController {
     var selectedFriends: [UserSummary] = []
     var representativeImageIndex: Int? = 0
     
+    var totalSpendingAmountText: String? {
+        didSet {
+            consumLeftLabel.text = totalSpendingAmountText
+        }
+    }
+    
     var imageLocations: [CLLocationCoordinate2D] = []
     let pinLogManager = PinLogManager()
-    var pinLog: PinLog? //추가
-    
+    var pinLog: PinLog?
+    var expenses: [DailyExpenses] = []
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
     var publicViewHeightConstraint: Constraint?
@@ -393,20 +399,20 @@ class DetailInputViewController: UIViewController {
         requestPhotoLibraryAccess()
         updateColor()
         
-        if let pinLog = pinLog {
-            configureView(with: pinLog)
-        }
-        
         mainTextField.delegate = self
         subTextField.delegate = self
         
+        if let pinLog = pinLog {
+            configureView(with: pinLog)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         navigationController?.navigationBar.tintColor = .white
         navigationItem.largeTitleDisplayMode = .never
+        
     }
     
     func setupUI() {
@@ -709,8 +715,8 @@ class DetailInputViewController: UIViewController {
     
     @objc func consumButtonTapped() {
         let spendVC = SpendingListViewController()
-        spendVC.modalPresentationStyle = .fullScreen
-        self.present(spendVC, animated: true)
+        spendVC.pinLog = pinLog
+        navigationController?.pushViewController(spendVC, animated: true)
     }
     
     @objc func showDatePicker(_ sender: UIButton) {
@@ -755,24 +761,26 @@ class DetailInputViewController: UIViewController {
     }
     
     func configureView(with pinLog: PinLog) {
-        print("Configuring view with pinLog: \(pinLog)")
+        expenses = pinLog.expenses ?? [] // 저장된 지출 내역 로드
+        spendingPublicSwitch.isOn = pinLog.isSpendingPublic
         locationLeftLabel.text = pinLog.location
         mainTextField.text = pinLog.title
         mainTextField.textColor = .black
         subTextField.text = pinLog.content
         subTextField.textColor = .black
         publicSwitch.isOn = pinLog.isPublic
-        //spendingPublicSwitch.isOn = pinLog.isSpendingPublic // 새로 추가한 필드
+        spendingPublicSwitch.isOn = pinLog.isSpendingPublic
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         startDateButton.setTitle(dateFormatter.string(from: pinLog.startDate), for: .normal)
         endDateButton.setTitle(dateFormatter.string(from: pinLog.endDate), for: .normal)
-        
+
         selectedImages.removeAll()
         imageLocations.removeAll()
-        
+
         let dispatchGroup = DispatchGroup()
-        
+
         for media in pinLog.media {
             dispatchGroup.enter()
             if let url = URL(string: media.url) {
@@ -789,15 +797,23 @@ class DetailInputViewController: UIViewController {
                 dispatchGroup.leave()
             }
         }
-        
+
         dispatchGroup.notify(queue: .main) {
             self.representativeImageIndex = self.selectedImages.firstIndex { $0.1 }
             self.updateRepresentativeImage()
             self.galleryCollectionView.reloadData()
             self.updateGalleryCountButton()
         }
-        
+
         loadSelectedFriends(pinLog: pinLog)
+
+        // totalSpendingAmount 값을 consumLeftLabel에 설정
+        if let totalSpendingAmount = pinLog.totalSpendingAmount {
+            consumLeftLabel.text = "\(formatCurrency(Int(totalSpendingAmount)))원"
+        } else {
+            consumLeftLabel.text = "지출 내역을 입력해주세요"
+        }
+        updateTotalSpendingAmount(with: expenses)
     }
     
     
@@ -905,7 +921,6 @@ class DetailInputViewController: UIViewController {
             return
         }
         
-        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
@@ -922,10 +937,12 @@ class DetailInputViewController: UIViewController {
         let title = mainTextField.text ?? ""
         let content = subTextField.text ?? ""
         let isPublic = publicSwitch.isOn
-        //let isSpendingPublic = spendingPublicSwitch.isOn
+        let isSpendingPublic = spendingPublicSwitch.isOn
         let address = savedAddress ?? "Unknown Address"
         let latitude = savedLocation?.latitude ?? 0.0
         let longitude = savedLocation?.longitude ?? 0.0
+        let totalSpendingAmount = calculateTotalSpendingAmount()
+        let maxSpendingAmount = calculateMaxSpendingAmount()
         
         Task {
             do {
@@ -942,8 +959,11 @@ class DetailInputViewController: UIViewController {
                     pinLog.title = title
                     pinLog.content = content
                     pinLog.isPublic = isPublic
-                    //pinLog.isSpendingPublic = isSpendingPublic
+                    pinLog.isSpendingPublic = isSpendingPublic
                     pinLog.attendeeIds = selectedFriends.map { $0.uid }
+                    pinLog.totalSpendingAmount = totalSpendingAmount
+                    pinLog.maxSpendingAmount = maxSpendingAmount
+                    pinLog.expenses = expenses
                 } else {
                     pinLog = PinLog(location: locationTitle,
                                     address: address,
@@ -960,9 +980,10 @@ class DetailInputViewController: UIViewController {
                                     createdAt: Date(),
                                     pinCount: 0,
                                     pinnedBy: [],
-                                    totalSpendingAmount: 0.0
-                                    //isSpendingPublic: isSpendingPublic
-                    )
+                                    totalSpendingAmount: totalSpendingAmount,
+                                    isSpendingPublic: isSpendingPublic,
+                                    maxSpendingAmount: maxSpendingAmount,
+                                    expenses: expenses)
                 }
                 
                 // 선택된 대표 이미지가 있으면 설정
@@ -996,6 +1017,14 @@ class DetailInputViewController: UIViewController {
                 present(alert, animated: true, completion: nil)
             }
         }
+    }
+    
+    func calculateTotalSpendingAmount() -> Int {
+        return expenses.flatMap { $0.expenses }.reduce(0) { $0 + $1.expenseAmount }
+    }
+
+    func calculateMaxSpendingAmount() -> Int {
+        return expenses.flatMap { $0.expenses }.map { $0.expenseAmount }.max() ?? 0
     }
     
     func loadSelectedFriends(pinLog: PinLog) {
@@ -1134,6 +1163,17 @@ class DetailInputViewController: UIViewController {
             representativeImageIndex = selectedImages.isEmpty ? nil : 0
         }
         galleryCollectionView.reloadData()
+    }
+    
+    func updateTotalSpendingAmount(with dailyExpenses: [DailyExpenses]) {
+        let totalAmount = dailyExpenses.flatMap { $0.expenses }.reduce(0) { $0 + $1.expenseAmount }
+        consumLeftLabel.text = "\(formatCurrency(totalAmount))원"
+    }
+
+    func formatCurrency(_ amount: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }
 
@@ -1302,4 +1342,5 @@ extension DetailInputViewController: UITextViewDelegate {
         }
     }
 }
+
 

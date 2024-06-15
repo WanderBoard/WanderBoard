@@ -77,7 +77,6 @@
 		4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37622C077122001B03F8 /* DetailViewController.swift */; };
 		4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */; };
 		4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */; };
-		6BBE4B822C19950100A7A793 /* ExpenseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7C2C19950100A7A793 /* ExpenseModel.swift */; };
 		6BBE4B832C19950100A7A793 /* InsertSpendingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7D2C19950100A7A793 /* InsertSpendingViewController.swift */; };
 		6BBE4B842C19950100A7A793 /* SpendingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7E2C19950100A7A793 /* SpendingListViewController.swift */; };
 		6BBE4B852C19950100A7A793 /* SpendingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B7F2C19950100A7A793 /* SpendingTableViewCell.swift */; };
@@ -99,7 +98,6 @@
 		FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */; };
 		FB9A3AD62C1984A200E1EAA2 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */; };
 		FB9A3ADB2C1984B700E1EAA2 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */; };
-		FB9A3ADC2C1984B700E1EAA2 /* EmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD82C1984B600E1EAA2 /* EmptyView.swift */; };
 		FB9A3ADD2C1984B700E1EAA2 /* MyTripsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */; };
 		FB9A3ADE2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */; };
 		FB9A3AE52C1984C600E1EAA2 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3ADF2C1984C600E1EAA2 /* SearchViewController.swift */; };
@@ -164,7 +162,6 @@
 		4DFA37622C077122001B03F8 /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryCollectionViewCell.swift; sourceTree = "<group>"; };
 		4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendCollectionViewCell.swift; sourceTree = "<group>"; };
-		6BBE4B7C2C19950100A7A793 /* ExpenseModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseModel.swift; sourceTree = "<group>"; };
 		6BBE4B7D2C19950100A7A793 /* InsertSpendingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsertSpendingViewController.swift; sourceTree = "<group>"; };
 		6BBE4B7E2C19950100A7A793 /* SpendingListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpendingListViewController.swift; sourceTree = "<group>"; };
 		6BBE4B7F2C19950100A7A793 /* SpendingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpendingTableViewCell.swift; sourceTree = "<group>"; };
@@ -186,7 +183,6 @@
 		FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
 		FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterCollectionViewCell.swift; sourceTree = "<group>"; };
-		FB9A3AD82C1984B600E1EAA2 /* EmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyView.swift; sourceTree = "<group>"; };
 		FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTripsViewController.swift; sourceTree = "<group>"; };
 		FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTripsCollectionViewCell.swift; sourceTree = "<group>"; };
 		FB9A3ADF2C1984C600E1EAA2 /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -383,7 +379,6 @@
 			isa = PBXGroup;
 			children = (
 				6BBE4B892C1BD93100A7A793 /* NavigationBarFactory.swift */,
-				6BBE4B7C2C19950100A7A793 /* ExpenseModel.swift */,
 				6BBE4B7D2C19950100A7A793 /* InsertSpendingViewController.swift */,
 				6BBE4B7E2C19950100A7A793 /* SpendingListViewController.swift */,
 				6BBE4B7F2C19950100A7A793 /* SpendingTableViewCell.swift */,
@@ -439,7 +434,6 @@
 		FB72E7422C0F3EE7002AADBD /* MyTrips */ = {
 			isa = PBXGroup;
 			children = (
-				FB9A3AD82C1984B600E1EAA2 /* EmptyView.swift */,
 				FB9A3AD72C1984B600E1EAA2 /* FilterCollectionViewCell.swift */,
 				FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */,
 				FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */,
@@ -575,12 +569,12 @@
 				6BBE4B862C19950100A7A793 /* SpendingTableViewHeaderView.swift in Sources */,
 				FB9A3AE52C1984C600E1EAA2 /* SearchViewController.swift in Sources */,
 				956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */,
+
 				2A7623BB2C1DE9310044CF05 /* TermsOfServiceViewController.swift in Sources */,
-				6BBE4B822C19950100A7A793 /* ExpenseModel.swift in Sources */,
+
 				6BBE4B852C19950100A7A793 /* SpendingTableViewCell.swift in Sources */,
 				2AF29A062C1B68320021D231 /* PrivacyPolicyScripts.swift in Sources */,
 				4D21E8592C1AB960002FDBC9 /* MateTableViewCell.swift in Sources */,
-				FB9A3ADC2C1984B700E1EAA2 /* EmptyView.swift in Sources */,
 				4D21E85B2C1B39E7002FDBC9 /* UserSummary.swift in Sources */,
 				2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */,
 				2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */,

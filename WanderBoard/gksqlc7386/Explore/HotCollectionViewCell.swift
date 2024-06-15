@@ -17,8 +17,8 @@ class HotCollectionViewCell: UICollectionViewCell {
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 30
         $0.image = UIImage(systemName: "photo")
-        $0.backgroundColor = .font
-        $0.tintColor = .font
+        $0.backgroundColor = .black
+        $0.tintColor = .black
     }
     
     private let blackView = UIImageView().then {
@@ -28,7 +28,7 @@ class HotCollectionViewCell: UICollectionViewCell {
     
     private let dateLabel = UILabel().then {
         $0.textColor = .white
-        $0.font = UIFont.systemFont(ofSize: 15)
+        $0.font = UIFont.systemFont(ofSize: 14)
         $0.text = "2023.05"
     }
     
@@ -50,7 +50,7 @@ class HotCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         setupConstraints()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -70,20 +70,20 @@ class HotCollectionViewCell: UICollectionViewCell {
         blackView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-        
+
         dateLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(21)
+            $0.leading.equalToSuperview().offset(20)
             $0.bottom.equalTo(locationLabel.snp.top).offset(-10)
         }
         
         locationLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(21)
+            $0.leading.equalToSuperview().offset(20)
             $0.bottom.equalToSuperview().offset(-20)
         }
         
         profile.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(21)
-            $0.bottom.equalToSuperview().inset(16)
+            $0.trailing.equalToSuperview().inset(20)
+            $0.bottom.equalToSuperview().inset(20)
             $0.width.height.equalTo(30)
         }
     }

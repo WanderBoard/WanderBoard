@@ -27,8 +27,8 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
         let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
         button.setImage(image, for: .normal)
-        button.tintColor = UIColor(named: "textColor")
-        button.backgroundColor = .font
+        button.tintColor = .white
+        button.backgroundColor = .black
         button.layer.cornerRadius = 15
         button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         return button
@@ -45,10 +45,10 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         $0.delegate = self
         $0.isHidden = true
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         view.backgroundColor = .systemBackground
         
         setupConstraints()
@@ -89,11 +89,11 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             }
         }
     }
-    
+
     private func setupConstraints() {
         view.addSubview(collectionView)
         view.addSubview(emptyView)
-        
+
         collectionView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
@@ -102,7 +102,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             $0.edges.equalToSuperview()
         }
     }
-    
+
     private func setGradient() {
         let maskedView = UIView(frame: CGRect(x: 0, y: 722, width: 393, height: 130))
         let gradientLayer = CAGradientLayer()
@@ -180,7 +180,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 2
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == 0 {
             return filters.count
@@ -188,7 +188,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
             return filterTripLogs().count
         }
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.section == 0 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilterCollectionViewCell.identifier, for: indexPath) as! FilterCollectionViewCell

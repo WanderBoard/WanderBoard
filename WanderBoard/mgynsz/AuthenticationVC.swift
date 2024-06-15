@@ -23,7 +23,7 @@ class AuthenticationVC: UIViewController {
         let attributedText = NSAttributedString(
             string: text,
             attributes: [
-                .font: UIFont.systemFont(ofSize: 20, weight: .bold),
+                .font: UIFont.systemFont(ofSize: 20, weight: .semibold),
                 .paragraphStyle: paragraphStyle
             ]
         )
@@ -51,7 +51,7 @@ class AuthenticationVC: UIViewController {
         configuration.baseForegroundColor = .black
         
         let button = UIButton(configuration: configuration, primaryAction: nil)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         button.layer.cornerRadius = 10
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
@@ -65,7 +65,7 @@ class AuthenticationVC: UIViewController {
             imageView.snp.makeConstraints { make in
                 make.width.height.equalTo(20) // 이미지 크기 조절
                 make.centerY.equalTo(button.snp.centerY)
-                make.trailing.equalTo(titleLabel.snp.leading).inset(-10)
+                make.trailing.equalTo(titleLabel.snp.leading).inset(-16)
             }
             titleLabel.snp.makeConstraints { make in
                 make.centerX.equalTo(button.snp.centerX).offset(16)
@@ -86,7 +86,7 @@ class AuthenticationVC: UIViewController {
         configuration.baseForegroundColor = .black
         
         let button = UIButton(configuration: configuration, primaryAction: nil)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         button.layer.cornerRadius = 10
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
@@ -100,7 +100,7 @@ class AuthenticationVC: UIViewController {
             imageView.snp.makeConstraints { make in
                 make.width.height.equalTo(20) // 이미지 크기 조절
                 make.centerY.equalTo(button.snp.centerY)
-                make.trailing.equalTo(titleLabel.snp.leading).inset(-10)
+                make.trailing.equalTo(titleLabel.snp.leading).inset(-16)
             }
             titleLabel.snp.makeConstraints { make in
                 make.centerX.equalTo(button.snp.centerX).offset(16)
@@ -121,7 +121,7 @@ class AuthenticationVC: UIViewController {
         configuration.baseForegroundColor = UIColor(named: "textColor")
         
         let button = UIButton(configuration: configuration, primaryAction: nil)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         button.layer.cornerRadius = 10
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
@@ -135,7 +135,7 @@ class AuthenticationVC: UIViewController {
             imageView.snp.makeConstraints { make in
                 make.width.height.equalTo(20) // 이미지 크기 조절
                 make.centerY.equalTo(button.snp.centerY)
-                make.trailing.equalTo(titleLabel.snp.leading).inset(-10)
+                make.trailing.equalTo(titleLabel.snp.leading).inset(-16)
             }
             titleLabel.snp.makeConstraints { make in
                 make.centerX.equalTo(button.snp.centerX).offset(16)
@@ -149,7 +149,7 @@ class AuthenticationVC: UIViewController {
     private let termsLabel: UILabel = {
         let label = UILabel()
         label.textColor = .gray
-        let text = "By clicking continue, you agree to our Terms of Service and Privacy Policy"
+        let text = "By clicking continue, you agree to our \nTerms of Service and Privacy Policy"
         let attributedText = NSMutableAttributedString(string: text)
         attributedText.addAttribute(.foregroundColor, value: UIColor(named: "textColorSub") ?? .red, range: (text as NSString).range(of: "Terms of Service"))
         attributedText.addAttribute(.foregroundColor, value: UIColor(named: "textColorSub") ?? .red, range: (text as NSString).range(of: "Privacy Policy"))
@@ -178,36 +178,39 @@ class AuthenticationVC: UIViewController {
         
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(80)
-            make.left.equalToSuperview().inset(48)
+            make.left.equalToSuperview().inset(47)
         }
         
         logoImageView.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(16)
-            make.left.equalToSuperview().offset(48)
+            make.left.equalToSuperview().offset(42)
+            //            make.right.equalToSuperview().inset(39)
             make.height.equalTo(34)
+            //            make.width.equalTo(logoImageView.snp.width).multipliedBy(0.8)
         }
         
         kakaoLoginButton.snp.makeConstraints { make in
-            make.bottom.equalTo(appleSignInButton.snp.top).offset(-15)
-            make.left.right.equalToSuperview().inset(48)
+            make.bottom.equalTo(appleSignInButton.snp.top).offset(-16)
+            make.left.right.equalToSuperview().inset(47)
             make.height.equalTo(50)
         }
         
         appleSignInButton.snp.makeConstraints { make in
-            make.bottom.equalTo(googleSignInButton.snp.top).offset(-15)
-            make.left.right.equalToSuperview().inset(48)
+            make.bottom.equalTo(googleSignInButton.snp.top).offset(-16)
+            make.left.right.equalToSuperview().inset(47)
             make.height.equalTo(50)
         }
         
         googleSignInButton.snp.makeConstraints { make in
-            make.bottom.equalTo(termsLabel.snp.top).offset(-15)
-            make.left.right.equalToSuperview().inset(48)
+            make.bottom.equalTo(termsLabel.snp.top).offset(-16)
+            make.left.right.equalToSuperview().inset(47)
             make.height.equalTo(50)
         }
         
         termsLabel.snp.makeConstraints { make in
-            make.left.right.equalTo(view).inset(90)
-            make.bottom.equalTo(view).inset(54)
+            //            make.top.equalTo(googleSignInButton.snp.bottom).offset(20)
+            make.left.right.equalToSuperview().inset(47)
+            make.bottom.equalToSuperview().inset(48)
         }
         
         kakaoLoginButton.addTarget(self, action: #selector(signInKakaoTapped), for: .touchUpInside)

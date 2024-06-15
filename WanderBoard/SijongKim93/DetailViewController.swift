@@ -47,7 +47,7 @@ class DetailViewController: UIViewController {
         $0.isUserInteractionEnabled = false
     }
     
-    //추가
+    // 추가
     var profileImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
@@ -75,7 +75,7 @@ class DetailViewController: UIViewController {
     
     var locationLabel = UILabel().then {
         $0.text = "---"
-        $0.font = UIFont.boldSystemFont(ofSize: 34)
+        $0.font = UIFont.systemFont(ofSize: 40)
         $0.textColor = .white
         $0.numberOfLines = 2
     }
@@ -134,7 +134,7 @@ class DetailViewController: UIViewController {
     
     var mainTitleLabel = UILabel().then {
         $0.text = "부산에 다녀왔다"
-        $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        $0.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
     }
     
     // 추가
@@ -184,7 +184,7 @@ class DetailViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: 85, height: 85)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = UIColor(named: "textColor")
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isScrollEnabled = true
         return collectionView
@@ -305,8 +305,8 @@ class DetailViewController: UIViewController {
         maxConsumptionLabel.textColor = textGrayColor2
     }
     
-    
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
+    
     // 핀 버튼
     lazy var pinButton = UIButton().then {
         $0.setImage(UIImage(systemName: "pin.circle"), for: .normal)
@@ -466,6 +466,7 @@ class DetailViewController: UIViewController {
             $0.bottom.equalTo(locationStackView).inset(-1)
             $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(10)
         }
+        
         
         scrollView.snp.makeConstraints {
             $0.top.equalTo(backgroundImageView.snp.bottom).offset(-20)

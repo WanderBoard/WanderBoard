@@ -19,15 +19,15 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
     
     var blockedAuthors: [String] = []
     var hiddenPinLogs: [String] = []
-    
+        
     var lastDocumentSnapshot: DocumentSnapshot?
     var isLoading = false
     let pageSize = 30
-    
+        
     let pinLogManager = PinLogManager()
     
     lazy var searchBar = UISearchBar().then {
-        $0.placeholder = "여행지를 검색하세요"
+        $0.placeholder = "Search"
         $0.delegate = self
         $0.autocorrectionType = .no
         $0.spellCheckingType = .no
@@ -35,16 +35,16 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
     
     let collectionViewFlowLayout = UICollectionViewFlowLayout().then {
         $0.scrollDirection = .vertical
-        $0.minimumLineSpacing = 16
-        $0.sectionInset = .init(top: 14, left: 16, bottom: 0, right: 16)
+        $0.minimumLineSpacing = 10
+        $0.sectionInset = .init(top: 20, left: 30, bottom: 0, right: 30)
         
         let screenWidth = UIScreen.main.bounds.width
-        let inset: CGFloat = 21
+        let inset: CGFloat = 30
         let spacing: CGFloat = 10
         let numberOfItemsPerRow: CGFloat = 2
         
         let itemWidth = (screenWidth - 2 * inset - (numberOfItemsPerRow - 1) * spacing) / numberOfItemsPerRow
-        let itemHeight = itemWidth * 117 / 170
+        let itemHeight = itemWidth * 110 / 160
         
         $0.itemSize = CGSize(width: itemWidth, height: itemHeight)
     }
@@ -69,6 +69,8 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         super.viewWillAppear(animated)
         
         navigationItem.largeTitleDisplayMode = .never
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        
         Task {
             self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
             self.hiddenPinLogs = try await AuthenticationManager.shared.getHiddenPinLogs()
@@ -83,7 +85,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
     private func applyFilterAndReload() {
         DispatchQueue.main.async {
             var filteredLogs = self.allTripLogs.filter { !self.blockedAuthors.contains($0.authorId) && !self.hiddenPinLogs.contains($0.id ?? "") }
-            
+
             if let keyword = self.searchKeyword, !keyword.isEmpty {
                 let lowercasedSearchText = keyword.lowercased()
                 filteredLogs = filteredLogs.filter {
@@ -101,7 +103,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
                     }
                 }
             }
-            
+
             self.searchedLogs = filteredLogs
             self.collectionView.reloadData()
         }
@@ -145,7 +147,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             }
         }
     }
-    
+
     private func setupSearchBar() {
         navigationItem.titleView = searchBar
     }
@@ -171,13 +173,13 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return searchedLogs.count
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentCollectionViewCell.identifier, for: indexPath) as? RecentCollectionViewCell else { return UICollectionViewCell() }
         cell.configure(with: searchedLogs[indexPath.item])
         return cell
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         NotificationHelper.changePage(hidden: true, isEnabled: false)
         let detailVC = DetailViewController()

@@ -10,32 +10,6 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 import CoreLocation
 
-//struct Media: Codable {
-//    var url: String
-//    var latitude: Double?
-//    var longitude: Double?
-//    var dateTaken: Date?
-//
-//    func toDictionary() -> [String: Any] {
-//        var dict: [String: Any] = ["url": url]
-//        if let latitude = latitude {
-//            dict["latitude"] = latitude
-//        }
-//        if let longitude = longitude {
-//            dict["longitude"] = longitude
-//        }
-//        if let dateTaken = dateTaken {
-//            dict["dateTaken"] = dateTaken.timeIntervalSince1970
-//        }
-//        return dict
-//    }
-//}
-
-import Foundation
-import FirebaseFirestore
-import FirebaseFirestoreSwift
-import CoreLocation
-
 struct Media: Codable {
     var url: String
     var latitude: Double?
@@ -155,59 +129,3 @@ struct PinLog: Identifiable, Codable {
         self.expenses = expenses // 지출 데이터 추가 (옵셔널)
     }
 }
-
-
-//
-//import Foundation
-//import FirebaseFirestore
-//import FirebaseFirestoreSwift
-//import CoreLocation
-//
-//struct Media: Codable {
-//    var url: String
-//    var latitude: Double?
-//    var longitude: Double?
-//    var dateTaken: Date?
-//    var isRepresentative: Bool
-//
-//    var location: CLLocation? {
-//        get {
-//            guard let latitude = latitude, let longitude = longitude else { return nil }
-//            return CLLocation(latitude: latitude, longitude: longitude)
-//        }
-//        set {
-//            latitude = newValue?.coordinate.latitude
-//            longitude = newValue?.coordinate.longitude
-//        }
-//    }
-//}
-//
-//struct PinLog: Identifiable, Codable {
-//    @DocumentID var id: String?
-//    var location: String
-//    var startDate: Date
-//    var endDate: Date
-//    var duration: Int
-//    var title: String
-//    var content: String
-//    var media: [Media]
-//    var authorId: String
-//    var attendeeIds: [String]
-//    var isPublic: Bool
-//    var createdAt: Date?
-//
-//    init(id: String? = nil, location: String, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?) {
-//        self.id = id
-//        self.location = location
-//        self.startDate = startDate
-//        self.endDate = endDate
-//        self.duration = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0
-//        self.title = title
-//        self.content = content
-//        self.media = media
-//        self.authorId = authorId
-//        self.attendeeIds = attendeeIds
-//        self.isPublic = isPublic
-//        self.createdAt = createdAt
-//    }
-//}

@@ -28,7 +28,8 @@ protocol DetailInputViewControllerDelegate: AnyObject {
 
 class DetailInputViewController: UIViewController, CalendarHostingControllerDelegate {
     
-    
+    var progressViewController: ProgressViewController?
+
     private let locationManager = LocationManager()
     var savedLocation: CLLocationCoordinate2D?
     var savedPinLogId: String?
@@ -622,6 +623,26 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
     }
     
+    private func showProgressView() {
+        let progressVC = ProgressViewController()
+        addChild(progressVC)
+        view.addSubview(progressVC.view)
+        progressVC.view.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        progressVC.didMove(toParent: self)
+        progressViewController = progressVC
+    }
+
+    private func hideProgressView() {
+        if let progressVC = progressViewController {
+            progressVC.willMove(toParent: nil)
+            progressVC.view.removeFromSuperview()
+            progressVC.removeFromParent()
+            progressViewController = nil
+        }
+    }
+    
     func updateColor(){
         
         //베이비그레이-커스텀블랙
@@ -880,6 +901,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     @objc func doneButtonTapped() {
+        
+        navigationItem.rightBarButtonItem?.isEnabled = false
+        
         guard let locationTitle = locationLeftLabel.text, locationTitle != "지역을 선택하세요" else {
             let alert = UIAlertController(title: "지역 선택", message: "지역을 선택해주세요.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "확인", style: .default))
@@ -932,6 +956,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let maxSpendingAmount = calculateMaxSpendingAmount()
         
         let imageLocations = selectedImages.compactMap { $0.2 }
+        
+        showProgressView()
         
         Task {
             do {
@@ -1006,6 +1032,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                 alert.addAction(UIAlertAction(title: "확인", style: .default))
                 present(alert, animated: true, completion: nil)
             }
+            hideProgressView()
+            navigationItem.rightBarButtonItem?.isEnabled = true
         }
     }
     

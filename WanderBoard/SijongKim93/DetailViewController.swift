@@ -170,12 +170,12 @@ class DetailViewController: UIViewController {
         
         //백그라운드 블러 효과 만들기
         let blurEffect = UIBlurEffect(style: .light)
-               let blurEffectView = UIVisualEffectView(effect: blurEffect)
-               blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
         segment.insertSubview(blurEffectView, at: 0)
         blurEffectView.snp.makeConstraints { make in
-                    make.edges.equalTo(segment)
-                }
+            make.edges.equalTo(segment)
+        }
         return segment
     }()
     
@@ -341,7 +341,7 @@ class DetailViewController: UIViewController {
         //라이트그레이-다크그레이
         let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
         maxConsumptionLabel.textColor = lightGTodarkG
-       
+        
         
         //라이트그레이-라이트블랙
         let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
@@ -503,7 +503,7 @@ class DetailViewController: UIViewController {
         backgroundImageView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.height.equalTo(515)
+            $0.height.equalTo(530)
         }
         
         topContentView.snp.makeConstraints {
@@ -527,7 +527,7 @@ class DetailViewController: UIViewController {
         
         
         scrollView.snp.makeConstraints {
-            $0.top.equalTo(backgroundImageView.snp.bottom).offset(-20)
+            $0.top.equalTo(backgroundImageView.snp.bottom).offset(-46)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(40)
         }
@@ -539,20 +539,20 @@ class DetailViewController: UIViewController {
         }
         
         optionsButton.snp.makeConstraints {
-            $0.top.equalTo(contentView).inset(24)
+            $0.top.equalTo(contentView).inset(28)
             $0.trailing.equalTo(contentView).inset(32)
             $0.width.height.equalTo(24)
         }
         
         mainTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(contentView).offset(50)
+            $0.top.equalTo(contentView).offset(46)
             $0.leading.trailing.equalTo(contentView).inset(32)
         }
         
         subTextContainer.snp.makeConstraints {
             $0.top.equalTo(mainTitleLabel.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(150)
+            $0.height.equalTo(129)
         }
         
         subTextLabel.snp.makeConstraints {
@@ -560,22 +560,22 @@ class DetailViewController: UIViewController {
         }
         
         textLabelLine.snp.makeConstraints {
-            $0.top.equalTo(subTextContainer.snp.bottom)
+            $0.top.equalTo(subTextContainer.snp.bottom).offset(30)
             $0.height.equalTo(1)
             $0.leading.trailing.equalTo(contentView).inset(32)
         }
         
         segmentControl.snp.makeConstraints {
-            $0.top.equalTo(textLabelLine.snp.bottom).offset(48)
+            $0.top.equalTo(textLabelLine.snp.bottom).offset(50)
             $0.leading.equalTo(contentView).inset(16)
             $0.height.equalTo(30)
-            $0.width.equalTo(123)
+            $0.width.equalTo(121)
         }
         
         albumImageView.snp.makeConstraints {
-            $0.top.equalTo(segmentControl).offset(-10)
+            $0.top.equalTo(segmentControl).offset(-20)
             $0.leading.trailing.equalTo(contentView)
-            $0.height.equalTo(300)
+            $0.height.equalTo(270)
         }
         
         galleryCollectionView.snp.makeConstraints {
@@ -595,13 +595,13 @@ class DetailViewController: UIViewController {
         }
         
         moneyCountainer.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(16)
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(25)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(90)
         }
         
         moneyCountSubTitle.snp.makeConstraints {
-            $0.bottom.equalTo(moneyCountTitle).inset(2)
+            $0.bottom.equalTo(moneyCountTitle)
             $0.leading.equalTo(moneyCountTitle.snp.trailing).offset(5)
         }
         
@@ -611,7 +611,7 @@ class DetailViewController: UIViewController {
         
         maxConsumView.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(16)
-            $0.height.equalTo(30)
+            $0.height.equalTo(33)
         }
         
         maxConsumptionLabel.snp.makeConstraints {
@@ -625,18 +625,18 @@ class DetailViewController: UIViewController {
         }
         
         friendTitle.snp.makeConstraints {
-            $0.top.equalTo(moneyCountainer.snp.bottom).offset(16)
+            $0.top.equalTo(moneyCountainer.snp.bottom).offset(30)
             $0.leading.equalTo(contentView).offset(16)
         }
         
         friendCollectionView.snp.makeConstraints {
-            $0.top.equalTo(friendTitle.snp.bottom).offset(16)
+            $0.top.equalTo(friendTitle.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(contentView)
-            $0.height.equalTo(90)
+            $0.height.equalTo(65)
         }
         
         bottomLogo.snp.makeConstraints {
-            $0.top.equalTo(friendCollectionView.snp.bottom).offset(32)
+            $0.top.equalTo(friendCollectionView.snp.bottom).offset(30)
             $0.width.equalTo(135)
             $0.height.equalTo(18)
             $0.centerX.equalToSuperview()
@@ -645,18 +645,18 @@ class DetailViewController: UIViewController {
     
     func configureView(with pinLog: PinLog) {
         locationLabel.text = pinLog.location
-
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
-
+        
         dateStartLabel.text = dateFormatter.string(from: pinLog.startDate)
         dateEndLabel.text = dateFormatter.string(from: pinLog.endDate)
-
+        
         let duration = Calendar.current.dateComponents([.day], from: pinLog.startDate, to: pinLog.endDate).day ?? 0
         dateDaysLabel.text = "\(duration) Days"
         mainTitleLabel.text = pinLog.title
         subTextLabel.text = pinLog.content
-
+        
         if pinLog.isSpendingPublic {
             if let totalSpendingAmount = pinLog.totalSpendingAmount, totalSpendingAmount > 0 {
                 moneyCountTitle.text = "\(formatCurrency(totalSpendingAmount))원"
@@ -692,15 +692,15 @@ class DetailViewController: UIViewController {
             moneyCountSubTitle.isHidden = true
             consumMainStackView.isHidden = true
         }
-
+        
         selectedImages.removeAll()
         updateSelectedImages(with: pinLog.media)
-
+        
         if let firstMedia = pinLog.media.first, let latitude = firstMedia.latitude, let longitude = firstMedia.longitude {
             let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
             mapViewController?.mapView.setRegion(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001)), animated: true)
         }
-
+        
         for media in pinLog.media {
             if let latitude = media.latitude, let longitude = media.longitude {
                 let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -709,14 +709,14 @@ class DetailViewController: UIViewController {
         }
         galleryCollectionView.reloadData()
         updateSelectedFriends(with: pinLog.attendeeIds)
-
+        
         // 닉네임 설정
         FirestoreManager.shared.fetchUserDisplayName(userId: pinLog.authorId) { [weak self] displayName in
             DispatchQueue.main.async {
                 self?.nicknameLabel.text = displayName ?? "No Name"
             }
         }
-
+        
         // 프로필 이미지 불러오기
         FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId) { [weak self] photoURL in
             if let photoURL = photoURL, let url = URL(string: photoURL) {
@@ -736,7 +736,7 @@ class DetailViewController: UIViewController {
         friendTitle.isHidden = pinLog.attendeeIds.isEmpty
         friendCollectionView.isHidden = pinLog.attendeeIds.isEmpty
     }
-
+    
     
     //프로필 이미지
     func loadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {

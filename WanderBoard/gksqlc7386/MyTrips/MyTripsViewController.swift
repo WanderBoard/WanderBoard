@@ -100,6 +100,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         $0.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
 
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -154,6 +155,8 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             $0.leading.equalToSuperview().offset(16)
             $0.trailing.equalToSuperview().offset(-136)
             $0.height.equalTo(30) // 필터 버튼 높이
+
+
         }
         
         collectionView.snp.makeConstraints {

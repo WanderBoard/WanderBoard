@@ -229,7 +229,6 @@ extension PageViewController: UIPageViewControllerDataSource, UIPageViewControll
 
 protocol PageIndexed {
     var pageIndex: Int? { get set }
-    var customNavBarTintColor: UIColor? { get }
 }
 
 

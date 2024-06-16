@@ -65,15 +65,15 @@ final class AccountDeletionManager {
 
     // 전체 사용자 데이터 삭제 함수
     func deleteUser(uid: String, context: NSManagedObjectContext) async throws {
+        // 사용자 데이터를 삭제하는 모든 작업이 성공적으로 완료된 경우에만 계정 삭제
         do {
             try await deleteUserData(uid: uid)
             try await deletePinLogsForUser(userId: uid)
             try await removeUserIdFromPinLogs(userId: uid)
             try deleteUserFromCoreData(userId: uid, context: context)
-            try await deleteUserAccount()
-            print("회원 탈퇴 성공")
+            print("모든 사용자 데이터 삭제 성공")
         } catch {
-            print("회원 탈퇴 실패: \(error.localizedDescription)")
+            print("사용자 데이터 삭제 중 오류 발생: \(error.localizedDescription)")
             throw error
         }
     }

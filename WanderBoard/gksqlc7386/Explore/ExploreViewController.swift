@@ -22,8 +22,8 @@ class ExploreViewController: UIViewController, PageIndexed {
     
     let pinLogManager = PinLogManager()
     var recentCellHeight: CGFloat = 0
-    
     var lastSnapshot: DocumentSnapshot?
+    var isLoading = false
     
     lazy var searchButton = UIButton(type: .system).then {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
@@ -46,8 +46,8 @@ class ExploreViewController: UIViewController, PageIndexed {
         view.backgroundColor = .systemBackground
         
         setupConstraints()
-        setGradient()
-        setupNV()
+        setupNavigationBar()
+        loadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -58,12 +58,6 @@ class ExploreViewController: UIViewController, PageIndexed {
         
         NotificationHelper.changePage(hidden: false, isEnabled: true)
         searchButton.isHidden = false
-        
-        if recentLogs.isEmpty {
-            loadData()
-        }
-        
-        reloadRecentCell()
     }
 
     private func loadData() {
@@ -75,46 +69,21 @@ class ExploreViewController: UIViewController, PageIndexed {
         }
     }
     
-    private func reloadRecentCell() {
-        let indexPath = IndexPath(row: 1, section: 0) // 두 번째 셀의 인덱스
-        tableView.reloadRows(at: [indexPath], with: .automatic)
-    }
-    
-    private func setupNV() {
+    private func setupNavigationBar() {
         navigationItem.title = pageText
         
         if let navigationBarSuperview = navigationController?.navigationBar.superview {
             navigationBarSuperview.addSubview(searchButton)
-            
             searchButton.snp.makeConstraints {
                 $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-16)
                 $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
                 $0.size.equalTo(CGSize(width: 30, height: 30))
             }
         }
-        
-//        if let navigationBarSuperview = navigationController?.navigationBar.superview {
-//            let customView = UIView()
-//            customView.backgroundColor = .clear
-//            customView.addSubview(searchButton)
-//            
-//            navigationBarSuperview.addSubview(customView)
-//            
-//            customView.snp.makeConstraints {
-//                $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-30)
-//                $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
-//                $0.size.equalTo(CGSize(width: 30, height: 30))
-//            }
-//            
-//            searchButton.snp.makeConstraints {
-//                $0.edges.equalToSuperview()
-//            }
-//        }
     }
     
     private func setupConstraints() {
         view.addSubview(tableView)
-        
         tableView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
@@ -124,42 +93,27 @@ class ExploreViewController: UIViewController, PageIndexed {
         return logs.filter { !blockedAuthors.contains($0.authorId) && !hiddenPinLogs.contains($0.id ?? "") }
     }
     
-    func loadRecentData() async {
-        do {
-            let logs = try await pinLogManager.fetchPublicPinLogs()
-            await MainActor.run {
-                self.recentLogs = filterBlockedAndHiddenLogs(from: logs)
+    func loadRecentData() {
+        pinLogManager.fetchInitialData(pageSize: 30) { result in
+            switch result {
+            case .success(let (logs, snapshot)):
+                self.recentLogs = self.filterBlockedAndHiddenLogs(from: logs)
                 self.recentLogs.sort { ($0.createdAt ?? Date.distantPast) > ($1.createdAt ?? Date.distantPast) }
                 self.calculateRecentCellHeight()
-                self.tableView.reloadData()
+                self.lastSnapshot = snapshot
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            case .failure(let error):
+                print("Failed to fetch initial data: \(error.localizedDescription)")
             }
-        } catch {
-            print("Failed to fetch pin logs: \(error.localizedDescription)")
         }
     }
-    
-//    // 무한스크롤 시도 중
-//    func loadRecentData() {
-//        pinLogManager.fetchInitialData(pageSize: 30) { result in
-//            switch result {
-//            case .success(let (logs, snapshot)):
-//                DispatchQueue.main.async {
-//                    self.recentLogs = self.filterBlockedAuthors(from: logs)
-//                    self.calculateRecentCellHeight()
-//                    self.lastSnapshot = snapshot
-//                    self.reloadRecentCell()
-//                }
-//            case .failure(let error):
-//                print("Failed to fetch pin logs: \(error.localizedDescription)")
-//            }
-//        }
-//    }
     
     func loadHotData() async {
         do {
             let logs = try await pinLogManager.fetchHotPinLogs()
             await MainActor.run {
-                //self.recentLogs = logs
                 self.hotLogs = filterBlockedAndHiddenLogs(from: logs)
                 self.tableView.reloadData()
             }
@@ -168,23 +122,11 @@ class ExploreViewController: UIViewController, PageIndexed {
         }
     }
     
-    private func setGradient() {
-        let maskedView = UIView(frame: CGRect(x: 0, y: 722, width: 393, height: 130))
-        let gradientLayer = CAGradientLayer()
-        
-        maskedView.backgroundColor = view.backgroundColor
-        gradientLayer.frame = maskedView.bounds
-        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98), UIColor.white.cgColor, UIColor.white.cgColor]
-        gradientLayer.locations = [0, 0.05, 0.8, 1]
-        maskedView.layer.mask = gradientLayer
-        view.addSubview(maskedView)
-    }
-    
     private func calculateRecentCellHeight() {
         guard let recentCell = tableView.dequeueReusableCell(withIdentifier: RecentTableViewCell.identifier) as? RecentTableViewCell else { return }
         recentCell.configure(with: recentLogs)
         recentCellHeight = recentCell.calculateCollectionViewHeight()
-        print("Calculated recentCellHeight: \(recentCellHeight)")
+        //print("Calculated recentCellHeight: \(recentCellHeight)")
     }
     
     @objc func searchButtonTapped(_ sender: UIButton) {
@@ -203,13 +145,13 @@ extension ExploreViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.row {
         case 0:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: HotTableViewCell.identifier, for: indexPath) as? HotTableViewCell else { return .init() }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: HotTableViewCell.identifier, for: indexPath) as? HotTableViewCell else { return UITableViewCell() }
             cell.configure(with: hotLogs)
             cell.delegate = self
             cell.selectionStyle = .none
             return cell
         case 1:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: RecentTableViewCell.identifier, for: indexPath) as? RecentTableViewCell else { return .init() }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: RecentTableViewCell.identifier, for: indexPath) as? RecentTableViewCell else { return UITableViewCell() }
             cell.delegate = self
             cell.configure(with: recentLogs)
             cell.updateItemCount(recentLogs.count)
@@ -225,8 +167,7 @@ extension ExploreViewController: UITableViewDelegate, UITableViewDataSource {
         case 0:
             return 450
         case 1:
-            print("Returning recentCellHeight: \(recentCellHeight) for row 1")
-            return recentCellHeight
+            return recentCellHeight > 0 ? recentCellHeight : 500 // 최소 높이를 지정하거나 동적으로 계산된 높이를 반환
         default:
             return 0
         }
@@ -257,12 +198,16 @@ extension ExploreViewController: RecentTableViewCellDelegate {
     }
     
     func loadMoreRecentLogs() {
-        guard let lastSnapshot = lastSnapshot else {
-            print("Last snapshot is nil")
+        guard let lastSnapshot = lastSnapshot, !isLoading else {
+            //print("Last snapshot is nil or already loading")
             return
         }
-        
+
+        isLoading = true
+        //print("Loading more logs...")
+
         pinLogManager.fetchMoreData(pageSize: 30, lastSnapshot: lastSnapshot) { result in
+            self.isLoading = false
             switch result {
             case .success(let (newLogs, newSnapshot)):
                 let filteredNewLogs = self.filterBlockedAndHiddenLogs(from: newLogs)
@@ -270,9 +215,15 @@ extension ExploreViewController: RecentTableViewCellDelegate {
                 self.recentLogs.sort { ($0.createdAt ?? Date.distantPast) > ($1.createdAt ?? Date.distantPast) }
                 self.calculateRecentCellHeight()
                 self.lastSnapshot = newSnapshot
-                self.tableView.reloadData()
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                    if let cell = self.tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? RecentTableViewCell {
+                        cell.updateItemCount(self.recentLogs.count)
+                    }
+                }
+                print("Loaded more logs, total count: \(self.recentLogs.count)")
             case .failure(let error):
-                print("Failed to fetch more pin logs: \(error.localizedDescription)")
+                print("Failed to fetch more data: \(error.localizedDescription)")
             }
         }
     }
@@ -280,16 +231,12 @@ extension ExploreViewController: RecentTableViewCellDelegate {
 
 extension ExploreViewController: DetailViewControllerDelegate {
     func didHidePinLog(_ hiddenPinLogId: String) {
-        self.blockedAuthors.append(hiddenPinLogId)
-        
         self.recentLogs = self.recentLogs.filter { $0.id != hiddenPinLogId }
         self.hotLogs = self.hotLogs.filter { $0.id != hiddenPinLogId }
-        
         self.tableView.reloadData()
     }
     
     func didUpdatePinButton(_ updatedPinLog: PinLog) {
-        print("Received updated pin log via delegate")
         if let index = recentLogs.firstIndex(where: { $0.id == updatedPinLog.id }) {
             recentLogs[index] = updatedPinLog
             tableView.reloadData()
@@ -312,11 +259,28 @@ extension ExploreViewController: DetailViewControllerDelegate {
     
     func didBlockAuthor(_ authorId: String) {
         self.blockedAuthors.append(authorId)
-        
-        // 차단된 작성자의 로그를 숨기기 위해 필터링
         self.recentLogs = self.recentLogs.filter { !self.blockedAuthors.contains($0.authorId) }
         self.hotLogs = self.hotLogs.filter { !self.blockedAuthors.contains($0.authorId) }
-        
         self.tableView.reloadData()
+    }
+}
+
+extension ExploreViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+
+        //print("TableView Scroll offsetY: \(offsetY), contentHeight: \(contentHeight), height: \(height), isLoading: \(isLoading)")
+        
+        if offsetY > contentHeight - height && !isLoading {
+           // print("TableView Triggered loadMoreRecentLogs")
+            loadMoreRecentLogs()
+        }
+        
+//        if offsetY > contentHeight - height * 0.8 && !isLoading {
+//           // print("TableView Triggered loadMoreRecentLogs")
+//            loadMoreRecentLogs()
+//        }
     }
 }

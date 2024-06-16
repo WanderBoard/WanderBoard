@@ -44,6 +44,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         fetchUserData()
         fetchAndDisplayUserPinCount() // 핀 개수 가져오기 및 UI 업데이트
         fetchInvitationCount()
+        fetchTagData()
         
         let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem = backButton
@@ -61,6 +62,21 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 }
             } catch {
                 print("유저데이터를 받아오는데 실패했습니다")
+            }
+        }
+    }
+    
+    func fetchTagData() {
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        
+        Task {
+            do {
+                let taggedPinLogs = try await PinLogManager.shared.fetchTaggedPinLogs(forUserId: currentUserId)
+                DispatchQueue.main.async {
+                    self.tagPin.text = "\(taggedPinLogs.count)"
+                }
+            } catch {
+                print("태그된 핀 로그 개수를 가져오는데 실패했습니다: \(error)")
             }
         }
     }

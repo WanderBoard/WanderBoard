@@ -177,6 +177,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         gradientLayer.locations = [0, 0.05, 0.8, 1]
         maskedView.layer.mask = gradientLayer
         view.addSubview(maskedView)
+        maskedView.isUserInteractionEnabled = false
     }
     
     func filterTripLogs() -> [PinLog] {

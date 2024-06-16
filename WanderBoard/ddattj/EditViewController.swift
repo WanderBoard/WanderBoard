@@ -481,125 +481,63 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         withdrawalB.setTitleColor(withdrawalColor, for: .normal)
     }
     
+    // ManagedObjectContext 가져오기
+    var context: NSManagedObjectContext {
+        return (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    }
+    
     // 회원 탈퇴 액션
     @objc func TappedWithdrawalB(_ sender: UIButton) {
-        // 첫 번째 alert 창
-        let firstAlert = UIAlertController(title: "정말 회원 탈퇴를 하시겠습니까?", message: nil, preferredStyle: .alert)
-        
+        let confirmAlert = UIAlertController(title: "회원 탈퇴", message: "정말로 회원 탈퇴하시겠습니까? \n 지금까지의 모든 기록이 사라집니다.", preferredStyle: .alert)
         let confirmAction = UIAlertAction(title: "확인", style: .destructive) { _ in
-            // 두 번째 alert 창
-            let secondAlert = UIAlertController(title: "Wanderboard와 함께하는 여정이 즐겁지 않으셨나요?", message: nil, preferredStyle: .alert)
-            
-            let finalConfirmAction = UIAlertAction(title: "회원 탈퇴하기", style: .destructive) { _ in
-                // 회원 탈퇴 로직 처리
-                self.reauthenticateAndDeleteUser()
-            }
-            
-            let continueAction = UIAlertAction(title: "여정을 이어가기", style: .default, handler: nil)
-            
-            secondAlert.addAction(finalConfirmAction)
-            secondAlert.addAction(continueAction)
-            
-            self.present(secondAlert, animated: true, completion: nil)
+            self.performAccountDeletion()
         }
-        
         let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
         
-        firstAlert.addAction(confirmAction)
-        firstAlert.addAction(cancelAction)
+        confirmAlert.addAction(confirmAction)
+        confirmAlert.addAction(cancelAction)
         
-        self.present(firstAlert, animated: true, completion: nil)
+        self.present(confirmAlert, animated: true, completion: nil)
     }
-    
-    func reauthenticateAndDeleteUser() {
-        guard let user = Auth.auth().currentUser else {
-            print("사용자가 로그인 되어있지 않습니다")
-            return
-        }
-        
-        // 로그인 방법에 따라 Credential 생성
-        if let email = user.email {
-            // 이메일과 비밀번호로 로그인한 경우
-            let alert = UIAlertController(title: "비밀번호 재입력", message: "계정을 삭제하려면 비밀번호를 다시 입력해주세요.", preferredStyle: .alert)
-            
-            alert.addTextField { textField in
-                textField.placeholder = "비밀번호"
-                textField.isSecureTextEntry = true
-            }
-            
-            let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
-                if let password = alert.textFields?.first?.text {
-                    let credential = EmailAuthProvider.credential(withEmail: email, password: password)
-                    self.reauthenticate(user: user, with: credential)
-                }
-            }
-            
-            let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
-            
-            alert.addAction(confirmAction)
-            alert.addAction(cancelAction)
-            
-            self.present(alert, animated: true, completion: nil)
-        } else {
-            // 다른 로그인 방법 (예: Google, Facebook 등)
-            // 여기서는 간단히 사용자에게 다시 로그인하도록 안내하는 방법을 사용합니다.
-            let alert = UIAlertController(title: "재인증 필요", message: "계정을 삭제하려면 다시 로그인해주세요.", preferredStyle: .alert)
-            let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-                // 로그아웃하고 로그인 화면으로 이동
-                try? Auth.auth().signOut()
-                self.navigationController?.popToRootViewController(animated: true)
-            }
-            alert.addAction(confirm)
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
-    
-    func reauthenticate(user: FirebaseAuth.User, with credential: AuthCredential) {
-        user.reauthenticate(with: credential) { result, error in
-            if let error = error {
-                print("재인증 실패: \(error.localizedDescription)")
-                let alert = UIAlertController(title: "오류", message: "재인증에 실패했습니다. 다시 시도해주세요.", preferredStyle: .alert)
-                let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
-                alert.addAction(confirm)
-                self.present(alert, animated: true, completion: nil)
-            } else {
-                self.deleteUserAccount()
-            }
-        }
-    }
-    
-    func deleteUserAccount() {
-        guard let user = Auth.auth().currentUser else {
-            print("사용자가 로그인 되어있지 않습니다")
-            return
-        }
+
+    private func performAccountDeletion() {
+        guard let user = Auth.auth().currentUser else { return }
+        let userId = user.uid
         
         Task {
             do {
-                // Core Data context 가져오기
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                let context = appDelegate.persistentContainer.viewContext
-                
-                // AccountDeletionManager를 사용하여 사용자 데이터 삭제
-                try await AccountDeletionManager.shared.deleteUser(uid: user.uid, context: context)
-                
-                print("회원 탈퇴 성공")
-                // 성공 알림 창
-                let successAlert = UIAlertController(title: "탈퇴가 완료되었습니다.", message: "다시 함께 여행하길 바랄게요", preferredStyle: .alert)
-                let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-                    // 탈퇴 후 로그아웃 및 초기 화면으로 이동
-                    self.navigationController?.popToRootViewController(animated: true)
+                try await AccountDeletionManager.shared.deleteUser(uid: userId, context: context)
+                try await Auth.auth().signOut()
+                showAlert(title: "회원 탈퇴 완료", message: "회원 탈퇴가 완료되었습니다.") {
+                    self.navigateToLoginScreen()
                 }
-                successAlert.addAction(confirm)
-                self.present(successAlert, animated: true, completion: nil)
             } catch {
                 print("회원 탈퇴 실패: \(error.localizedDescription)")
-                // 오류 알림 창
-                let errorAlert = UIAlertController(title: "오류", message: "회원 탈퇴 중 오류가 발생했습니다. 다시 시도해주세요.", preferredStyle: .alert)
-                let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
-                errorAlert.addAction(confirm)
-                self.present(errorAlert, animated: true, completion: nil)
+                showAlert(title: "오류", message: "회원 탈퇴 중 오류가 발생했습니다. 다시 시도해주세요.")
             }
+        }
+    }
+
+    // 로그인 화면으로 이동하는 함수
+    func navigateToLoginScreen() {
+        DispatchQueue.main.async {
+            let loginVC = AuthenticationVC() 
+            let navigationController = UINavigationController(rootViewController: loginVC)
+            navigationController.modalPresentationStyle = .fullScreen
+            self.view.window?.rootViewController = navigationController
+            self.view.window?.makeKeyAndVisible()
+        }
+    }
+
+    // 오류 메시지를 표시하는 함수
+    func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
+        DispatchQueue.main.async {
+            let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "확인", style: .default) { _ in
+                completion?()
+            }
+            alertController.addAction(okAction)
+            self.present(alertController, animated: true, completion: nil)
         }
     }
 }

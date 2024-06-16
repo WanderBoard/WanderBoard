@@ -46,6 +46,7 @@ class ExploreViewController: UIViewController, PageIndexed {
         view.backgroundColor = .systemBackground
         
         setupConstraints()
+        setGradient()
         setupNavigationBar()
         loadData()
     }
@@ -64,8 +65,8 @@ class ExploreViewController: UIViewController, PageIndexed {
         Task {
             self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
             self.hiddenPinLogs = try await AuthenticationManager.shared.getHiddenPinLogs()
-            await loadRecentData()
             await loadHotData()
+            loadRecentData()
         }
     }
     
@@ -87,6 +88,19 @@ class ExploreViewController: UIViewController, PageIndexed {
         tableView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+    }
+    
+    private func setGradient() {
+        let maskedView = UIView(frame: CGRect(x: 0, y: 722, width: 393, height: 130))
+        let gradientLayer = CAGradientLayer()
+        
+        maskedView.backgroundColor = view.backgroundColor
+        gradientLayer.frame = maskedView.bounds
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98), UIColor.white.cgColor, UIColor.white.cgColor]
+        gradientLayer.locations = [0, 0.05, 0.8, 1]
+        maskedView.layer.mask = gradientLayer
+        view.addSubview(maskedView)
+        maskedView.isUserInteractionEnabled = false
     }
     
     private func filterBlockedAndHiddenLogs(from logs: [PinLog]) -> [PinLog] {
@@ -252,8 +266,8 @@ extension ExploreViewController: DetailViewControllerDelegate {
         Task {
             self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
             self.hiddenPinLogs = try await AuthenticationManager.shared.getHiddenPinLogs()
-            await loadRecentData()
             await loadHotData()
+            loadRecentData()
         }
     }
     

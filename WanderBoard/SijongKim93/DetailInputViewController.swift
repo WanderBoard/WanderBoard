@@ -931,6 +931,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let totalSpendingAmount = calculateTotalSpendingAmount()
         let maxSpendingAmount = calculateMaxSpendingAmount()
         
+        let imageLocations = selectedImages.compactMap { $0.2 }
+        
         Task {
             do {
                 var pinLog: PinLog
@@ -967,7 +969,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                                     createdAt: Date(),
                                     pinCount: 0,
                                     pinnedBy: [],
-                                    
                                     totalSpendingAmount: totalSpendingAmount,
                                     isSpendingPublic: isSpendingPublic,
                                     maxSpendingAmount: maxSpendingAmount,
@@ -990,7 +991,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                 self.savedPinLogId = savedPinLog.id
                 self.pinLog = savedPinLog
                 delegate?.didSavePinLog(savedPinLog)
-                
+
                 if let navigationController = self.navigationController {
                     for viewController in navigationController.viewControllers {
                         if viewController is MyTripsViewController {

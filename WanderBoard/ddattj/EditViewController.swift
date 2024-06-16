@@ -506,8 +506,14 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         Task {
             do {
+                // 모든 사용자 데이터 삭제
                 try await AccountDeletionManager.shared.deleteUser(uid: userId, context: context)
-                try await Auth.auth().signOut()
+                
+                // 모든 데이터 삭제가 성공하면 계정 삭제 및 로그아웃
+                try await AccountDeletionManager.shared.deleteUserAccount()
+                try Auth.auth().signOut()
+                
+                // 성공 알림 및 로그인 화면으로 이동
                 showAlert(title: "회원 탈퇴 완료", message: "회원 탈퇴가 완료되었습니다.") {
                     self.navigateToLoginScreen()
                 }
@@ -521,7 +527,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     // 로그인 화면으로 이동하는 함수
     func navigateToLoginScreen() {
         DispatchQueue.main.async {
-            let loginVC = AuthenticationVC() 
+            let loginVC = AuthenticationVC()
             let navigationController = UINavigationController(rootViewController: loginVC)
             navigationController.modalPresentationStyle = .fullScreen
             self.view.window?.rootViewController = navigationController

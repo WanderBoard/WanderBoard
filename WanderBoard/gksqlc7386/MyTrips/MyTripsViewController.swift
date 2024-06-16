@@ -214,7 +214,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
                 return
             }
             // 사용자가 작성한 핀로그 가져오기
-            let userPinLogs = try await pinLogManager.fetchPinLogsWithoutLocation(forUserId: userId)
+            let userPinLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
             MyTripsViewController.tripLogs = userPinLogs
             
             // 태그된 핀로그 가져오기
@@ -283,6 +283,13 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         }
 
         collectionView.reloadData()
+        
+        // 프로필 이미지 가시성 업데이트
+        for indexPath in collectionView.indexPathsForVisibleItems {
+            if let cell = collectionView.cellForItem(at: indexPath) as? MyTripsCollectionViewCell {
+                cell.updateProfileImageVisibility(for: currentFilterIndex)
+            }
+        }
     }
     
     private func updateFilterButtonColors() {
@@ -339,6 +346,8 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
             
             let tripLog = filterTripLogs()[indexPath.item]
             cell.configure(with: tripLog)
+            //cell.configure(with: tripLog, filterIndex: currentFilterIndex)
+            cell.updateProfileImageVisibility(for: currentFilterIndex)
             
             return cell
         }

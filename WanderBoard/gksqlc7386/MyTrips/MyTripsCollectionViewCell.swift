@@ -56,6 +56,16 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         $0.tintColor = .white
     }
     
+    let profileImg = UIImageView().then {
+        $0.image = UIImage(systemName: "pesron")
+        $0.backgroundColor = .white
+        $0.tintColor = .white
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+        $0.layer.cornerRadius = 15
+        $0.isHidden = true
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -72,6 +82,7 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         
         blackView.addSubview(stackView)
         blackView.addSubview(privateButton)
+        blackView.addSubview(profileImg)
         
         stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(subTitle)
@@ -94,6 +105,17 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
             $0.trailing.equalTo(contentView.snp.trailing).inset(30)
             $0.bottom.equalTo(contentView.snp.bottom).inset(30)
         }
+        
+        profileImg.snp.makeConstraints{
+            $0.width.height.equalTo(30)
+            $0.leading.equalTo(stackView.snp.trailing).offset(30)
+            $0.trailing.equalTo(contentView.snp.trailing).inset(30)
+            $0.bottom.equalTo(contentView.snp.bottom).inset(30)
+        }
+    }
+    
+    func updateProfileImageVisibility(for filterIndex: Int) {
+        self.profileImg.isHidden = filterIndex == 0
     }
     
     func configure(with tripLog: PinLog) {
@@ -112,5 +134,31 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         subTitle.text = "\(startDate) - \(endDate) \(duration) days"
         
         privateButton.isHidden = tripLog.isPublic
+        
+        // 프로필 이미지 로드
+        FirestoreManager.shared.fetchUserProfileImageURL(userId: tripLog.authorId) { [weak self] photoURL in
+            if let photoURL = photoURL, let url = URL(string: photoURL) {
+                self?.loadImage(from: url) { image in
+                    DispatchQueue.main.async {
+                        self?.profileImg.image = image
+                    }
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self?.profileImg.image = UIImage(systemName: "person.circle")
+                }
+            }
+        }
+    }
+    
+    private func loadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            if let data = data, let image = UIImage(data: data) {
+                completion(image)
+            } else {
+                completion(nil)
+            }
+        }
+        task.resume()
     }
 }

@@ -12,6 +12,7 @@ import FirebaseAuth
 
 class SpendingListViewController: UIViewController {
     var pinLog: PinLog?
+    var shouldShowEditButton: Bool = true
 
     // MARK: Components
     var dailyExpenses: [DailyExpenses] = []
@@ -109,14 +110,20 @@ class SpendingListViewController: UIViewController {
         updateView()
         
         navigationController?.navigationBar.tintColor = .black
+        
+        
+        if shouldShowEditButton {
+            navigationItem.rightBarButtonItem = penButton
+        } else {
+            navigationItem.rightBarButtonItem = nil
+        }
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        print("VWD")
-        if let navigationController = presentingViewController as? UINavigationController,
-           let detailInputVC = navigationController.topViewController as? DetailInputViewController {
-            detailInputVC.totalSpendingAmountText = totalSpendingAmount.text
+        if let navigationController = navigationController,
+           navigationController.viewControllers.contains(where: { $0 is DetailViewController }) {
+            navigationItem.rightBarButtonItem = penButton
         }
     }
 

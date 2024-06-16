@@ -717,6 +717,7 @@ class DetailInputViewController: UIViewController {
         let spendVC = SpendingListViewController()
 
         spendVC.pinLog = pinLog
+        spendVC.shouldShowEditButton = true
         navigationController?.pushViewController(spendVC, animated: true)
     }
     

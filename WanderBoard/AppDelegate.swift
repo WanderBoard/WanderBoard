@@ -97,8 +97,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 window?.makeKeyAndVisible()
             }
         } else {
-            window?.rootViewController = AuthenticationVC()
+            // 사용자 로그아웃 상태 시 LaunchViewController를 2초 동안 보여준 후 AuthenticationVC로 이동
+            let launchViewController = LaunchViewController()
+            window?.rootViewController = launchViewController
             window?.makeKeyAndVisible()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                self.window?.rootViewController = AuthenticationVC()
+                self.window?.makeKeyAndVisible()
+            }
         }
     }
     
@@ -133,5 +140,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 }
-
-

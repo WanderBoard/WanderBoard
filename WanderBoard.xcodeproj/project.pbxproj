@@ -83,6 +83,8 @@
 		6BBE4B862C19950100A7A793 /* SpendingTableViewHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B802C19950100A7A793 /* SpendingTableViewHeaderView.swift */; };
 		6BBE4B882C1AEE6200A7A793 /* SpendingEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B872C1AEE6200A7A793 /* SpendingEmptyView.swift */; };
 		6BBE4B8A2C1BD93100A7A793 /* NavigationBarFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4B892C1BD93100A7A793 /* NavigationBarFactory.swift */; };
+		6BBE4BE62C1F06D700A7A793 /* ContentsPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4BE52C1F06D700A7A793 /* ContentsPageViewController.swift */; };
+		6BBE4BE82C1F06DE00A7A793 /* TutorialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBE4BE72C1F06DE00A7A793 /* TutorialViewController.swift */; };
 		9530E4A42C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */; };
 		955A2B762C1989320008A1CB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 955A2B752C1989320008A1CB /* GoogleService-Info.plist */; };
 		9561FFF92C186B440072B065 /* OnboardingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9561FFF82C186B440072B065 /* OnboardingPage.swift */; };
@@ -168,6 +170,8 @@
 		6BBE4B802C19950100A7A793 /* SpendingTableViewHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpendingTableViewHeaderView.swift; sourceTree = "<group>"; };
 		6BBE4B872C1AEE6200A7A793 /* SpendingEmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendingEmptyView.swift; sourceTree = "<group>"; };
 		6BBE4B892C1BD93100A7A793 /* NavigationBarFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarFactory.swift; sourceTree = "<group>"; };
+		6BBE4BE52C1F06D700A7A793 /* ContentsPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentsPageViewController.swift; sourceTree = "<group>"; };
+		6BBE4BE72C1F06DE00A7A793 /* TutorialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TutorialViewController.swift; sourceTree = "<group>"; };
 		9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyCollectionViewCell.swift; sourceTree = "<group>"; };
 		955A2B752C1989320008A1CB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9561FFF82C186B440072B065 /* OnboardingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPage.swift; sourceTree = "<group>"; };
@@ -378,6 +382,8 @@
 		6BBE4B812C19950100A7A793 /* pond1225 */ = {
 			isa = PBXGroup;
 			children = (
+				6BBE4BE52C1F06D700A7A793 /* ContentsPageViewController.swift */,
+				6BBE4BE72C1F06DE00A7A793 /* TutorialViewController.swift */,
 				6BBE4B892C1BD93100A7A793 /* NavigationBarFactory.swift */,
 				6BBE4B7D2C19950100A7A793 /* InsertSpendingViewController.swift */,
 				6BBE4B7E2C19950100A7A793 /* SpendingListViewController.swift */,
@@ -569,9 +575,7 @@
 				6BBE4B862C19950100A7A793 /* SpendingTableViewHeaderView.swift in Sources */,
 				FB9A3AE52C1984C600E1EAA2 /* SearchViewController.swift in Sources */,
 				956ED7902C0852B90001BAC6 /* BaseViewController.swift in Sources */,
-
 				2A7623BB2C1DE9310044CF05 /* TermsOfServiceViewController.swift in Sources */,
-
 				6BBE4B852C19950100A7A793 /* SpendingTableViewCell.swift in Sources */,
 				2AF29A062C1B68320021D231 /* PrivacyPolicyScripts.swift in Sources */,
 				4D21E8592C1AB960002FDBC9 /* MateTableViewCell.swift in Sources */,
@@ -584,6 +588,7 @@
 				FB9A3AE82C1984C600E1EAA2 /* HotCollectionViewCell.swift in Sources */,
 				2A5D471F2C0A2771005C0F76 /* LocationManager.swift in Sources */,
 				2A76550B2C06175B00D8A098 /* AuthenticationManager.swift in Sources */,
+				6BBE4BE62C1F06D700A7A793 /* ContentsPageViewController.swift in Sources */,
 				4D21E85D2C1B3A4E002FDBC9 /* MateManager.swift in Sources */,
 				2A7654FD2C060FB500D8A098 /* SignInWithGoogle.swift in Sources */,
 				2A1D31F12C1C7ED400288C71 /* ConsentStatusViewController.swift in Sources */,
@@ -609,6 +614,7 @@
 				2A5D471D2C0A2742005C0F76 /* MapViewModel.swift in Sources */,
 				956ED7972C0852B90001BAC6 /* SettingViewController.swift in Sources */,
 				2A5F47C82C0E3A0C00D289AA /* StorageManager.swift in Sources */,
+				6BBE4BE82C1F06DE00A7A793 /* TutorialViewController.swift in Sources */,
 				2A7655042C0610BA00D8A098 /* SignInWithApple.swift in Sources */,
 				956ED7922C0852B90001BAC6 /* EditViewController.swift in Sources */,
 				2A8AB1782C12407B00C5244F /* SignUpViewController.swift in Sources */,

@@ -100,6 +100,12 @@
 		FB0C32442C14C2D000DD2F00 /* WanderBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FB0C32422C14C2D000DD2F00 /* WanderBoard.xcdatamodeld */; };
 		FB3793AB2C1D660B009C1268 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */; };
 		FB3793AD2C1D6854009C1268 /* AccountDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */; };
+
+		FB501A612C1F2B2B0083E796 /* BlockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB501A5F2C1F2B2A0083E796 /* BlockViewController.swift */; };
+		FB501A622C1F2B2B0083E796 /* BlockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB501A602C1F2B2A0083E796 /* BlockTableViewCell.swift */; };
+		FB501A642C1F2CB70083E796 /* BlockedUserSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB501A632C1F2CB70083E796 /* BlockedUserSummary.swift */; };
+		FB501A662C1F32540083E796 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB501A652C1F32540083E796 /* FilterCollectionViewCell.swift */; };
+
 		FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */; };
 		FB9A3AD62C1984A200E1EAA2 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */; };
 		FB9A3ADD2C1984B700E1EAA2 /* MyTripsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */; };
@@ -189,6 +195,12 @@
 		FB0C32432C14C2D000DD2F00 /* WanderBoard.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WanderBoard.xcdatamodel; sourceTree = "<group>"; };
 		FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionManager.swift; sourceTree = "<group>"; };
+
+		FB501A5F2C1F2B2A0083E796 /* BlockViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BlockViewController.swift; path = "../../../../Final Project 3/WanderBoard/WanderBoard/ddattj/BlockViewController.swift"; sourceTree = "<group>"; };
+		FB501A602C1F2B2A0083E796 /* BlockTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BlockTableViewCell.swift; path = "../../../../Final Project 3/WanderBoard/WanderBoard/ddattj/BlockTableViewCell.swift"; sourceTree = "<group>"; };
+		FB501A632C1F2CB70083E796 /* BlockedUserSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUserSummary.swift; sourceTree = "<group>"; };
+		FB501A652C1F32540083E796 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterCollectionViewCell.swift; path = "../../../../../Final Project 최최최종/WanderBoard/WanderBoard/gksqlc7386/MyTrips/FilterCollectionViewCell.swift"; sourceTree = "<group>"; };
+
 		FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
 		FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTripsViewController.swift; sourceTree = "<group>"; };
@@ -348,6 +360,9 @@
 				2A9BED2D2C08B71D0032C403 /* Invitation.swift */,
 				2A8AB1792C1240E500C5244F /* User.swift */,
 				4D21E85A2C1B39E7002FDBC9 /* UserSummary.swift */,
+
+				FB501A632C1F2CB70083E796 /* BlockedUserSummary.swift */,
+
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -416,6 +431,11 @@
 				2A7623BA2C1DE9310044CF05 /* TermsOfServiceViewController.swift */,
 				9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */,
 				2AF29A052C1B68310021D231 /* PrivacyPolicyScripts.swift */,
+
+				9561FFF82C186B440072B065 /* OnboardingPage.swift */,
+				FB501A602C1F2B2A0083E796 /* BlockTableViewCell.swift */,
+				FB501A5F2C1F2B2A0083E796 /* BlockViewController.swift */,
+
 			);
 			path = ddattj;
 			sourceTree = "<group>";
@@ -447,6 +467,9 @@
 		FB72E7422C0F3EE7002AADBD /* MyTrips */ = {
 			isa = PBXGroup;
 			children = (
+
+				FB501A652C1F32540083E796 /* FilterCollectionViewCell.swift */,
+
 				FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */,
 				FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */,
 			);
@@ -565,6 +588,7 @@
 				2AF299D82C1AF25A0021D231 /* PrivacyPolicySectionHeaderView.swift in Sources */,
 				FB9A3AE92C1984C600E1EAA2 /* RecentTableViewCell.swift in Sources */,
 				2A7655172C06316300D8A098 /* UIApplication+Extensions.swift in Sources */,
+				FB501A622C1F2B2B0083E796 /* BlockTableViewCell.swift in Sources */,
 				2A7655232C070B1700D8A098 /* Numeric.swift in Sources */,
 				6BBE4B882C1AEE6200A7A793 /* SpendingEmptyView.swift in Sources */,
 				6BBE4B8A2C1BD93100A7A793 /* NavigationBarFactory.swift in Sources */,
@@ -603,6 +627,7 @@
 				FB9A3ADE2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift in Sources */,
 				956ED7932C0852B90001BAC6 /* MyPageTableViewCell.swift in Sources */,
 				2A7655112C0622C000D8A098 /* FirestoreManager.swift in Sources */,
+				FB501A612C1F2B2B0083E796 /* BlockViewController.swift in Sources */,
 				FB9A3AE62C1984C600E1EAA2 /* ExploreViewController.swift in Sources */,
 				2A8AB1762C12400100C5244F /* SignInViewController.swift in Sources */,
 				4D9D8B502C05B1BD0043E7DF /* AppDelegate.swift in Sources */,
@@ -614,6 +639,9 @@
 				4DB75A052C13416E001813C3 /* GalleryDetailViewController.swift in Sources */,
 				2A76552C2C073F2F00D8A098 /* SignInWithKakao.swift in Sources */,
 				FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */,
+
+				FB501A662C1F32540083E796 /* FilterCollectionViewCell.swift in Sources */,
+
 				4D21E8572C1AB932002FDBC9 /* MateViewController.swift in Sources */,
 				2A7655212C070B0400D8A098 /* Formatter.swift in Sources */,
 				FB9A3AD62C1984A200E1EAA2 /* NotificationHelper.swift in Sources */,
@@ -624,6 +652,7 @@
 				2A7655042C0610BA00D8A098 /* SignInWithApple.swift in Sources */,
 				956ED7922C0852B90001BAC6 /* EditViewController.swift in Sources */,
 				2A8AB1782C12407B00C5244F /* SignUpViewController.swift in Sources */,
+				FB501A642C1F2CB70083E796 /* BlockedUserSummary.swift in Sources */,
 				2A8AB18D2C138A5500C5244F /* CustomLocationCell.swift in Sources */,
 				4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */,
 				4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */,

@@ -1,10 +1,10 @@
 // !$*UTF8*$!
 {
-archiveVersion = 1;
-classes = {
-};
-objectVersion = 56;
-objects = {
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
 
 /* Begin PBXBuildFile section */
 		2A18AB122C147D6C00E88171 /* PlaceInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A18AB112C147D6C00E88171 /* PlaceInfoView.swift */; };
@@ -209,38 +209,37 @@ objects = {
 		FB9A3AE22C1984C600E1EAA2 /* HotCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HotCollectionViewCell.swift; sourceTree = "<group>"; };
 		FB9A3AE32C1984C600E1EAA2 /* RecentTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecentTableViewCell.swift; sourceTree = "<group>"; };
 		FB9A3AE42C1984C600E1EAA2 /* RecentCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecentCollectionViewCell.swift; sourceTree = "<group>"; };
-
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-4D9D8B492C05B1BD0043E7DF /* Frameworks */ = {
-isa = PBXFrameworksBuildPhase;
-buildActionMask = 2147483647;
-files = (
-2A7654E92C060A3500D8A098 /* FirebaseAnalyticsSwift in Frameworks */,
-2A7654EF2C060A3500D8A098 /* FirebaseAuthCombine-Community in Frameworks */,
-4D9D8B712C05B3350043E7DF /* Kingfisher in Frameworks */,
-2A76552A2C073E4900D8A098 /* KakaoSDKUser in Frameworks */,
-2A7655022C060FFA00D8A098 /* GoogleSignInSwift in Frameworks */,
-2A7654F12C060A3500D8A098 /* FirebaseFirestore in Frameworks */,
-4D9D8B742C05B4CD0043E7DF /* Then in Frameworks */,
-2A7655002C060FFA00D8A098 /* GoogleSignIn in Frameworks */,
-2A76552E2C07407500D8A098 /* KakaoSDKCommon in Frameworks */,
-2A7655262C073E4900D8A098 /* KakaoSDK in Frameworks */,
-2A7654F32C060A3500D8A098 /* FirebaseFirestoreCombine-Community in Frameworks */,
-2A7654E72C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
-2A7654EB2C060A3500D8A098 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
-2A1D31EF2C1C10BB00288C71 /* HorizonCalendar in Frameworks */,
-2A7654F92C060A3500D8A098 /* FirebaseStorageCombine-Community in Frameworks */,
-2A7654F72C060A3500D8A098 /* FirebaseStorage in Frameworks */,
-2A7654E52C060A3500D8A098 /* FirebaseAnalytics in Frameworks */,
-4D9D8B6E2C05B3290043E7DF /* SnapKit in Frameworks */,
-2A7654ED2C060A3500D8A098 /* FirebaseAuth in Frameworks */,
-2A7654F52C060A3500D8A098 /* FirebaseFirestoreSwift in Frameworks */,
-2A7655282C073E4900D8A098 /* KakaoSDKAuth in Frameworks */,
-);
-runOnlyForDeploymentPostprocessing = 0;
-};
+		4D9D8B492C05B1BD0043E7DF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2A7654E92C060A3500D8A098 /* FirebaseAnalyticsSwift in Frameworks */,
+				2A7654EF2C060A3500D8A098 /* FirebaseAuthCombine-Community in Frameworks */,
+				4D9D8B712C05B3350043E7DF /* Kingfisher in Frameworks */,
+				2A76552A2C073E4900D8A098 /* KakaoSDKUser in Frameworks */,
+				2A7655022C060FFA00D8A098 /* GoogleSignInSwift in Frameworks */,
+				2A7654F12C060A3500D8A098 /* FirebaseFirestore in Frameworks */,
+				4D9D8B742C05B4CD0043E7DF /* Then in Frameworks */,
+				2A7655002C060FFA00D8A098 /* GoogleSignIn in Frameworks */,
+				2A76552E2C07407500D8A098 /* KakaoSDKCommon in Frameworks */,
+				2A7655262C073E4900D8A098 /* KakaoSDK in Frameworks */,
+				2A7654F32C060A3500D8A098 /* FirebaseFirestoreCombine-Community in Frameworks */,
+				2A7654E72C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
+				2A7654EB2C060A3500D8A098 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
+				2A1D31EF2C1C10BB00288C71 /* HorizonCalendar in Frameworks */,
+				2A7654F92C060A3500D8A098 /* FirebaseStorageCombine-Community in Frameworks */,
+				2A7654F72C060A3500D8A098 /* FirebaseStorage in Frameworks */,
+				2A7654E52C060A3500D8A098 /* FirebaseAnalytics in Frameworks */,
+				4D9D8B6E2C05B3290043E7DF /* SnapKit in Frameworks */,
+				2A7654ED2C060A3500D8A098 /* FirebaseAuth in Frameworks */,
+				2A7654F52C060A3500D8A098 /* FirebaseFirestoreSwift in Frameworks */,
+				2A7655282C073E4900D8A098 /* KakaoSDKAuth in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -469,103 +468,102 @@ runOnlyForDeploymentPostprocessing = 0;
 			path = MyTrips;
 			sourceTree = "<group>";
 		};
-
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-4D9D8B4B2C05B1BD0043E7DF /* WanderBoard */ = {
-isa = PBXNativeTarget;
-buildConfigurationList = 4D9D8B632C05B1BE0043E7DF /* Build configuration list for PBXNativeTarget "WanderBoard" */;
-buildPhases = (
-4D9D8B482C05B1BD0043E7DF /* Sources */,
-4D9D8B492C05B1BD0043E7DF /* Frameworks */,
-4D9D8B4A2C05B1BD0043E7DF /* Resources */,
-);
-buildRules = (
-);
-dependencies = (
-);
-name = WanderBoard;
-packageProductDependencies = (
-4D9D8B6D2C05B3290043E7DF /* SnapKit */,
-4D9D8B702C05B3350043E7DF /* Kingfisher */,
-4D9D8B732C05B4CD0043E7DF /* Then */,
-2A7654E42C060A3500D8A098 /* FirebaseAnalytics */,
-2A7654E62C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion */,
-2A7654E82C060A3500D8A098 /* FirebaseAnalyticsSwift */,
-2A7654EA2C060A3500D8A098 /* FirebaseAnalyticsWithoutAdIdSupport */,
-2A7654EC2C060A3500D8A098 /* FirebaseAuth */,
-2A7654EE2C060A3500D8A098 /* FirebaseAuthCombine-Community */,
-2A7654F02C060A3500D8A098 /* FirebaseFirestore */,
-2A7654F22C060A3500D8A098 /* FirebaseFirestoreCombine-Community */,
-2A7654F42C060A3500D8A098 /* FirebaseFirestoreSwift */,
-2A7654F62C060A3500D8A098 /* FirebaseStorage */,
-2A7654F82C060A3500D8A098 /* FirebaseStorageCombine-Community */,
-2A7654FF2C060FFA00D8A098 /* GoogleSignIn */,
-2A7655012C060FFA00D8A098 /* GoogleSignInSwift */,
-2A7655252C073E4900D8A098 /* KakaoSDK */,
-2A7655272C073E4900D8A098 /* KakaoSDKAuth */,
-2A7655292C073E4900D8A098 /* KakaoSDKUser */,
-2A76552D2C07407500D8A098 /* KakaoSDKCommon */,
-2A1D31EE2C1C10BB00288C71 /* HorizonCalendar */,
-);
-productName = WanderBoard;
-productReference = 4D9D8B4C2C05B1BD0043E7DF /* WanderBoard.app */;
-productType = "com.apple.product-type.application";
-};
+		4D9D8B4B2C05B1BD0043E7DF /* WanderBoard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4D9D8B632C05B1BE0043E7DF /* Build configuration list for PBXNativeTarget "WanderBoard" */;
+			buildPhases = (
+				4D9D8B482C05B1BD0043E7DF /* Sources */,
+				4D9D8B492C05B1BD0043E7DF /* Frameworks */,
+				4D9D8B4A2C05B1BD0043E7DF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WanderBoard;
+			packageProductDependencies = (
+				4D9D8B6D2C05B3290043E7DF /* SnapKit */,
+				4D9D8B702C05B3350043E7DF /* Kingfisher */,
+				4D9D8B732C05B4CD0043E7DF /* Then */,
+				2A7654E42C060A3500D8A098 /* FirebaseAnalytics */,
+				2A7654E62C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion */,
+				2A7654E82C060A3500D8A098 /* FirebaseAnalyticsSwift */,
+				2A7654EA2C060A3500D8A098 /* FirebaseAnalyticsWithoutAdIdSupport */,
+				2A7654EC2C060A3500D8A098 /* FirebaseAuth */,
+				2A7654EE2C060A3500D8A098 /* FirebaseAuthCombine-Community */,
+				2A7654F02C060A3500D8A098 /* FirebaseFirestore */,
+				2A7654F22C060A3500D8A098 /* FirebaseFirestoreCombine-Community */,
+				2A7654F42C060A3500D8A098 /* FirebaseFirestoreSwift */,
+				2A7654F62C060A3500D8A098 /* FirebaseStorage */,
+				2A7654F82C060A3500D8A098 /* FirebaseStorageCombine-Community */,
+				2A7654FF2C060FFA00D8A098 /* GoogleSignIn */,
+				2A7655012C060FFA00D8A098 /* GoogleSignInSwift */,
+				2A7655252C073E4900D8A098 /* KakaoSDK */,
+				2A7655272C073E4900D8A098 /* KakaoSDKAuth */,
+				2A7655292C073E4900D8A098 /* KakaoSDKUser */,
+				2A76552D2C07407500D8A098 /* KakaoSDKCommon */,
+				2A1D31EE2C1C10BB00288C71 /* HorizonCalendar */,
+			);
+			productName = WanderBoard;
+			productReference = 4D9D8B4C2C05B1BD0043E7DF /* WanderBoard.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-4D9D8B442C05B1BD0043E7DF /* Project object */ = {
-isa = PBXProject;
-attributes = {
-BuildIndependentTargetsInParallel = 1;
-LastSwiftUpdateCheck = 1530;
-LastUpgradeCheck = 1530;
-TargetAttributes = {
-4D9D8B4B2C05B1BD0043E7DF = {
-CreatedOnToolsVersion = 15.3;
-};
-};
-};
-buildConfigurationList = 4D9D8B472C05B1BD0043E7DF /* Build configuration list for PBXProject "WanderBoard" */;
-compatibilityVersion = "Xcode 14.0";
-developmentRegion = en;
-hasScannedForEncodings = 0;
-knownRegions = (
-en,
-Base,
-);
-mainGroup = 4D9D8B432C05B1BD0043E7DF;
-packageReferences = (
-4D9D8B6C2C05B3290043E7DF /* XCRemoteSwiftPackageReference "SnapKit" */,
-4D9D8B6F2C05B3350043E7DF /* XCRemoteSwiftPackageReference "Kingfisher" */,
-4D9D8B722C05B4CD0043E7DF /* XCRemoteSwiftPackageReference "Then" */,
-2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-2A7654FE2C060FFA00D8A098 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
-2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
-2A1D31ED2C1C10BB00288C71 /* XCRemoteSwiftPackageReference "HorizonCalendar" */,
-);
-productRefGroup = 4D9D8B4D2C05B1BD0043E7DF /* Products */;
-projectDirPath = "";
-projectRoot = "";
-targets = (
-4D9D8B4B2C05B1BD0043E7DF /* WanderBoard */,
-);
-};
+		4D9D8B442C05B1BD0043E7DF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1530;
+				LastUpgradeCheck = 1530;
+				TargetAttributes = {
+					4D9D8B4B2C05B1BD0043E7DF = {
+						CreatedOnToolsVersion = 15.3;
+					};
+				};
+			};
+			buildConfigurationList = 4D9D8B472C05B1BD0043E7DF /* Build configuration list for PBXProject "WanderBoard" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 4D9D8B432C05B1BD0043E7DF;
+			packageReferences = (
+				4D9D8B6C2C05B3290043E7DF /* XCRemoteSwiftPackageReference "SnapKit" */,
+				4D9D8B6F2C05B3350043E7DF /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				4D9D8B722C05B4CD0043E7DF /* XCRemoteSwiftPackageReference "Then" */,
+				2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				2A7654FE2C060FFA00D8A098 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+				2A1D31ED2C1C10BB00288C71 /* XCRemoteSwiftPackageReference "HorizonCalendar" */,
+			);
+			productRefGroup = 4D9D8B4D2C05B1BD0043E7DF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4D9D8B4B2C05B1BD0043E7DF /* WanderBoard */,
+			);
+		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-4D9D8B4A2C05B1BD0043E7DF /* Resources */ = {
-isa = PBXResourcesBuildPhase;
-buildActionMask = 2147483647;
-files = (
-4D9D8B5C2C05B1BE0043E7DF /* Assets.xcassets in Resources */,
-955A2B762C1989320008A1CB /* GoogleService-Info.plist in Resources */,
-4D9D8B5F2C05B1BE0043E7DF /* Base in Resources */,
-);
-runOnlyForDeploymentPostprocessing = 0;
-};
+		4D9D8B4A2C05B1BD0043E7DF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4D9D8B5C2C05B1BE0043E7DF /* Assets.xcassets in Resources */,
+				955A2B762C1989320008A1CB /* GoogleService-Info.plist in Resources */,
+				4D9D8B5F2C05B1BE0043E7DF /* Base in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -660,18 +658,17 @@ runOnlyForDeploymentPostprocessing = 0;
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-4D9D8B5D2C05B1BE0043E7DF /* LaunchScreen.storyboard */ = {
-isa = PBXVariantGroup;
-children = (
-4D9D8B5E2C05B1BE0043E7DF /* Base */,
-);
-name = LaunchScreen.storyboard;
-sourceTree = "<group>";
-};
+		4D9D8B5D2C05B1BE0043E7DF /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4D9D8B5E2C05B1BE0043E7DF /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -870,209 +867,208 @@ sourceTree = "<group>";
 			};
 			name = Release;
 		};
-
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-4D9D8B472C05B1BD0043E7DF /* Build configuration list for PBXProject "WanderBoard" */ = {
-isa = XCConfigurationList;
-buildConfigurations = (
-4D9D8B612C05B1BE0043E7DF /* Debug */,
-4D9D8B622C05B1BE0043E7DF /* Release */,
-);
-defaultConfigurationIsVisible = 0;
-defaultConfigurationName = Release;
-};
-4D9D8B632C05B1BE0043E7DF /* Build configuration list for PBXNativeTarget "WanderBoard" */ = {
-isa = XCConfigurationList;
-buildConfigurations = (
-4D9D8B642C05B1BE0043E7DF /* Debug */,
-4D9D8B652C05B1BE0043E7DF /* Release */,
-);
-defaultConfigurationIsVisible = 0;
-defaultConfigurationName = Release;
-};
+		4D9D8B472C05B1BD0043E7DF /* Build configuration list for PBXProject "WanderBoard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4D9D8B612C05B1BE0043E7DF /* Debug */,
+				4D9D8B622C05B1BE0043E7DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4D9D8B632C05B1BE0043E7DF /* Build configuration list for PBXNativeTarget "WanderBoard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4D9D8B642C05B1BE0043E7DF /* Debug */,
+				4D9D8B652C05B1BE0043E7DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-2A1D31ED2C1C10BB00288C71 /* XCRemoteSwiftPackageReference "HorizonCalendar" */ = {
-isa = XCRemoteSwiftPackageReference;
-repositoryURL = "https://github.com/airbnb/HorizonCalendar.git";
-requirement = {
-branch = master;
-kind = branch;
-};
-};
-2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-isa = XCRemoteSwiftPackageReference;
-repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
-requirement = {
-kind = upToNextMajorVersion;
-minimumVersion = 10.26.0;
-};
-};
-2A7654FE2C060FFA00D8A098 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
-isa = XCRemoteSwiftPackageReference;
-repositoryURL = "https://github.com/google/GoogleSignIn-iOS.git";
-requirement = {
-kind = upToNextMajorVersion;
-minimumVersion = 7.1.0;
-};
-};
-2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
-isa = XCRemoteSwiftPackageReference;
-repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
-requirement = {
-kind = upToNextMajorVersion;
-minimumVersion = 2.22.2;
-};
-};
-4D9D8B6C2C05B3290043E7DF /* XCRemoteSwiftPackageReference "SnapKit" */ = {
-isa = XCRemoteSwiftPackageReference;
-repositoryURL = "https://github.com/SnapKit/SnapKit.git";
-requirement = {
-kind = upToNextMajorVersion;
-minimumVersion = 5.7.1;
-};
-};
-4D9D8B6F2C05B3350043E7DF /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
-isa = XCRemoteSwiftPackageReference;
-repositoryURL = "https://github.com/onevcat/Kingfisher.git";
-requirement = {
-kind = upToNextMajorVersion;
-minimumVersion = 7.11.0;
-};
-};
-4D9D8B722C05B4CD0043E7DF /* XCRemoteSwiftPackageReference "Then" */ = {
-isa = XCRemoteSwiftPackageReference;
-repositoryURL = "https://github.com/devxoul/Then";
-requirement = {
-kind = upToNextMajorVersion;
-minimumVersion = 3.0.0;
-};
-};
+		2A1D31ED2C1C10BB00288C71 /* XCRemoteSwiftPackageReference "HorizonCalendar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/HorizonCalendar.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.26.0;
+			};
+		};
+		2A7654FE2C060FFA00D8A098 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.1.0;
+			};
+		};
+		2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.22.2;
+			};
+		};
+		4D9D8B6C2C05B3290043E7DF /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		4D9D8B6F2C05B3350043E7DF /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.11.0;
+			};
+		};
+		4D9D8B722C05B4CD0043E7DF /* XCRemoteSwiftPackageReference "Then" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devxoul/Then";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-2A1D31EE2C1C10BB00288C71 /* HorizonCalendar */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A1D31ED2C1C10BB00288C71 /* XCRemoteSwiftPackageReference "HorizonCalendar" */;
-productName = HorizonCalendar;
-};
-2A7654E42C060A3500D8A098 /* FirebaseAnalytics */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-productName = FirebaseAnalytics;
-};
-2A7654E62C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-productName = FirebaseAnalyticsOnDeviceConversion;
-};
-2A7654E82C060A3500D8A098 /* FirebaseAnalyticsSwift */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-productName = FirebaseAnalyticsSwift;
-};
-2A7654EA2C060A3500D8A098 /* FirebaseAnalyticsWithoutAdIdSupport */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-productName = FirebaseAnalyticsWithoutAdIdSupport;
-};
-2A7654EC2C060A3500D8A098 /* FirebaseAuth */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-productName = FirebaseAuth;
-};
-2A7654EE2C060A3500D8A098 /* FirebaseAuthCombine-Community */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-productName = "FirebaseAuthCombine-Community";
-};
-2A7654F02C060A3500D8A098 /* FirebaseFirestore */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-productName = FirebaseFirestore;
-};
-2A7654F22C060A3500D8A098 /* FirebaseFirestoreCombine-Community */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-productName = "FirebaseFirestoreCombine-Community";
-};
-2A7654F42C060A3500D8A098 /* FirebaseFirestoreSwift */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-productName = FirebaseFirestoreSwift;
-};
-2A7654F62C060A3500D8A098 /* FirebaseStorage */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-productName = FirebaseStorage;
-};
-2A7654F82C060A3500D8A098 /* FirebaseStorageCombine-Community */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-productName = "FirebaseStorageCombine-Community";
-};
-2A7654FF2C060FFA00D8A098 /* GoogleSignIn */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7654FE2C060FFA00D8A098 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
-productName = GoogleSignIn;
-};
-2A7655012C060FFA00D8A098 /* GoogleSignInSwift */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7654FE2C060FFA00D8A098 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
-productName = GoogleSignInSwift;
-};
-2A7655252C073E4900D8A098 /* KakaoSDK */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
-productName = KakaoSDK;
-};
-2A7655272C073E4900D8A098 /* KakaoSDKAuth */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
-productName = KakaoSDKAuth;
-};
-2A7655292C073E4900D8A098 /* KakaoSDKUser */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
-productName = KakaoSDKUser;
-};
-2A76552D2C07407500D8A098 /* KakaoSDKCommon */ = {
-isa = XCSwiftPackageProductDependency;
-package = 2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
-productName = KakaoSDKCommon;
-};
-4D9D8B6D2C05B3290043E7DF /* SnapKit */ = {
-isa = XCSwiftPackageProductDependency;
-package = 4D9D8B6C2C05B3290043E7DF /* XCRemoteSwiftPackageReference "SnapKit" */;
-productName = SnapKit;
-};
-4D9D8B702C05B3350043E7DF /* Kingfisher */ = {
-isa = XCSwiftPackageProductDependency;
-package = 4D9D8B6F2C05B3350043E7DF /* XCRemoteSwiftPackageReference "Kingfisher" */;
-productName = Kingfisher;
-};
-4D9D8B732C05B4CD0043E7DF /* Then */ = {
-isa = XCSwiftPackageProductDependency;
-package = 4D9D8B722C05B4CD0043E7DF /* XCRemoteSwiftPackageReference "Then" */;
-productName = Then;
-};
+		2A1D31EE2C1C10BB00288C71 /* HorizonCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A1D31ED2C1C10BB00288C71 /* XCRemoteSwiftPackageReference "HorizonCalendar" */;
+			productName = HorizonCalendar;
+		};
+		2A7654E42C060A3500D8A098 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		2A7654E62C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsOnDeviceConversion;
+		};
+		2A7654E82C060A3500D8A098 /* FirebaseAnalyticsSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsSwift;
+		};
+		2A7654EA2C060A3500D8A098 /* FirebaseAnalyticsWithoutAdIdSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsWithoutAdIdSupport;
+		};
+		2A7654EC2C060A3500D8A098 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		2A7654EE2C060A3500D8A098 /* FirebaseAuthCombine-Community */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseAuthCombine-Community";
+		};
+		2A7654F02C060A3500D8A098 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		2A7654F22C060A3500D8A098 /* FirebaseFirestoreCombine-Community */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseFirestoreCombine-Community";
+		};
+		2A7654F42C060A3500D8A098 /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
+		};
+		2A7654F62C060A3500D8A098 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		2A7654F82C060A3500D8A098 /* FirebaseStorageCombine-Community */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseStorageCombine-Community";
+		};
+		2A7654FF2C060FFA00D8A098 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7654FE2C060FFA00D8A098 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		2A7655012C060FFA00D8A098 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7654FE2C060FFA00D8A098 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+		2A7655252C073E4900D8A098 /* KakaoSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDK;
+		};
+		2A7655272C073E4900D8A098 /* KakaoSDKAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKAuth;
+		};
+		2A7655292C073E4900D8A098 /* KakaoSDKUser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKUser;
+		};
+		2A76552D2C07407500D8A098 /* KakaoSDKCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKCommon;
+		};
+		4D9D8B6D2C05B3290043E7DF /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4D9D8B6C2C05B3290043E7DF /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		4D9D8B702C05B3350043E7DF /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4D9D8B6F2C05B3350043E7DF /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		4D9D8B732C05B4CD0043E7DF /* Then */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4D9D8B722C05B4CD0043E7DF /* XCRemoteSwiftPackageReference "Then" */;
+			productName = Then;
+		};
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
-FB0C32422C14C2D000DD2F00 /* WanderBoard.xcdatamodeld */ = {
-isa = XCVersionGroup;
-children = (
-FB0C32432C14C2D000DD2F00 /* WanderBoard.xcdatamodel */,
-);
-currentVersion = FB0C32432C14C2D000DD2F00 /* WanderBoard.xcdatamodel */;
-path = WanderBoard.xcdatamodeld;
-sourceTree = "<group>";
-versionGroupType = wrapper.xcdatamodel;
-};
+		FB0C32422C14C2D000DD2F00 /* WanderBoard.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				FB0C32432C14C2D000DD2F00 /* WanderBoard.xcdatamodel */,
+			);
+			currentVersion = FB0C32432C14C2D000DD2F00 /* WanderBoard.xcdatamodel */;
+			path = WanderBoard.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
 /* End XCVersionGroup section */
-};
-rootObject = 4D9D8B442C05B1BD0043E7DF /* Project object */;
+	};
+	rootObject = 4D9D8B442C05B1BD0043E7DF /* Project object */;
 }

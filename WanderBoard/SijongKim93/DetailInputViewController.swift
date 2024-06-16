@@ -26,8 +26,7 @@ protocol DetailInputViewControllerDelegate: AnyObject {
     func didSavePinLog(_ pinLog: PinLog)
 }
 
-class DetailInputViewController: UIViewController {
-    
+class DetailInputViewController: UIViewController, CalendarHostingControllerDelegate {
     
     
     private let locationManager = LocationManager()
@@ -161,57 +160,89 @@ class DetailInputViewController: UIViewController {
         $0.isUserInteractionEnabled = false
     }
     
+//    let dateLabel = UILabel().then {
+//        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+//        $0.textColor = .font
+//        
+//        let imageAttachment = NSTextAttachment()
+//        let systemImage = UIImage(systemName: "calendar")?.withTintColor(.font, renderingMode: .alwaysOriginal)
+//        imageAttachment.image = systemImage
+//        imageAttachment.bounds = CGRect(x: 0, y: -6, width: 30, height: 24)
+//        
+//        let fullString = NSMutableAttributedString(string: "")
+//        fullString.append(NSAttributedString(attachment: imageAttachment))
+//        fullString.append(NSAttributedString(string: " 날짜", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .bold)]))
+//        
+//        $0.attributedText = fullString
+//    }
+//    
+//    let startDateButton = UIButton(type: .system).then {
+//        var configuration = UIButton.Configuration.filled()
+//        configuration.title = "시작일자"
+//        configuration.baseBackgroundColor = .babygray
+//        configuration.baseForegroundColor = .font
+//        configuration.cornerStyle = .medium
+//        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10)
+//        $0.configuration = configuration
+//        $0.tintColor = .font
+//    }
+//    
+//    let endDateLabel = UILabel().then {
+//        $0.text = "-"
+//        $0.font = UIFont.systemFont(ofSize: 16)
+//        $0.textColor = .font
+//        $0.textAlignment = .center
+//    }
+//    
+//    let endDateButton = UIButton(type: .system).then {
+//        var configuration = UIButton.Configuration.filled()
+//        configuration.title = "종료일자"
+//        configuration.baseBackgroundColor = .babygray
+//        configuration.baseForegroundColor = .font
+//        configuration.cornerStyle = .medium
+//        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10)
+//        $0.configuration = configuration
+//        $0.tintColor = .font
+//    }
+//    
+//    let dateStackView = UIStackView().then {
+//        $0.axis = .horizontal
+//        $0.alignment = .center
+//        $0.distribution = .fill
+//        $0.spacing = 10
+//    }
+    
     let dateLabel = UILabel().then {
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.text = "날짜를 선택하세요"
+        $0.font = UIFont.systemFont(ofSize: 15)
         $0.textColor = .font
-        
-        let imageAttachment = NSTextAttachment()
-        let systemImage = UIImage(systemName: "calendar")?.withTintColor(.font, renderingMode: .alwaysOriginal)
-        imageAttachment.image = systemImage
-        imageAttachment.bounds = CGRect(x: 0, y: -6, width: 30, height: 24)
-        
-        let fullString = NSMutableAttributedString(string: "")
-        fullString.append(NSAttributedString(attachment: imageAttachment))
-        fullString.append(NSAttributedString(string: " 날짜", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .bold)]))
-        
-        $0.attributedText = fullString
+        $0.isHidden = false
     }
     
-    let startDateButton = UIButton(type: .system).then {
-        var configuration = UIButton.Configuration.filled()
-        configuration.title = "시작일자"
-        configuration.baseBackgroundColor = .babygray
-        configuration.baseForegroundColor = .font
-        configuration.cornerStyle = .medium
-        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10)
-        $0.configuration = configuration
-        $0.tintColor = .font
-    }
-    
-    let endDateLabel = UILabel().then {
-        $0.text = "-"
-        $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = .font
-        $0.textAlignment = .center
-    }
-    
-    let endDateButton = UIButton(type: .system).then {
-        var configuration = UIButton.Configuration.filled()
-        configuration.title = "종료일자"
-        configuration.baseBackgroundColor = .babygray
-        configuration.baseForegroundColor = .font
-        configuration.cornerStyle = .medium
-        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10)
-        $0.configuration = configuration
+    let dateRightLabel = UIImageView().then {
+        $0.image = UIImage(systemName: "chevron.right")
         $0.tintColor = .font
     }
     
     let dateStackView = UIStackView().then {
         $0.axis = .horizontal
         $0.alignment = .center
-        $0.distribution = .fill
+        $0.distribution = .equalSpacing
         $0.spacing = 10
+        $0.isUserInteractionEnabled = false
     }
+    
+    let dateButton = UIButton().then {
+        var configuration = UIButton.Configuration.filled()
+//        configuration.title = "날짜를 선택하세요"
+        configuration.baseBackgroundColor = .babygray
+        configuration.baseForegroundColor = .font
+        configuration.cornerStyle = .medium
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10)
+        $0.configuration = configuration
+        $0.tintColor = .font
+    }
+
     
     let mainTextField = UITextView().then {
         $0.text = "여행 제목을 입력해주세요."
@@ -387,9 +418,55 @@ class DetailInputViewController: UIViewController {
         $0.isUserInteractionEnabled = false
     }
     
+    private var selectedStartDate: Date?
+    private var selectedEndDate: Date?
+
+//    func didSelectDates(startDate: Date, endDate: Date) {
+//        // delegate 메서드 구현: 날짜 선택 시 호출되어 버튼 제목을 업데이트하고 선택된 날짜를 저장
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "yyyy-MM-dd"
+//        let startDateString = dateFormatter.string(from: startDate)
+//        let endDateString = dateFormatter.string(from: endDate)
+//        dateButton.setTitle("\(startDateString) ~ \(endDateString)", for: .normal)
+//        selectedStartDate = startDate
+//        selectedEndDate = endDate
+//    }
+    
+    func didSelectDates(startDate: Date, endDate: Date) {
+        print("didSelectDates 호출됨")
+        updateDateLabel(with: startDate, endDate: endDate)
+        selectedStartDate = startDate
+        selectedEndDate = endDate
+    }
+    
+//    func updateDateLabel(with startDate: Date, endDate: Date) {
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "yyyy-MM-dd"
+//        let startDateString = dateFormatter.string(from: startDate)
+//        let endDateString = dateFormatter.string(from: endDate)
+//        let dateRangeString = "\(startDateString) ~ \(endDateString)"
+////        self.dateLabel.text = dateRangeString
+//        self.dateButton.setTitle(dateRangeString, for: .normal)
+//    }
+
+    func updateDateLabel(with startDate: Date, endDate: Date) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let startDateString = dateFormatter.string(from: startDate)
+        let endDateString = dateFormatter.string(from: endDate)
+        let dateRangeString = "\(startDateString) ~ \(endDateString)"
+        print("updateDateLabel 호출됨: \(dateRangeString)")
+        
+        // dateLabel의 텍스트 업데이트
+        self.dateLabel.text = dateRangeString
+//        self.dateButton.setTitle(dateRangeString, for: .normal)
+
+    }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
+//        calendarHostingController.delegate = self
         setupUI()
         setupConstraints()
         actionButton()
@@ -433,12 +510,21 @@ class DetailInputViewController: UIViewController {
         toggleSwitchStackView.addArrangedSubview(publicStackView)
         toggleSwitchStackView.addArrangedSubview(spendingPublicStackView)
         
-        contentView.addSubview(dateLabel)
-        contentView.addSubview(dateStackView)
-        dateStackView.addArrangedSubview(startDateButton)
-        dateStackView.addArrangedSubview(endDateLabel)
-        dateStackView.addArrangedSubview(endDateButton)
+//        contentView.addSubview(dateLabel)
+//        contentView.addSubview(dateRightLabel)
+//        contentView.addSubview(dateStackView)
+//        dateStackView.addArrangedSubview(startDateButton)
+//        dateStackView.addArrangedSubview(endDateLabel)
+//        dateStackView.addArrangedSubview(endDateButton)
         
+//        contentView.addSubview(dateLabel)
+//        contentView.addSubview(dateButton)
+        
+        dateStackView.addArrangedSubview(dateLabel)
+        dateStackView.addArrangedSubview(dateRightLabel)
+        contentView.addSubview(dateButton)
+        dateButton.addSubview(dateStackView)
+
         contentView.addSubview(mainTextField)
         contentView.addSubview(subTextField)
         contentView.addSubview(locationButton)
@@ -529,18 +615,33 @@ class DetailInputViewController: UIViewController {
             $0.leading.trailing.equalToSuperview().inset(16)
         }
         
-        dateLabel.snp.makeConstraints {
+//        dateLabel.snp.makeConstraints {
+//            $0.top.equalTo(locationButton.snp.bottom).offset(24)
+//            $0.leading.equalTo(contentView).inset(32)
+//        }
+//        
+//        dateStackView.snp.makeConstraints {
+//            $0.top.equalTo(dateLabel.snp.bottom).offset(10)
+//            $0.leading.trailing.equalTo(contentView).inset(32)
+//        }
+        
+        dateButton.snp.makeConstraints {
             $0.top.equalTo(locationButton.snp.bottom).offset(24)
-            $0.leading.equalTo(contentView).inset(32)
+            $0.leading.trailing.equalTo(contentView).inset(32)
+            $0.height.equalTo(46)
         }
         
         dateStackView.snp.makeConstraints {
-            $0.top.equalTo(dateLabel.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(contentView).inset(32)
+            $0.centerY.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(16)
         }
+
+//        calendarHostingController.view.snp.makeConstraints {
+//            $0.edges.equalToSuperview()
+//        }
         
         mainTextField.snp.makeConstraints {
-            $0.top.equalTo(dateStackView.snp.bottom).offset(24)
+            $0.top.equalTo(dateButton.snp.bottom).offset(24)
             $0.leading.trailing.equalTo(contentView).inset(32)
             $0.height.equalTo(37)
         }
@@ -632,8 +733,9 @@ class DetailInputViewController: UIViewController {
         bodyLine.backgroundColor = lineColor
         
         let buttonBackground = traitCollection.userInterfaceStyle == .dark ? UIColor.customblack : UIColor.babygray
-        startDateButton.configuration?.baseBackgroundColor = buttonBackground
-        endDateButton.configuration?.baseBackgroundColor = buttonBackground
+//        startDateButton.configuration?.baseBackgroundColor = buttonBackground
+//        endDateButton.configuration?.baseBackgroundColor = buttonBackground
+        
         locationButton.backgroundColor = buttonBackground
         consumButton.backgroundColor = buttonBackground
     }
@@ -656,8 +758,10 @@ class DetailInputViewController: UIViewController {
     
     func actionButton() {
         publicOpenButton.addTarget(self, action: #selector(publicOpenButtonTapped), for: .touchUpInside)
-        startDateButton.addTarget(self, action: #selector(showDatePicker(_:)), for: .touchUpInside)
-        endDateButton.addTarget(self, action: #selector(showDatePicker(_:)), for: .touchUpInside)
+//        startDateButton.addTarget(self, action: #selector(showDatePicker(_:)), for: .touchUpInside)
+//        endDateButton.addTarget(self, action: #selector(showDatePicker(_:)), for: .touchUpInside)
+        dateButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
+
         galleryCountButton.addTarget(self, action: #selector(showPHPicker), for: .touchUpInside)
         
         locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
@@ -720,36 +824,49 @@ class DetailInputViewController: UIViewController {
         navigationController?.pushViewController(spendVC, animated: true)
     }
     
-    @objc func showDatePicker(_ sender: UIButton) {
-        let datePicker = UIDatePicker()
-        datePicker.tintColor = .black
-        datePicker.datePickerMode = .date
-        datePicker.preferredDatePickerStyle = .inline
-        
-        let alert = UIAlertController(title: "날짜 선택", message: nil, preferredStyle: .actionSheet)
-        alert.view.addSubview(datePicker)
-        
-        datePicker.snp.makeConstraints {
-            $0.top.leading.trailing.equalTo(alert.view)
-            $0.bottom.equalTo(alert.view.snp.bottom).offset(-120)
+//    @objc func showDatePicker(_ sender: UIButton) {
+//        let datePicker = UIDatePicker()
+//        datePicker.tintColor = .black
+//        datePicker.datePickerMode = .date
+//        datePicker.preferredDatePickerStyle = .inline
+//        
+//        let alert = UIAlertController(title: "날짜 선택", message: nil, preferredStyle: .actionSheet)
+//        alert.view.addSubview(datePicker)
+//        
+//        datePicker.snp.makeConstraints {
+//            $0.top.leading.trailing.equalTo(alert.view)
+//            $0.bottom.equalTo(alert.view.snp.bottom).offset(-120)
+//        }
+//        
+//        let selectAction = UIAlertAction(title: "선택", style: .default) { _ in
+//            let dateFormatter = DateFormatter()
+//            dateFormatter.dateFormat = "yyyy-MM-dd"
+//            let selectedDate = dateFormatter.string(from: datePicker.date)
+//            sender.setTitle(selectedDate, for: .normal)
+//        }
+//        selectAction.setValue(UIColor.black, forKey: "titleTextColor")
+//        
+//        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+//        cancelAction.setValue(UIColor.red, forKey: "titleTextColor")
+//        
+//        alert.addAction(selectAction)
+//        alert.addAction(cancelAction)
+//        
+//        present(alert, animated: true, completion: nil)
+//    }
+    
+    @objc func showCalendar() {
+        let calendarVC = CalendarHostingController()
+        calendarVC.delegate = self
+        calendarVC.modalPresentationStyle = .pageSheet
+        if let sheet = calendarVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { _ in 460 })]
+            sheet.prefersGrabberVisible = true
         }
-        
-        let selectAction = UIAlertAction(title: "선택", style: .default) { _ in
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let selectedDate = dateFormatter.string(from: datePicker.date)
-            sender.setTitle(selectedDate, for: .normal)
-        }
-        selectAction.setValue(UIColor.black, forKey: "titleTextColor")
-        
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
-        cancelAction.setValue(UIColor.red, forKey: "titleTextColor")
-        
-        alert.addAction(selectAction)
-        alert.addAction(cancelAction)
-        
-        present(alert, animated: true, completion: nil)
+        present(calendarVC, animated: true, completion: nil)
     }
+
+
     
     func setupNavigationBar() {
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
@@ -772,10 +889,14 @@ class DetailInputViewController: UIViewController {
         publicSwitch.isOn = pinLog.isPublic
         spendingPublicSwitch.isOn = pinLog.isSpendingPublic
 
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        startDateButton.setTitle(dateFormatter.string(from: pinLog.startDate), for: .normal)
-        endDateButton.setTitle(dateFormatter.string(from: pinLog.endDate), for: .normal)
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "yyyy-MM-dd"
+//        startDateButton.setTitle(dateFormatter.string(from: pinLog.startDate), for: .normal)
+//        endDateButton.setTitle(dateFormatter.string(from: pinLog.endDate), for: .normal)
+        
+//        let startDateString = dateFormatter.string(from: pinLog.startDate)
+//        let endDateString = dateFormatter.string(from: pinLog.endDate)
+        updateDateLabel(with: pinLog.startDate, endDate: pinLog.endDate)
 
         selectedImages.removeAll()
         imageLocations.removeAll()
@@ -900,13 +1021,13 @@ class DetailInputViewController: UIViewController {
             return
         }
         
-        guard let startDateString = startDateButton.title(for: .normal), startDateString != "시작일자",
-              let endDateString = endDateButton.title(for: .normal), endDateString != "종료일자" else {
-            let alert = UIAlertController(title: "날짜 선택", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true, completion: nil)
-            return
-        }
+//        guard let startDateString = startDateButton.title(for: .normal), startDateString != "시작일자",
+//              let endDateString = endDateButton.title(for: .normal), endDateString != "종료일자" else {
+//            let alert = UIAlertController(title: "날짜 선택", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
+//            alert.addAction(UIAlertAction(title: "확인", style: .default))
+//            present(alert, animated: true, completion: nil)
+//            return
+//        }
         
         guard let mainTitle = mainTextField.text, !mainTitle.isEmpty, mainTextField.textColor != .lightgray else {
             let alert = UIAlertController(title: "제목 입력", message: "여행 제목을 입력해주세요.", preferredStyle: .alert)
@@ -922,18 +1043,35 @@ class DetailInputViewController: UIViewController {
             return
         }
         
+        guard let dateRange = dateLabel.text, dateRange != "날짜를 선택하세요" else {
+            let alert = UIAlertController(title: "날짜 선택", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "확인", style: .default))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
-        guard let startDateString = startDateButton.title(for: .normal),
-              let endDateString = endDateButton.title(for: .normal),
-              let startDate = dateFormatter.date(from: startDateString),
-              let endDate = dateFormatter.date(from: endDateString) else {
+        let dates = dateRange.split(separator: " ~ ")
+        guard dates.count == 2,
+              let startDate = dateFormatter.date(from: String(dates[0])),
+              let endDate = dateFormatter.date(from: String(dates[1])) else {
             let alert = UIAlertController(title: "오류", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "확인", style: .default))
             present(alert, animated: true, completion: nil)
             return
         }
+        
+//        guard let startDateString = startDateButton.title(for: .normal),
+//              let endDateString = endDateButton.title(for: .normal),
+//              let startDate = dateFormatter.date(from: startDateString),
+//              let endDate = dateFormatter.date(from: endDateString) else {
+//            let alert = UIAlertController(title: "오류", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
+//            alert.addAction(UIAlertAction(title: "확인", style: .default))
+//            present(alert, animated: true, completion: nil)
+//            return
+//        }
         
         let title = mainTextField.text ?? ""
         let content = subTextField.text ?? ""

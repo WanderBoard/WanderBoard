@@ -798,9 +798,28 @@ class DetailViewController: UIViewController {
         present(galleryDetailVC, animated: true, completion: nil)
     }
     
+    @objc func showMapViewController() {
+        guard let firstLocation = selectedImages.compactMap({ $0.2 }).first else {
+            print("No location data available.")
+            return
+        }
+
+        let region = MKCoordinateRegion(center: firstLocation, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+        let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
+        }
+        mapVC.pinLocations = selectedImages.compactMap { $0.2 }
+        if let navigationController = self.navigationController {
+            navigationController.pushViewController(mapVC, animated: true)
+        } else {
+            present(mapVC, animated: true, completion: nil)
+        }
+    }
+
+    
     func setupActionButton() {
         albumAllButton.addTarget(self, action: #selector(showGalleryDetail), for: .touchUpInside)
         moneyMoveButton.addTarget(self, action: #selector(moneyMoveButtonTapped), for: .touchUpInside)
+        mapAllButton.addTarget(self, action: #selector(showMapViewController), for: .touchUpInside)
     }
     
     func fetchImagesFromFirestore(completion: @escaping ([Media]) -> Void) {

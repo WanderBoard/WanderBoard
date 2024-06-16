@@ -24,6 +24,8 @@ class ExploreViewController: UIViewController, PageIndexed {
     var recentCellHeight: CGFloat = 0
     var lastSnapshot: DocumentSnapshot?
     var isLoading = false
+
+    var progressViewController: ProgressViewController?
     
     lazy var searchButton = UIButton(type: .system).then {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
@@ -60,13 +62,38 @@ class ExploreViewController: UIViewController, PageIndexed {
         NotificationHelper.changePage(hidden: false, isEnabled: true)
         searchButton.isHidden = false
     }
+    
+    private func showProgressView() {
+        let progressVC = ProgressViewController()
+        addChild(progressVC)
+        view.addSubview(progressVC.view)
+        progressVC.view.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        progressVC.didMove(toParent: self)
+        progressViewController = progressVC
+    }
+
+    private func hideProgressView() {
+        if let progressVC = progressViewController {
+            progressVC.willMove(toParent: nil)
+            progressVC.view.removeFromSuperview()
+            progressVC.removeFromParent()
+            progressViewController = nil
+        }
+    }
 
     private func loadData() {
+        
+        showProgressView()
+        
         Task {
+//            try await Task.sleep(nanoseconds: 3_000_000_000) // 프로그레스뷰 테스트용 강제지연 3초
             self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
             self.hiddenPinLogs = try await AuthenticationManager.shared.getHiddenPinLogs()
             await loadHotData()
             loadRecentData()
+            hideProgressView()
         }
     }
     

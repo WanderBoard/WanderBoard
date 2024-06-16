@@ -172,14 +172,24 @@ class FirestoreManager {
         let userRef = db.collection("users").document(userId)
         try await userRef.updateData(["blockedAuthors": FieldValue.arrayUnion([authorId])])
     }
+    
+    func getUserSummary(userId: String) async throws -> BlockedUserSummary? {
+        let document = try await Firestore.firestore().collection("users").document(userId).getDocument()
+        guard let data = document.data() else { return nil }
+        return BlockedUserSummary(uid: userId, email: data["email"] as? String ?? "", displayName: data["displayName"] as? String ?? "", photoURL: data["photoURL"] as? String, isBlocked: true)
+    }
+    
+    func unblockAuthor(userId: String, authorId: String) async throws {
+        let userRef = Firestore.firestore().collection("users").document(userId)
+        try await userRef.updateData([
+            "blockedAuthors": FieldValue.arrayRemove([authorId])
+        ])
+    }
 
     // 사용자가 차단한 작성자 목록을 가져오는 함수
     func getBlockedAuthors(userId: String) async throws -> [String] {
-        let userRef = db.collection("users").document(userId)
-        let document = try await userRef.getDocument()
-        guard let data = document.data(), let blockedAuthors = data["blockedAuthors"] as? [String] else {
-            return []
-        }
+        let document = try await Firestore.firestore().collection("users").document(userId).getDocument()
+        let blockedAuthors = document.data()?["blockedAuthors"] as? [String] ?? []
         return blockedAuthors
     }
     

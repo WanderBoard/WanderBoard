@@ -340,9 +340,9 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                         policyVC.navigationItem.title = "마케팅활용동의 및 광고수신동의"
                      case 3:
                     NotificationHelper.changePage(hidden: true, isEnabled: false)
-//                         let blockVC = BlockViewController()
-//                         self.navigationController?.pushViewController(blockVC, animated: true)
-//                         blockVC.navigationItem.title = "차단관리"
+                         let blockVC = BlockViewController()
+                         self.navigationController?.pushViewController(blockVC, animated: true)
+                         blockVC.navigationItem.title = "차단관리"
                     case 4:
                     NotificationHelper.changePage(hidden: true, isEnabled: false)
                         let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)

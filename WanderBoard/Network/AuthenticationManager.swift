@@ -94,6 +94,32 @@ final class AuthenticationManager {
         }
     }
     
+    func getBlockedUsersSummaries() async throws -> [BlockedUserSummary] {
+        guard let currentUser = Auth.auth().currentUser else {
+            throw URLError(.badServerResponse)
+        }
+        let blockedAuthorIds = try await FirestoreManager.shared.getBlockedAuthors(userId: currentUser.uid)
+        return try await withThrowingTaskGroup(of: BlockedUserSummary?.self) { group in
+            for authorId in blockedAuthorIds {
+                group.addTask {
+                    return try await FirestoreManager.shared.getUserSummary(userId: authorId)
+                }
+            }
+            return try await group.reduce(into: [BlockedUserSummary]()) { summaries, summary in
+                if let summary = summary {
+                    summaries.append(summary)
+                }
+            }
+        }
+    }
+    
+    func unblockAuthor(authorId: String) async throws {
+        guard let currentUser = Auth.auth().currentUser else {
+            throw URLError(.badServerResponse)
+        }
+        try await FirestoreManager.shared.unblockAuthor(userId: currentUser.uid, authorId: authorId)
+    }
+    
     // 현재 사용자 가져오기
     func getCurrentUser() -> AuthDataResultModel? {
         guard let currentUser = Auth.auth().currentUser else {

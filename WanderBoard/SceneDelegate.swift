@@ -18,7 +18,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = AuthenticationVC()
+        
+        if UserDefaults.standard.bool(forKey: "isLoggedIn") {
+            // 사용자가 로그인된 상태
+            window?.rootViewController = PageViewController()
+        } else {
+            // 사용자 로그아웃 상태 시 LaunchViewController를 2초 동안 보여준 후 AuthenticationVC로 이동
+            let launchViewController = LaunchViewController()
+            window?.rootViewController = launchViewController
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                self.window?.rootViewController = AuthenticationVC()
+                self.window?.makeKeyAndVisible()
+            }
+        }
+        
         window?.makeKeyAndVisible()
         
     }

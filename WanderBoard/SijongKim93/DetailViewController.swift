@@ -514,7 +514,7 @@ class DetailViewController: UIViewController {
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.bottom.equalTo(bottomLogo.snp.bottom).offset(30)
+            $0.bottom.equalTo(bottomLogo.snp.bottom)
         }
         
         optionsButton.snp.makeConstraints {
@@ -604,18 +604,18 @@ class DetailViewController: UIViewController {
         }
         
         friendTitle.snp.makeConstraints {
-            $0.top.equalTo(moneyCountainer.snp.bottom).offset(32)
+            $0.top.equalTo(moneyCountainer.snp.bottom).offset(16)
             $0.leading.equalTo(contentView).offset(16)
         }
         
         friendCollectionView.snp.makeConstraints {
-            $0.top.equalTo(friendTitle.snp.bottom).offset(20)
+            $0.top.equalTo(friendTitle.snp.bottom).offset(16)
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(90)
         }
         
         bottomLogo.snp.makeConstraints {
-            $0.top.equalTo(friendCollectionView.snp.bottom).offset(50)
+            $0.top.equalTo(friendCollectionView.snp.bottom).offset(32)
             $0.width.equalTo(135)
             $0.height.equalTo(18)
             $0.centerX.equalToSuperview()
@@ -624,25 +624,40 @@ class DetailViewController: UIViewController {
     
     func configureView(with pinLog: PinLog) {
         locationLabel.text = pinLog.location
-        
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
-        
+
         dateStartLabel.text = dateFormatter.string(from: pinLog.startDate)
         dateEndLabel.text = dateFormatter.string(from: pinLog.endDate)
-        
+
         let duration = Calendar.current.dateComponents([.day], from: pinLog.startDate, to: pinLog.endDate).day ?? 0
         dateDaysLabel.text = "\(duration) Days"
         mainTitleLabel.text = pinLog.title
         subTextLabel.text = pinLog.content
-        
+
         if pinLog.isSpendingPublic {
-            moneyCountTitle.text = "\(formatCurrency(Int(pinLog.totalSpendingAmount ?? 0)))원"
-            maxConsumptionLabel.text = "최고금액 지출 : \(formatCurrency(pinLog.maxSpendingAmount ?? 0))원"
-            moneyCountainer.isHidden = false
+            if let totalSpendingAmount = pinLog.totalSpendingAmount, totalSpendingAmount > 0 {
+                moneyCountTitle.text = "\(formatCurrency(totalSpendingAmount))원"
+                maxConsumptionLabel.text = "최고금액 지출 : \(formatCurrency(pinLog.maxSpendingAmount ?? 0))원"
+                moneyCountainer.isHidden = false
+                moneyCountSubTitle.isHidden = false
+                consumMainStackView.isHidden = false
+            } else {
+                let noDataLabel = UILabel().then {
+                    $0.text = "지출 내역이 없습니다."
+                    $0.font = UIFont.systemFont(ofSize: 15)
+                    $0.textColor = .darkgray
+                }
+                moneyCountainer.addSubview(noDataLabel)
+                noDataLabel.snp.makeConstraints {
+                    $0.center.equalToSuperview()
+                }
+                moneyCountainer.isHidden = false
+                moneyCountSubTitle.isHidden = true
+                consumMainStackView.isHidden = true
+            }
         } else {
-            moneyCountSubTitle.isHidden = true
-            consumMainStackView.isHidden = true
             let privateLabel = UILabel().then {
                 $0.text = "지출 내역이 비공개입니다."
                 $0.font = UIFont.systemFont(ofSize: 15)
@@ -652,16 +667,19 @@ class DetailViewController: UIViewController {
             privateLabel.snp.makeConstraints {
                 $0.center.equalToSuperview()
             }
+            moneyCountainer.isHidden = false
+            moneyCountSubTitle.isHidden = true
+            consumMainStackView.isHidden = true
         }
-        
+
         selectedImages.removeAll()
         updateSelectedImages(with: pinLog.media)
-        
+
         if let firstMedia = pinLog.media.first, let latitude = firstMedia.latitude, let longitude = firstMedia.longitude {
             let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
             mapViewController?.mapView.setRegion(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001)), animated: true)
         }
-        
+
         for media in pinLog.media {
             if let latitude = media.latitude, let longitude = media.longitude {
                 let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -670,14 +688,14 @@ class DetailViewController: UIViewController {
         }
         galleryCollectionView.reloadData()
         updateSelectedFriends(with: pinLog.attendeeIds)
-        
+
         // 닉네임 설정
         FirestoreManager.shared.fetchUserDisplayName(userId: pinLog.authorId) { [weak self] displayName in
             DispatchQueue.main.async {
                 self?.nicknameLabel.text = displayName ?? "No Name"
             }
         }
-        
+
         // 프로필 이미지 불러오기
         FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId) { [weak self] photoURL in
             if let photoURL = photoURL, let url = URL(string: photoURL) {
@@ -693,7 +711,11 @@ class DetailViewController: UIViewController {
                 self?.profileImageView.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
             }
         }
+        
+        friendTitle.isHidden = pinLog.attendeeIds.isEmpty
+        friendCollectionView.isHidden = pinLog.attendeeIds.isEmpty
     }
+
     
     //프로필 이미지
     func loadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
@@ -786,6 +808,8 @@ class DetailViewController: UIViewController {
     @objc func moneyMoveButtonTapped() {
         let spendVC = SpendingListViewController()
         spendVC.pinLog = self.pinLog
+        spendVC.shouldShowEditButton = false
+        spendVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(spendVC, animated: true)
     }
     
@@ -1109,7 +1133,7 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.dateStackView.isHidden = true
                     
                     self.scrollView.snp.remakeConstraints {
-                        $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-40)
+                        $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-20)
                         $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
                         $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(40)
                     }
@@ -1117,7 +1141,7 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.contentView.snp.remakeConstraints {
                         $0.edges.equalTo(self.scrollView.contentLayoutGuide)
                         $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                        $0.bottom.equalTo(self.bottomLogo.snp.bottom).offset(70)
+                        $0.bottom.equalTo(self.bottomLogo.snp.bottom)
                     }
                     
                     self.backgroundImageView.snp.updateConstraints {
@@ -1133,7 +1157,7 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.dateStackView.isHidden = false
                     
                     self.scrollView.snp.remakeConstraints {
-                        $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-40)
+                        $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-20)
                         $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
                         $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(40)
                     }
@@ -1141,7 +1165,7 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.contentView.snp.remakeConstraints {
                         $0.edges.equalTo(self.scrollView.contentLayoutGuide)
                         $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                        $0.bottom.equalTo(self.bottomLogo.snp.bottom).offset(70)
+                        $0.bottom.equalTo(self.bottomLogo.snp.bottom)
                     }
                     
                     self.backgroundImageView.snp.updateConstraints {

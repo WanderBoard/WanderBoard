@@ -82,6 +82,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         $0.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
 
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

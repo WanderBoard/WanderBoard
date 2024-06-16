@@ -623,26 +623,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
     }
     
-    private func showProgressView() {
-        let progressVC = ProgressViewController()
-        addChild(progressVC)
-        view.addSubview(progressVC.view)
-        progressVC.view.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        progressVC.didMove(toParent: self)
-        progressViewController = progressVC
-    }
-
-    private func hideProgressView() {
-        if let progressVC = progressViewController {
-            progressVC.willMove(toParent: nil)
-            progressVC.view.removeFromSuperview()
-            progressVC.removeFromParent()
-            progressViewController = nil
-        }
-    }
-    
     func updateColor(){
         
         //베이비그레이-커스텀블랙
@@ -897,6 +877,26 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             "timestamp": Timestamp(date: mediaItem.dateTaken ?? Date())
         ]) { error in
             completion(error)
+        }
+    }
+    
+    private func showProgressView() {
+        let progressVC = ProgressViewController()
+        addChild(progressVC)
+        view.addSubview(progressVC.view)
+        progressVC.view.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        progressVC.didMove(toParent: self)
+        progressViewController = progressVC
+    }
+
+    private func hideProgressView() {
+        if let progressVC = progressViewController {
+            progressVC.willMove(toParent: nil)
+            progressVC.view.removeFromSuperview()
+            progressVC.removeFromParent()
+            progressViewController = nil
         }
     }
     
@@ -1325,9 +1325,6 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
         }
     }
 }
-
-
-
 
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {

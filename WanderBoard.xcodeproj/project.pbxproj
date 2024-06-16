@@ -67,6 +67,9 @@
 		4D21E85D2C1B3A4E002FDBC9 /* MateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E85C2C1B3A4E002FDBC9 /* MateManager.swift */; };
 		4D21E85F2C1B4C8A002FDBC9 /* AddedMateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D21E85E2C1B4C8A002FDBC9 /* AddedMateCell.swift */; };
 		4D37AF252C1D4640005DADEA /* DetailInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D37AF242C1D4640005DADEA /* DetailInputViewController.swift */; };
+		4D37AF312C1ED06C005DADEA /* BlockedUserSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D37AF302C1ED06C005DADEA /* BlockedUserSummary.swift */; };
+		4D37AF332C1ED0AA005DADEA /* BlockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D37AF322C1ED0AA005DADEA /* BlockViewController.swift */; };
+		4D37AF352C1ED0B1005DADEA /* BlockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D37AF342C1ED0B1005DADEA /* BlockTableViewCell.swift */; };
 		4D8947332C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */; };
 		4D8947352C0F357C0057F083 /* FriendInputCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */; };
 		4D9D8B502C05B1BD0043E7DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9D8B4F2C05B1BD0043E7DF /* AppDelegate.swift */; };
@@ -157,6 +160,9 @@
 		4D21E85C2C1B3A4E002FDBC9 /* MateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MateManager.swift; sourceTree = "<group>"; };
 		4D21E85E2C1B4C8A002FDBC9 /* AddedMateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddedMateCell.swift; sourceTree = "<group>"; };
 		4D37AF242C1D4640005DADEA /* DetailInputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailInputViewController.swift; sourceTree = "<group>"; };
+		4D37AF302C1ED06C005DADEA /* BlockedUserSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BlockedUserSummary.swift; path = "../../../../../.Trash/WanderBoard 오후 4.44.41/WanderBoard/Models/BlockedUserSummary.swift"; sourceTree = "<group>"; };
+		4D37AF322C1ED0AA005DADEA /* BlockViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BlockViewController.swift; path = "../../../WanderBoard 복사본/WanderBoard/ddattj/BlockViewController.swift"; sourceTree = "<group>"; };
+		4D37AF342C1ED0B1005DADEA /* BlockTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BlockTableViewCell.swift; path = "../../../WanderBoard 복사본/WanderBoard/ddattj/BlockTableViewCell.swift"; sourceTree = "<group>"; };
 		4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GallaryInPutCollectionViewCell.swift; sourceTree = "<group>"; };
 		4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendInputCollectionViewCell.swift; sourceTree = "<group>"; };
 		4D9D8B4C2C05B1BD0043E7DF /* WanderBoard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WanderBoard.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -348,6 +354,7 @@
 				2A9BED2D2C08B71D0032C403 /* Invitation.swift */,
 				2A8AB1792C1240E500C5244F /* User.swift */,
 				4D21E85A2C1B39E7002FDBC9 /* UserSummary.swift */,
+				4D37AF302C1ED06C005DADEA /* BlockedUserSummary.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -414,6 +421,8 @@
 				2A7623BA2C1DE9310044CF05 /* TermsOfServiceViewController.swift */,
 				9530E4A32C0F29DD00D4E8BE /* PrivacyPolicyCollectionViewCell.swift */,
 				2AF29A052C1B68310021D231 /* PrivacyPolicyScripts.swift */,
+				4D37AF322C1ED0AA005DADEA /* BlockViewController.swift */,
+				4D37AF342C1ED0B1005DADEA /* BlockTableViewCell.swift */,
 				9561FFF82C186B440072B065 /* OnboardingPage.swift */,
 			);
 			path = ddattj;
@@ -573,7 +582,9 @@
 				2A5F47C42C0E0AFF00D289AA /* MapView.swift in Sources */,
 				2A9BED322C08E2A40032C403 /* PinLogManager.swift in Sources */,
 				2A9BED2A2C08A4330032C403 /* PageControlButton.swift in Sources */,
+				4D37AF352C1ED0B1005DADEA /* BlockTableViewCell.swift in Sources */,
 				FB9A3ADB2C1984B700E1EAA2 /* FilterCollectionViewCell.swift in Sources */,
+				4D37AF312C1ED06C005DADEA /* BlockedUserSummary.swift in Sources */,
 				2A5F47C62C0E276500D289AA /* ImageUploader.swift in Sources */,
 				2A7623DB2C1E21F80044CF05 /* LaunchViewController.swift in Sources */,
 				FB3793AD2C1D6854009C1268 /* AccountDeletionManager.swift in Sources */,
@@ -623,6 +634,7 @@
 				2A5F47C82C0E3A0C00D289AA /* StorageManager.swift in Sources */,
 				2A7655042C0610BA00D8A098 /* SignInWithApple.swift in Sources */,
 				956ED7922C0852B90001BAC6 /* EditViewController.swift in Sources */,
+				4D37AF332C1ED0AA005DADEA /* BlockViewController.swift in Sources */,
 				2A8AB1782C12407B00C5244F /* SignUpViewController.swift in Sources */,
 				2A8AB18D2C138A5500C5244F /* CustomLocationCell.swift in Sources */,
 				4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */,

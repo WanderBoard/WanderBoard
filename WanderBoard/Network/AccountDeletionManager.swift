@@ -16,11 +16,6 @@ final class AccountDeletionManager {
     private let db = Firestore.firestore()
     private init() { }
 
-//    // 사용자 데이터를 Firestore에서 삭제하는 함수
-//    func deleteUserData(uid: String) async throws {
-//        try await FirestoreManager.shared.deleteUserData(uid: uid)
-//    }
-    
     // 사용자의 데이터를 Firestore에서 삭제하는 함수 (회원 탈퇴)
     func deleteUserData(uid: String) async throws {
         let userRef = db.collection("users").document(uid)
@@ -34,10 +29,23 @@ final class AccountDeletionManager {
             try await document.reference.delete()
         }
     }
-
-//    func deleteUserFromCoreData(userId: String, context: NSManagedObjectContext) throws {
-//        try CoreDataManager.shared.deleteUserFromCoreData(userId: userId, context: context)
-//    }
+    
+    // 특정 사용자가 참여한 PinLog에서 해당 사용자 ID를 삭제하는 함수
+    func removeUserIdFromPinLogs(userId: String) async throws {
+        let snapshot = try await db.collection("pinLogs").whereField("attendeeIds", arrayContains: userId).getDocuments()
+        for document in snapshot.documents {
+            var data = document.data()
+            if var attendeeIds = data["attendeeIds"] as? [String] {
+                attendeeIds.removeAll { $0 == userId }
+                data["attendeeIds"] = attendeeIds
+            }
+            if var pinnedBy = data["pinnedBy"] as? [String] {
+                pinnedBy.removeAll { $0 == userId }
+                data["pinnedBy"] = pinnedBy
+            }
+            try await document.reference.setData(data, merge: true)
+        }
+    }
     
     // Core Data에서 사용자 데이터를 삭제하는 함수
     func deleteUserFromCoreData(userId: String, context: NSManagedObjectContext) throws {
@@ -55,19 +63,12 @@ final class AccountDeletionManager {
         }
     }
 
-    // Firebase Authentication에서 사용자 계정을 삭제하는 함수
-    func deleteUserAccount() async throws {
-        guard let user = Auth.auth().currentUser else {
-            throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인 되어있지 않습니다"])
-        }
-        try await user.delete()
-    }
-
     // 전체 사용자 데이터 삭제 함수
     func deleteUser(uid: String, context: NSManagedObjectContext) async throws {
         do {
             try await deleteUserData(uid: uid)
             try await deletePinLogsForUser(userId: uid)
+            try await removeUserIdFromPinLogs(userId: uid)
             try deleteUserFromCoreData(userId: uid, context: context)
             try await deleteUserAccount()
             print("회원 탈퇴 성공")
@@ -75,5 +76,11 @@ final class AccountDeletionManager {
             print("회원 탈퇴 실패: \(error.localizedDescription)")
             throw error
         }
+    }
+
+    // 사용자 계정을 삭제하는 함수
+    func deleteUserAccount() async throws {
+        guard let user = Auth.auth().currentUser else { throw NSError(domain: "User not found", code: 404, userInfo: nil) }
+        try await user.delete()
     }
 }

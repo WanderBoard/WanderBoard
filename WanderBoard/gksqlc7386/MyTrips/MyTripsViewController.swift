@@ -22,6 +22,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     let filters = ["My Pin", "Tag Pin", "Wander Pin"]
     var currentFilterIndex = 0
     static var pinnedTripLogs: [PinLog] = [] // 핀 찍은 로그를 저장할 새로운 배열 추가
+    static var taggedTripLogs: [PinLog] = [] // 태그 된 아이디들 불러오는
     
     lazy var plusButton: UIButton = {
         let button = UIButton(type: .system)
@@ -35,29 +36,10 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         return button
     }()
     
-    lazy var filterStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.spacing = 8
-        stackView.distribution = .fillProportionally
-        filters.enumerated().forEach { index, filter in
-            let button = UIButton(type: .system)
-            button.setTitle(filter, for: .normal)
-            button.setTitleColor(.darkgray, for: .normal)
-            button.titleLabel?.font = .systemFont(ofSize: 12, weight: .medium)
-            button.layer.cornerRadius = 15
-            button.layer.borderColor = UIColor.babygray.cgColor
-            button.layer.borderWidth = 1
-            button.tag = index
-            button.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
-            stackView.addArrangedSubview(button)
-        }
-        return stackView
-    }()
-    
     lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.dataSource = self
         $0.delegate = self
+        $0.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: FilterCollectionViewCell.identifier)
         $0.register(MyTripsCollectionViewCell.self, forCellWithReuseIdentifier: MyTripsCollectionViewCell.identifier)
     }
     
@@ -112,7 +94,6 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         updateNavigationBarColor()
         
         currentFilterIndex = 0
-        updateFilterButtonColors()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -147,21 +128,10 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
 
     private func setupConstraints() {
-        view.addSubview(filterStackView)
         view.addSubview(collectionView)
-
-        filterStackView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide)
-            $0.leading.equalToSuperview().offset(16)
-            $0.trailing.equalToSuperview().offset(-136)
-            $0.height.equalTo(30) // 필터 버튼 높이
-
-
-        }
         
         collectionView.snp.makeConstraints {
-            $0.top.equalTo(filterStackView.snp.bottom).offset(8)
-            $0.leading.trailing.bottom.equalToSuperview()
+            $0.edges.equalToSuperview()
         }
 
         collectionView.addSubview(emptyView)
@@ -208,16 +178,15 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         gradientLayer.locations = [0, 0.05, 0.8, 1]
         maskedView.layer.mask = gradientLayer
         view.addSubview(maskedView)
+        maskedView.isUserInteractionEnabled = false
     }
     
     func filterTripLogs() -> [PinLog] {
-        guard let userId = Auth.auth().currentUser?.uid else { return [] }
-        
         switch currentFilterIndex {
         case 0:
-            return MyTripsViewController.tripLogs.filter { $0.authorId == userId }
+            return MyTripsViewController.tripLogs
         case 1:
-            return [] // 다른 필터 로직 추가
+            return MyTripsViewController.taggedTripLogs
         case 2:
             return MyTripsViewController.pinnedTripLogs
         default:
@@ -237,12 +206,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     @objc func filterButtonTapped(sender: UIButton) {
         currentFilterIndex = sender.tag
         updateFilterButtonColors()
-        Task {
-            if currentFilterIndex == 2 { // Wander Pin 필터가 선택되었을 때
-                await loadPinnedData()
-            }
-            updateView()
-        }
+        updateView()
     }
     
     func loadData() async {
@@ -251,10 +215,16 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
                 print("No user ID found")
                 return
             }
-            // 위치 정보를 포함하지 않는 핀 로그 데이터를 가져옵니다.
-            let pinLogs = try await pinLogManager.fetchPinLogsWithoutLocation(forUserId: userId)
-            MyTripsViewController.tripLogs = pinLogs
-            print("Fetched pinLogs: \(pinLogs)")
+            // 사용자가 작성한 핀로그 가져오기
+            let userPinLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
+            MyTripsViewController.tripLogs = userPinLogs
+            
+            // 태그된 핀로그 가져오기
+            let taggedPinLogs = try await pinLogManager.fetchTaggedPinLogs(forUserId: userId)
+            MyTripsViewController.taggedTripLogs = taggedPinLogs
+            
+            print("Fetched userPinLogs: \(userPinLogs)")
+            print("Fetched taggedPinLogs: \(taggedPinLogs)")
             updateView()
         } catch {
             print("Failed to fetch pin logs: \(error.localizedDescription)")
@@ -311,79 +281,115 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             }
         } else {
             emptyView.isHidden = true
+            plusButton.isHidden = false
         }
 
         collectionView.reloadData()
+        
+        // 프로필 이미지 가시성 업데이트
+        for indexPath in collectionView.indexPathsForVisibleItems {
+            if let cell = collectionView.cellForItem(at: indexPath) as? MyTripsCollectionViewCell {
+                cell.updateProfileImageVisibility(for: currentFilterIndex)
+            }
+        }
     }
     
     private func updateFilterButtonColors() {
-        for (index, view) in filterStackView.arrangedSubviews.enumerated() {
-            if let button = view as? UIButton {
+        for index in 0..<filters.count {
+            let indexPath = IndexPath(item: index, section: 0)
+            if let cell = collectionView.cellForItem(at: indexPath) as? FilterCollectionViewCell {
                 if index == currentFilterIndex {
-                    button.backgroundColor = .babygray
-                    button.setTitleColor(.darkgray, for: .normal)
+                    cell.filterButton.backgroundColor = .babygray
+                    cell.filterButton.setTitleColor(.darkgray, for: .normal)
                 } else {
-                    button.backgroundColor = .clear
-                    button.setTitleColor(.darkgray, for: .normal)
+                    cell.filterButton.backgroundColor = .clear
+                    cell.filterButton.setTitleColor(.darkgray, for: .normal)
                 }
             }
         }
     }
-    
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            updateColor()
-        }
-    }
-    
-    func updateColor() {
-        let lineColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
-        filterStackView.arrangedSubviews.forEach { view in
-            if let button = view as? UIButton {
-                button.layer.borderColor = lineColor?.cgColor
-            }
-        }
-    }
+
 }
 
 extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        return 2
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return filterTripLogs().count
+        if section == 0 {
+            return filters.count
+        } else {
+            return filterTripLogs().count
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyTripsCollectionViewCell.identifier, for: indexPath) as? MyTripsCollectionViewCell else {
-            fatalError("컬렉션 뷰 오류")
+        if indexPath.section == 0 {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilterCollectionViewCell.identifier, for: indexPath) as! FilterCollectionViewCell
+            cell.filterButton.setTitle(filters[indexPath.item], for: .normal)
+            cell.filterButton.tag = indexPath.item
+            cell.filterButton.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
+            
+            // 필터 버튼 색상 업데이트
+            if indexPath.item == currentFilterIndex {
+                cell.filterButton.backgroundColor = .babygray
+                cell.filterButton.setTitleColor(.darkgray, for: .normal)
+            } else {
+                cell.filterButton.backgroundColor = .clear
+                cell.filterButton.setTitleColor(.darkgray, for: .normal)
+            }
+            
+            return cell
+        } else {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyTripsCollectionViewCell.identifier, for: indexPath) as? MyTripsCollectionViewCell else {
+                fatalError("컬렉션 뷰 오류")
+            }
+            
+            let tripLog = filterTripLogs()[indexPath.item]
+            cell.configure(with: tripLog)
+            //cell.configure(with: tripLog, filterIndex: currentFilterIndex)
+            cell.updateProfileImageVisibility(for: currentFilterIndex)
+            
+            return cell
         }
-        
-        let tripLog = filterTripLogs()[indexPath.item]
-        cell.configure(with: tripLog)
-        
-        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let screenWidth = UIScreen.main.bounds.width
-        let itemWidth = screenWidth - 32
-        let itemHeight = itemWidth * 9/16
-        return CGSize(width: itemWidth, height: itemHeight)
+        if indexPath.section == 0 {
+            let itemWidth = screenWidth / 4 - 16
+            let itemHeight = itemWidth * 1/3
+            return CGSize(width: itemWidth, height: itemHeight)
+        } else {
+            let itemWidth = screenWidth - 32
+            let itemHeight = itemWidth * 9/16
+            return CGSize(width: itemWidth, height: itemHeight)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 16
+        if section == 0 {
+            return 8
+        } else {
+            return 16
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 0
+        if section == 0 {
+            return 8
+        } else {
+            return 0
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
+        if section == 0 {
+            return UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
+        } else {
+            return UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

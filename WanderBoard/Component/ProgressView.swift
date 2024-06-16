@@ -10,7 +10,7 @@ import SwiftUI
 struct ProgressView: View {
     var body: some View {
         ZStack {
-            Color.black.opacity(0.4)
+            Color.black.opacity(0.2)
                 .edgesIgnoringSafeArea(.all)
             VStack {
                 Spacer().frame(height: 240)

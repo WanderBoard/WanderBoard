@@ -36,6 +36,7 @@ class HotCollectionViewCell: UICollectionViewCell {
         $0.textColor = .white
         $0.font = UIFont.boldSystemFont(ofSize: 22)
         $0.text = "충청북도 청주시"
+        $0.numberOfLines = 2
     }
     
     private let profile = UIImageView().then {
@@ -79,6 +80,7 @@ class HotCollectionViewCell: UICollectionViewCell {
         locationLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(20)
             $0.bottom.equalToSuperview().offset(-20)
+            $0.trailing.equalTo(profile.snp.leading).offset(10)
         }
         
         profile.snp.makeConstraints {

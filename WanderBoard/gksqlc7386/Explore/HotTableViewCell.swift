@@ -41,7 +41,7 @@ class HotTableViewCell: UITableViewCell {
         $0.scrollDirection = .horizontal
         $0.minimumLineSpacing = 20
         $0.itemSize = .init(width: 240, height: 320)
-        $0.sectionInset = .init(top: 0, left: 30, bottom: 5, right: 0)
+        $0.sectionInset = .init(top: 0, left: 30, bottom: 5, right: 10)
     }
     
     var hotPinLogs: [PinLog] = [] {

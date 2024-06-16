@@ -5,68 +5,182 @@
 //  Created by David Jang on 6/14/24.
 //
 
-//import SwiftUI
-//import HorizonCalendar
-//
-//struct CalendarView: View {
-//    @Binding var startDate: Date?
-//    @Binding var endDate: Date?
-//    @Environment(\.dismiss) var dismiss
-//
-//    var body: some View {
-//        CalendarRepresentable(startDate: $startDate, endDate: $endDate, onDismiss: { dismiss() })
-//            .frame(maxWidth: .infinity, maxHeight: .infinity)
-//            .background(Color(.systemBackground))
-//            .edgesIgnoringSafeArea(.all)
-//    }
-//}
-//
-//// SwiftUI Preview 환경 설정
-//struct CalendarView_Previews: PreviewProvider {
-//    @State static var startDate: Date? = Date() // 더미 시작 날짜
-//    @State static var endDate: Date? = Date().addingTimeInterval(86400 * 5) // 더미 종료 날짜 (5일 후)
-//
-//    static var previews: some View {
-//        CalendarView(startDate: $startDate, endDate: $endDate)
-//    }
-//}
-//
-//
-//
-//struct CalendarRepresentable: UIViewRepresentable {
-//    @Binding var startDate: Date?
-//    @Binding var endDate: Date?
-//    var onDismiss: () -> Void
-//
-//    func makeUIView(context: Context) -> CalendarView {
-//        let calendarView = CalendarView(initialContent: makeContent())
-//        return calendarView
-//    }
-//
-//    func updateUIView(_ uiView: CalendarView, context: Context) {
-//        uiView.setContent(makeContent())
-//    }
-//
-//    private func makeContent() -> CalendarViewContent {
-//        let calendar = Calendar.current
-//        let visibleStartDate = calendar.date(from: DateComponents(year: 2020, month: 1, day: 1))!
-//        let visibleEndDate = calendar.date(from: DateComponents(year: 2022, month: 12, day: 31))!
-//
-//        return CalendarViewContent(
-//            calendar: calendar,
-//            visibleDateRange: visibleStartDate...visibleEndDate,
-//            monthsLayout: .vertical(options: VerticalMonthsLayoutOptions()))
-//            .withDayItemModelProvider(for: DayRange) { day in
-//                var dayConfig = DayConfiguration()
-//                let date = calendar.startOfDay(for: day.date)
-//                let isSelected = (self.startDate == date || (self.startDate != nil && self.endDate != nil && date >= self.startDate! && date <= self.endDate!))
-//                if isSelected {
-//                    dayConfig.backgroundColor = .red
-//                }
-//                return dayConfig
-//            }
-//    }
-//}
+import SwiftUI
 
-// DayConfiguration와 같은 누락된 구조체나 클래스는 HorizonCalendar 라이브러리 내에 정의되어 있어야 합니다.
+struct CalendarView: View {
+    @State private var selectedStartDate: Date?
+    @State private var selectedEndDate: Date?
+    @State private var currentMonth: Date = Date()
+    @State private var showingDatePicker = false
+    
+    private let calendar = Calendar.current
+    private let dateFormatter: DateFormatter
+    
+    var onDatesSelected: ((Date, Date) -> Void)?
+    @Environment(\.presentationMode) var presentationMode
+    
+    init(onDatesSelected: ((Date, Date) -> Void)? = nil) {
+        self.onDatesSelected = onDatesSelected
+        dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMMM yyyy"
+    }
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text(dateFormatter.string(from: currentMonth))
+                    .font(.headline)
+                Spacer()
+                Button(action: { showingDatePicker.toggle() }) {
+                    Image(systemName: showingDatePicker ? "chevron.down" : "chevron.right")
+                        .foregroundColor(.black)
+                }
+            }
+            .padding()
+            
+            if showingDatePicker {
+                DatePicker("", selection: $currentMonth, displayedComponents: [.date])
+                    .datePickerStyle(WheelDatePickerStyle())
+                    .labelsHidden()
+                    .onChange(of: currentMonth) { _ in
+                        showingDatePicker = false
+                    }
+            } else {
+                HStack(spacing: -28) {
+                    ForEach(["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"], id: \.self) { day in
+                        Text(day)
+                            .frame(maxWidth: .infinity)
+                            .font(.caption2)
+                            .foregroundColor(Color("darkgray"))
+                    }
+                }
+                .padding(.bottom, 5)
+                
+                let days = generateDaysInMonth(for: currentMonth)
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 15) {
+                    ForEach(days, id: \.self) { date in
+                        Text(date != nil ? "\(calendar.component(.day, from: date!))" : "")
+                            .frame(width: 30, height: 30)
+                            .background(getBackgroundColor(for: date))
+                            .foregroundColor(getTextColor(for: date))
+                            .cornerRadius(15)
+                            .onTapGesture {
+                                if let date = date {
+                                    if selectedStartDate == nil || (selectedStartDate != nil && selectedEndDate != nil) {
+                                        selectedStartDate = date
+                                        selectedEndDate = nil
+                                    } else if let startDate = selectedStartDate, date >= startDate {
+                                        selectedEndDate = date
+                                    }
+                                }
+                            }
+                    }
+                }
+                .padding()
+                .gesture(DragGesture().onEnded { value in
+                    if value.translation.width < 0 {
+                        currentMonth = calendar.date(byAdding: .month, value: 1, to: currentMonth) ?? currentMonth
+                    } else if value.translation.width > 0 {
+                        currentMonth = calendar.date(byAdding: .month, value: -1, to: currentMonth) ?? currentMonth
+                    }
+                })
+            }
+            
+            Spacer()
+            
+            Button(action: {
+                if let startDate = selectedStartDate, let endDate = selectedEndDate {
+                    onDatesSelected?(startDate, endDate) // 선택 버튼을 눌렀을 때 클로저 호출
+                    presentationMode.wrappedValue.dismiss() // 캘린더 뷰 닫기
+                }
+            }) {
+                Text("선택")
+                    .frame(maxWidth: .infinity, maxHeight: 50)
+                    .background(isSelectionComplete() ? Color.black : Color("babygray"))
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+            .disabled(!isSelectionComplete())
+            .padding(.horizontal)
+        }
+        .padding()
+        .onChange(of: showingDatePicker) { _ in
+            if !showingDatePicker {
+                // DatePicker를 숨길 때 캘린더를 업데이트
+                currentMonth = calendar.date(from: DateComponents(year: calendar.component(.year, from: currentMonth), month: calendar.component(.month, from: currentMonth))) ?? Date()
+            }
+        }
+    }
+    
+    private func generateDaysInMonth(for date: Date) -> [Date?] {
+        guard let monthInterval = calendar.dateInterval(of: .month, for: date),
+              let _ = calendar.dateInterval(of: .weekOfMonth, for: monthInterval.start) else {
+            return []
+        }
+        
+        let daysInMonth = calendar.range(of: .day, in: .month, for: date)!.count
+        let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: monthInterval.start))!
+        let firstWeekday = calendar.component(.weekday, from: firstDayOfMonth)
+        
+        var days: [Date?] = []
+        for dayOffset in 0..<(daysInMonth + firstWeekday - 1) {
+            if dayOffset < firstWeekday - 1 {
+                days.append(nil)
+            } else {
+                let day = dayOffset - (firstWeekday - 2)
+                days.append(calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth))
+            }
+        }
+        return days
+    }
+    
+    private func getBackgroundColor(for date: Date?) -> Color {
+        guard let date = date else { return Color.clear }
+        
+        if let startDate = selectedStartDate, let endDate = selectedEndDate {
+            if date >= startDate && date <= endDate {
+                return date == startDate || date == endDate ? Color.black : Color("babygray")
+            }
+        } else if let startDate = selectedStartDate {
+            if date == startDate {
+                return Color.black
+            }
+        }
+        
+        return Color.clear
+    }
+    
+    private func getTextColor(for date: Date?) -> Color {
+        guard let date = date else { return Color.clear }
+        
+        if let startDate = selectedStartDate {
+            if date < startDate {
+                return Color.gray
+            }
+        }
+        
+        if let startDate = selectedStartDate, let endDate = selectedEndDate {
+            if date == startDate || date == endDate {
+                return Color.white
+            } else if date > startDate && date < endDate {
+                return Color.black
+            }
+        } else if let startDate = selectedStartDate {
+            if date == startDate {
+                return Color.white
+            }
+        }
+        
+        return Color.primary
+    }
+    
+    private func isSelectionComplete() -> Bool {
+        return selectedStartDate != nil && selectedEndDate != nil
+    }
+}
 
+struct CalendarView_Previews: PreviewProvider {
+    static var previews: some View {
+        CalendarView()
+    }
+}

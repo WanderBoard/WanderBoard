@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		2A18AB122C147D6C00E88171 /* PlaceInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A18AB112C147D6C00E88171 /* PlaceInfoView.swift */; };
 		2A1D31EC2C1C108800288C71 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1D31EB2C1C108800288C71 /* CalendarView.swift */; };
-		2A1D31EF2C1C10BB00288C71 /* HorizonCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 2A1D31EE2C1C10BB00288C71 /* HorizonCalendar */; };
 		2A1D31F12C1C7ED400288C71 /* ConsentStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1D31F02C1C7ED400288C71 /* ConsentStatusViewController.swift */; };
 		2A5D471D2C0A2742005C0F76 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D471C2C0A2742005C0F76 /* MapViewModel.swift */; };
 		2A5D471F2C0A2771005C0F76 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D471E2C0A2771005C0F76 /* LocationManager.swift */; };
@@ -22,6 +21,8 @@
 		2A7623DB2C1E21F80044CF05 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7623DA2C1E21F80044CF05 /* LaunchViewController.swift */; };
 		2A7623DD2C1E2FE20044CF05 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7623DC2C1E2FE20044CF05 /* ProgressView.swift */; };
 		2A7623DF2C1E3FBB0044CF05 /* ProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7623DE2C1E3FBB0044CF05 /* ProgressViewController.swift */; };
+		2A7623E52C1EDC630044CF05 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7623E42C1EDC630044CF05 /* Kingfisher */; };
+		2A7623E72C1F0F7A0044CF05 /* CalendarHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7623E62C1F0F7A0044CF05 /* CalendarHostingController.swift */; };
 		2A7654E52C060A3500D8A098 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7654E42C060A3500D8A098 /* FirebaseAnalytics */; };
 		2A7654E72C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7654E62C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion */; };
 		2A7654E92C060A3500D8A098 /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7654E82C060A3500D8A098 /* FirebaseAnalyticsSwift */; };
@@ -75,7 +76,6 @@
 		4D9D8B5C2C05B1BE0043E7DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D9D8B5B2C05B1BE0043E7DF /* Assets.xcassets */; };
 		4D9D8B5F2C05B1BE0043E7DF /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 4D9D8B5E2C05B1BE0043E7DF /* Base */; };
 		4D9D8B6E2C05B3290043E7DF /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4D9D8B6D2C05B3290043E7DF /* SnapKit */; };
-		4D9D8B712C05B3350043E7DF /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4D9D8B702C05B3350043E7DF /* Kingfisher */; };
 		4D9D8B742C05B4CD0043E7DF /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 4D9D8B732C05B4CD0043E7DF /* Then */; };
 		4DB75A052C13416E001813C3 /* GalleryDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DB75A042C13416E001813C3 /* GalleryDetailViewController.swift */; };
 		4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA37622C077122001B03F8 /* DetailViewController.swift */; };
@@ -131,6 +131,7 @@
 		2A7623DA2C1E21F80044CF05 /* LaunchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchViewController.swift; sourceTree = "<group>"; };
 		2A7623DC2C1E2FE20044CF05 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 		2A7623DE2C1E3FBB0044CF05 /* ProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressViewController.swift; sourceTree = "<group>"; };
+		2A7623E62C1F0F7A0044CF05 /* CalendarHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarHostingController.swift; sourceTree = "<group>"; };
 		2A7654E12C06097400D8A098 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2A7654FC2C060FB500D8A098 /* SignInWithGoogle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithGoogle.swift; sourceTree = "<group>"; };
 		2A7655032C0610BA00D8A098 /* SignInWithApple.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithApple.swift; sourceTree = "<group>"; };
@@ -216,9 +217,9 @@
 			files = (
 				2A7654E92C060A3500D8A098 /* FirebaseAnalyticsSwift in Frameworks */,
 				2A7654EF2C060A3500D8A098 /* FirebaseAuthCombine-Community in Frameworks */,
-				4D9D8B712C05B3350043E7DF /* Kingfisher in Frameworks */,
 				2A76552A2C073E4900D8A098 /* KakaoSDKUser in Frameworks */,
 				2A7655022C060FFA00D8A098 /* GoogleSignInSwift in Frameworks */,
+				2A7623E52C1EDC630044CF05 /* Kingfisher in Frameworks */,
 				2A7654F12C060A3500D8A098 /* FirebaseFirestore in Frameworks */,
 				4D9D8B742C05B4CD0043E7DF /* Then in Frameworks */,
 				2A7655002C060FFA00D8A098 /* GoogleSignIn in Frameworks */,
@@ -227,7 +228,6 @@
 				2A7654F32C060A3500D8A098 /* FirebaseFirestoreCombine-Community in Frameworks */,
 				2A7654E72C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
 				2A7654EB2C060A3500D8A098 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
-				2A1D31EF2C1C10BB00288C71 /* HorizonCalendar in Frameworks */,
 				2A7654F92C060A3500D8A098 /* FirebaseStorageCombine-Community in Frameworks */,
 				2A7654F72C060A3500D8A098 /* FirebaseStorage in Frameworks */,
 				2A7654E52C060A3500D8A098 /* FirebaseAnalytics in Frameworks */,
@@ -263,6 +263,7 @@
 				2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */,
 				2A8AB1772C12407B00C5244F /* SignUpViewController.swift */,
 				2A7623DA2C1E21F80044CF05 /* LaunchViewController.swift */,
+				2A7623E62C1F0F7A0044CF05 /* CalendarHostingController.swift */,
 				2A8AB1752C12400100C5244F /* SignInViewController.swift */,
 			);
 			path = mgynsz;
@@ -483,7 +484,6 @@
 			name = WanderBoard;
 			packageProductDependencies = (
 				4D9D8B6D2C05B3290043E7DF /* SnapKit */,
-				4D9D8B702C05B3350043E7DF /* Kingfisher */,
 				4D9D8B732C05B4CD0043E7DF /* Then */,
 				2A7654E42C060A3500D8A098 /* FirebaseAnalytics */,
 				2A7654E62C060A3500D8A098 /* FirebaseAnalyticsOnDeviceConversion */,
@@ -502,7 +502,7 @@
 				2A7655272C073E4900D8A098 /* KakaoSDKAuth */,
 				2A7655292C073E4900D8A098 /* KakaoSDKUser */,
 				2A76552D2C07407500D8A098 /* KakaoSDKCommon */,
-				2A1D31EE2C1C10BB00288C71 /* HorizonCalendar */,
+				2A7623E42C1EDC630044CF05 /* Kingfisher */,
 			);
 			productName = WanderBoard;
 			productReference = 4D9D8B4C2C05B1BD0043E7DF /* WanderBoard.app */;
@@ -534,12 +534,11 @@
 			mainGroup = 4D9D8B432C05B1BD0043E7DF;
 			packageReferences = (
 				4D9D8B6C2C05B3290043E7DF /* XCRemoteSwiftPackageReference "SnapKit" */,
-				4D9D8B6F2C05B3350043E7DF /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				4D9D8B722C05B4CD0043E7DF /* XCRemoteSwiftPackageReference "Then" */,
 				2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				2A7654FE2C060FFA00D8A098 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				2A7655242C073E4900D8A098 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
-				2A1D31ED2C1C10BB00288C71 /* XCRemoteSwiftPackageReference "HorizonCalendar" */,
+				2A7623E32C1EDC630044CF05 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = 4D9D8B4D2C05B1BD0043E7DF /* Products */;
 			projectDirPath = "";
@@ -572,6 +571,7 @@
 				FB9A3AEA2C1984C600E1EAA2 /* RecentCollectionViewCell.swift in Sources */,
 				956ED7942C0852B90001BAC6 /* MyPageViewController.swift in Sources */,
 				4D8947332C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift in Sources */,
+				2A7623E72C1F0F7A0044CF05 /* CalendarHostingController.swift in Sources */,
 				FB9A3ADD2C1984B700E1EAA2 /* MyTripsViewController.swift in Sources */,
 				6BBE4B832C19950100A7A793 /* InsertSpendingViewController.swift in Sources */,
 				2AF299D82C1AF25A0021D231 /* PrivacyPolicySectionHeaderView.swift in Sources */,
@@ -887,12 +887,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		2A1D31ED2C1C10BB00288C71 /* XCRemoteSwiftPackageReference "HorizonCalendar" */ = {
+		2A7623E32C1EDC630044CF05 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/HorizonCalendar.git";
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.12.0;
 			};
 		};
 		2A7654E32C060A3500D8A098 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
@@ -927,14 +927,6 @@
 				minimumVersion = 5.7.1;
 			};
 		};
-		4D9D8B6F2C05B3350043E7DF /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 7.11.0;
-			};
-		};
 		4D9D8B722C05B4CD0043E7DF /* XCRemoteSwiftPackageReference "Then" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/devxoul/Then";
@@ -946,10 +938,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2A1D31EE2C1C10BB00288C71 /* HorizonCalendar */ = {
+		2A7623E42C1EDC630044CF05 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 2A1D31ED2C1C10BB00288C71 /* XCRemoteSwiftPackageReference "HorizonCalendar" */;
-			productName = HorizonCalendar;
+			package = 2A7623E32C1EDC630044CF05 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 		2A7654E42C060A3500D8A098 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1040,11 +1032,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4D9D8B6C2C05B3290043E7DF /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
-		};
-		4D9D8B702C05B3350043E7DF /* Kingfisher */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4D9D8B6F2C05B3350043E7DF /* XCRemoteSwiftPackageReference "Kingfisher" */;
-			productName = Kingfisher;
 		};
 		4D9D8B732C05B4CD0043E7DF /* Then */ = {
 			isa = XCSwiftPackageProductDependency;

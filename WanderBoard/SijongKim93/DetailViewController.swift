@@ -37,7 +37,7 @@ class DetailViewController: UIViewController {
     let backgroundImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
-        $0.backgroundColor = .clear
+        $0.backgroundColor = .font
         $0.isUserInteractionEnabled = true
     }
     
@@ -51,7 +51,7 @@ class DetailViewController: UIViewController {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 16
-        $0.backgroundColor = UIColor.lightgray
+        $0.backgroundColor = UIColor.darkgray
         $0.image = UIImage(systemName: "person")
         $0.snp.makeConstraints {
             $0.width.height.equalTo(32)
@@ -133,7 +133,7 @@ class DetailViewController: UIViewController {
     
     var mainTitleLabel = UILabel().then {
         $0.text = "부산에 다녀왔다"
-        $0.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
+        $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
     }
     
     // 추가
@@ -158,7 +158,8 @@ class DetailViewController: UIViewController {
         let segment = UISegmentedControl(items: items)
         segment.selectedSegmentIndex = 0
         
-        segment.backgroundColor = UIColor(white: 1, alpha: 0.5)
+        //세그먼트에 글래스모피즘 효과를 내기 위해 우선 배경 투명도 조절
+        segment.backgroundColor = UIColor(white: 1, alpha: 0.6)
         segment.layer.cornerRadius = 16
         segment.layer.masksToBounds = true
         segment.setTitleTextAttributes([.foregroundColor: UIColor.white, .backgroundColor: UIColor.black], for: .selected)
@@ -166,6 +167,15 @@ class DetailViewController: UIViewController {
         segment.selectedSegmentTintColor = .black
         segment.layer.borderWidth = 0
         segment.isUserInteractionEnabled = true
+        
+        //백그라운드 블러 효과 만들기
+        let blurEffect = UIBlurEffect(style: .light)
+               let blurEffectView = UIVisualEffectView(effect: blurEffect)
+               blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+        segment.insertSubview(blurEffectView, at: 0)
+        blurEffectView.snp.makeConstraints { make in
+                    make.edges.equalTo(segment)
+                }
         return segment
     }()
     
@@ -183,7 +193,7 @@ class DetailViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: 85, height: 85)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = UIColor(named: "textColor")
+        collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isScrollEnabled = true
         return collectionView
@@ -232,7 +242,7 @@ class DetailViewController: UIViewController {
     let moneyCountSubTitle = UILabel().then {
         $0.text = "₩"
         $0.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
-        $0.textColor = .darkgray
+        $0.textColor = .font
         $0.isHidden = false
     }
     
@@ -242,7 +252,7 @@ class DetailViewController: UIViewController {
     }
     
     let maxConsumView = UIView().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = UIColor(named: "textColor")
         $0.layer.cornerRadius = 8
         $0.clipsToBounds = true
     }
@@ -278,9 +288,9 @@ class DetailViewController: UIViewController {
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 5
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
-        layout.itemSize = CGSize(width: 85, height: 85)
+        layout.itemSize = CGSize(width: 60, height: 60)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = UIColor(named: "textColor")
+        collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isScrollEnabled = true
         return collectionView
@@ -323,18 +333,29 @@ class DetailViewController: UIViewController {
     }
     
     func updateColor(){
-        let textLabelLineColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
-        textLabelLine.backgroundColor = textLabelLineColor
         
-        let ButtonGrayColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
-        mapAllButton.setTitleColor(ButtonGrayColor, for: .normal)
-        albumAllButton.setTitleColor(ButtonGrayColor, for: .normal)
+        //베이비그레이-커스텀블랙
+        let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+        moneyCountainer.backgroundColor = babyGTocustomB
         
-        let textGrayColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
-        maxConsumptionLabel.textColor = textGrayColor
+        //라이트그레이-다크그레이
+        let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
+        maxConsumptionLabel.textColor = lightGTodarkG
+       
         
-        let textGrayColor2 = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
-        maxConsumptionLabel.textColor = textGrayColor2
+        //라이트그레이-라이트블랙
+        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        textLabelLine.backgroundColor = lightGTolightB
+        
+        //다크그레이-라이트그레이
+        let darkBTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
+        profileImageView.backgroundColor = darkBTolightG
+        mapAllButton.setTitleColor(darkBTolightG, for: .normal)
+        albumAllButton.setTitleColor(darkBTolightG, for: .normal)
+        maxConsumptionLabel.textColor = darkBTolightG
+        moneyMoveButton.tintColor = darkBTolightG
+        maxConsumptionLabel.textColor = darkBTolightG
+        
     }
     
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛

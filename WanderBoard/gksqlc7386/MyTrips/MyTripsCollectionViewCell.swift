@@ -101,14 +101,14 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         }
         
         privateButton.snp.makeConstraints{
-            $0.leading.equalTo(stackView.snp.trailing).offset(30)
+            $0.leading.equalTo(stackView.snp.trailing).offset(20)
             $0.trailing.equalTo(contentView.snp.trailing).inset(30)
             $0.bottom.equalTo(contentView.snp.bottom).inset(30)
         }
         
         profileImg.snp.makeConstraints{
             $0.width.height.equalTo(30)
-            $0.leading.equalTo(stackView.snp.trailing).offset(30)
+            $0.leading.equalTo(stackView.snp.trailing).offset(20)
             $0.trailing.equalTo(contentView.snp.trailing).inset(30)
             $0.bottom.equalTo(contentView.snp.bottom).inset(30)
         }

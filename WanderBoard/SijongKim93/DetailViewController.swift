@@ -808,6 +808,8 @@ class DetailViewController: UIViewController {
     @objc func moneyMoveButtonTapped() {
         let spendVC = SpendingListViewController()
         spendVC.pinLog = self.pinLog
+        spendVC.shouldShowEditButton = false
+        spendVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(spendVC, animated: true)
     }
     

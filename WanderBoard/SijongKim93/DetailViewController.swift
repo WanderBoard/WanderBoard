@@ -157,8 +157,6 @@ class DetailViewController: UIViewController {
         let items = ["Map", "Album"]
         let segment = UISegmentedControl(items: items)
         segment.selectedSegmentIndex = 0
-        
-        //세그먼트에 글래스모피즘 효과를 내기 위해 우선 배경 투명도 조절
         segment.backgroundColor = UIColor(white: 1, alpha: 0.6)
         segment.layer.cornerRadius = 16
         segment.layer.masksToBounds = true
@@ -168,14 +166,6 @@ class DetailViewController: UIViewController {
         segment.layer.borderWidth = 0
         segment.isUserInteractionEnabled = true
         
-        //백그라운드 블러 효과 만들기
-        let blurEffect = UIBlurEffect(style: .light)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
-        segment.insertSubview(blurEffectView, at: 0)
-        blurEffectView.snp.makeConstraints { make in
-            make.edges.equalTo(segment)
-        }
         return segment
     }()
     
@@ -201,7 +191,7 @@ class DetailViewController: UIViewController {
     
     let mapAllButton = UIButton().then {
         var config = UIButton.Configuration.plain()
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 16, weight: .bold)
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
         let symbolImage = UIImage(systemName: "arrow.down.left.and.arrow.up.right", withConfiguration: symbolConfiguration)
         config.image = symbolImage
         config.background.backgroundColor = UIColor(white: 1, alpha: 0.5)
@@ -214,11 +204,11 @@ class DetailViewController: UIViewController {
     
     let albumAllButton = UIButton().then {
         var config = UIButton.Configuration.plain()
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 16, weight: .bold)
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
         let symbolImage = UIImage(systemName: "arrow.down.left.and.arrow.up.right", withConfiguration: symbolConfiguration)
         config.image = symbolImage
         config.background.backgroundColor = UIColor(white: 1, alpha: 0.5)
-        config.imagePadding = 5
+        config.imagePadding = 2
         config.cornerStyle = .medium
         config.background.strokeColor = .clear
         config.background.strokeWidth = 0
@@ -297,7 +287,7 @@ class DetailViewController: UIViewController {
     }()
     
     let bottomLogo = UIImageView().then {
-        $0.image = UIImage(named: "logo")
+        $0.image = UIImage(named: "logo")?.withTintColor(.lightgray)
     }
     
     override func viewDidLoad() {
@@ -310,6 +300,7 @@ class DetailViewController: UIViewController {
         setupSegmentControl()
         applyDarkOverlayToBackgroundImage()
         setupActionButton()
+        updateColor()
         
         //한빛
         newSetupConstraints()
@@ -346,6 +337,7 @@ class DetailViewController: UIViewController {
         //라이트그레이-라이트블랙
         let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
         textLabelLine.backgroundColor = lightGTolightB
+        bottomLogo.image = UIImage(named: "logo")?.withTintColor(lightGTolightB!)
         
         //다크그레이-라이트그레이
         let darkBTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
@@ -535,7 +527,7 @@ class DetailViewController: UIViewController {
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.bottom.equalTo(bottomLogo.snp.bottom)
+            $0.bottom.equalTo(bottomLogo.snp.bottom).offset(30)
         }
         
         optionsButton.snp.makeConstraints {
@@ -580,18 +572,21 @@ class DetailViewController: UIViewController {
         
         galleryCollectionView.snp.makeConstraints {
             $0.top.equalTo(mapViewController!.view.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(contentView)
+            $0.leading.equalTo(contentView).offset(16)
+            $0.trailing.equalTo(contentView)
             $0.height.equalTo(90)
         }
         
         mapAllButton.snp.makeConstraints {
             $0.centerY.equalTo(segmentControl)
             $0.trailing.equalTo(contentView).inset(16)
+            $0.width.equalTo(44)
         }
         
         albumAllButton.snp.makeConstraints {
             $0.centerY.equalTo(segmentControl)
             $0.trailing.equalTo(contentView).inset(16)
+            $0.width.equalTo(44)
         }
         
         moneyCountainer.snp.makeConstraints {

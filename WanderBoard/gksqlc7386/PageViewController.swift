@@ -100,7 +100,7 @@ class PageViewController: UIViewController, CLLocationManagerDelegate {
         
         let appearance = UINavigationBarAppearance()
         
-        appearance.backgroundColor = .white.withAlphaComponent(0.9)
+        appearance.backgroundColor = .systemBackground
         appearance.backgroundEffect = nil
         navigationController.navigationBar.standardAppearance = appearance
         
@@ -166,7 +166,7 @@ class PageViewController: UIViewController, CLLocationManagerDelegate {
                 gestureRecognizer.isEnabled = true
                 return
             }
-
+            
             // 첫 번째 페이지에서 왼쪽으로 스크롤할 때 스크롤을 막음
             if selectedIndex == 0 && translation.x > 0 {
                 gestureRecognizer.isEnabled = false
@@ -207,7 +207,7 @@ extension PageViewController: UIPageViewControllerDataSource, UIPageViewControll
         }
         return viewControllerAtIndex(index: index - 1)
     }
-
+    
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard let navigationController = viewController as? UINavigationController,
               let viewController = navigationController.topViewController as? UIViewController & PageIndexed,
@@ -229,7 +229,9 @@ extension PageViewController: UIPageViewControllerDataSource, UIPageViewControll
 
 protocol PageIndexed {
     var pageIndex: Int? { get set }
+    var customNavBarTintColor: UIColor? { get }
 }
+
 
 
 

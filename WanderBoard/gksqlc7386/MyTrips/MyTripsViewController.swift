@@ -300,10 +300,10 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             if let cell = collectionView.cellForItem(at: indexPath) as? FilterCollectionViewCell {
                 if index == currentFilterIndex {
                     cell.filterButton.backgroundColor = .babygray
-                    cell.filterButton.setTitleColor(.darkgray, for: .normal)
+                    cell.filterButton.setTitleColor(.babygray, for: .normal)
                 } else {
                     cell.filterButton.backgroundColor = .clear
-                    cell.filterButton.setTitleColor(.darkgray, for: .normal)
+                    cell.filterButton.setTitleColor(.babygray, for: .normal)
                 }
             }
         }

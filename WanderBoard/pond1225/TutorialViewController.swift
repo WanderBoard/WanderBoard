@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 
 class TutorialViewController: UIPageViewController {
-
+    
     private var pages = [UIViewController]()
     private var initialPage = 0
     private var pageControl = UIPageControl()
@@ -41,11 +41,11 @@ class TutorialViewController: UIPageViewController {
         self.setViewControllers([pages[initialPage]], direction: .forward, animated: true)
         
         pageControl.numberOfPages = pages.count
-                pageControl.currentPage = initialPage
-                pageControl.currentPageIndicatorTintColor = .black
-                pageControl.pageIndicatorTintColor = .gray
-                pageControl.translatesAutoresizingMaskIntoConstraints = false
-                view.addSubview(pageControl)
+        pageControl.currentPage = initialPage
+        pageControl.currentPageIndicatorTintColor = .black
+        pageControl.pageIndicatorTintColor = .gray
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(pageControl)
     }
     
     private func makeConstraints() {

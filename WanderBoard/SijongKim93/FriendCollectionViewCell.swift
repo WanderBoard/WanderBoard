@@ -32,12 +32,12 @@ class FriendCollectionViewCell: UICollectionViewCell {
         }
         
         contentView.layoutIfNeeded()
-        imageView.layer.cornerRadius = imageView.frame.height / 2
+        imageView.layer.cornerRadius = 30
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        imageView.layer.cornerRadius = imageView.frame.height / 2
+        imageView.layer.cornerRadius = 30
     }
     
     func configure(with image: UIImage?) {

@@ -13,13 +13,13 @@ class SpendingTableViewCell: UITableViewCell {
     
     let categoryImageView: UIImageView = {
         let categoryImageView = UIImageView()
-        categoryImageView.tintColor = .gray //나중에 575757로 색상 변경
+        categoryImageView.tintColor = .lightgray
         
         return categoryImageView
     }()
     
     let expenseContent: UILabel = {
-       let expenseContent = UILabel()
+        let expenseContent = UILabel()
         expenseContent.font = UIFont.systemFont(ofSize: 17)
         
         return expenseContent
@@ -83,7 +83,7 @@ class SpendingTableViewCell: UITableViewCell {
             $0.centerY.equalTo(contentView.snp.centerY)
             $0.trailing.equalTo(contentView.safeAreaLayoutGuide).inset(32)
         }
-
+        
         
     }
     

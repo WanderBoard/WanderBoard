@@ -27,7 +27,7 @@ class FriendInputCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(addButton)
         
         imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 42.5
+        imageView.layer.cornerRadius = 30
         imageView.clipsToBounds = true
         
         imageView.snp.makeConstraints {
@@ -38,7 +38,7 @@ class FriendInputCollectionViewCell: UICollectionViewCell {
         addButton.setTitleColor(#colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1), for: .normal)
         addButton.titleLabel?.font = UIFont.systemFont(ofSize: 32)
         addButton.backgroundColor = .clear
-        addButton.layer.cornerRadius = 42.5
+        addButton.layer.cornerRadius = 30
         addButton.layer.borderColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
         addButton.layer.borderWidth = 1
         addButton.clipsToBounds = true

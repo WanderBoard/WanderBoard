@@ -53,7 +53,7 @@ class SpendingEmptyView: UIView {
         
         setupConstraints()
     }
-        
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }

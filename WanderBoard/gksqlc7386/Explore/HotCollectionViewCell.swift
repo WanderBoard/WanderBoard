@@ -80,7 +80,7 @@ class HotCollectionViewCell: UICollectionViewCell {
         locationLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(20)
             $0.bottom.equalToSuperview().offset(-20)
-            $0.trailing.equalTo(profile.snp.leading).offset(10)
+            $0.trailing.equalTo(profile.snp.leading).offset(-5)
         }
         
         profile.snp.makeConstraints {

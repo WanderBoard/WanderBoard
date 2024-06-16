@@ -621,12 +621,14 @@ class DetailInputViewController: UIViewController {
     }
     
     func updateColor(){
-        let textFieldColor = traitCollection.userInterfaceStyle == .dark ? UIColor.darkgray : UIColor.lightgray
-        mainTextField.textColor = textFieldColor
-        mainTextField.layer.borderColor = textFieldColor.cgColor
-        subTextField.textColor = textFieldColor
-        subTextField.layer.borderColor = textFieldColor.cgColor
+        //라이트그레이-다크그레이
+        let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor.darkgray : UIColor.lightgray
+        mainTextField.textColor = lightGTodarkG
+        mainTextField.layer.borderColor = lightGTodarkG.cgColor
+        subTextField.textColor = lightGTodarkG
+        subTextField.layer.borderColor = lightGTodarkG.cgColor
         
+        //라이트그레이-라이트블랙
         let lineColor = traitCollection.userInterfaceStyle == .dark ? UIColor.lightblack : UIColor.lightgray
         topLine.backgroundColor = lineColor
         bodyLine.backgroundColor = lineColor

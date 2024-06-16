@@ -101,10 +101,10 @@
 		FB0C32442C14C2D000DD2F00 /* WanderBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FB0C32422C14C2D000DD2F00 /* WanderBoard.xcdatamodeld */; };
 		FB3793AB2C1D660B009C1268 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */; };
 		FB3793AD2C1D6854009C1268 /* AccountDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */; };
-		FB3793AF2C1E0BFD009C1268 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3793AE2C1E0BFD009C1268 /* FilterCollectionViewCell.swift */; };
 		FB501A612C1F2B2B0083E796 /* BlockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB501A5F2C1F2B2A0083E796 /* BlockViewController.swift */; };
 		FB501A622C1F2B2B0083E796 /* BlockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB501A602C1F2B2A0083E796 /* BlockTableViewCell.swift */; };
 		FB501A642C1F2CB70083E796 /* BlockedUserSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB501A632C1F2CB70083E796 /* BlockedUserSummary.swift */; };
+		FB501A662C1F32540083E796 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB501A652C1F32540083E796 /* FilterCollectionViewCell.swift */; };
 		FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */; };
 		FB9A3AD62C1984A200E1EAA2 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */; };
 		FB9A3ADD2C1984B700E1EAA2 /* MyTripsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */; };
@@ -195,10 +195,10 @@
 		FB0C32432C14C2D000DD2F00 /* WanderBoard.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WanderBoard.xcdatamodel; sourceTree = "<group>"; };
 		FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionManager.swift; sourceTree = "<group>"; };
-		FB3793AE2C1E0BFD009C1268 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterCollectionViewCell.swift; path = "../../../../../Final Project 제일 최종/WanderBoard 복사본/WanderBoard/gksqlc7386/MyTrips/FilterCollectionViewCell.swift"; sourceTree = "<group>"; };
 		FB501A5F2C1F2B2A0083E796 /* BlockViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BlockViewController.swift; path = "../../../../Final Project 3/WanderBoard/WanderBoard/ddattj/BlockViewController.swift"; sourceTree = "<group>"; };
 		FB501A602C1F2B2A0083E796 /* BlockTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BlockTableViewCell.swift; path = "../../../../Final Project 3/WanderBoard/WanderBoard/ddattj/BlockTableViewCell.swift"; sourceTree = "<group>"; };
 		FB501A632C1F2CB70083E796 /* BlockedUserSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUserSummary.swift; sourceTree = "<group>"; };
+		FB501A652C1F32540083E796 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterCollectionViewCell.swift; path = "../../../../../Final Project 최최최종/WanderBoard/WanderBoard/gksqlc7386/MyTrips/FilterCollectionViewCell.swift"; sourceTree = "<group>"; };
 		FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
 		FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTripsViewController.swift; sourceTree = "<group>"; };
@@ -461,7 +461,7 @@
 		FB72E7422C0F3EE7002AADBD /* MyTrips */ = {
 			isa = PBXGroup;
 			children = (
-				FB3793AE2C1E0BFD009C1268 /* FilterCollectionViewCell.swift */,
+				FB501A652C1F32540083E796 /* FilterCollectionViewCell.swift */,
 				FB9A3ADA2C1984B700E1EAA2 /* MyTripsCollectionViewCell.swift */,
 				FB9A3AD92C1984B600E1EAA2 /* MyTripsViewController.swift */,
 			);
@@ -631,7 +631,7 @@
 				4DB75A052C13416E001813C3 /* GalleryDetailViewController.swift in Sources */,
 				2A76552C2C073F2F00D8A098 /* SignInWithKakao.swift in Sources */,
 				FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */,
-				FB3793AF2C1E0BFD009C1268 /* FilterCollectionViewCell.swift in Sources */,
+				FB501A662C1F32540083E796 /* FilterCollectionViewCell.swift in Sources */,
 				4D21E8572C1AB932002FDBC9 /* MateViewController.swift in Sources */,
 				9561FFF92C186B440072B065 /* OnboardingPage.swift in Sources */,
 				2A7655212C070B0400D8A098 /* Formatter.swift in Sources */,

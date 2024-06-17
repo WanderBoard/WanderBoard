@@ -648,7 +648,7 @@ class DetailViewController: UIViewController {
         dateEndLabel.text = dateFormatter.string(from: pinLog.endDate)
         
         let duration = Calendar.current.dateComponents([.day], from: pinLog.startDate, to: pinLog.endDate).day ?? 0
-        dateDaysLabel.text = "\(duration) Days"
+        dateDaysLabel.text = "\(duration + 1) Days"
         mainTitleLabel.text = pinLog.title
         subTextLabel.text = pinLog.content
         

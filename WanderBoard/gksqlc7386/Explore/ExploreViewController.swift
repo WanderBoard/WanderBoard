@@ -175,6 +175,8 @@ class ExploreViewController: UIViewController, PageIndexed {
         searchButton.isHidden = true
         let searchVC = SearchViewController()
         navigationController?.pushViewController(searchVC, animated: true)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+            
     }
 }
 
@@ -240,12 +242,10 @@ extension ExploreViewController: RecentTableViewCellDelegate {
     
     func loadMoreRecentLogs() {
         guard let lastSnapshot = lastSnapshot, !isLoading else {
-            //print("Last snapshot is nil or already loading")
             return
         }
 
         isLoading = true
-        //print("Loading more logs...")
 
         pinLogManager.fetchMoreData(pageSize: 30, lastSnapshot: lastSnapshot) { result in
             self.isLoading = false
@@ -312,16 +312,9 @@ extension ExploreViewController: UIScrollViewDelegate {
         let contentHeight = scrollView.contentSize.height
         let height = scrollView.frame.size.height
 
-        //print("TableView Scroll offsetY: \(offsetY), contentHeight: \(contentHeight), height: \(height), isLoading: \(isLoading)")
-        
         if offsetY > contentHeight - height && !isLoading {
-           // print("TableView Triggered loadMoreRecentLogs")
             loadMoreRecentLogs()
         }
         
-//        if offsetY > contentHeight - height * 0.8 && !isLoading {
-//           // print("TableView Triggered loadMoreRecentLogs")
-//            loadMoreRecentLogs()
-//        }
     }
 }

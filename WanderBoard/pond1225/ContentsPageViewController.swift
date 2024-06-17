@@ -169,13 +169,13 @@ class ContentsPageViewController: UIViewController {
         }
         
         subTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(12)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(stackView.snp.width)
         }
         
         detailTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(subTitleLabel.snp.bottom).offset(8)
+            $0.top.equalTo(subTitleLabel.snp.bottom)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(stackView.snp.width)
         }
@@ -183,7 +183,8 @@ class ContentsPageViewController: UIViewController {
         imageView.snp.makeConstraints {
             $0.top.equalTo(detailTitleLabel.snp.bottom).offset(30)
             $0.centerX.equalToSuperview()
-            $0.width.height.equalTo(view).multipliedBy(0.6)
+//            $0.width.height.equalTo(view).multipliedBy(0.6)
+            $0.left.right.bottom.equalTo(view)
         }
     }
     

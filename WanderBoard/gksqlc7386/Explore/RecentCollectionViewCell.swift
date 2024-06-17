@@ -102,7 +102,7 @@ class RecentCollectionViewCell: UICollectionViewCell {
         backImg.image = nil
         
         // 이미지 일단 첫 번째 이미지
-        if let imageUrl = recentLog.media.first?.url, let url = URL(string: imageUrl) {
+        if let imageUrl = recentLog.media.first(where: { $0.isRepresentative })?.url ?? recentLog.media.first?.url, let url = URL(string: imageUrl) {
             loadImage(from: url) { [weak self] image in
                 DispatchQueue.main.async {
                     guard self?.localLabel.text == recentLog.location else {

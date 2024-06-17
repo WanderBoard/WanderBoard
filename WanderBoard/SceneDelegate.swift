@@ -19,21 +19,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
+        let initialViewController: UIViewController
+        
         if UserDefaults.standard.bool(forKey: "isLoggedIn") {
             // 사용자가 로그인된 상태
-            window?.rootViewController = PageViewController()
+            initialViewController = PageViewController()
         } else {
-            // 사용자 로그아웃 상태 시 LaunchViewController를 2초 동안 보여준 후 AuthenticationVC로 이동
-            let launchViewController = LaunchViewController()
-            window?.rootViewController = launchViewController
+            // 사용자 로그아웃 상태 시 LaunchViewController를 3초 동안 보여준 후 AuthenticationVC로 이동
+            initialViewController = LaunchViewController()
+            window?.rootViewController = initialViewController
+            window?.makeKeyAndVisible()
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 self.window?.rootViewController = AuthenticationVC()
                 self.window?.makeKeyAndVisible()
             }
+            return
         }
         
+        window?.rootViewController = initialViewController
         window?.makeKeyAndVisible()
-        
     }
     
     func sceneDidDisconnect(_ scene: UIScene) { }

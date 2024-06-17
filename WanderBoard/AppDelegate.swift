@@ -67,47 +67,52 @@ import KakaoSDKAuth
         }
     }
     
-    private func configureInitialViewController() {
-        if UserDefaults.standard.bool(forKey: "isLoggedIn") {
-            if let currentUser = Auth.auth().currentUser {
-                let uid = currentUser.uid
-                Firestore.firestore().collection("users").document(uid).getDocument { (document, error) in
-                    if let document = document, document.exists {
-                        let data = document.data()
-                        let isProfileComplete = data?["isProfileComplete"] as? Bool ?? false
-                        DispatchQueue.main.async {
-                            let initialViewController: UIViewController
-                            if isProfileComplete {
-                                initialViewController = PageViewController()
-                            } else {
-                                initialViewController = AuthenticationVC()
-                            }
-                            self.window?.rootViewController = initialViewController
-                            self.window?.makeKeyAndVisible()
-                        }
-                    } else {
-                        DispatchQueue.main.async {
-                            self.window?.rootViewController = AuthenticationVC()
-                            self.window?.makeKeyAndVisible()
-                        }
-                    }
-                }
-            } else {
-                window?.rootViewController = AuthenticationVC()
-                window?.makeKeyAndVisible()
-            }
-        } else {
-            // 사용자 로그아웃 상태 시 LaunchViewController를 2초 동안 보여준 후 AuthenticationVC로 이동
-            let launchViewController = LaunchViewController()
-            window?.rootViewController = launchViewController
-            window?.makeKeyAndVisible()
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                self.window?.rootViewController = AuthenticationVC()
-                self.window?.makeKeyAndVisible()
-            }
-        }
-    }
+     private func configureInitialViewController() {
+         let hasLaunchedBefore = UserDefaults.standard.bool(forKey: "hasLaunchedBefore")
+         let isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
+         let initialViewController: UIViewController
+         
+         if !hasLaunchedBefore {
+             UserDefaults.standard.set(true, forKey: "hasLaunchedBefore")
+             initialViewController = TutorialViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
+         } else if isLoggedIn, let currentUser = Auth.auth().currentUser {
+             let uid = currentUser.uid
+             Firestore.firestore().collection("users").document(uid).getDocument { (document, error) in
+                 if let document = document, document.exists {
+                     let data = document.data()
+                     let isProfileComplete = data?["isProfileComplete"] as? Bool ?? false
+                     DispatchQueue.main.async {
+                         if isProfileComplete {
+                             self.window?.rootViewController = PageViewController()
+                         } else {
+                             self.window?.rootViewController = AuthenticationVC()
+                         }
+                         self.window?.makeKeyAndVisible()
+                     }
+                 } else {
+                     DispatchQueue.main.async {
+                         self.window?.rootViewController = AuthenticationVC()
+                         self.window?.makeKeyAndVisible()
+                     }
+                 }
+             }
+             return
+         } else {
+             // 사용자 로그아웃 상태 시 LaunchViewController를 3초 동안 보여준 후 AuthenticationVC로 이동
+             initialViewController = LaunchViewController()
+             window?.rootViewController = initialViewController
+             window?.makeKeyAndVisible()
+             
+             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                 self.window?.rootViewController = AuthenticationVC()
+                 self.window?.makeKeyAndVisible()
+             }
+             return
+         }
+         
+         window?.rootViewController = initialViewController
+         window?.makeKeyAndVisible()
+     }
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         if AuthApi.isKakaoTalkLoginUrl(url) {

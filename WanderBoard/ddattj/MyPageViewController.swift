@@ -344,16 +344,10 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                          self.navigationController?.pushViewController(blockVC, animated: true)
                          blockVC.navigationItem.title = "차단관리"
                     case 4:
-                    NotificationHelper.changePage(hidden: true, isEnabled: false)
+                        NotificationHelper.changePage(hidden: true, isEnabled: false)
                         let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
                         let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-                            let logOutVC = AuthenticationVC()
-                            if let transition = self.transition {
-                                self.navigationController?.view.layer.add(transition, forKey: kCATransition)
-                            }
-                            self.navigationController?.pushViewController(logOutVC, animated: false)
-                            self.navigationController?.navigationBar.isHidden = true
-
+                            self.handleLogout() // 로그아웃 처리
                         }
                         let close = UIAlertAction(title: "취소", style: .destructive, handler: nil)
                         
@@ -367,4 +361,22 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
         })
     }
     
+    private func handleLogout() {
+        do {
+            try Auth.auth().signOut()
+            UserDefaults.standard.set(false, forKey: "isLoggedIn") // 로그인 상태 업데이트
+            navigateToAuthenticationVC()
+        } catch let signOutError as NSError {
+            print("Error signing out: %@", signOutError)
+        }
+    }
+
+    private func navigateToAuthenticationVC() {
+        let logOutVC = AuthenticationVC()
+        if let transition = self.transition {
+            self.navigationController?.view.layer.add(transition, forKey: kCATransition)
+        }
+        self.navigationController?.pushViewController(logOutVC, animated: false)
+        self.navigationController?.navigationBar.isHidden = true
+    }
 }

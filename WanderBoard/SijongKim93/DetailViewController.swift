@@ -567,12 +567,12 @@ class DetailViewController: UIViewController {
         albumImageView.snp.makeConstraints {
             $0.top.equalTo(segmentControl).offset(-20)
             $0.leading.trailing.equalTo(contentView)
-            $0.height.equalTo(270)
+            $0.height.equalTo(300)
         }
         
         galleryCollectionView.snp.makeConstraints {
             $0.top.equalTo(mapViewController!.view.snp.bottom).offset(10)
-            $0.leading.equalTo(contentView).offset(16)
+            $0.leading.equalTo(contentView)
             $0.trailing.equalTo(contentView)
             $0.height.equalTo(90)
         }
@@ -590,7 +590,7 @@ class DetailViewController: UIViewController {
         }
         
         moneyCountainer.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(25)
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(24)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(90)
         }
@@ -1047,7 +1047,7 @@ class DetailViewController: UIViewController {
         contentView.addSubview(mapVC.view)
         contentView.sendSubviewToBack(mapViewController!.view)
         mapVC.view.snp.makeConstraints {
-            $0.top.equalTo(segmentControl).offset(-10)
+            $0.top.equalTo(segmentControl).offset(-20)
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(300)
         }

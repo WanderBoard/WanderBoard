@@ -5,9 +5,32 @@
 //  Created by t2023-m0049 on 6/16/24.
 //
 
-import Foundation
 import UIKit
 import SnapKit
+import SwiftUI
+
+extension UIViewController {
+    private struct Preview: UIViewControllerRepresentable {
+            let viewController: UIViewController
+
+            func makeUIViewController(context: Context) -> UIViewController {
+                return viewController
+            }
+
+            func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+            }
+        }
+
+        func toPreview() -> some View {
+            Preview(viewController: self)
+        }
+}
+
+struct MyViewController_PreViews: PreviewProvider {
+    static var previews: some View {
+        ContentsPageViewController().toPreview()
+    }
+}
 
 class ContentsPageViewController: UIViewController {
     
@@ -73,7 +96,7 @@ class ContentsPageViewController: UIViewController {
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .black
         button.layer.cornerRadius = 10
-        button.addTarget(self, action: #selector(wanderButtonTapped), for: .touchUpInside)
+        button.addTarget(ContentsPageViewController.self, action: #selector(wanderButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -99,6 +122,7 @@ class ContentsPageViewController: UIViewController {
         
         configureUI()
         makeConstraints()
+        setGradient()
     }
     
     
@@ -183,6 +207,19 @@ class ContentsPageViewController: UIViewController {
             $0.centerX.equalToSuperview()
             $0.width.height.equalTo(view).multipliedBy(0.6)
         }
+    }
+    
+    private func setGradient() {
+        let maskedView = UIView(frame: CGRect(x: 0, y: 722, width: 393, height: 130))
+        let gradientLayer = CAGradientLayer()
+        
+        maskedView.backgroundColor = view.backgroundColor
+        gradientLayer.frame = maskedView.bounds
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98), UIColor.white.cgColor, UIColor.white.cgColor]
+        gradientLayer.locations = [0, 0.05, 0.8, 1]
+        maskedView.layer.mask = gradientLayer
+        view.addSubview(maskedView)
+        maskedView.isUserInteractionEnabled = false
     }
     
     @objc private func xButtonTapped() {

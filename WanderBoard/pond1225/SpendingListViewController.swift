@@ -335,6 +335,7 @@ extension SpendingListViewController: UITableViewDataSource {
         
         cell.expenseContent.text = expense.expenseContent
         cell.memo.text = expense.memo
+        cell.memo.numberOfLines = 2
         cell.expenseAmount.text = "\(formatCurrency(expense.expenseAmount))원"
         cell.categoryImageView.image = UIImage(systemName: expense.imageName)
         

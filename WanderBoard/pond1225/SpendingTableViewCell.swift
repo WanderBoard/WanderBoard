@@ -77,6 +77,7 @@ class SpendingTableViewCell: UITableViewCell {
         memo.snp.makeConstraints {
             $0.top.equalTo(expenseContent.snp.bottom).offset(4)
             $0.leading.equalTo(expenseContent.snp.leading)
+            $0.trailing.equalTo(expenseAmount.snp.leading)
         }
         
         expenseAmount.snp.makeConstraints {

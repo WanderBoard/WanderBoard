@@ -343,7 +343,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     let mateCountButton = UIButton(type: .system).then {
         var configuration = UIButton.Configuration.filled()
-        configuration.baseBackgroundColor = .darkgray
+        configuration.baseBackgroundColor = .babygray
         configuration.cornerStyle = .medium
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 32, bottom: 8, trailing: 40)
         $0.configuration = configuration
@@ -651,6 +651,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         locationButton.backgroundColor = babyGTocustomB
         consumButton.backgroundColor = babyGTocustomB
         galleryCountButton.configuration?.baseBackgroundColor = babyGTocustomB
+        mateCountButton.configuration?.baseBackgroundColor = babyGTocustomB
         
         //라이트그레이-다크그레이
         let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")

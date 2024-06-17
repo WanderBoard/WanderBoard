@@ -50,7 +50,6 @@
 		2A76552A2C073E4900D8A098 /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7655292C073E4900D8A098 /* KakaoSDKUser */; };
 		2A76552C2C073F2F00D8A098 /* SignInWithKakao.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */; };
 		2A76552E2C07407500D8A098 /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 2A76552D2C07407500D8A098 /* KakaoSDKCommon */; };
-		2A8AB1762C12400100C5244F /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB1752C12400100C5244F /* SignInViewController.swift */; };
 		2A8AB1782C12407B00C5244F /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB1772C12407B00C5244F /* SignUpViewController.swift */; };
 		2A8AB17A2C1240E500C5244F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB1792C1240E500C5244F /* User.swift */; };
 		2A8AB17C2C1241ED00C5244F /* UserProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB17B2C1241ED00C5244F /* UserProfileManager.swift */; };
@@ -144,7 +143,6 @@
 		2A7655202C070B0400D8A098 /* Formatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatter.swift; sourceTree = "<group>"; };
 		2A7655222C070B1700D8A098 /* Numeric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Numeric.swift; sourceTree = "<group>"; };
 		2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithKakao.swift; sourceTree = "<group>"; };
-		2A8AB1752C12400100C5244F /* SignInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
 		2A8AB1772C12407B00C5244F /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		2A8AB1792C1240E500C5244F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		2A8AB17B2C1241ED00C5244F /* UserProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileManager.swift; sourceTree = "<group>"; };
@@ -264,7 +262,6 @@
 				2A8AB1772C12407B00C5244F /* SignUpViewController.swift */,
 				2A7623DA2C1E21F80044CF05 /* LaunchViewController.swift */,
 				2A7623E62C1F0F7A0044CF05 /* CalendarHostingController.swift */,
-				2A8AB1752C12400100C5244F /* SignInViewController.swift */,
 			);
 			path = mgynsz;
 			sourceTree = "<group>";
@@ -619,7 +616,6 @@
 				956ED7932C0852B90001BAC6 /* MyPageTableViewCell.swift in Sources */,
 				2A7655112C0622C000D8A098 /* FirestoreManager.swift in Sources */,
 				FB9A3AE62C1984C600E1EAA2 /* ExploreViewController.swift in Sources */,
-				2A8AB1762C12400100C5244F /* SignInViewController.swift in Sources */,
 				4D9D8B502C05B1BD0043E7DF /* AppDelegate.swift in Sources */,
 				6BBE4B842C19950100A7A793 /* SpendingListViewController.swift in Sources */,
 				956ED7962C0852B90001BAC6 /* PrivacyPolicyViewController.swift in Sources */,

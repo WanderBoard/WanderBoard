@@ -206,6 +206,7 @@ class ContentsPageViewController: UIViewController {
             let nextVC = AuthenticationVC()
             nextVC.modalPresentationStyle = .fullScreen
             self.present(nextVC, animated: true)
+
         }))
         alert.addAction(UIAlertAction(title: "아니요", style: .cancel, handler: nil))
         present(alert, animated: true, completion: nil)

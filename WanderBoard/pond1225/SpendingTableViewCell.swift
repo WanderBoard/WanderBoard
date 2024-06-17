@@ -28,7 +28,7 @@ class SpendingTableViewCell: UITableViewCell {
     let memo: UILabel = {
         let memo = UILabel()
         memo.font = UIFont.systemFont(ofSize: 12)
-        
+        memo.numberOfLines = 2
         return memo
     }()
     
@@ -78,6 +78,7 @@ class SpendingTableViewCell: UITableViewCell {
             $0.top.equalTo(expenseContent.snp.bottom).offset(4)
             $0.leading.equalTo(expenseContent.snp.leading)
             $0.trailing.equalTo(expenseAmount.snp.leading)
+
         }
         
         expenseAmount.snp.makeConstraints {

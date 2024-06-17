@@ -14,21 +14,6 @@ import FirebaseStorage
 
 class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UITextFieldDelegate {
     
-//    private let topBar: UIView = {
-//        let view = UIView()
-//        view.backgroundColor = .black
-//        view.layer.cornerRadius = 2
-//        return view
-//    }()
-    
-//    private let titleLabel: UILabel = {
-//        let label = UILabel()
-//        label.text = "회원가입asdads"
-//        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-//        label.textAlignment = .center
-//        return label
-//    }()
-    
     private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.text = "프로필 설정"
@@ -45,10 +30,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         imageView.image = image
         imageView.contentMode = .scaleAspectFill
-        imageView.contentMode = .center
         imageView.tintColor = UIColor(named: "ButtonColor")
         imageView.isUserInteractionEnabled = true
-//        imageView.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         imageView.layer.cornerRadius = 50
         imageView.layer.borderColor = UIColor(named: "ButtonColor")?.cgColor
         imageView.clipsToBounds = true

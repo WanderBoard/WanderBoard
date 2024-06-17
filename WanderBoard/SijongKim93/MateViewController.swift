@@ -229,6 +229,7 @@ extension MateViewController: UITableViewDelegate, UITableViewDataSource {
         let user = filteredUsers[indexPath.row]
         cell.configure(with: user)
         cell.delegate = self
+        cell.selectionStyle = .none
         return cell
     }
 }
@@ -275,6 +276,7 @@ extension MateViewController: UICollectionViewDelegate, UICollectionViewDataSour
         let mate = addedMates[indexPath.row]
         cell.configure(with: mate)
         cell.delegate = self
+        
         return cell
     }
     

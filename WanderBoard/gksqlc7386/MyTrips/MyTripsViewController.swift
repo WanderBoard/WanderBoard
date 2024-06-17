@@ -260,17 +260,17 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             // 현재 필터에 따라 텍스트 업데이트
             switch currentFilterIndex {
             case 0:
-                mainLabel.text = "나만의 핀 기록을 추가해보세요"
+                mainLabel.text = "나만의 핀 기록을 추가할 수 있어요"
                 subLabel.text = "아직 핀 기록이 없습니다.\n WanderBoard에 소중한 순간들을 기록해보세요."
                 addButton.isHidden = false
                 plusButton.isHidden = true
             case 1:
-                mainLabel.text = "함께한 추억을 공유해보세요"
-                subLabel.text = "메이트를 추가하거나 추가된 여행 기록이 \n 이곳에 표시됩니다."
+                mainLabel.text = "함께한 추억을 볼 수 있어요"
+                subLabel.text = "내가 메이트로 추가된 여행 기록이 \n 이곳에 표시됩니다."
                 addButton.isHidden = true
                 plusButton.isHidden = false
             case 2:
-                mainLabel.text = "다른 사람의 여행을 저장해보세요"
+                mainLabel.text = "다른 사람의 여행을 저장할 수 있어요"
                 subLabel.text = "Wander Pin 버튼을 눌러 저장한 핀이 \n 이곳에 표시됩니다."
                 addButton.isHidden = true
                 plusButton.isHidden = false
@@ -429,7 +429,7 @@ extension MyTripsViewController {
         let navbarAppearance = UINavigationBarAppearance()
         navbarAppearance.configureWithOpaqueBackground()
         let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.clear
-        navbarAppearance.backgroundColor = navBarColor
+        navbarAppearance.backgroundColor = .systemBackground
         navigationController?.navigationBar.standardAppearance = navbarAppearance
     }
 }

@@ -77,12 +77,14 @@ class SpendingTableViewCell: UITableViewCell {
         memo.snp.makeConstraints {
             $0.top.equalTo(expenseContent.snp.bottom).offset(4)
             $0.leading.equalTo(expenseContent.snp.leading)
+            $0.width.equalTo(195)
             $0.trailing.equalTo(expenseAmount.snp.leading)
 
         }
         
         expenseAmount.snp.makeConstraints {
             $0.centerY.equalTo(contentView.snp.centerY)
+            $0.leading.equalTo(memo.snp.trailing).offset(12)
             $0.trailing.equalTo(contentView.safeAreaLayoutGuide).inset(32)
         }
         

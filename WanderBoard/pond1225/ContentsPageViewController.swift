@@ -201,9 +201,6 @@ class ContentsPageViewController: UIViewController {
     @objc private func xButtonTapped() {
         let alert = UIAlertController(title: nil, message: "정말 튜토리얼을 종료하시겠습니까?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "예", style: .default, handler: { _ in
-            //                    let nextVC = NextViewController()
-            //                    nextVC.modalPresentationStyle = .fullScreen
-            //                    self.present(nextVC, animated: true)
         }))
         alert.addAction(UIAlertAction(title: "아니요", style: .cancel, handler: nil))
         present(alert, animated: true, completion: nil)

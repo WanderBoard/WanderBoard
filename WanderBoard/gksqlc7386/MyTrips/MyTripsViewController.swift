@@ -348,7 +348,6 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
             
             let tripLog = filterTripLogs()[indexPath.item]
             cell.configure(with: tripLog)
-            //cell.configure(with: tripLog, filterIndex: currentFilterIndex)
             cell.updateProfileImageVisibility(for: currentFilterIndex)
             
             return cell

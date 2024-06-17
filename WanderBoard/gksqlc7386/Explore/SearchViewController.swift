@@ -69,7 +69,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         super.viewWillAppear(animated)
         
         navigationItem.largeTitleDisplayMode = .never
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
         Task {
             self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()

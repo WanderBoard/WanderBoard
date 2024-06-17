@@ -79,7 +79,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     let publicMainLabel = UILabel().then {
         $0.text = "공개 여부"
         $0.textColor = .font
-        $0.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        $0.font = UIFont.systemFont(ofSize: 17, weight: .bold)
     }
     
     let publicOpenButton = UIButton().then {
@@ -91,7 +91,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.axis = .horizontal
         $0.alignment = .center
         $0.distribution = .equalSpacing
-        $0.spacing = 10
+        $0.spacing = 20
     }
     
     let publicLabel = UILabel().then {
@@ -102,7 +102,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     let publicSwitch = UISwitch().then {
         $0.isOn = true
-        $0.onTintColor = .black
+        $0.thumbTintColor = UIColor(named: "textColor")
+        $0.onTintColor = .font
     }
     
     let publicStackView = UIStackView().then {
@@ -135,7 +136,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.axis = .vertical
         $0.alignment = .center
         $0.distribution = .equalSpacing
-        $0.spacing = 16
+        $0.spacing = 20
     }
     
     let topLine = UIView().then {
@@ -144,7 +145,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     let locationLeftLabel = UILabel().then {
         $0.text = "지역을 선택하세요"
-        $0.font = UIFont.systemFont(ofSize: 15)
+        $0.font = UIFont.systemFont(ofSize: 14)
         $0.textColor = .font
     }
     
@@ -161,61 +162,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.isUserInteractionEnabled = false
     }
     
-//    let dateLabel = UILabel().then {
-//        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-//        $0.textColor = .font
-//        
-//        let imageAttachment = NSTextAttachment()
-//        let systemImage = UIImage(systemName: "calendar")?.withTintColor(.font, renderingMode: .alwaysOriginal)
-//        imageAttachment.image = systemImage
-//        imageAttachment.bounds = CGRect(x: 0, y: -6, width: 30, height: 24)
-//        
-//        let fullString = NSMutableAttributedString(string: "")
-//        fullString.append(NSAttributedString(attachment: imageAttachment))
-//        fullString.append(NSAttributedString(string: " 날짜", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .bold)]))
-//        
-//        $0.attributedText = fullString
-//    }
-//    
-//    let startDateButton = UIButton(type: .system).then {
-//        var configuration = UIButton.Configuration.filled()
-//        configuration.title = "시작일자"
-//        configuration.baseBackgroundColor = .babygray
-//        configuration.baseForegroundColor = .font
-//        configuration.cornerStyle = .medium
-//        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10)
-//        $0.configuration = configuration
-//        $0.tintColor = .font
-//    }
-//    
-//    let endDateLabel = UILabel().then {
-//        $0.text = "-"
-//        $0.font = UIFont.systemFont(ofSize: 16)
-//        $0.textColor = .font
-//        $0.textAlignment = .center
-//    }
-//    
-//    let endDateButton = UIButton(type: .system).then {
-//        var configuration = UIButton.Configuration.filled()
-//        configuration.title = "종료일자"
-//        configuration.baseBackgroundColor = .babygray
-//        configuration.baseForegroundColor = .font
-//        configuration.cornerStyle = .medium
-//        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 10, bottom: 8, trailing: 10)
-//        $0.configuration = configuration
-//        $0.tintColor = .font
-//    }
-//    
-//    let dateStackView = UIStackView().then {
-//        $0.axis = .horizontal
-//        $0.alignment = .center
-//        $0.distribution = .fill
-//        $0.spacing = 10
-//    }
-    
     let dateLabel = UILabel().then {
         $0.text = "날짜를 선택하세요"
-        $0.font = UIFont.systemFont(ofSize: 15)
+        $0.font = UIFont.systemFont(ofSize: 14)
         $0.textColor = .font
         $0.isHidden = false
     }
@@ -235,7 +184,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     let dateButton = UIButton().then {
         var configuration = UIButton.Configuration.filled()
-//        configuration.title = "날짜를 선택하세요"
         configuration.baseBackgroundColor = .babygray
         configuration.baseForegroundColor = .font
         configuration.cornerStyle = .medium
@@ -243,7 +191,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.configuration = configuration
         $0.tintColor = .font
     }
-
+    
     
     let mainTextField = UITextView().then {
         $0.text = "여행 제목을 입력해주세요."
@@ -270,24 +218,24 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     let locationButton = UIButton().then {
-        $0.backgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        $0.backgroundColor = .babygray
         $0.layer.cornerRadius = 8
     }
     
     let consumButton = UIButton().then {
-        $0.backgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        $0.backgroundColor = .babygray
         $0.layer.cornerRadius = 8
     }
     
     let consumLeftLabel = UILabel().then {
         $0.text = "지출 내역을 추가하세요"
-        $0.font = UIFont.systemFont(ofSize: 15)
-        $0.textColor = .font
+        $0.font = UIFont.systemFont(ofSize: 14)
+        $0.textColor = .darkgray
     }
     
     let consumRightLabel = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
-        $0.tintColor = .font
+        $0.tintColor = .darkgray
     }
     
     let consumStackView = UIStackView().then {
@@ -299,21 +247,21 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     let bodyLine = UIView().then {
-        $0.backgroundColor = .babygray
+        $0.backgroundColor = .lightblack
     }
     
     let galleryLabel = UILabel().then {
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
         $0.textColor = .font
         
         let imageAttachment = NSTextAttachment()
         let systemImage = UIImage(systemName: "photo")?.withTintColor(.font, renderingMode: .alwaysOriginal)
         imageAttachment.image = systemImage
-        imageAttachment.bounds = CGRect(x: 0, y: -6, width: 30, height: 24)
+        imageAttachment.bounds = CGRect(x: 0, y: -5, width: 24, height: 18.4)
         
         let fullString = NSMutableAttributedString(string: "")
         fullString.append(NSAttributedString(attachment: imageAttachment))
-        fullString.append(NSAttributedString(string: " 앨범 추가", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .bold)]))
+        fullString.append(NSAttributedString(string: " 앨범 추가", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12, weight: .bold)]))
         
         $0.attributedText = fullString
     }
@@ -321,7 +269,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     lazy var galleryCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 5
+        layout.minimumInteritemSpacing = 10
         layout.sectionInset = UIEdgeInsets(top: 10, left: 32, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: 85, height: 85)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -332,44 +280,44 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     let galleryCountButton = UIButton(type: .system).then {
         var configuration = UIButton.Configuration.filled()
-        configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        configuration.baseBackgroundColor = .babygray
         configuration.cornerStyle = .medium
-        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 40, bottom: 8, trailing: 40)
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 32, bottom: 8, trailing: 40)
         $0.configuration = configuration
-        $0.layer.cornerRadius = 8
+        $0.layer.cornerRadius = 10
         $0.isHidden = true
     }
     
     let galleryCountLabel = UILabel().then {
         $0.text = "0/10"
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
+        $0.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+        $0.textColor = .darkgray
     }
     
     let galleryArrowImageView = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
-        $0.tintColor = .black
+        $0.tintColor = .darkgray
     }
     
     let galleryCountStackView = UIStackView().then {
         $0.axis = .horizontal
         $0.alignment = .center
-        $0.spacing = 4
+        $0.spacing = 8
         $0.isUserInteractionEnabled = false
     }
     
     let mateLabel = UILabel().then {
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        $0.textColor = .font
+        $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+        $0.textColor = .darkgray
         
         let imageAttachment = NSTextAttachment()
         let systemImage = UIImage(systemName: "person.2")?.withTintColor(.font, renderingMode: .alwaysOriginal)
         imageAttachment.image = systemImage
-        imageAttachment.bounds = CGRect(x: 0, y: -6, width: 30, height: 24)
+        imageAttachment.bounds = CGRect(x: 0, y: -5, width: 24, height: 16.61)
         
         let fullString = NSMutableAttributedString(string: "")
         fullString.append(NSAttributedString(attachment: imageAttachment))
-        fullString.append(NSAttributedString(string: " 메이트", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .bold)]))
+        fullString.append(NSAttributedString(string: " 메이트", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12, weight: .bold)]))
         
         $0.attributedText = fullString
     }
@@ -377,11 +325,13 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     lazy var mateCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 5
-        layout.itemSize = CGSize(width: 85, height: 85)
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 0)
+        layout.minimumInteritemSpacing = 10
+        layout.itemSize = CGSize(width: 60, height: 60)
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 32, bottom: 0, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
+//        collectionView.clipsToBounds = true
+//        collectionView.layer.cornerRadius = 30
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
@@ -393,45 +343,34 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     let mateCountButton = UIButton(type: .system).then {
         var configuration = UIButton.Configuration.filled()
-        configuration.baseBackgroundColor = #colorLiteral(red: 0.947927177, green: 0.9562781453, blue: 0.9702228904, alpha: 1)
+        configuration.baseBackgroundColor = .darkgray
         configuration.cornerStyle = .medium
-        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 40, bottom: 8, trailing: 40)
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 32, bottom: 8, trailing: 40)
         $0.configuration = configuration
-        $0.layer.cornerRadius = 8
+        $0.layer.cornerRadius = 10
         $0.isHidden = true
     }
     
     let mateCountLabel = UILabel().then {
         $0.text = "0"
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        $0.textColor = #colorLiteral(red: 0.5913596153, green: 0.5913596153, blue: 0.5913596153, alpha: 1)
+        $0.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+        $0.textColor = .darkgray
     }
     
     let mateIconImageView = UIImageView().then {
         $0.image = UIImage(systemName: "person")
-        $0.tintColor = .black
+        $0.tintColor = .darkgray
     }
     
     let mateCountStackView = UIStackView().then {
         $0.axis = .horizontal
         $0.alignment = .center
-        $0.spacing = 4
+        $0.spacing = 8
         $0.isUserInteractionEnabled = false
     }
     
     private var selectedStartDate: Date?
     private var selectedEndDate: Date?
-
-//    func didSelectDates(startDate: Date, endDate: Date) {
-//        // delegate 메서드 구현: 날짜 선택 시 호출되어 버튼 제목을 업데이트하고 선택된 날짜를 저장
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "yyyy-MM-dd"
-//        let startDateString = dateFormatter.string(from: startDate)
-//        let endDateString = dateFormatter.string(from: endDate)
-//        dateButton.setTitle("\(startDateString) ~ \(endDateString)", for: .normal)
-//        selectedStartDate = startDate
-//        selectedEndDate = endDate
-//    }
     
     func didSelectDates(startDate: Date, endDate: Date) {
         print("didSelectDates 호출됨")
@@ -440,16 +379,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         selectedEndDate = endDate
     }
     
-//    func updateDateLabel(with startDate: Date, endDate: Date) {
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "yyyy-MM-dd"
-//        let startDateString = dateFormatter.string(from: startDate)
-//        let endDateString = dateFormatter.string(from: endDate)
-//        let dateRangeString = "\(startDateString) ~ \(endDateString)"
-////        self.dateLabel.text = dateRangeString
-//        self.dateButton.setTitle(dateRangeString, for: .normal)
-//    }
-
+    
     func updateDateLabel(with startDate: Date, endDate: Date) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -460,14 +390,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         
         // dateLabel의 텍스트 업데이트
         self.dateLabel.text = dateRangeString
-//        self.dateButton.setTitle(dateRangeString, for: .normal)
-
+        
     }
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        calendarHostingController.delegate = self
         setupUI()
         setupConstraints()
         actionButton()
@@ -487,7 +414,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        
         navigationController?.navigationBar.tintColor = .white
         navigationItem.largeTitleDisplayMode = .never
         
@@ -511,21 +438,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         toggleSwitchStackView.addArrangedSubview(publicStackView)
         toggleSwitchStackView.addArrangedSubview(spendingPublicStackView)
         
-//        contentView.addSubview(dateLabel)
-//        contentView.addSubview(dateRightLabel)
-//        contentView.addSubview(dateStackView)
-//        dateStackView.addArrangedSubview(startDateButton)
-//        dateStackView.addArrangedSubview(endDateLabel)
-//        dateStackView.addArrangedSubview(endDateButton)
-        
-//        contentView.addSubview(dateLabel)
-//        contentView.addSubview(dateButton)
-        
         dateStackView.addArrangedSubview(dateLabel)
         dateStackView.addArrangedSubview(dateRightLabel)
         contentView.addSubview(dateButton)
         dateButton.addSubview(dateStackView)
-
+        
         contentView.addSubview(mainTextField)
         contentView.addSubview(subTextField)
         contentView.addSubview(locationButton)
@@ -581,7 +498,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         publicView.snp.makeConstraints {
-            $0.top.equalTo(publicOpenStackView.snp.bottom).offset(16)
+            $0.top.equalTo(publicOpenStackView.snp.bottom).offset(30)
             $0.leading.trailing.equalTo(contentView).inset(32)
             self.publicViewHeightConstraint = $0.height.equalTo(0).constraint
         }
@@ -600,15 +517,15 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         topLine.snp.makeConstraints {
-            $0.top.equalTo(publicView.snp.bottom).offset(16)
+            $0.top.equalTo(publicView.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(1)
         }
         
         locationButton.snp.makeConstraints {
-            $0.top.equalTo(topLine.snp.bottom).offset(24)
+            $0.top.equalTo(topLine.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(46)
+            $0.height.equalTo(44)
         }
         
         locationStackView.snp.makeConstraints {
@@ -616,35 +533,21 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             $0.leading.trailing.equalToSuperview().inset(16)
         }
         
-//        dateLabel.snp.makeConstraints {
-//            $0.top.equalTo(locationButton.snp.bottom).offset(24)
-//            $0.leading.equalTo(contentView).inset(32)
-//        }
-//        
-//        dateStackView.snp.makeConstraints {
-//            $0.top.equalTo(dateLabel.snp.bottom).offset(10)
-//            $0.leading.trailing.equalTo(contentView).inset(32)
-//        }
-        
         dateButton.snp.makeConstraints {
-            $0.top.equalTo(locationButton.snp.bottom).offset(24)
+            $0.top.equalTo(locationButton.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(46)
+            $0.height.equalTo(44)
         }
         
         dateStackView.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.leading.trailing.equalToSuperview().inset(16)
         }
-
-//        calendarHostingController.view.snp.makeConstraints {
-//            $0.edges.equalToSuperview()
-//        }
         
         mainTextField.snp.makeConstraints {
-            $0.top.equalTo(dateButton.snp.bottom).offset(24)
+            $0.top.equalTo(dateButton.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(37)
+            $0.height.equalTo(44)
         }
         
         subTextField.snp.makeConstraints {
@@ -654,9 +557,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         consumButton.snp.makeConstraints {
-            $0.top.equalTo(subTextField.snp.bottom).offset(24)
+            $0.top.equalTo(subTextField.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(46)
+            $0.height.equalTo(44)
         }
         
         consumStackView.snp.makeConstraints {
@@ -665,13 +568,13 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         bodyLine.snp.makeConstraints {
-            $0.top.equalTo(consumButton.snp.bottom).offset(24)
+            $0.top.equalTo(consumButton.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(1)
         }
         
         galleryLabel.snp.makeConstraints {
-            $0.top.equalTo(bodyLine.snp.bottom).offset(24)
+            $0.top.equalTo(bodyLine.snp.bottom).offset(20)
             $0.leading.equalTo(contentView).inset(32)
         }
         
@@ -692,7 +595,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         mateLabel.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(50)
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(63)
             $0.leading.equalTo(contentView).inset(32)
         }
         
@@ -715,8 +618,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        
-        // 이전 trait collection과 현재 trait collection이 다를 경우 업데이트
         if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             updateColor()
         }
@@ -743,24 +644,25 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     func updateColor(){
+        
+        //베이비그레이-커스텀블랙
+        let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+        dateButton.configuration?.baseBackgroundColor = babyGTocustomB
+        locationButton.backgroundColor = babyGTocustomB
+        consumButton.backgroundColor = babyGTocustomB
+        galleryCountButton.configuration?.baseBackgroundColor = babyGTocustomB
+        
         //라이트그레이-다크그레이
-        let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor.darkgray : UIColor.lightgray
+        let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
         mainTextField.textColor = lightGTodarkG
-        mainTextField.layer.borderColor = lightGTodarkG.cgColor
+        mainTextField.layer.borderColor = lightGTodarkG?.cgColor
         subTextField.textColor = lightGTodarkG
-        subTextField.layer.borderColor = lightGTodarkG.cgColor
+        subTextField.layer.borderColor = lightGTodarkG?.cgColor
         
         //라이트그레이-라이트블랙
-        let lineColor = traitCollection.userInterfaceStyle == .dark ? UIColor.lightblack : UIColor.lightgray
-        topLine.backgroundColor = lineColor
-        bodyLine.backgroundColor = lineColor
-        
-        let buttonBackground = traitCollection.userInterfaceStyle == .dark ? UIColor.customblack : UIColor.babygray
-//        startDateButton.configuration?.baseBackgroundColor = buttonBackground
-//        endDateButton.configuration?.baseBackgroundColor = buttonBackground
-        
-        locationButton.backgroundColor = buttonBackground
-        consumButton.backgroundColor = buttonBackground
+        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        topLine.backgroundColor = lightGTolightB
+        bodyLine.backgroundColor = lightGTolightB
     }
     
     func setupCollectionView() {
@@ -781,10 +683,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     func actionButton() {
         publicOpenButton.addTarget(self, action: #selector(publicOpenButtonTapped), for: .touchUpInside)
-//        startDateButton.addTarget(self, action: #selector(showDatePicker(_:)), for: .touchUpInside)
-//        endDateButton.addTarget(self, action: #selector(showDatePicker(_:)), for: .touchUpInside)
+        
         dateButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
-
+        
         galleryCountButton.addTarget(self, action: #selector(showPHPicker), for: .touchUpInside)
         
         locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
@@ -842,42 +743,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     @objc func consumButtonTapped() {
         let spendVC = SpendingListViewController()
-
+        
         spendVC.pinLog = pinLog
         spendVC.shouldShowEditButton = true
         navigationController?.pushViewController(spendVC, animated: true)
     }
-    
-//    @objc func showDatePicker(_ sender: UIButton) {
-//        let datePicker = UIDatePicker()
-//        datePicker.tintColor = .black
-//        datePicker.datePickerMode = .date
-//        datePicker.preferredDatePickerStyle = .inline
-//        
-//        let alert = UIAlertController(title: "날짜 선택", message: nil, preferredStyle: .actionSheet)
-//        alert.view.addSubview(datePicker)
-//        
-//        datePicker.snp.makeConstraints {
-//            $0.top.leading.trailing.equalTo(alert.view)
-//            $0.bottom.equalTo(alert.view.snp.bottom).offset(-120)
-//        }
-//        
-//        let selectAction = UIAlertAction(title: "선택", style: .default) { _ in
-//            let dateFormatter = DateFormatter()
-//            dateFormatter.dateFormat = "yyyy-MM-dd"
-//            let selectedDate = dateFormatter.string(from: datePicker.date)
-//            sender.setTitle(selectedDate, for: .normal)
-//        }
-//        selectAction.setValue(UIColor.black, forKey: "titleTextColor")
-//        
-//        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
-//        cancelAction.setValue(UIColor.red, forKey: "titleTextColor")
-//        
-//        alert.addAction(selectAction)
-//        alert.addAction(cancelAction)
-//        
-//        present(alert, animated: true, completion: nil)
-//    }
     
     @objc func showCalendar() {
         let calendarVC = CalendarHostingController()
@@ -889,8 +759,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         present(calendarVC, animated: true, completion: nil)
     }
-
-
+    
+    
     
     func setupNavigationBar() {
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
@@ -912,21 +782,14 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         subTextField.textColor = .black
         publicSwitch.isOn = pinLog.isPublic
         spendingPublicSwitch.isOn = pinLog.isSpendingPublic
-
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "yyyy-MM-dd"
-//        startDateButton.setTitle(dateFormatter.string(from: pinLog.startDate), for: .normal)
-//        endDateButton.setTitle(dateFormatter.string(from: pinLog.endDate), for: .normal)
         
-//        let startDateString = dateFormatter.string(from: pinLog.startDate)
-//        let endDateString = dateFormatter.string(from: pinLog.endDate)
         updateDateLabel(with: pinLog.startDate, endDate: pinLog.endDate)
-
+        
         selectedImages.removeAll()
         imageLocations.removeAll()
-
+        
         let dispatchGroup = DispatchGroup()
-
+        
         for media in pinLog.media {
             dispatchGroup.enter()
             if let url = URL(string: media.url) {
@@ -943,16 +806,16 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                 dispatchGroup.leave()
             }
         }
-
+        
         dispatchGroup.notify(queue: .main) {
             self.representativeImageIndex = self.selectedImages.firstIndex { $0.1 }
             self.updateRepresentativeImage()
             self.galleryCollectionView.reloadData()
             self.updateGalleryCountButton()
         }
-
+        
         loadSelectedFriends(pinLog: pinLog)
-
+        
         // totalSpendingAmount 값을 consumLeftLabel에 설정
         if let totalSpendingAmount = pinLog.totalSpendingAmount {
             consumLeftLabel.text = "\(formatCurrency(Int(totalSpendingAmount)))원"
@@ -1048,14 +911,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             return
         }
         
-//        guard let startDateString = startDateButton.title(for: .normal), startDateString != "시작일자",
-//              let endDateString = endDateButton.title(for: .normal), endDateString != "종료일자" else {
-//            let alert = UIAlertController(title: "날짜 선택", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
-//            alert.addAction(UIAlertAction(title: "확인", style: .default))
-//            present(alert, animated: true, completion: nil)
-//            return
-//        }
-        
         guard let mainTitle = mainTextField.text, !mainTitle.isEmpty, mainTextField.textColor != .lightgray else {
             let alert = UIAlertController(title: "제목 입력", message: "여행 제목을 입력해주세요.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "확인", style: .default))
@@ -1089,16 +944,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             present(alert, animated: true, completion: nil)
             return
         }
-        
-//        guard let startDateString = startDateButton.title(for: .normal),
-//              let endDateString = endDateButton.title(for: .normal),
-//              let startDate = dateFormatter.date(from: startDateString),
-//              let endDate = dateFormatter.date(from: endDateString) else {
-//            let alert = UIAlertController(title: "오류", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
-//            alert.addAction(UIAlertAction(title: "확인", style: .default))
-//            present(alert, animated: true, completion: nil)
-//            return
-//        }
         
         let title = mainTextField.text ?? ""
         let content = subTextField.text ?? ""
@@ -1154,7 +999,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                                     isSpendingPublic: isSpendingPublic,
                                     maxSpendingAmount: maxSpendingAmount,
                                     expenses: expenses)
-            
+                    
                 }
                 
                 // 선택된 대표 이미지가 있으면 설정
@@ -1195,7 +1040,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     func calculateTotalSpendingAmount() -> Int {
         return expenses.flatMap { $0.expenses }.reduce(0) { $0 + $1.expenseAmount }
     }
-
+    
     func calculateMaxSpendingAmount() -> Int {
         return expenses.flatMap { $0.expenses }.map { $0.expenseAmount }.max() ?? 0
     }
@@ -1342,7 +1187,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let totalAmount = dailyExpenses.flatMap { $0.expenses }.reduce(0) { $0 + $1.expenseAmount }
         consumLeftLabel.text = "\(formatCurrency(totalAmount))원"
     }
-
+    
     func formatCurrency(_ amount: Int) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
@@ -1488,7 +1333,7 @@ extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == UIColor.lightgray {
             textView.text = nil
-            textView.textColor = .black
+            textView.textColor = .font
         }
     }
     
@@ -1499,7 +1344,7 @@ extension DetailInputViewController: UITextViewDelegate {
             } else if textView == subTextField {
                 textView.text = "기록을 담아 주세요."
             }
-            textView.textColor = #colorLiteral(red: 0.8522331715, green: 0.8522332311, blue: 0.8522332311, alpha: 1)
+            textView.textColor = .font
         }
     }
     

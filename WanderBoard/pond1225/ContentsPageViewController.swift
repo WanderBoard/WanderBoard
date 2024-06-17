@@ -5,14 +5,13 @@
 //  Created by t2023-m0049 on 6/16/24.
 //
 
-import Foundation
 import UIKit
 import SnapKit
 
 class ContentsPageViewController: UIViewController {
     
     private var stackView: UIStackView = {
-
+        
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 20
@@ -40,7 +39,7 @@ class ContentsPageViewController: UIViewController {
         subTitleLabel.textAlignment = .center
         subTitleLabel.numberOfLines = 0
         
-    return subTitleLabel
+        return subTitleLabel
     }()
     
     private var detailTitleLabel: UILabel = {
@@ -51,7 +50,7 @@ class ContentsPageViewController: UIViewController {
         detailTitleLabel.textAlignment = .center
         detailTitleLabel.numberOfLines = 0
         
-    return detailTitleLabel
+        return detailTitleLabel
     }()
     
     private var imageView = UIImageView()
@@ -63,19 +62,19 @@ class ContentsPageViewController: UIViewController {
         xButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         xButton.tintColor = .lightGray
         xButton.addTarget(self, action: #selector(xButtonTapped), for: .touchUpInside)
-     
+        
         return xButton
     }()
     
     private var wanderButton: UIButton = {
-           let button = UIButton(type: .system)
-           button.setTitle("Let's Wander!", for: .normal)
-           button.setTitleColor(.white, for: .normal)
-           button.backgroundColor = .black
-           button.layer.cornerRadius = 10
-           button.addTarget(self, action: #selector(wanderButtonTapped), for: .touchUpInside)
-           return button
-       }()
+        let button = UIButton(type: .system)
+        button.setTitle("Let's Wander!", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .black
+        button.layer.cornerRadius = 10
+        button.addTarget(ContentsPageViewController.self, action: #selector(wanderButtonTapped), for: .touchUpInside)
+        return button
+    }()
     
     init(title: String, subTitle: String, detailTitle: String, imageName: String, showXButton: Bool, showWanderButton: Bool = false) {
         self.showXButton = showXButton
@@ -99,13 +98,14 @@ class ContentsPageViewController: UIViewController {
         
         configureUI()
         makeConstraints()
+//        setGradient()
     }
     
     
     private func configureUI() {
         
         imageView.contentMode = .scaleAspectFill
-    
+        
         view.addSubview(stackView)
         stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(subTitleLabel)
@@ -122,27 +122,27 @@ class ContentsPageViewController: UIViewController {
     }
     
     private func setDetailTitle(_ detailTitle: String) {
-           let paragraphStyle = NSMutableParagraphStyle()
-           paragraphStyle.lineSpacing = 6
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 6
         paragraphStyle.alignment = .center
-           let attributedString = NSAttributedString(
-               string: detailTitle,
-               attributes: [
-                   .paragraphStyle: paragraphStyle,
-                   .font: UIFont.systemFont(ofSize: 13)
-               ]
-           )
-           detailTitleLabel.attributedText = attributedString
-       }
+        let attributedString = NSAttributedString(
+            string: detailTitle,
+            attributes: [
+                .paragraphStyle: paragraphStyle,
+                .font: UIFont.systemFont(ofSize: 13)
+            ]
+        )
+        detailTitleLabel.attributedText = attributedString
+    }
     
     
     private func makeConstraints() {
         
         stackView.snp.makeConstraints {
-                    $0.centerX.equalToSuperview()
-                    $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(80)
-                    $0.width.equalToSuperview().inset(20)
-                }
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(80)
+            $0.width.equalToSuperview().inset(20)
+        }
         
         if showXButton {
             xButton.snp.makeConstraints {
@@ -153,37 +153,50 @@ class ContentsPageViewController: UIViewController {
         }
         
         if showWanderButton {
-                    wanderButton.snp.makeConstraints {
-                        $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
-                        $0.centerX.equalToSuperview()
-                        $0.width.equalTo(235)
-                        $0.height.equalTo(50)
-                    }
-                }
-                
-                titleLabel.snp.makeConstraints {
-                    $0.top.equalTo(stackView.snp.top)
-                    $0.centerX.equalToSuperview()
-                }
-                
-                subTitleLabel.snp.makeConstraints {
-                    $0.top.equalTo(titleLabel.snp.bottom).offset(20)
-                    $0.centerX.equalToSuperview()
-                    $0.width.equalTo(stackView.snp.width)
-                }
-                
-                detailTitleLabel.snp.makeConstraints {
-                    $0.top.equalTo(subTitleLabel.snp.bottom).offset(8)
-                    $0.centerX.equalToSuperview()
-                    $0.width.equalTo(stackView.snp.width)
-                }
-                
-                imageView.snp.makeConstraints {
-                    $0.top.equalTo(detailTitleLabel.snp.bottom).offset(30)
-                    $0.centerX.equalToSuperview()
-                    $0.width.height.equalTo(view).multipliedBy(0.6)
-                }
+            wanderButton.snp.makeConstraints {
+                $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
+                $0.centerX.equalToSuperview()
+                $0.width.equalTo(235)
+                $0.height.equalTo(50)
+            }
+        }
+        
+        titleLabel.snp.makeConstraints {
+            $0.top.equalTo(stackView.snp.top)
+            $0.centerX.equalToSuperview()
+        }
+        
+        subTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
+            $0.centerX.equalToSuperview()
+            $0.width.equalTo(stackView.snp.width)
+        }
+        
+        detailTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(subTitleLabel.snp.bottom).offset(8)
+            $0.centerX.equalToSuperview()
+            $0.width.equalTo(stackView.snp.width)
+        }
+        
+        imageView.snp.makeConstraints {
+            $0.top.equalTo(detailTitleLabel.snp.bottom).offset(30)
+            $0.centerX.equalToSuperview()
+            $0.width.height.equalTo(view).multipliedBy(0.6)
+        }
     }
+    
+//    private func setGradient() {
+//        let maskedView = UIView(frame: CGRect(x: 0, y: 722, width: 393, height: 130))
+//        let gradientLayer = CAGradientLayer()
+//        
+//        maskedView.backgroundColor = view.backgroundColor
+//        gradientLayer.frame = maskedView.bounds
+//        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98), UIColor.white.cgColor, UIColor.white.cgColor]
+//        gradientLayer.locations = [0, 0.05, 0.8, 1]
+//        maskedView.layer.mask = gradientLayer
+//        view.addSubview(maskedView)
+//        maskedView.isUserInteractionEnabled = false
+//    }
     
     @objc private func xButtonTapped() {
         let alert = UIAlertController(title: nil, message: "정말 튜토리얼을 종료하시겠습니까?", preferredStyle: .alert)
@@ -201,4 +214,5 @@ class ContentsPageViewController: UIViewController {
              nextVC.modalPresentationStyle = .fullScreen
              self.present(nextVC, animated: true)
         }
+
 }

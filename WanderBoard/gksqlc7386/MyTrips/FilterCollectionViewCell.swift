@@ -16,7 +16,7 @@ class FilterCollectionViewCell: UICollectionViewCell {
     let filterButton = UIButton().then {
         $0.backgroundColor = .clear
         $0.setTitleColor(.darkgray, for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 13, weight: .medium)
+        $0.titleLabel?.font = .systemFont(ofSize: 12, weight: .regular)
         $0.layer.cornerRadius = 12
         $0.layer.borderColor = UIColor.lightgray.cgColor
         $0.layer.borderWidth = 1

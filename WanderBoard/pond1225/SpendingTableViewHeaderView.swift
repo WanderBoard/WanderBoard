@@ -43,7 +43,7 @@ class SpendingTableViewHeaderView: UITableViewHeaderFooterView {
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
         
-        self.contentView.backgroundColor = .lightGray
+        self.contentView.backgroundColor = .lightgray
         
         configureUI()
         makeConstraints()

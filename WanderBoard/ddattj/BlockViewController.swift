@@ -151,6 +151,7 @@ extension BlockViewController: UITableViewDelegate, UITableViewDataSource {
         let user = filteredUsers[indexPath.row]
         cell.configure(with: user)
         cell.delegate = self
+        cell.selectionStyle = .none
         return cell
     }
 }

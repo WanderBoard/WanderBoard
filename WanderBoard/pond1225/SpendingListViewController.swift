@@ -338,6 +338,7 @@ extension SpendingListViewController: UITableViewDataSource {
         cell.memo.numberOfLines = 2
         cell.expenseAmount.text = "\(formatCurrency(expense.expenseAmount))원"
         cell.categoryImageView.image = UIImage(systemName: expense.imageName)
+        cell.selectionStyle = .none
         
         return cell
     }
@@ -367,6 +368,7 @@ extension SpendingListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80 //메모에 따라 늘어나도록 스택뷰...해줘야할듯 합니다
+
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {

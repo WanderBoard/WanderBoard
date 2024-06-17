@@ -97,8 +97,8 @@ class HotCollectionViewCell: UICollectionViewCell {
         // 이전 이미지를 초기화
         backImg.image = nil
         
-        // 이미지 일단 첫 번째 이미지
-        if let imageUrl = hotLog.media.first?.url, let url = URL(string: imageUrl) {
+        // 이미지 대표 이미지
+        if let imageUrl = hotLog.media.first(where: { $0.isRepresentative })?.url ?? hotLog.media.first?.url, let url = URL(string: imageUrl) {
             loadImage(from: url) { [weak self] image in
                 DispatchQueue.main.async {
                     guard self?.locationLabel.text == hotLog.location else {

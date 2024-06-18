@@ -92,9 +92,13 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         return titles.map { title in
             var configuration = UIButton.Configuration.filled()
             configuration.title = title
-            configuration.baseBackgroundColor = title == "선택안함" ? .black : .babygray
+            configuration.baseBackgroundColor = title == "선택안함" ? .black : .white
             configuration.baseForegroundColor = title == "선택안함" ? .white : .black
             configuration.cornerStyle = .capsule
+            if title != "선택안함" {
+                configuration.background.strokeColor = .black
+                configuration.background.strokeWidth = 1
+            }
 
             let button = UIButton(configuration: configuration, primaryAction: nil)
             button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
@@ -105,15 +109,19 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
                 if button.isSelected {
                     updatedConfiguration?.baseBackgroundColor = .black
                     updatedConfiguration?.baseForegroundColor = .white
+                    updatedConfiguration?.background.strokeWidth = 0
                 } else {
-                    updatedConfiguration?.baseBackgroundColor = .babygray
+                    updatedConfiguration?.baseBackgroundColor = .white
                     updatedConfiguration?.baseForegroundColor = .black
+                    updatedConfiguration?.background.strokeColor = .black
+                    updatedConfiguration?.background.strokeWidth = 1
                 }
                 button.configuration = updatedConfiguration
             }
             return button
         }
     }()
+
 
     private let interestsLabel: UILabel = {
         let label = UILabel()
@@ -529,8 +537,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         let tagLabel = UILabel()
         tagLabel.text = text
         tagLabel.font = UIFont.systemFont(ofSize: 14)
-        tagLabel.textColor = .white
-        tagLabel.backgroundColor = .black
+        tagLabel.textColor = .darkgray
+        tagLabel.backgroundColor = .babygray
         tagLabel.layer.cornerRadius = 10
         tagLabel.clipsToBounds = true
         tagLabel.textAlignment = .center

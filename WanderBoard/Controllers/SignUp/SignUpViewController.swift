@@ -323,19 +323,19 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
 //        }
         
         subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(30)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             make.centerX.equalToSuperview()
         }
         
         profileImageView.snp.makeConstraints { make in
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(20)
+            make.top.equalTo(subtitleLabel.snp.bottom).offset(16)
             make.centerX.equalToSuperview()
             make.width.equalTo(100)
             make.height.equalTo(100)
         }
         
         nickNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(profileImageView.snp.bottom).offset(30)
+            make.top.equalTo(profileImageView.snp.bottom).offset(20)
             make.left.equalToSuperview().inset(34)
         }
         
@@ -360,7 +360,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         }
         
         genderLabel.snp.makeConstraints { make in
-            make.top.equalTo(nicknameHintLabel.snp.bottom).offset(50)
+            make.top.equalTo(nicknameHintLabel.snp.bottom).offset(30)
             make.left.equalToSuperview().inset(34)
         }
         
@@ -385,7 +385,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         }
         
         interestsLabel.snp.makeConstraints { make in
-            make.top.equalTo(lastButton!.snp.bottom).offset(40)
+            make.top.equalTo(lastButton!.snp.bottom).offset(20)
             make.left.equalToSuperview().inset(34)
         }
         
@@ -410,12 +410,12 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         }
 
         privacyCheckBox.snp.makeConstraints { make in
-            make.bottom.equalTo(signUpButton.snp.top).offset(-20)
+            make.bottom.equalTo(signUpButton.snp.top).offset(-16)
             make.left.equalToSuperview().inset(30)
         }
         
         privacyPolicyButton.snp.makeConstraints { make in
-            make.bottom.equalTo(signUpButton.snp.top).offset(-20)
+            make.bottom.equalTo(signUpButton.snp.top).offset(-16)
             make.right.equalToSuperview().inset(30)
         }
         
@@ -424,7 +424,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             make.left.equalToSuperview().inset(30)
             make.right.equalToSuperview().inset(30)
             make.height.equalTo(50)
-            make.bottom.equalToSuperview().inset(48)
+            make.bottom.equalToSuperview().inset(30)
         }
         
         privacyCheckBox.addTarget(self, action: #selector(privacyPolicyTapped), for: .touchUpInside)

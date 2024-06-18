@@ -13,15 +13,19 @@ class HotTableViewCell: UITableViewCell {
     
     weak var delegate: HotTableViewCellDelegate?
     
+    var isRefreshing = false
+    var itemWidth: CGFloat = 240.0
+    let minimumLineSpacing: CGFloat = 20
+    
     let hotView = UIView().then {
         $0.backgroundColor = UIColor(named: "textColor")
-    
+        
         $0.layer.shadowOffset = CGSize(width: 5, height: 5)
         $0.layer.shadowOpacity = 0.3
         $0.layer.shadowRadius = 10
         $0.layer.shadowColor = UIColor.black.cgColor
         $0.layer.masksToBounds = false
-  
+        
         $0.layer.cornerRadius = 30
         $0.layer.maskedCorners = CACornerMask(arrayLiteral: .layerMinXMinYCorner, .layerMinXMaxYCorner)
     }
@@ -35,6 +39,14 @@ class HotTableViewCell: UITableViewCell {
         $0.dataSource = self
         $0.delegate = self
         $0.register(HotCollectionViewCell.self, forCellWithReuseIdentifier: HotCollectionViewCell.identifier)
+        $0.alwaysBounceHorizontal = true
+        $0.showsHorizontalScrollIndicator = false
+        $0.showsVerticalScrollIndicator = true
+        $0.alwaysBounceVertical = false
+    }
+    
+    lazy var refreshControl = UIRefreshControl().then {
+        $0.addTarget(self, action: #selector(refreshData), for: .valueChanged)
     }
     
     let hotCollectionViewLayout = UICollectionViewFlowLayout().then {
@@ -49,7 +61,7 @@ class HotTableViewCell: UITableViewCell {
             hotCollectionView.reloadData()
         }
     }
-
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -106,6 +118,16 @@ class HotTableViewCell: UITableViewCell {
         let shadowColor = traitCollection.userInterfaceStyle == .dark ? UIColor.lightgray : UIColor.black
         hotView.layer.shadowColor = shadowColor.cgColor
     }
+    
+    @objc func refreshData() {
+        guard !isRefreshing else { return }
+        isRefreshing = true
+        delegate?.refreshHotData()
+    }
+    
+    func endRefreshing() {
+        isRefreshing = false
+    }
 }
 
 extension HotTableViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -125,8 +147,38 @@ extension HotTableViewCell: UICollectionViewDataSource, UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         delegate?.hotTableViewCell(self, didSelectItemAt: indexPath)
     }
+    
+    // 페이징 기능 추가
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        let cellWidthIncludeSpacing = itemWidth + minimumLineSpacing
+        
+        var offset = targetContentOffset.pointee
+        let index = (offset.x + scrollView.contentInset.left) / cellWidthIncludeSpacing
+        let roundedIndex: CGFloat = round(index)
+        
+        offset = CGPoint(x: roundedIndex * cellWidthIncludeSpacing - scrollView.contentInset.left, y: scrollView.contentInset.top)
+        targetContentOffset.pointee = offset
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetX = scrollView.contentOffset.x
+        let contentWidth = scrollView.contentSize.width
+        let width = scrollView.frame.size.width
+        
+        if offsetX + width >= contentWidth + 100 {
+            scrollView.setContentOffset(.zero, animated: true)
+            refreshData()
+        }
+        
+        // 맨 앞으로 당겼을 때 새로고침
+        if offsetX <= -100 {
+            scrollView.setContentOffset(.zero, animated: true)
+            refreshData()
+        }
+    }
 }
 
 protocol HotTableViewCellDelegate: AnyObject {
     func hotTableViewCell(_ cell: HotTableViewCell, didSelectItemAt indexPath: IndexPath)
+    func refreshHotData()
 }

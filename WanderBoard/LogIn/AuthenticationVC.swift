@@ -221,8 +221,6 @@ class AuthenticationVC: UIViewController {
     }
     
     private func addGestureRecognizers() {
-//        _ = (termsLabel.text! as NSString).range(of: "Terms of Service")
-//        _ = (termsLabel.text! as NSString).range(of: "Privacy Policy")
 
         let termsTapGesture = UITapGestureRecognizer(target: self, action: #selector(termsOfServiceTapped))
         termsLabel.addGestureRecognizer(termsTapGesture)

@@ -427,7 +427,7 @@ extension MyTripsViewController {
     func updateNavigationBarColor() {
         let navbarAppearance = UINavigationBarAppearance()
         navbarAppearance.configureWithOpaqueBackground()
-        let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.clear
+        _ = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.clear
         navbarAppearance.backgroundColor = .systemBackground
         navigationController?.navigationBar.standardAppearance = navbarAppearance
     }

@@ -24,7 +24,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
-
+        
         let configuration = UIImage.SymbolConfiguration(pointSize: 30, weight: .thin)
         let image = UIImage(systemName: "person.fill", withConfiguration: configuration)
         
@@ -46,7 +46,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         return label
     }()
     
-     private let nicknameTextField: UITextField = {
+    private let nicknameTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = " 닉네임을 입력하세요"
         textField.borderStyle = .none
@@ -57,7 +57,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 45))
         textField.leftView = paddingView
         textField.leftViewMode = .always
-
+        
         return textField
     }()
     
@@ -72,11 +72,11 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let duplicateCheckButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("중복확인", for: .normal)
-//        button.backgroundColor = .orange
-//        button.setTitleColor(.systemBackground, for: .normal)
+        //        button.backgroundColor = .orange
+        //        button.setTitleColor(.systemBackground, for: .normal)
         button.layer.cornerRadius = 10
         button.layer.masksToBounds = true
-
+        
         return button
     }()
     
@@ -99,7 +99,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
                 configuration.background.strokeColor = .black
                 configuration.background.strokeWidth = 1
             }
-
+            
             let button = UIButton(configuration: configuration, primaryAction: nil)
             button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
             button.isSelected = title == "선택안함"
@@ -121,8 +121,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             return button
         }
     }()
-
-
+    
+    
     private let interestsLabel: UILabel = {
         let label = UILabel()
         label.text = "관심 여행지"
@@ -161,7 +161,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         configuration.image = UIImage(systemName: "circle")
         configuration.imagePadding = 8
         configuration.baseForegroundColor = .black
-
+        
         let button = UIButton(configuration: configuration, primaryAction: nil)
         button.isEnabled = false
         
@@ -190,10 +190,10 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             updatedConfiguration?.image = image
             button.configuration = updatedConfiguration
         }
-
+        
         return button
     }()
-
+    
     private let privacyPolicyButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("확인하기 ＞", for: .normal)
@@ -205,8 +205,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let signUpButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("회원가입", for: .normal)
-//        button.backgroundColor = .black
-//        button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 10
         return button
     }()
@@ -255,7 +253,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         
         let backButton = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(backButtonTapped))
-//        backButton.title = "Back"
         self.navigationItem.leftBarButtonItem = backButton
     }
     
@@ -270,7 +267,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             let activeTextFieldBottom = activeTextField?.frame.maxY ?? 0
             
             if activeTextFieldBottom > keyboardTop {
-                let offset = activeTextFieldBottom - keyboardTop + 70 // 키보드 위? 텍스트 필드 높이? 위치? 조정!!
+                let offset = activeTextFieldBottom - keyboardTop + 70
                 self.view.frame.origin.y = -offset
             }
         }
@@ -290,7 +287,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     func textFieldDidEndEditing(_ textField: UITextField) {
         if activeTextField == textField {
             activeTextField = nil
-            self.view.frame.origin.y = 0 // 스크롤 된 상태에서 상단 텍스트필드 다시 터치하면 뷰 원래 위치로 내려주는!
+            self.view.frame.origin.y = 0
         }
     }
     
@@ -338,7 +335,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             make.right.equalTo(duplicateCheckButton.snp.left).offset(-10)
             make.height.equalTo(43)
         }
-        
         
         duplicateCheckButton.snp.makeConstraints { make in
             make.centerY.equalTo(nicknameTextField.snp.centerY)
@@ -391,17 +387,17 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         tagScrollView.snp.makeConstraints { make in
             make.top.equalTo(interestsTextField.snp.bottom).offset(16)
-            make.left.equalToSuperview()//.inset(30)
-            make.right.equalToSuperview()//.inset(30)
+            make.left.equalToSuperview()
+            make.right.equalToSuperview()
             make.height.equalTo(50)
         }
         
         tagContainerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.height.equalToSuperview() // tagScrollView의 높이에 맞춤
+            make.height.equalToSuperview()
             make.left.equalToSuperview()
         }
-
+        
         privacyCheckBox.snp.makeConstraints { make in
             make.bottom.equalTo(signUpButton.snp.top).offset(-16)
             make.left.equalToSuperview().inset(30)
@@ -497,9 +493,9 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         updateSignUpButtonState()
         updateDuplicateCheckButtonState()
     }
-
+    
     @objc private func interestsTextFieldDidChange(_ textField: UITextField) {
-
+        
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -529,14 +525,14 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         tagLabel.textAlignment = .center
         tagLabel.sizeToFit()
         let tagWidth = tagLabel.frame.width + 16
-
+        
         tagLabel.snp.makeConstraints { make in
             make.height.equalTo(30)
             make.width.equalTo(tagWidth)
         }
-
+        
         tagContainerView.addSubview(tagLabel)
-
+        
         let previousTagLabel = tagContainerView.subviews.dropLast().last
         tagLabel.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(6)
@@ -546,23 +542,23 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
                 make.left.equalToSuperview().inset(30)
             }
         }
-
+        
         tagContainerView.snp.remakeConstraints { make in
             make.edges.equalToSuperview()
             make.height.equalToSuperview()
             make.right.equalTo(tagLabel.snp.right).offset(8)
         }
-
+        
         interestTags.append(text)
         updateSignUpButtonState()
-
+        
         // Scroll to the added tag
         tagScrollView.layoutIfNeeded()
         let contentWidth = tagContainerView.frame.width
         let offsetX = max(contentWidth - tagScrollView.bounds.width, 0)
         tagScrollView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: true)
     }
-
+    
     
     private func updateDuplicateCheckButtonState() {
         let nicknameLength = nicknameTextField.text?.count ?? 0
@@ -570,7 +566,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         duplicateCheckButton.isEnabled = isValidLength
         duplicateCheckButton.backgroundColor = isValidLength ? .black : .babygray
         duplicateCheckButton.setTitleColor(isValidLength ? .white : .black, for: .normal)
-
+        
     }
     
     private func showAlert(title: String, message: String) {
@@ -579,7 +575,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         alert.addAction(confirmAction)
         present(alert, animated: true, completion: nil)
     }
-
+    
     // 확인 및 취소
     private func showConfirmationAlert(title: String, message: String, nickname: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -627,7 +623,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         privacyVC.modalPresentationStyle = .formSheet
         present(privacyVC, animated: true, completion: nil)
     }
-
+    
     @objc private func updatePrivacyPolicyButtonState() {
         privacyPolicyButton.isEnabled = !privacyCheckBox.isSelected
         privacyPolicyButton.setTitleColor(privacyCheckBox.isSelected ? .lightGray : .black, for: .normal)

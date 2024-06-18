@@ -86,6 +86,10 @@ class GalleryDetailViewController: UIViewController {
         scrollView.delegate = self
         pageControl.numberOfPages = selectedImages.count
         
+        let imageHeightRatio: CGFloat = 0.7
+        let imageHeight = view.frame.height * imageHeightRatio
+        let topOffset = (view.frame.height - imageHeight) / 2
+        
         for (index, image) in selectedImages.enumerated() {
             let imageView = UIImageView(image: image)
             imageView.contentMode = .scaleAspectFill
@@ -95,8 +99,8 @@ class GalleryDetailViewController: UIViewController {
             
             imageView.snp.makeConstraints {
                 $0.width.equalToSuperview()
-                $0.height.equalTo(600)
-                $0.centerY.equalToSuperview()
+                $0.height.equalTo(imageHeight)
+                $0.top.equalToSuperview().offset(topOffset)
                 $0.leading.equalToSuperview().offset(CGFloat(index) * view.frame.width)
             }
         }

@@ -479,10 +479,10 @@
 		4DC759912C20643900976FAA /* DetailPage */ = {
 			isa = PBXGroup;
 			children = (
-				2A7623E62C1F0F7A0044CF05 /* CalendarHostingController.swift */,
-				4DB75A042C13416E001813C3 /* GalleryDetailViewController.swift */,
 				4DFA37622C077122001B03F8 /* DetailViewController.swift */,
 				4D37AF242C1D4640005DADEA /* DetailInputViewController.swift */,
+				2A7623E62C1F0F7A0044CF05 /* CalendarHostingController.swift */,
+				4DB75A042C13416E001813C3 /* GalleryDetailViewController.swift */,
 				4D21E8562C1AB932002FDBC9 /* MateViewController.swift */,
 			);
 			path = DetailPage;

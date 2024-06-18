@@ -194,7 +194,9 @@ class SpendingListViewController: UIViewController {
     @objc func handleBackButtonTapped() {
         if let navigationController = navigationController {
             if let detailInputVC = navigationController.viewControllers.first(where: { $0 is DetailInputViewController }) as? DetailInputViewController {
-                detailInputVC.totalSpendingAmountText = totalSpendingAmount.text
+                if let totalSpendingText = totalSpendingAmount.text, !totalSpendingText.isEmpty, totalSpendingText != "0원" {
+                    detailInputVC.totalSpendingAmountText = totalSpendingText
+                }
                 detailInputVC.expenses = dailyExpenses
             }
             navigationController.popViewController(animated: true)

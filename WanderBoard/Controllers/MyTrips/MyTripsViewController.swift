@@ -347,7 +347,9 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
             }
             
             let tripLog = filterTripLogs()[indexPath.item]
-            cell.configure(with: tripLog)
+            Task {
+                await cell.configure(with: tripLog)
+            }
             cell.updateProfileImageVisibility(for: currentFilterIndex)
             
             return cell

@@ -99,7 +99,6 @@
 		9592A3D72C1F41B400CF6FD6 /* BlockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9592A3D62C1F41B400CF6FD6 /* BlockViewController.swift */; };
 		9592A3D92C1F436500CF6FD6 /* BlockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9592A3D82C1F436500CF6FD6 /* BlockTableViewCell.swift */; };
 		FB0C32442C14C2D000DD2F00 /* WanderBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FB0C32422C14C2D000DD2F00 /* WanderBoard.xcdatamodeld */; };
-		FB3793AB2C1D660B009C1268 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */; };
 		FB3793AD2C1D6854009C1268 /* AccountDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */; };
 		FB501A642C1F2CB70083E796 /* BlockedUserSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB501A632C1F2CB70083E796 /* BlockedUserSummary.swift */; };
 		FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */; };
@@ -190,7 +189,6 @@
 		9592A3D62C1F41B400CF6FD6 /* BlockViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockViewController.swift; sourceTree = "<group>"; };
 		9592A3D82C1F436500CF6FD6 /* BlockTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockTableViewCell.swift; sourceTree = "<group>"; };
 		FB0C32432C14C2D000DD2F00 /* WanderBoard.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WanderBoard.xcdatamodel; sourceTree = "<group>"; };
-		FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionManager.swift; sourceTree = "<group>"; };
 		FB501A632C1F2CB70083E796 /* BlockedUserSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUserSummary.swift; sourceTree = "<group>"; };
 		FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
@@ -369,7 +367,6 @@
 				2A5F47C52C0E276500D289AA /* ImageUploader.swift */,
 				2A7655102C0622C000D8A098 /* FirestoreManager.swift */,
 				2A76550A2C06175B00D8A098 /* AuthenticationManager.swift */,
-				FB3793AA2C1D660B009C1268 /* CoreDataManager.swift */,
 				FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */,
 			);
 			path = NetworkManager;
@@ -706,7 +703,6 @@
 				4DFA37672C07712D001B03F8 /* FriendCollectionViewCell.swift in Sources */,
 				4DFA37632C077122001B03F8 /* DetailViewController.swift in Sources */,
 				4DFA37652C077128001B03F8 /* GalleryCollectionViewCell.swift in Sources */,
-				FB3793AB2C1D660B009C1268 /* CoreDataManager.swift in Sources */,
 				2A7623D92C1E21130044CF05 /* WavesView.swift in Sources */,
 				4D9D8B522C05B1BD0043E7DF /* SceneDelegate.swift in Sources */,
 				4D21E85F2C1B4C8A002FDBC9 /* AddedMateCell.swift in Sources */,

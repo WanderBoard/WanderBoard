@@ -118,7 +118,7 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         self.profileImg.isHidden = filterIndex == 0
     }
     
-    func configure(with tripLog: PinLog) {
+    func configure(with tripLog: PinLog) async {
         if let imageUrl = tripLog.media.first(where: { $0.isRepresentative })?.url ?? tripLog.media.first?.url, let url = URL(string: imageUrl) {
             bgImage.kf.setImage(with: url)
         } else {
@@ -136,18 +136,10 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         privateButton.isHidden = tripLog.isPublic
         
         // 프로필 사진
-        Task {
-            if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: tripLog.authorId), let url = URL(string: photoURL) {
-                loadImage(from: url) { [weak self] image in
-                    DispatchQueue.main.async {
-                        self?.profileImg.image = image
-                    }
-                }
-            } else {
-                DispatchQueue.main.async {
-                    self.profileImg.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
-                }
-            }
+        if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: tripLog.authorId), let url = URL(string: photoURL) {
+            profileImg.kf.setImage(with: url, placeholder: UIImage(systemName: "person.circle"))
+        } else {
+            profileImg.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
         }
     }
     

@@ -93,7 +93,7 @@ class HotCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func configure(with hotLog: PinLog) {
+    func configure(with hotLog: PinLog) async {
         locationLabel.text = hotLog.location
         dateLabel.text = formatDate(hotLog.startDate)
         
@@ -102,37 +102,16 @@ class HotCollectionViewCell: UICollectionViewCell {
         
         // 대표 이미지
         if let imageUrl = hotLog.media.first(where: { $0.isRepresentative })?.url ?? hotLog.media.first?.url, let url = URL(string: imageUrl) {
-            let cacheKey = NSString(string: url.absoluteString)
-            if let cachedImage = HotCollectionViewCell.imageCache.object(forKey: cacheKey) {
-                backImg.image = cachedImage
-            } else {
-                loadImage(from: url) { [weak self] image in
-                    DispatchQueue.main.async {
-                        guard let self = self else { return }
-                        if let image = image {
-                            HotCollectionViewCell.imageCache.setObject(image, forKey: cacheKey)
-                        }
-                        self.backImg.image = image
-                    }
-                }
-            }
+            backImg.kf.setImage(with: url, placeholder: UIImage(systemName: "photo"))
         } else {
             backImg.image = UIImage(systemName: "photo") // 임시 기본 이미지
         }
         
         // 프로필 사진
-        Task {
-            if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: hotLog.authorId), let url = URL(string: photoURL) {
-                loadImage(from: url) { [weak self] image in
-                    DispatchQueue.main.async {
-                        self?.profile.image = image
-                    }
-                }
-            } else {
-                DispatchQueue.main.async {
-                    self.profile.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
-                }
-            }
+        if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: hotLog.authorId), let url = URL(string: photoURL) {
+            profile.kf.setImage(with: url, placeholder: UIImage(systemName: "person.circle"))
+        } else {
+            profile.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
         }
     }
     

@@ -97,7 +97,7 @@ class RecentCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func configure(with recentLog: PinLog) {
+    func configure(with recentLog: PinLog) async {
         localLabel.text = recentLog.location
         dateLabel.text = formatDate(recentLog.startDate)
         
@@ -106,20 +106,7 @@ class RecentCollectionViewCell: UICollectionViewCell {
         
         // 대표 이미지
         if let imageUrl = recentLog.media.first(where: { $0.isRepresentative })?.url ?? recentLog.media.first?.url, let url = URL(string: imageUrl) {
-            let cacheKey = NSString(string: url.absoluteString)
-            if let cachedImage = RecentCollectionViewCell.imageCache.object(forKey: cacheKey) {
-                backImg.image = cachedImage
-            } else {
-                loadImage(from: url) { [weak self] image in
-                    DispatchQueue.main.async {
-                        guard let self = self else { return }
-                        if let image = image {
-                            RecentCollectionViewCell.imageCache.setObject(image, forKey: cacheKey)
-                        }
-                        self.backImg.image = image
-                    }
-                }
-            }
+            backImg.kf.setImage(with: url, placeholder: UIImage(systemName: "photo"))
         } else {
             backImg.image = UIImage(systemName: "photo") // 임시 기본 이미지
         }

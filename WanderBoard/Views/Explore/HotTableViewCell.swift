@@ -109,15 +109,17 @@ class HotTableViewCell: UITableViewCell {
 }
 
 extension HotTableViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return hotPinLogs.count
-    }
-    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HotCollectionViewCell.identifier, for: indexPath) as! HotCollectionViewCell
         let hotLog = hotPinLogs[indexPath.item]
-        cell.configure(with: hotLog)
+        Task {
+            await cell.configure(with: hotLog)
+        }
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return hotPinLogs.count
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

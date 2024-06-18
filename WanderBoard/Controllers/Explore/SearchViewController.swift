@@ -178,7 +178,7 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentCollectionViewCell.identifier, for: indexPath) as? RecentCollectionViewCell else { return UICollectionViewCell() }
-        cell.configure(with: searchedLogs[indexPath.item])
+        Task { await cell.configure(with: searchedLogs[indexPath.item]) }
         return cell
     }
 

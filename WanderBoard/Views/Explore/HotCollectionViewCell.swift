@@ -12,6 +12,9 @@ import Then
 class HotCollectionViewCell: UICollectionViewCell {
     static let identifier = String(describing: HotCollectionViewCell.self)
     
+    //이미지 캐싱
+    private static let imageCache = NSCache<NSString, UIImage>()
+    
     private let backImg = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
@@ -97,33 +100,38 @@ class HotCollectionViewCell: UICollectionViewCell {
         // 이전 이미지를 초기화
         backImg.image = nil
         
-        // 이미지 대표 이미지
+        // 대표 이미지
         if let imageUrl = hotLog.media.first(where: { $0.isRepresentative })?.url ?? hotLog.media.first?.url, let url = URL(string: imageUrl) {
-            loadImage(from: url) { [weak self] image in
-                DispatchQueue.main.async {
-                    guard self?.locationLabel.text == hotLog.location else {
-                        return
+            let cacheKey = NSString(string: url.absoluteString)
+            if let cachedImage = HotCollectionViewCell.imageCache.object(forKey: cacheKey) {
+                backImg.image = cachedImage
+            } else {
+                loadImage(from: url) { [weak self] image in
+                    DispatchQueue.main.async {
+                        guard let self = self else { return }
+                        if let image = image {
+                            HotCollectionViewCell.imageCache.setObject(image, forKey: cacheKey)
+                        }
+                        self.backImg.image = image
                     }
-                    self?.backImg.image = image
                 }
             }
         } else {
             backImg.image = UIImage(systemName: "photo") // 임시 기본 이미지
         }
         
-        //프로필 사진
-        FirestoreManager.shared.fetchUserProfileImageURL(userId: hotLog.authorId) { [weak self] photoURL in
-            if let photoURL = photoURL, let url = URL(string: photoURL) {
-                self?.loadImage(from: url) { image in
+        // 프로필 사진
+        Task {
+            if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: hotLog.authorId), let url = URL(string: photoURL) {
+                loadImage(from: url) { [weak self] image in
                     DispatchQueue.main.async {
-                        guard self?.locationLabel.text == hotLog.location else {
-                            return
-                        }
                         self?.profile.image = image
                     }
                 }
             } else {
-                self?.profile.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
+                DispatchQueue.main.async {
+                    self.profile.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
+                }
             }
         }
     }

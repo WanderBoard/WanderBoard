@@ -135,17 +135,17 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         
         privateButton.isHidden = tripLog.isPublic
         
-        // 프로필 이미지 로드
-        FirestoreManager.shared.fetchUserProfileImageURL(userId: tripLog.authorId) { [weak self] photoURL in
-            if let photoURL = photoURL, let url = URL(string: photoURL) {
-                self?.loadImage(from: url) { image in
+        // 프로필 사진
+        Task {
+            if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: tripLog.authorId), let url = URL(string: photoURL) {
+                loadImage(from: url) { [weak self] image in
                     DispatchQueue.main.async {
                         self?.profileImg.image = image
                     }
                 }
             } else {
                 DispatchQueue.main.async {
-                    self?.profileImg.image = UIImage(systemName: "person.circle")
+                    self.profileImg.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
                 }
             }
         }

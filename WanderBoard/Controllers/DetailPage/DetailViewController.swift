@@ -712,19 +712,18 @@ class DetailViewController: UIViewController {
             }
         }
         
-        // 프로필 이미지 불러오기
-        FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId) { [weak self] photoURL in
-            if let photoURL = photoURL, let url = URL(string: photoURL) {
-                self?.loadImage(from: url) { image in
+        // 프로필 사진
+        Task {
+            if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId), let url = URL(string: photoURL) {
+                loadImage(from: url) { [weak self] image in
                     DispatchQueue.main.async {
-                        guard self?.locationLabel.text == pinLog.location else {
-                            return
-                        }
                         self?.profileImageView.image = image
                     }
                 }
             } else {
-                self?.profileImageView.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
+                DispatchQueue.main.async {
+                    self.profileImageView.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
+                }
             }
         }
         

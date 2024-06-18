@@ -10,6 +10,9 @@ import UIKit
 class RecentCollectionViewCell: UICollectionViewCell {
     static let identifier = String(describing: RecentCollectionViewCell.self)
     
+    //이미지 캐싱
+    private static let imageCache = NSCache<NSString, UIImage>()
+    
     private let backImg = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
@@ -101,25 +104,25 @@ class RecentCollectionViewCell: UICollectionViewCell {
         // 이전 이미지를 초기화
         backImg.image = nil
         
-        // 이미지 일단 첫 번째 이미지
+        // 대표 이미지
         if let imageUrl = recentLog.media.first(where: { $0.isRepresentative })?.url ?? recentLog.media.first?.url, let url = URL(string: imageUrl) {
-            loadImage(from: url) { [weak self] image in
-                DispatchQueue.main.async {
-                    guard self?.localLabel.text == recentLog.location else {
-                        return
+            let cacheKey = NSString(string: url.absoluteString)
+            if let cachedImage = RecentCollectionViewCell.imageCache.object(forKey: cacheKey) {
+                backImg.image = cachedImage
+            } else {
+                loadImage(from: url) { [weak self] image in
+                    DispatchQueue.main.async {
+                        guard let self = self else { return }
+                        if let image = image {
+                            RecentCollectionViewCell.imageCache.setObject(image, forKey: cacheKey)
+                        }
+                        self.backImg.image = image
                     }
-                    self?.backImg.image = image
                 }
             }
         } else {
             backImg.image = UIImage(systemName: "photo") // 임시 기본 이미지
         }
-    }
-    
-    private func formatDate(_ date: Date) -> String? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy.MM"
-        return dateFormatter.string(from: date)
     }
     
     private func loadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
@@ -131,5 +134,11 @@ class RecentCollectionViewCell: UICollectionViewCell {
             }
         }
         task.resume()
+    }
+    
+    private func formatDate(_ date: Date) -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM"
+        return dateFormatter.string(from: date)
     }
 }

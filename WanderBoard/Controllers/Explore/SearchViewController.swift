@@ -12,6 +12,9 @@ import FirebaseFirestore
 
 class SearchViewController: UIViewController, UISearchBarDelegate {
     
+    //이미지 캐싱
+    private static let imageCache = NSCache<NSString, UIImage>()
+    
     var searchKeyword: String?
     
     var allTripLogs: [PinLog] = []

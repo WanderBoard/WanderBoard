@@ -103,12 +103,11 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         navigationItem.largeTitleDisplayMode = .always
         
         NotificationHelper.changePage(hidden: false, isEnabled: true)
-        updateView()
         plusButton.isHidden = false
 
         Task {
             await loadData()
-            await loadPinnedData() // 핀 찍은 데이터도 로드
+            await loadPinnedData() // 핀 찍은 데이터 로드
             updateView()
         }
     }
@@ -169,15 +168,21 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
 
     private func setGradient() {
-        let maskedView = UIView(frame: CGRect(x: 0, y: 722, width: 393, height: 130))
-        let gradientLayer = CAGradientLayer()
-        
+        let maskedView = UIView()
         maskedView.backgroundColor = view.backgroundColor
-        gradientLayer.frame = maskedView.bounds
-        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98), UIColor.white.cgColor, UIColor.white.cgColor]
-        gradientLayer.locations = [0, 0.05, 0.8, 1]
-        maskedView.layer.mask = gradientLayer
         view.addSubview(maskedView)
+        
+        maskedView.snp.makeConstraints {
+            $0.bottom.leading.trailing.equalToSuperview()
+            $0.height.equalTo(50)
+        }
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = view.bounds
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98).cgColor, UIColor.white.cgColor, UIColor.white.cgColor]
+        gradientLayer.locations = [0, 0.05, 0.8, 1]
+        
+        maskedView.layer.mask = gradientLayer
         maskedView.isUserInteractionEnabled = false
     }
     
@@ -389,7 +394,7 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
         if section == 0 {
             return UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
         } else {
-            return UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
+            return UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
         }
     }
     

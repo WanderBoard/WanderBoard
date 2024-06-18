@@ -49,7 +49,7 @@ class ExploreViewController: UIViewController, PageIndexed {
         
         setupConstraints()
         setGradient()
-        setupNavigationBar()
+        setupNV()
         loadData()
     }
     
@@ -97,7 +97,7 @@ class ExploreViewController: UIViewController, PageIndexed {
         }
     }
     
-    private func setupNavigationBar() {
+    private func setupNV() {
         navigationItem.title = pageText
         
         if let navigationBarSuperview = navigationController?.navigationBar.superview {
@@ -118,15 +118,21 @@ class ExploreViewController: UIViewController, PageIndexed {
     }
     
     private func setGradient() {
-        let maskedView = UIView(frame: CGRect(x: 0, y: 722, width: 393, height: 130))
-        let gradientLayer = CAGradientLayer()
-        
+        let maskedView = UIView()
         maskedView.backgroundColor = view.backgroundColor
-        gradientLayer.frame = maskedView.bounds
-        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98), UIColor.white.cgColor, UIColor.white.cgColor]
-        gradientLayer.locations = [0, 0.05, 0.8, 1]
-        maskedView.layer.mask = gradientLayer
         view.addSubview(maskedView)
+        
+        maskedView.snp.makeConstraints {
+            $0.bottom.leading.trailing.equalToSuperview()
+            $0.height.equalTo(50)
+        }
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = view.bounds
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98).cgColor, UIColor.white.cgColor, UIColor.white.cgColor]
+        gradientLayer.locations = [0, 0.05, 0.8, 1]
+        
+        maskedView.layer.mask = gradientLayer
         maskedView.isUserInteractionEnabled = false
     }
     

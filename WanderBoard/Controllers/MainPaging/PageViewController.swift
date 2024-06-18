@@ -192,7 +192,7 @@ class PageViewController: UIViewController, CLLocationManagerDelegate {
     func updateColor(){
         let navbarAppearance = UINavigationBarAppearance()
         navbarAppearance.configureWithOpaqueBackground()
-        let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.clear
+        let navBarColor = traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.white
         navbarAppearance.backgroundColor = navBarColor
         navigationController?.navigationBar.standardAppearance = navbarAppearance
     }

@@ -172,10 +172,14 @@ extension MKPointAnnotation {
 
     var customSubtitle: String? {
         get {
-            return objc_getAssociatedObject(self, &AssociatedKeys.subtitleKey) as? String
+            return withUnsafePointer(to: &AssociatedKeys.subtitleKey) {
+                objc_getAssociatedObject(self, $0) as? String
+            }
         }
         set {
-            objc_setAssociatedObject(self, &AssociatedKeys.subtitleKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            withUnsafePointer(to: &AssociatedKeys.subtitleKey) {
+                objc_setAssociatedObject(self, $0, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            }
         }
     }
 }

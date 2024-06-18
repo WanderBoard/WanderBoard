@@ -63,8 +63,7 @@ struct MapView: UIViewRepresentable {
             if let title = annotation.title, let completion = self.parent.viewModel.searchResults.first(where: { $0.title == title }) {
                 Task {
                     do {
-                        let mapItem = try await self.parent.viewModel.searchForLocation(completion: completion)
-                        // 필요한 동작을 여기에 추가할 수 있습니다.
+                        _ = try await self.parent.viewModel.searchForLocation(completion: completion)
                     } catch {
                         print("Error: \(error)")
                     }

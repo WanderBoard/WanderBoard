@@ -31,7 +31,7 @@ class TermsOfServiceViewController: UIViewController {
         tableView.separatorStyle = .none
         return tableView
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -46,7 +46,7 @@ class TermsOfServiceViewController: UIViewController {
         
         setupConstraints()
     }
-
+    
     private func setupConstraints() {
         
         view.addSubview(topBar)
@@ -89,11 +89,11 @@ extension TermsOfServiceViewController: UITableViewDelegate, UITableViewDataSour
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return sectionExpandedStatus[section] ? 1 : 0
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: PrivacyPolicyTableViewCell.identifier, for: indexPath) as! PrivacyPolicyTableViewCell
         let scripts = [
@@ -105,16 +105,14 @@ extension TermsOfServiceViewController: UITableViewDelegate, UITableViewDataSour
         cell.disagreeCheckBox.isHidden = true
         return cell
     }
-
-
-
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: PrivacyPolicySectionHeaderView.identifier) as! PrivacyPolicySectionHeaderView
         header.configure(for: section, isCompleted: false, isExpanded: sectionExpandedStatus[section])
         header.delegate = self
         return header
     }
-
+    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 46
     }

@@ -13,6 +13,8 @@ import FirebaseAuth
 
 class ConsentStatusViewController: UIViewController {
     
+    private var sectionExpandedStatus = [false, false]
+    
     var agreedToMarketing = false
     var agreedToThirdParty = false
     var initialAgreedToMarketing = false
@@ -76,7 +78,7 @@ class ConsentStatusViewController: UIViewController {
         tableView.showsVerticalScrollIndicator = false
 
         tableView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(32)
             $0.left.equalTo(view).offset(32)
             $0.right.equalTo(view).offset(-32)
             $0.bottom.equalTo(view).offset(-100)
@@ -220,20 +222,30 @@ extension ConsentStatusViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return sectionExpandedStatus[section] ? 1 : 0 // 주석: 섹션 상태에 따라 셀 수를 결정
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: PrivacyPolicyTableViewCell.identifier, for: indexPath) as! PrivacyPolicyTableViewCell
+        let scripts = [
+            PrivacyPolicyScripts.marketingConsent,
+            PrivacyPolicyScripts.thirdPartySharing
+        ]
         let agreeStatus = indexPath.section == 0 ? agreedToMarketing : agreedToThirdParty
         let isEnabled = cancelButton.isHidden == false
-        cell.configure(for: indexPath.section + 2, delegate: self, agreeStatus: agreeStatus, disagreeStatus: !agreeStatus, isEnabled: isEnabled)
+        cell.configure(for: indexPath.section + 2, delegate: self, scriptText: scripts[indexPath.section], agreeStatus: agreeStatus, disagreeStatus: !agreeStatus, isEnabled: isEnabled)
         return cell
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: PrivacyPolicySectionHeaderView.identifier) as! PrivacyPolicySectionHeaderView
-        header.configure(for: section + 2, isCompleted: true)
+        header.configure(for: section, isCompleted: true, isExpanded: sectionExpandedStatus[section])
+        header.delegate = self
+
+        // 섹션에 맞는 타이틀 설정
+        let titles = ["마케팅활용동의 및 광고수신동의", "개인정보 제3자 제공동의"]
+        header.setTitle(titles[section]) // 주석: 타이틀 설정을 위한 메서드 호출
+        
         return header
     }
 
@@ -258,7 +270,7 @@ extension ConsentStatusViewController: PrivacyPolicyTableViewCellDelegate {
         } else if section == 3 {
             agreedToThirdParty = completed
         }
-        
+
         if agreedToMarketing == initialAgreedToMarketing && agreedToThirdParty == initialAgreedToThirdParty {
             cancelButton.isHidden = false
             saveButton.isHidden = true
@@ -267,5 +279,15 @@ extension ConsentStatusViewController: PrivacyPolicyTableViewCellDelegate {
             saveButton.isHidden = false
             saveButton.isEnabled = true
         }
+    }
+}
+
+extension ConsentStatusViewController: PrivacyPolicySectionHeaderViewDelegate {
+    func didTapHeader(in section: Int) {
+        guard section >= 0 && section < sectionExpandedStatus.count else {
+            return
+        }
+        sectionExpandedStatus[section].toggle()
+        tableView.reloadSections(IndexSet(integer: section), with: .automatic) // 주석: 섹션 상태를 변경하고 해당 섹션을 다시 로드
     }
 }

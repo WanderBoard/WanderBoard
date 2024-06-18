@@ -158,7 +158,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     private let privacyCheckBox: UIButton = {
         var configuration = UIButton.Configuration.plain()
-        configuration.image = UIImage(systemName: "square")
+        configuration.image = UIImage(systemName: "circle")
         configuration.imagePadding = 8
         configuration.baseForegroundColor = .black
 
@@ -185,7 +185,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         button.setAttributedTitle(titleText, for: .normal)
         
         button.configurationUpdateHandler = { button in
-            let image = button.isSelected ? UIImage(systemName: "checkmark.square") : UIImage(systemName: "square")
+            let image = button.isSelected ? UIImage(systemName: "checkmark.circle") : UIImage(systemName: "circle")
             var updatedConfiguration = button.configuration
             updatedConfiguration?.image = image
             button.configuration = updatedConfiguration
@@ -198,7 +198,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         let button = UIButton(type: .system)
         button.setTitle("확인하기 ＞", for: .normal)
         button.titleLabel?.font.withSize(10)
-        button.setTitleColor(.gray, for: .normal)
+        button.setTitleColor(.black, for: .normal)
         return button
     }()
     
@@ -423,6 +423,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         privacyPolicyButton.addTarget(self, action: #selector(privacyPolicyTapped), for: .touchUpInside)
         duplicateCheckButton.addTarget(self, action: #selector(duplicateCheckTapped), for: .touchUpInside)
         signUpButton.addTarget(self, action: #selector(signUpTapped), for: .touchUpInside)
+        privacyCheckBox.addTarget(self, action: #selector(updatePrivacyPolicyButtonState), for: .valueChanged)
     }
     
     private func checkProfileCompletion() {
@@ -621,11 +622,16 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             self.agreedToThirdParty = agreedToThirdParty
             self.privacyCheckBox.isSelected = agreedToTerms && agreedToPrivacyPolicy
             self.updateSignUpButtonState()
+            self.updatePrivacyPolicyButtonState()
         }
         privacyVC.modalPresentationStyle = .formSheet
         present(privacyVC, animated: true, completion: nil)
     }
 
+    @objc private func updatePrivacyPolicyButtonState() {
+        privacyPolicyButton.isEnabled = !privacyCheckBox.isSelected
+        privacyPolicyButton.setTitleColor(privacyCheckBox.isSelected ? .lightGray : .black, for: .normal)
+    }
     
     private func updateSignUpButtonState() {
         let isFormValid = nicknameTextField.isEnabled == false && privacyCheckBox.isSelected

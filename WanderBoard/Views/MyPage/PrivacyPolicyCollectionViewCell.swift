@@ -10,6 +10,7 @@ import SnapKit
 
 protocol PrivacyPolicyTableViewCellDelegate: AnyObject {
     func didChangeCompletionStatus(for section: Int, completed: Bool)
+    
 }
 
 class PrivacyPolicyTableViewCell: UITableViewCell {
@@ -49,10 +50,12 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
             $0.right.equalToSuperview().inset(16)
         }
 
-        agreeCheckBox.setTitle("동의함", for: .normal)
+        agreeCheckBox.setTitle(" 동의함", for: .normal)
         agreeCheckBox.setTitleColor(.black, for: .normal)
-        agreeCheckBox.setImage(UIImage(systemName: "square"), for: .normal)
-        agreeCheckBox.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+        agreeCheckBox.setImage(UIImage(systemName: "circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        agreeCheckBox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
+        agreeCheckBox.tintColor = .black
+
 //        agreeCheckBox.semanticContentAttribute = .forceRightToLeft
         agreeCheckBox.addTarget(self, action: #selector(agreeTapped), for: .touchUpInside)
         
@@ -62,10 +65,12 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
             $0.bottom.equalToSuperview().inset(16)
         }
         
-        disagreeCheckBox.setTitle("동의안함", for: .normal)
+        disagreeCheckBox.setTitle(" 동의안함", for: .normal)
         disagreeCheckBox.setTitleColor(.black, for: .normal)
-        disagreeCheckBox.setImage(UIImage(systemName: "square"), for: .normal)
-        disagreeCheckBox.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
+        disagreeCheckBox.setImage(UIImage(systemName: "circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        disagreeCheckBox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
+        disagreeCheckBox.tintColor = .black
+
 //        agreeCheckBox.semanticContentAttribute = .forceRightToLeft
         disagreeCheckBox.addTarget(self, action: #selector(disagreeTapped), for: .touchUpInside)
         
@@ -85,19 +90,11 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
         scriptLabel.layoutIfNeeded()
     }
 
-    func configure(for section: Int, delegate: PrivacyPolicyTableViewCellDelegate?, agreeStatus: Bool, disagreeStatus: Bool, isEnabled: Bool) {
+    func configure(for section: Int, delegate: PrivacyPolicyTableViewCellDelegate?, scriptText: String, agreeStatus: Bool, disagreeStatus: Bool, isEnabled: Bool) {
         self.section = section
         self.delegate = delegate
         self.isEnabled = isEnabled
-
-        let scripts = [
-            PrivacyPolicyScripts.termsOfService,
-            PrivacyPolicyScripts.privacyPolicy,
-            PrivacyPolicyScripts.marketingConsent,
-            PrivacyPolicyScripts.thirdPartySharing
-        ]
-
-        scriptLabel.text = scripts[section]
+        self.scriptLabel.text = scriptText
 
         agreeCheckBox.isSelected = agreeStatus
         disagreeCheckBox.isSelected = disagreeStatus
@@ -105,47 +102,45 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
         agreeCheckBox.isUserInteractionEnabled = isEnabled
         disagreeCheckBox.isUserInteractionEnabled = isEnabled
 
-        if isEnabled {
-            agreeCheckBox.setTitleColor(.black, for: .normal)
-            disagreeCheckBox.setTitleColor(.black, for: .normal)
-            agreeCheckBox.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
-            agreeCheckBox.setImage(UIImage(systemName: "square"), for: .normal)
-            disagreeCheckBox.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
-            disagreeCheckBox.setImage(UIImage(systemName: "square"), for: .normal)
-        } else {
-            agreeCheckBox.setTitleColor(.black, for: .normal)
-            disagreeCheckBox.setTitleColor(.black, for: .normal)
-            agreeCheckBox.setImage(UIImage(systemName: "checkmark.square.fill")?.withTintColor(UIColor.lightGray, renderingMode: .alwaysOriginal), for: .selected)
-            agreeCheckBox.setImage(UIImage(systemName: "square")?.withTintColor(UIColor.lightGray, renderingMode: .alwaysOriginal), for: .normal)
-            disagreeCheckBox.setImage(UIImage(systemName: "checkmark.square.fill")?.withTintColor(UIColor.lightGray, renderingMode: .alwaysOriginal), for: .selected)
-            disagreeCheckBox.setImage(UIImage(systemName: "square")?.withTintColor(UIColor.lightGray, renderingMode: .alwaysOriginal), for: .normal)
-        }
+        agreeCheckBox.setTitleColor(isEnabled ? .black : .gray, for: .normal)
+        disagreeCheckBox.setTitleColor(isEnabled ? .black : .gray, for: .normal)
+        agreeCheckBox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withTintColor(isEnabled ? .black : .lightGray, renderingMode: .alwaysOriginal), for: .selected)
+        agreeCheckBox.setImage(UIImage(systemName: "circle")?.withTintColor(isEnabled ? .black : .lightGray, renderingMode: .alwaysOriginal), for: .normal)
+        disagreeCheckBox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withTintColor(isEnabled ? .black : .lightGray, renderingMode: .alwaysOriginal), for: .selected)
+        disagreeCheckBox.setImage(UIImage(systemName: "circle")?.withTintColor(isEnabled ? .black : .lightGray, renderingMode: .alwaysOriginal), for: .normal)
 
-        if section == 2 || section == 3 {
-            agreeCheckBox.setTitle("동의함", for: .normal)
-            disagreeCheckBox.setTitle("동의안함", for: .normal)
+        // 모든 섹션에 대해 동의안함 버튼 숨기지 않음
+        disagreeCheckBox.isHidden = !(section >= 2)
+
+        if section == 0 || section == 1 {
+            agreeCheckBox.setTitle(" 동의함", for: .normal)
+            disagreeCheckBox.isHidden = true // 필수 항목에서는 동의안함 버튼 숨김
+        } else if section == 2 || section == 3 {
+            agreeCheckBox.setTitle(" 동의함", for: .normal)
+            disagreeCheckBox.setTitle(" 동의안함", for: .normal)
             disagreeCheckBox.isHidden = false
-        } else {
-            agreeCheckBox.setTitle("동의함", for: .normal)
-            disagreeCheckBox.isHidden = true
         }
+//        else {
+//            agreeCheckBox.setTitle("동의함", for: .normal)
+//            disagreeCheckBox.isHidden = false
+//        }
     }
 
     
-    private func getScriptForSection(_ section: Int) -> String {
-        switch section {
-        case 0:
-            return PrivacyPolicyScripts.termsOfService
-        case 1:
-            return PrivacyPolicyScripts.privacyPolicy
-        case 2:
-            return PrivacyPolicyScripts.marketingConsent
-        case 3:
-            return PrivacyPolicyScripts.thirdPartySharing
-        default:
-            return ""
-        }
-    }
+//    private func getScriptForSection(_ section: Int) -> String {
+//        switch section {
+//        case 0:
+//            return PrivacyPolicyScripts.termsOfService
+//        case 1:
+//            return PrivacyPolicyScripts.privacyPolicy
+//        case 2:
+//            return PrivacyPolicyScripts.marketingConsent
+//        case 3:
+//            return PrivacyPolicyScripts.thirdPartySharing
+//        default:
+//            return ""
+//        }
+//    }
     
     @objc private func agreeTapped() {
         if !isEnabled { return }
@@ -193,3 +188,4 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
         })
     }
 }
+

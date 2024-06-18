@@ -48,6 +48,8 @@ class DetailViewController: UIViewController {
     
     // 추가
     var profileImageView = UIImageView().then {
+        $0.backgroundColor = .white
+        $0.tintColor = .white
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 16
@@ -77,6 +79,8 @@ class DetailViewController: UIViewController {
         $0.font = UIFont.systemFont(ofSize: 40)
         $0.textColor = .white
         $0.numberOfLines = 2
+        $0.adjustsFontSizeToFitWidth = true
+        $0.minimumScaleFactor = 0.5
     }
     
     var dateDaysLabel = UILabel().then {
@@ -369,12 +373,16 @@ class DetailViewController: UIViewController {
     func checkId() {
         if let pinLog = pinLog {
             if isCurrentUser(pinLog: pinLog) {
-                configureView(with: pinLog)
+                Task {
+                    await configureView(with: pinLog)
+                }
                 updatePinButtonState()
                 profileStackView.isHidden = true
             } else {
                 hideAppearUIElements()
-                configureView(with: pinLog)
+                Task {
+                    await configureView(with: pinLog)
+                }
                 updatePinButtonState()
                 profileStackView.isHidden = false
             }
@@ -639,7 +647,7 @@ class DetailViewController: UIViewController {
         }
     }
     
-    func configureView(with pinLog: PinLog) {
+    func configureView(with pinLog: PinLog) async {
         locationLabel.text = pinLog.location
         
         let dateFormatter = DateFormatter()
@@ -713,20 +721,18 @@ class DetailViewController: UIViewController {
             }
         }
         
-        // 프로필 이미지 불러오기
-        FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId) { [weak self] photoURL in
-            if let photoURL = photoURL, let url = URL(string: photoURL) {
-                self?.loadImage(from: url) { image in
-                    DispatchQueue.main.async {
-                        guard self?.locationLabel.text == pinLog.location else {
-                            return
-                        }
-                        self?.profileImageView.image = image
-                    }
-                }
-            } else {
-                self?.profileImageView.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
-            }
+        // 프로필 사진
+        if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId), let url = URL(string: photoURL) {
+            profileImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "person.circle"))
+        } else {
+            profileImageView.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
+        }
+        
+        // 백그라운드 이미지
+        if let representativeImageURL = pinLog.media.first(where: { $0.isRepresentative })?.url ?? pinLog.media.first?.url, let url = URL(string: representativeImageURL) {
+            backgroundImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "photo"))
+        } else {
+            backgroundImageView.image = UIImage(systemName: "photo")
         }
         
         friendTitle.isHidden = pinLog.attendeeIds.isEmpty
@@ -1248,6 +1254,8 @@ protocol DetailViewControllerDelegate: AnyObject {
 extension DetailViewController: DetailInputViewControllerDelegate {
     func didSavePinLog(_ pinLog: PinLog) {
         self.pinLog = pinLog
-        configureView(with: pinLog)
+        Task {
+            await configureView(with: pinLog)
+        }
     }
 }

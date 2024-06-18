@@ -28,20 +28,22 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
     }
     
     let titleLabel = UILabel().then{
-        $0.text = "Croatia"
         let screenWidth = UIScreen.main.bounds.width
         $0.font = .systemFont(ofSize: 28)
         $0.textColor = .white
         $0.textAlignment = .left
         $0.numberOfLines = 2
+        $0.adjustsFontSizeToFitWidth = true
+        $0.minimumScaleFactor = 0.5
     }
     
     let subTitle = UILabel().then{
-        $0.text = "Summer 2017 - 14 days"
         let screenWidth = UIScreen.main.bounds.width
         $0.font = .systemFont(ofSize: 16)
         $0.textColor = .white
         $0.textAlignment = .left
+        $0.adjustsFontSizeToFitWidth = true
+        $0.minimumScaleFactor = 0.7
     }
     
     let stackView = UIStackView().then {
@@ -118,7 +120,7 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         self.profileImg.isHidden = filterIndex == 0
     }
     
-    func configure(with tripLog: PinLog) {
+    func configure(with tripLog: PinLog) async {
         if let imageUrl = tripLog.media.first(where: { $0.isRepresentative })?.url ?? tripLog.media.first?.url, let url = URL(string: imageUrl) {
             bgImage.kf.setImage(with: url)
         } else {
@@ -135,19 +137,11 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         
         privateButton.isHidden = tripLog.isPublic
         
-        // 프로필 이미지 로드
-        FirestoreManager.shared.fetchUserProfileImageURL(userId: tripLog.authorId) { [weak self] photoURL in
-            if let photoURL = photoURL, let url = URL(string: photoURL) {
-                self?.loadImage(from: url) { image in
-                    DispatchQueue.main.async {
-                        self?.profileImg.image = image
-                    }
-                }
-            } else {
-                DispatchQueue.main.async {
-                    self?.profileImg.image = UIImage(systemName: "person.circle")
-                }
-            }
+        // 프로필 사진
+        if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: tripLog.authorId), let url = URL(string: photoURL) {
+            profileImg.kf.setImage(with: url, placeholder: UIImage(systemName: "person.circle"))
+        } else {
+            profileImg.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
         }
     }
     

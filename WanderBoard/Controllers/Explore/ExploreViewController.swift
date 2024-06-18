@@ -49,7 +49,7 @@ class ExploreViewController: UIViewController, PageIndexed {
         
         setupConstraints()
         setGradient()
-        setupNavigationBar()
+        setupNV()
         loadData()
     }
     
@@ -97,7 +97,7 @@ class ExploreViewController: UIViewController, PageIndexed {
         }
     }
     
-    private func setupNavigationBar() {
+    private func setupNV() {
         navigationItem.title = pageText
         
         if let navigationBarSuperview = navigationController?.navigationBar.superview {
@@ -118,15 +118,21 @@ class ExploreViewController: UIViewController, PageIndexed {
     }
     
     private func setGradient() {
-        let maskedView = UIView(frame: CGRect(x: 0, y: 722, width: 393, height: 130))
-        let gradientLayer = CAGradientLayer()
-        
+        let maskedView = UIView()
         maskedView.backgroundColor = view.backgroundColor
-        gradientLayer.frame = maskedView.bounds
-        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98), UIColor.white.cgColor, UIColor.white.cgColor]
-        gradientLayer.locations = [0, 0.05, 0.8, 1]
-        maskedView.layer.mask = gradientLayer
         view.addSubview(maskedView)
+        
+        maskedView.snp.makeConstraints {
+            $0.bottom.leading.trailing.equalToSuperview()
+            $0.height.equalTo(40)
+        }
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = view.bounds
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98).cgColor, UIColor.white.cgColor, UIColor.white.cgColor]
+        gradientLayer.locations = [0, 0.05, 0.8, 1]
+        
+        maskedView.layer.mask = gradientLayer
         maskedView.isUserInteractionEnabled = false
     }
     
@@ -156,7 +162,8 @@ class ExploreViewController: UIViewController, PageIndexed {
             let logs = try await pinLogManager.fetchHotPinLogs()
             await MainActor.run {
                 self.hotLogs = filterBlockedAndHiddenLogs(from: logs)
-                self.tableView.reloadData()
+                let indexPath = IndexPath(row: 0, section: 0)
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
         } catch {
             print("Failed to fetch pin logs: \(error.localizedDescription)")
@@ -218,6 +225,15 @@ extension ExploreViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension ExploreViewController: HotTableViewCellDelegate {
+    func refreshHotData() {
+        Task {
+            await loadHotData()
+            if let hotCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? HotTableViewCell {
+                hotCell.endRefreshing()
+            }
+        }
+    }
+    
     func hotTableViewCell(_ cell: HotTableViewCell, didSelectItemAt indexPath: IndexPath) {
         NotificationHelper.changePage(hidden: true, isEnabled: false)
         searchButton.isHidden = true
@@ -262,7 +278,7 @@ extension ExploreViewController: RecentTableViewCellDelegate {
                         cell.updateItemCount(self.recentLogs.count)
                     }
                 }
-                print("Loaded more logs, total count: \(self.recentLogs.count)")
+                //print("Loaded more logs, total count: \(self.recentLogs.count)")
             case .failure(let error):
                 print("Failed to fetch more data: \(error.localizedDescription)")
             }

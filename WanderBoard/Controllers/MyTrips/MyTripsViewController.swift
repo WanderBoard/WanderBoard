@@ -222,11 +222,11 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             }
             // 사용자가 작성한 핀로그 가져오기
             let userPinLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
-            MyTripsViewController.tripLogs = userPinLogs
+            MyTripsViewController.tripLogs = userPinLogs.sorted { $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast }
             
             // 태그된 핀로그 가져오기
             let taggedPinLogs = try await pinLogManager.fetchTaggedPinLogs(forUserId: userId)
-            MyTripsViewController.taggedTripLogs = taggedPinLogs
+            MyTripsViewController.taggedTripLogs = taggedPinLogs.sorted { $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast }
             
             print("Fetched userPinLogs: \(userPinLogs)")
             print("Fetched taggedPinLogs: \(taggedPinLogs)")

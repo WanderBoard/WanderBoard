@@ -45,6 +45,8 @@ class RecentCollectionViewCell: UICollectionViewCell {
         $0.textColor = .white
         $0.textAlignment = .center
         $0.numberOfLines = 2
+        $0.adjustsFontSizeToFitWidth = true
+        $0.minimumScaleFactor = 0.7
     }
     
     private let stackView = UIStackView().then {

@@ -79,6 +79,8 @@ class DetailViewController: UIViewController {
         $0.font = UIFont.systemFont(ofSize: 40)
         $0.textColor = .white
         $0.numberOfLines = 2
+        $0.adjustsFontSizeToFitWidth = true
+        $0.minimumScaleFactor = 0.5
     }
     
     var dateDaysLabel = UILabel().then {

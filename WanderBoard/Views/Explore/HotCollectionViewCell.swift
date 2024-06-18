@@ -40,6 +40,8 @@ class HotCollectionViewCell: UICollectionViewCell {
         $0.font = UIFont.boldSystemFont(ofSize: 22)
         $0.text = "충청북도 청주시"
         $0.numberOfLines = 2
+        $0.adjustsFontSizeToFitWidth = true
+        $0.minimumScaleFactor = 0.7
     }
     
     private let profile = UIImageView().then {

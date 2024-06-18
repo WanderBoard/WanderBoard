@@ -28,20 +28,22 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
     }
     
     let titleLabel = UILabel().then{
-        $0.text = "Croatia"
         let screenWidth = UIScreen.main.bounds.width
         $0.font = .systemFont(ofSize: 28)
         $0.textColor = .white
         $0.textAlignment = .left
         $0.numberOfLines = 2
+        $0.adjustsFontSizeToFitWidth = true
+        $0.minimumScaleFactor = 0.5
     }
     
     let subTitle = UILabel().then{
-        $0.text = "Summer 2017 - 14 days"
         let screenWidth = UIScreen.main.bounds.width
         $0.font = .systemFont(ofSize: 16)
         $0.textColor = .white
         $0.textAlignment = .left
+        $0.adjustsFontSizeToFitWidth = true
+        $0.minimumScaleFactor = 0.7
     }
     
     let stackView = UIStackView().then {

@@ -15,6 +15,8 @@ import FirebaseFirestore
 class MyPageViewController: BaseViewController, PageIndexed {
     var pageIndex: Int?
     
+    let scrollView = UIScrollView()
+    let contentView = UIView()
     let editButton = UIButton()
     var profile = UIImageView()
     var myName = UILabel()
@@ -41,6 +43,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         tableView.dataSource = self
         
         configureUI()
+        setGradient()
         fetchUserData()
         fetchAndDisplayUserPinCount() // 핀 개수 가져오기 및 UI 업데이트
         fetchInvitationCount()
@@ -48,6 +51,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         
         let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem = backButton
+        navigationItem.largeTitleDisplayMode = .never
     }
     
     
@@ -120,25 +124,41 @@ class MyPageViewController: BaseViewController, PageIndexed {
     }
     
     override func constraintLayout() {
-        [profile, myName, myID, statusB, myPin, tagPin, wanderPin, status1, status2, status3, tableView].forEach(){
-            view.addSubview($0)
+        view.addSubview(scrollView)
+        
+        scrollView.snp.makeConstraints(){
+            $0.edges.equalTo(view)
         }
-        profile.snp.makeConstraints(){
-            $0.centerX.equalTo(view)
-            $0.top.equalTo(view).offset(112)
+        
+        scrollView.addSubview(contentView)
+        
+         [profile, myName, myID, statusB, myPin, tagPin, wanderPin, status1, status2, status3, tableView].forEach(){
+             contentView.addSubview($0)
+        }
+        
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView)
+            $0.width.equalTo(scrollView)
+            $0.height.equalTo(720)
+        }
+        
+        
+        profile.snp.makeConstraints() {
+            $0.centerX.equalTo(contentView)
+            $0.top.equalTo(contentView).offset(14)
             $0.width.height.equalTo(106)
         }
         myName.snp.makeConstraints(){
             $0.top.equalTo(profile.snp.bottom).offset(19)
-            $0.centerX.equalTo(view)
+            $0.centerX.equalTo(contentView)
         }
         myID.snp.makeConstraints(){
             $0.top.equalTo(myName.snp.bottom).offset(5)
-            $0.centerX.equalTo(view)
+            $0.centerX.equalTo(contentView)
         }
         statusB.snp.makeConstraints(){
             $0.top.equalTo(myID.snp.bottom).offset(19)
-            $0.centerX.equalTo(view)
+            $0.centerX.equalTo(contentView)
             $0.width.equalTo(360)
             $0.height.equalTo(91)
         }
@@ -148,7 +168,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         }
         tagPin.snp.makeConstraints(){
             $0.top.equalTo(statusB.snp.top).offset(23)
-            $0.centerX.equalTo(view)
+            $0.centerX.equalTo(contentView)
         }
         wanderPin.snp.makeConstraints(){
             $0.top.equalTo(statusB.snp.top).offset(23)
@@ -160,7 +180,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         }
         status2.snp.makeConstraints(){
             $0.bottom.equalTo(statusB.snp.bottom).inset(24)
-            $0.centerX.equalTo(view)
+            $0.centerX.equalTo(contentView)
         }
         status3.snp.makeConstraints(){
             $0.bottom.equalTo(statusB.snp.bottom).inset(24)
@@ -169,7 +189,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         tableView.snp.makeConstraints(){
             $0.top.equalTo(statusB.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview().inset(32)
-            $0.bottom.equalTo(view).offset(-110)
+            $0.bottom.equalTo(contentView).offset(-110)
 
         }
     }
@@ -179,7 +199,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         editButton.setImage(UIImage(systemName: "pencil.circle"), for: .normal)
         editButton.tintColor = .font
         editButton.imageView?.snp.makeConstraints(){
-            $0.width.height.equalTo(30)
+            $0.width.height.equalTo(25)
         }
         editButton.addTarget(self, action: #selector(edit), for: .touchUpInside)
         let barButtonItem = UIBarButtonItem(customView: editButton)
@@ -230,6 +250,18 @@ class MyPageViewController: BaseViewController, PageIndexed {
         }
     }
     
+    func setGradient() {
+        let maskedView = UIView(frame: CGRect(x: 0, y: ( view.frame.height - 100), width: view.frame.height, height: 100))
+        let gradientLayer = CAGradientLayer()
+        
+        maskedView.backgroundColor = view.backgroundColor
+        gradientLayer.frame = maskedView.bounds
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.7), UIColor.white.cgColor, UIColor.white.cgColor]
+        gradientLayer.locations = [0, 0.5, 0.9, 1]
+        maskedView.layer.mask = gradientLayer
+        view.addSubview(maskedView)
+        maskedView.isUserInteractionEnabled = false
+    }
     
     func updateUI() {
         guard let userData = userData else { return }

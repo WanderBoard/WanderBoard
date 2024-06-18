@@ -291,8 +291,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         signUpButton.isEnabled = false
         signUpButton.backgroundColor = .babygray
         
-//        view.addSubview(topBar)
-//        view.addSubview(titleLabel)
         view.addSubview(subtitleLabel)
         view.addSubview(profileImageView)
         view.addSubview(nickNameLabel)
@@ -308,19 +306,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         view.addSubview(privacyCheckBox)
         view.addSubview(privacyPolicyButton)
         view.addSubview(signUpButton)
-        
-//        topBar.snp.makeConstraints { make in
-//            make.top.equalTo(view.snp.top).offset(16)
-//            make.centerX.equalToSuperview()
-//            make.width.equalTo(80)
-//            make.height.equalTo(4)
-//        }
-//        
-//        titleLabel.snp.makeConstraints { make in
-//            make.top.equalTo(topBar.snp.bottom).offset(20)
-//            make.centerX.equalToSuperview()
-//            make.height.equalTo(20)
-//        }
         
         subtitleLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(30)
@@ -420,7 +405,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         }
         
         signUpButton.snp.makeConstraints { make in
-//            make.top.equalTo(privacyCheckBox.snp.bottom).offset(20)
             make.left.equalToSuperview().inset(30)
             make.right.equalToSuperview().inset(30)
             make.height.equalTo(50)

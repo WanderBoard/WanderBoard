@@ -124,7 +124,7 @@ class ExploreViewController: UIViewController, PageIndexed {
         
         maskedView.snp.makeConstraints {
             $0.bottom.leading.trailing.equalToSuperview()
-            $0.height.equalTo(50)
+            $0.height.equalTo(40)
         }
         
         let gradientLayer = CAGradientLayer()

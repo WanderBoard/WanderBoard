@@ -39,7 +39,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
     let collectionViewFlowLayout = UICollectionViewFlowLayout().then {
         $0.scrollDirection = .vertical
         $0.minimumLineSpacing = 10
-        $0.sectionInset = .init(top: 20, left: 30, bottom: 0, right: 30)
+        $0.sectionInset = .init(top: 20, left: 30, bottom: 20, right: 30)
         
         let screenWidth = UIScreen.main.bounds.width
         let inset: CGFloat = 30
@@ -65,6 +65,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         view.backgroundColor = .systemBackground
         
         setupConstraints()
+        setGradient()
         setupSearchBar()
     }
     
@@ -160,6 +161,25 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         collectionView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+    }
+    
+    private func setGradient() {
+        let maskedView = UIView()
+        maskedView.backgroundColor = view.backgroundColor
+        view.addSubview(maskedView)
+        
+        maskedView.snp.makeConstraints {
+            $0.bottom.leading.trailing.equalToSuperview()
+            $0.height.equalTo(40)
+        }
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = view.bounds
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98).cgColor, UIColor.white.cgColor, UIColor.white.cgColor]
+        gradientLayer.locations = [0, 0.05, 0.8, 1]
+        
+        maskedView.layer.mask = gradientLayer
+        maskedView.isUserInteractionEnabled = false
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {

@@ -519,15 +519,15 @@ class DetailViewController: UIViewController {
         
         
         scrollView.snp.makeConstraints {
-            $0.top.equalTo(backgroundImageView.snp.bottom).offset(-46)
+            $0.top.equalTo(backgroundImageView.snp.bottom).offset(-16)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(40)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(16)
         }
         
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.bottom.equalTo(bottomLogo.snp.bottom).offset(30)
+            $0.bottom.equalTo(bottomLogo.snp.bottom).offset(10)
         }
         
         optionsButton.snp.makeConstraints {
@@ -635,6 +635,7 @@ class DetailViewController: UIViewController {
             $0.width.equalTo(135)
             $0.height.equalTo(18)
             $0.centerX.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(20)
         }
     }
     
@@ -1168,20 +1169,21 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.dateStackView.isHidden = true
                     
                     self.scrollView.snp.remakeConstraints {
-                        $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-20)
+                        $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-16)
                         $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(40)
+                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(16)
                     }
                     
                     self.contentView.snp.remakeConstraints {
                         $0.edges.equalTo(self.scrollView.contentLayoutGuide)
                         $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                        $0.bottom.equalTo(self.bottomLogo.snp.bottom)
+                        $0.bottom.equalTo(self.bottomLogo.snp.bottom).offset(30)
                     }
                     
                     self.backgroundImageView.snp.updateConstraints {
                         $0.height.equalTo(150)
                     }
+                    
                     
                     self.view.layoutIfNeeded()
                 }, completion: nil)
@@ -1192,20 +1194,21 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.dateStackView.isHidden = false
                     
                     self.scrollView.snp.remakeConstraints {
-                        $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-20)
+                        $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-16)
                         $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(40)
+                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(16)
                     }
                     
                     self.contentView.snp.remakeConstraints {
                         $0.edges.equalTo(self.scrollView.contentLayoutGuide)
                         $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                        $0.bottom.equalTo(self.bottomLogo.snp.bottom)
+                        $0.bottom.equalTo(self.bottomLogo.snp.bottom).offset(30)
                     }
                     
                     self.backgroundImageView.snp.updateConstraints {
                         $0.height.equalTo(515)
                     }
+                    
                     
                     self.view.layoutIfNeeded()
                 }, completion: nil)

@@ -489,7 +489,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.bottom.equalTo(mateCountButton.snp.bottom).offset(30)
+            $0.bottom.equalTo(mateCountButton.snp.bottom).offset(50)
         }
         
         publicOpenStackView.snp.makeConstraints {
@@ -818,7 +818,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         loadSelectedFriends(pinLog: pinLog)
         
         // totalSpendingAmount 값을 consumLeftLabel에 설정
-        if let totalSpendingAmount = pinLog.totalSpendingAmount {
+        if let totalSpendingAmount = pinLog.totalSpendingAmount, totalSpendingAmount > 0 {
             consumLeftLabel.text = "\(formatCurrency(Int(totalSpendingAmount)))원"
         } else {
             consumLeftLabel.text = "지출 내역을 입력해주세요"

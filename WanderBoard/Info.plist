@@ -11,7 +11,7 @@
 			<string>Google Sign In</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.165797900278-ika1t7d1oucnlrng07ege1e66cq33h3a</string>
+				<string>com.googleusercontent.apps.66810557991-ulbc7n6dgmhi70iu0i0u9gf9ilnf269k</string>
 			</array>
 		</dict>
 		<dict>
@@ -21,7 +21,7 @@
 			<string>Kakao</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>kakaofdaab28c4efeacf52167771728104865</string>
+				<string>kakaobc1969cc0cd1ae85004329699d424b47</string>
 			</array>
 		</dict>
 	</array>

@@ -83,8 +83,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let duplicateCheckButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("중복확인", for: .normal)
-        //        button.backgroundColor = .orange
-        //        button.setTitleColor(.systemBackground, for: .normal)
         button.layer.cornerRadius = 10
         button.layer.masksToBounds = true
         
@@ -569,12 +567,12 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         tagLabel.clipsToBounds = true
         tagLabel.textAlignment = .center
         tagLabel.sizeToFit()
-        let tagWidth = tagLabel.frame.width + 16
+        _ = tagLabel.frame.width + 16
         
-        tagLabel.snp.makeConstraints { make in
-            make.height.equalTo(30)
-            make.width.equalTo(tagWidth)
-        }
+//        tagLabel.snp.makeConstraints { make in
+//            make.height.equalTo(30)
+//            make.width.equalTo(tagWidth)
+//        }
         
         tagContainerView.addSubview(tagLabel)
         

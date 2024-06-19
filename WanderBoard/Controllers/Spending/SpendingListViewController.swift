@@ -33,6 +33,12 @@ class SpendingListViewController: UIViewController {
         spendingCardbutton.backgroundColor = .font
         spendingCardbutton.layer.cornerRadius = 25
         
+        spendingCardbutton.layer.shadowOffset = CGSize(width: 3, height: 6)
+        spendingCardbutton.layer.shadowOpacity = 0.3
+        spendingCardbutton.layer.shadowRadius = 5
+        spendingCardbutton.layer.shadowColor = UIColor.black.cgColor
+        spendingCardbutton.layer.masksToBounds = false
+        
         return spendingCardbutton
     }()
     
@@ -48,9 +54,12 @@ class SpendingListViewController: UIViewController {
     lazy var totalSpendingAmount: UILabel = {
         let totalSpendingAmount = UILabel()
         totalSpendingAmount.adjustsFontSizeToFitWidth = true
+        totalSpendingAmount.minimumScaleFactor = 0.7
+        totalSpendingAmount.textAlignment = .left
         totalSpendingAmount.text = ""
-        totalSpendingAmount.font = UIFont.systemFont(ofSize: 34)
+        totalSpendingAmount.font = UIFont.systemFont(ofSize: 28)
         totalSpendingAmount.textColor = UIColor(named: "textColor")
+        
         return totalSpendingAmount
     }()
     
@@ -249,17 +258,15 @@ class SpendingListViewController: UIViewController {
         }
         
         totalSpendingText.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(101.5)
+            $0.top.equalToSuperview().inset(110)
             $0.leading.equalToSuperview().inset(32)
             $0.width.equalTo(74)
             $0.height.equalTo(22.11)
         }
         
         totalSpendingAmount.snp.makeConstraints {
-            $0.top.equalTo(totalSpendingText.snp.bottom).offset(16.08)
-            $0.leading.equalTo(spendingCardbutton.snp.leading).inset(32)
-            $0.width.equalTo(171)
-            $0.height.equalTo(30)
+            $0.top.equalTo(totalSpendingText.snp.bottom).offset(10)
+            $0.leading.trailing.equalTo(spendingCardbutton).inset(30)
         }
         
         tableView.snp.makeConstraints {

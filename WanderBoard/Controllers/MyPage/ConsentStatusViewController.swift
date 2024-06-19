@@ -13,6 +13,8 @@ import FirebaseAuth
 
 class ConsentStatusViewController: UIViewController {
     
+    private var sectionExpandedStatus = [false, false]
+    
     var agreedToMarketing = false
     var agreedToThirdParty = false
     var initialAgreedToMarketing = false
@@ -24,7 +26,7 @@ class ConsentStatusViewController: UIViewController {
         tableView.separatorStyle = .none
         return tableView
     }()
-
+    
     private let modifyButton: UIButton = {
         let button = UIButton(type: .system).then {
             $0.setTitle("변경", for: .normal)
@@ -34,7 +36,7 @@ class ConsentStatusViewController: UIViewController {
         }
         return button
     }()
-
+    
     private let saveButton: UIButton = {
         let button = UIButton(type: .system).then {
             $0.setTitle("저장", for: .normal)
@@ -46,7 +48,7 @@ class ConsentStatusViewController: UIViewController {
         }
         return button
     }()
-
+    
     private let cancelButton: UIButton = {
         let button = UIButton(type: .system).then {
             $0.setTitle("취소", for: .normal)
@@ -57,7 +59,7 @@ class ConsentStatusViewController: UIViewController {
         }
         return button
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -67,42 +69,42 @@ class ConsentStatusViewController: UIViewController {
         view.addSubview(cancelButton)
         
         navigationItem.largeTitleDisplayMode = .never
-
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(PrivacyPolicyTableViewCell.self, forCellReuseIdentifier: PrivacyPolicyTableViewCell.identifier)
         tableView.register(PrivacyPolicySectionHeaderView.self, forHeaderFooterViewReuseIdentifier: PrivacyPolicySectionHeaderView.identifier)
         tableView.contentInsetAdjustmentBehavior = .never
         tableView.showsVerticalScrollIndicator = false
-
+        
         tableView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(32)
             $0.left.equalTo(view).offset(32)
             $0.right.equalTo(view).offset(-32)
             $0.bottom.equalTo(view).offset(-100)
         }
-
+        
         modifyButton.snp.makeConstraints {
             $0.left.equalTo(view).inset(32)
             $0.right.equalTo(view).inset(32)
             $0.height.equalTo(50)
             $0.bottom.equalTo(view).inset(60)
         }
-
+        
         saveButton.snp.makeConstraints {
             $0.left.equalTo(view).inset(32)
             $0.right.equalTo(view).inset(32)
             $0.height.equalTo(50)
             $0.bottom.equalTo(view).inset(60)
         }
-
+        
         cancelButton.snp.makeConstraints {
             $0.left.equalTo(view).inset(32)
             $0.right.equalTo(view).inset(32)
             $0.height.equalTo(50)
             $0.bottom.equalTo(view).inset(60)
         }
-
+        
         modifyButton.addTarget(self, action: #selector(modifyButtonTapped), for: .touchUpInside)
         saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
         cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
@@ -115,7 +117,7 @@ class ConsentStatusViewController: UIViewController {
         
         fetchConsentStatus()
     }
-
+    
     private func fetchConsentStatus() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
@@ -135,14 +137,14 @@ class ConsentStatusViewController: UIViewController {
             }
         }
     }
-
+    
     @objc private func modifyButtonTapped() {
         modifyButton.isHidden = true
         cancelButton.isHidden = false
         saveButton.isHidden = true
         tableView.reloadData()
     }
-
+    
     @objc private func cancelButtonTapped() {
         agreedToMarketing = initialAgreedToMarketing
         agreedToThirdParty = initialAgreedToThirdParty
@@ -153,7 +155,7 @@ class ConsentStatusViewController: UIViewController {
         
         self.navigationController?.popViewController(animated: true)
     }
-
+    
     @objc private func saveButtonTapped() {
         var message = ""
         if agreedToMarketing != initialAgreedToMarketing {
@@ -166,7 +168,7 @@ class ConsentStatusViewController: UIViewController {
             self.updateConsentStatus()
         }
     }
-
+    
     private func updateConsentStatus() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let userRef = Firestore.firestore().collection("users").document(uid)
@@ -189,7 +191,7 @@ class ConsentStatusViewController: UIViewController {
             }
         }
     }
-
+    
     private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "확인", style: .default) { _ in
@@ -198,15 +200,15 @@ class ConsentStatusViewController: UIViewController {
         alertController.addAction(okAction)
         present(alertController, animated: true, completion: nil)
     }
-
+    
     @objc private func buttonTouchDown(_ sender: UIButton) {
         animateButton(sender, transform: CGAffineTransform(scaleX: 0.95, y: 0.95))
     }
-
+    
     @objc private func buttonTouchUp(_ sender: UIButton) {
         animateButton(sender, transform: CGAffineTransform.identity)
     }
-
+    
     private func animateButton(_ button: UIButton, transform: CGAffineTransform) {
         UIView.animate(withDuration: 0.1, animations: {
             button.transform = transform
@@ -218,25 +220,34 @@ extension ConsentStatusViewController: UITableViewDelegate, UITableViewDataSourc
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return sectionExpandedStatus[section] ? 1 : 0 // 주석: 섹션 상태에 따라 셀 수를 결정
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: PrivacyPolicyTableViewCell.identifier, for: indexPath) as! PrivacyPolicyTableViewCell
+        let scripts = [
+            PrivacyPolicyScripts.marketingConsent,
+            PrivacyPolicyScripts.thirdPartySharing
+        ]
         let agreeStatus = indexPath.section == 0 ? agreedToMarketing : agreedToThirdParty
         let isEnabled = cancelButton.isHidden == false
-        cell.configure(for: indexPath.section + 2, delegate: self, agreeStatus: agreeStatus, disagreeStatus: !agreeStatus, isEnabled: isEnabled)
+        cell.configure(for: indexPath.section + 2, delegate: self, scriptText: scripts[indexPath.section], agreeStatus: agreeStatus, disagreeStatus: !agreeStatus, isEnabled: isEnabled)
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: PrivacyPolicySectionHeaderView.identifier) as! PrivacyPolicySectionHeaderView
-        header.configure(for: section + 2, isCompleted: true)
+        header.configure(for: section, isCompleted: true, isExpanded: sectionExpandedStatus[section])
+        header.delegate = self
+        
+        let titles = ["마케팅활용동의 및 광고수신동의", "개인정보 제3자 제공동의"]
+        header.setTitle(titles[section])
+        
         return header
     }
-
+    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 46
     }
@@ -267,5 +278,15 @@ extension ConsentStatusViewController: PrivacyPolicyTableViewCellDelegate {
             saveButton.isHidden = false
             saveButton.isEnabled = true
         }
+    }
+}
+
+extension ConsentStatusViewController: PrivacyPolicySectionHeaderViewDelegate {
+    func didTapHeader(in section: Int) {
+        guard section >= 0 && section < sectionExpandedStatus.count else {
+            return
+        }
+        sectionExpandedStatus[section].toggle()
+        tableView.reloadSections(IndexSet(integer: section), with: .automatic)
     }
 }

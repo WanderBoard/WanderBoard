@@ -29,8 +29,8 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
         let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
         button.setImage(image, for: .normal)
-        button.tintColor = .white
-        button.backgroundColor = .black
+        button.tintColor = UIColor(named: "textColor")
+        button.backgroundColor = .font
         button.layer.cornerRadius = 15
         button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         return button
@@ -337,7 +337,11 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
             
             // 필터 버튼 색상 업데이트
             if indexPath.item == currentFilterIndex {
-                cell.filterButton.backgroundColor = .babygray
+                if self.traitCollection.userInterfaceStyle == .dark {
+                    cell.filterButton.backgroundColor = .lightblack
+                } else {
+                    cell.filterButton.backgroundColor = .babygray
+                }
                 cell.filterButton.setTitleColor(.darkgray, for: .normal)
             } else {
                 cell.filterButton.backgroundColor = .clear

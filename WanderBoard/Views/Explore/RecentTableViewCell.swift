@@ -74,14 +74,12 @@ class RecentTableViewCell: UITableViewCell {
         logCount = count
         recentCollectionView.reloadData()
         layoutIfNeeded()
-        //print("Updated item count: \(count)")
     }
 
     func configure(with logs: [PinLog]) {
         recentLogs = logs
         logCount = logs.count
         recentCollectionView.reloadData()
-        //print("Configured with logs, count: \(logCount)")
     }
     
     func calculateCollectionViewHeight() -> CGFloat {

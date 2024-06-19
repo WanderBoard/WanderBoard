@@ -91,7 +91,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.axis = .horizontal
         $0.alignment = .center
         $0.distribution = .equalSpacing
-        $0.spacing = 20
+        $0.spacing = 10
     }
     
     let publicLabel = UILabel().then {
@@ -115,7 +115,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     let spendingPublicSwitch = UISwitch().then {
         $0.isOn = true
-        $0.onTintColor = .black
+        $0.thumbTintColor = UIColor(named: "textColor")
+        $0.onTintColor = .font
     }
     
     let spendingPublicLabel = UILabel().then {
@@ -146,7 +147,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     let locationLeftLabel = UILabel().then {
         $0.text = "지역을 선택하세요"
         $0.font = UIFont.systemFont(ofSize: 14)
-        $0.textColor = .font
+        $0.textColor = .darkgray
     }
     
     let locationRightLabel = UIImageView().then {
@@ -165,7 +166,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     let dateLabel = UILabel().then {
         $0.text = "날짜를 선택하세요"
         $0.font = UIFont.systemFont(ofSize: 14)
-        $0.textColor = .font
+        $0.textColor = .darkgray
         $0.isHidden = false
     }
     
@@ -308,7 +309,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     let mateLabel = UILabel().then {
         $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
-        $0.textColor = .darkgray
+        $0.textColor = .font
         
         let imageAttachment = NSTextAttachment()
         let systemImage = UIImage(systemName: "person.2")?.withTintColor(.font, renderingMode: .alwaysOriginal)
@@ -330,8 +331,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         layout.sectionInset = UIEdgeInsets(top: 10, left: 32, bottom: 0, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
-//        collectionView.clipsToBounds = true
-//        collectionView.layer.cornerRadius = 30
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
@@ -415,7 +414,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationController?.navigationBar.tintColor = .white
+        navigationController?.navigationBar.tintColor = UIColor (named: "textColor")
         navigationItem.largeTitleDisplayMode = .never
         
     }
@@ -483,13 +482,13 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         scrollView.snp.makeConstraints {
             $0.top.equalTo(topContainarView.snp.bottom).offset(-40)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(40)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(20)
         }
         
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.bottom.equalTo(mateCountButton.snp.bottom).offset(50)
+            $0.bottom.equalTo(mateCountButton.snp.bottom).offset(30)
         }
         
         publicOpenStackView.snp.makeConstraints {
@@ -746,7 +745,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let spendVC = SpendingListViewController()
         
         spendVC.pinLog = pinLog
-        spendVC.shouldShowEditButton = true
+//        spendVC.shouldShowEditButton = true
         navigationController?.pushViewController(spendVC, animated: true)
     }
     
@@ -778,9 +777,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         spendingPublicSwitch.isOn = pinLog.isSpendingPublic
         locationLeftLabel.text = pinLog.location
         mainTextField.text = pinLog.title
-        mainTextField.textColor = .black
+        mainTextField.textColor = .font
         subTextField.text = pinLog.content
-        subTextField.textColor = .black
+        subTextField.textColor = .font
         publicSwitch.isOn = pinLog.isPublic
         spendingPublicSwitch.isOn = pinLog.isSpendingPublic
         
@@ -1332,7 +1331,7 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
 
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor.lightgray {
+        if textView.textColor == UIColor.lightgray || textView.textColor == UIColor.darkgray {
             textView.text = nil
             textView.textColor = .font
         }

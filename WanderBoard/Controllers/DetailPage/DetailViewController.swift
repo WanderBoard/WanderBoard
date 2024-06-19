@@ -328,7 +328,6 @@ class DetailViewController: UIViewController {
     }
     
     func updateColor(){
-        
         //베이비그레이-커스텀블랙
         let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
         moneyCountainer.backgroundColor = babyGTocustomB
@@ -336,7 +335,6 @@ class DetailViewController: UIViewController {
         //라이트그레이-다크그레이
         let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
         maxConsumptionLabel.textColor = lightGTodarkG
-        
         
         //라이트그레이-라이트블랙
         let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
@@ -351,7 +349,6 @@ class DetailViewController: UIViewController {
         maxConsumptionLabel.textColor = darkBTolightG
         moneyMoveButton.tintColor = darkBTolightG
         maxConsumptionLabel.textColor = darkBTolightG
-        
     }
     
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
@@ -386,7 +383,6 @@ class DetailViewController: UIViewController {
                 updatePinButtonState()
                 profileStackView.isHidden = false
             }
-            // 현재 사용자가 작성자인지 여부에 따라 메뉴 설정
             setupMenu()
         }
     }
@@ -429,7 +425,6 @@ class DetailViewController: UIViewController {
             } else {
                 self.pinLog?.pinnedBy = updatedPinnedBy
                 self.pinLog?.pinCount = updatedPinCount
-                print("Updated pinnedBy: \(self.pinLog?.pinnedBy ?? [])")
                 self.updatePinButtonState()
                 if let updatedPinLog = self.pinLog {
                     print("Delegate called with updated pin log")
@@ -552,11 +547,11 @@ class DetailViewController: UIViewController {
         subTextContainer.snp.makeConstraints {
             $0.top.equalTo(mainTitleLabel.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(129)
+            $0.height.greaterThanOrEqualTo(130).priority(.low)
         }
         
         subTextLabel.snp.makeConstraints {
-            $0.top.leading.trailing.equalTo(subTextContainer)
+            $0.edges.equalTo(subTextContainer)
         }
         
         textLabelLine.snp.makeConstraints {
@@ -598,7 +593,7 @@ class DetailViewController: UIViewController {
         }
         
         moneyCountainer.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(24)
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(16)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(90)
         }
@@ -628,18 +623,18 @@ class DetailViewController: UIViewController {
         }
         
         friendTitle.snp.makeConstraints {
-            $0.top.equalTo(moneyCountainer.snp.bottom).offset(30)
+            $0.top.equalTo(moneyCountainer.snp.bottom).offset(16)
             $0.leading.equalTo(contentView).offset(16)
         }
         
         friendCollectionView.snp.makeConstraints {
-            $0.top.equalTo(friendTitle.snp.bottom).offset(20)
+            $0.top.equalTo(friendTitle.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(65)
         }
         
         bottomLogo.snp.makeConstraints {
-            $0.top.equalTo(friendCollectionView.snp.bottom).offset(30)
+            $0.top.equalTo(friendCollectionView.snp.bottom).offset(24)
             $0.width.equalTo(135)
             $0.height.equalTo(18)
             $0.centerX.equalToSuperview()
@@ -850,7 +845,7 @@ class DetailViewController: UIViewController {
     @objc func moneyMoveButtonTapped() {
         let spendVC = SpendingListViewController()
         spendVC.pinLog = self.pinLog
-        spendVC.shouldShowEditButton = false
+//        spendVC.shouldShowEditButton = false 세미:편집은 셀 스와이프로, 새 지출 내역작성은 펜버튼으로 진행(테이블뷰가 있으면 펜버튼이 보이고, 입력전으로 테이블뷰가 없으면 펜버튼이 없게 만들어서 shouldShowEditButton 기능이 불필요할 것 같아서 주석처리했습니다)
         spendVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(spendVC, animated: true)
     }
@@ -1046,8 +1041,7 @@ class DetailViewController: UIViewController {
     private func setupMapViewController() {
         let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001))
         mapViewController = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
-            // 장소가 선택되었을 때의 처리
-            // print("Location selected: \(coordinate.latitude), \(coordinate.longitude), address: \(address)")
+
         }
         guard let mapVC = mapViewController else { return }
         addChild(mapVC)

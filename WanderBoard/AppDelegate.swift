@@ -50,18 +50,14 @@ import KakaoSDKAuth
                 let hour = Calendar.current.component(.hour, from: Date())
                 if hour >= 18 || hour < 6 {
                     window?.overrideUserInterfaceStyle = .dark
-                    print("자동 다크모드")
                 } else {
                     window?.overrideUserInterfaceStyle = .light
-                    print("자동 라이트모드")
                 }
             } else {
                 if selectedMode == "dark" {
                     window?.overrideUserInterfaceStyle = .dark
-                    print("버튼으로 다크모드 선택")
                 } else {
                     window?.overrideUserInterfaceStyle = .light
-                    print("버튼으로 라이트모드 선택")
                 }
             }
         }

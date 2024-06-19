@@ -330,8 +330,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         layout.sectionInset = UIEdgeInsets(top: 10, left: 32, bottom: 0, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
-//        collectionView.clipsToBounds = true
-//        collectionView.layer.cornerRadius = 30
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
@@ -415,7 +413,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationController?.navigationBar.tintColor = .white
+        navigationController?.navigationBar.tintColor = UIColor (named: "textColor")
         navigationItem.largeTitleDisplayMode = .never
         
     }

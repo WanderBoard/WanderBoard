@@ -127,7 +127,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         view.addSubview(scrollView)
         
         scrollView.snp.makeConstraints(){
-            $0.edges.equalTo(view)
+            $0.edges.equalTo(view.safeAreaLayoutGuide)
         }
         
         scrollView.addSubview(contentView)
@@ -267,12 +267,12 @@ class MyPageViewController: BaseViewController, PageIndexed {
         guard let userData = userData else { return }
         myName.text = userData.displayName
         myID.text = userData.email
-        
-        //URLSession 사용해서 URL 이미지 다운로드 후 프로필 이미지에 설정해준다.
+
+        // URLSession을 사용해서 URL 이미지 다운로드 후 프로필 이미지에 설정해준다.
         if let photoURLString = userData.photoURL, let photoURL = URL(string: photoURLString) {
             downloadImage(from: photoURL) { [weak self] image in
                 DispatchQueue.main.async {
-                    self?.profile.image = image
+                    self?.profile.image = image ?? UIImage(named: "defaultProfileImage")
                 }
             }
         } else {
@@ -280,10 +280,11 @@ class MyPageViewController: BaseViewController, PageIndexed {
         }
     }
     
-    //이미지 다운로드 메서드
+    // 이미지 다운로드 메서드
     private func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data, error == nil else {
+                print("이미지 다운로드 실패: \(error?.localizedDescription ?? "Unknown error")")
                 completion(nil)
                 return
             }

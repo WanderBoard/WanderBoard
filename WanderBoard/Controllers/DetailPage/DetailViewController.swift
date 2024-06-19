@@ -428,7 +428,6 @@ class DetailViewController: UIViewController {
             } else {
                 self.pinLog?.pinnedBy = updatedPinnedBy
                 self.pinLog?.pinCount = updatedPinCount
-                print("Updated pinnedBy: \(self.pinLog?.pinnedBy ?? [])")
                 self.updatePinButtonState()
                 if let updatedPinLog = self.pinLog {
                     print("Delegate called with updated pin log")
@@ -1045,8 +1044,7 @@ class DetailViewController: UIViewController {
     private func setupMapViewController() {
         let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001))
         mapViewController = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
-            // 장소가 선택되었을 때의 처리
-            // print("Location selected: \(coordinate.latitude), \(coordinate.longitude), address: \(address)")
+
         }
         guard let mapVC = mapViewController else { return }
         addChild(mapVC)

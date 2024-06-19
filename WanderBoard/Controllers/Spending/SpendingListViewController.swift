@@ -112,11 +112,11 @@ class SpendingListViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .black
         
         
-        if shouldShowEditButton {
-            navigationItem.rightBarButtonItem = penButton
-        } else {
-            navigationItem.rightBarButtonItem = nil
-        }
+//        if shouldShowEditButton {
+//            navigationItem.rightBarButtonItem = penButton
+//        } else {
+//            navigationItem.rightBarButtonItem = nil
+//        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -411,7 +411,7 @@ extension SpendingListViewController: UITableViewDelegate {
 
 extension SpendingListViewController: SpendingEmptyViewDelegate {
     func didTapAddButton() {
-        penButton.isEnabled = false
+        penButton.isEnabled = true
         let inputVC = InsertSpendingViewController()
         inputVC.delegate = self
         inputVC.modalPresentationStyle = .automatic

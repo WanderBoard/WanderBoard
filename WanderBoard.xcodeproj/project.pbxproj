@@ -111,6 +111,7 @@
 		FB9A3AE82C1984C600E1EAA2 /* HotCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AE22C1984C600E1EAA2 /* HotCollectionViewCell.swift */; };
 		FB9A3AE92C1984C600E1EAA2 /* RecentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AE32C1984C600E1EAA2 /* RecentTableViewCell.swift */; };
 		FB9A3AEA2C1984C600E1EAA2 /* RecentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AE42C1984C600E1EAA2 /* RecentCollectionViewCell.swift */; };
+		FBB8AC782C22AB9100B62256 /* PinLogSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB8AC772C22AB9100B62256 /* PinLogSummary.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -201,6 +202,7 @@
 		FB9A3AE22C1984C600E1EAA2 /* HotCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HotCollectionViewCell.swift; sourceTree = "<group>"; };
 		FB9A3AE32C1984C600E1EAA2 /* RecentTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecentTableViewCell.swift; sourceTree = "<group>"; };
 		FB9A3AE42C1984C600E1EAA2 /* RecentCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecentCollectionViewCell.swift; sourceTree = "<group>"; };
+		FBB8AC772C22AB9100B62256 /* PinLogSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLogSummary.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -352,6 +354,7 @@
 				2A8AB1792C1240E500C5244F /* User.swift */,
 				4D21E85A2C1B39E7002FDBC9 /* UserSummary.swift */,
 				FB501A632C1F2CB70083E796 /* BlockedUserSummary.swift */,
+				FBB8AC772C22AB9100B62256 /* PinLogSummary.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -663,6 +666,7 @@
 				4D21E85B2C1B39E7002FDBC9 /* UserSummary.swift in Sources */,
 				2A9BED2C2C08B6C60032C403 /* PinLog.swift in Sources */,
 				2A9BED302C08DB200032C403 /* InvitationManager.swift in Sources */,
+				FBB8AC782C22AB9100B62256 /* PinLogSummary.swift in Sources */,
 				2A5D47232C0A27EF005C0F76 /* MapViewController.swift in Sources */,
 				2A8AB17C2C1241ED00C5244F /* UserProfileManager.swift in Sources */,
 				FB9A3AE72C1984C600E1EAA2 /* HotTableViewCell.swift in Sources */,

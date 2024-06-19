@@ -256,7 +256,7 @@ class AuthenticationVC: UIViewController {
                     let existingUser = try await FirestoreManager.shared.checkUserExists(email: email)
                     let isProfileComplete = existingUser?.isProfileComplete ?? false
                     
-                    var photoURL: String? = existingUser?.photoURL ?? result.profileImageUrl?.absoluteString
+                    let photoURL: String? = existingUser?.photoURL ?? result.profileImageUrl?.absoluteString
                     
                     if existingUser != nil {
                         try await FirestoreManager.shared.saveUser(

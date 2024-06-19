@@ -200,7 +200,6 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
     
     @objc func addButtonTapped() {
-        print("buttonTapped")
         NotificationHelper.changePage(hidden: true, isEnabled: false)
         plusButton.isHidden = true
         let inputVC = DetailInputViewController()

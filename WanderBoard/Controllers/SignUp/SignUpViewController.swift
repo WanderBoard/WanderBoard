@@ -216,8 +216,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let signUpButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("회원가입", for: .normal)
-        //        button.backgroundColor = .black
-        //        button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 10
         return button
     }()
@@ -271,7 +269,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         
         let backButton = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(backButtonTapped))
-        //        backButton.title = "Back"
         self.navigationItem.leftBarButtonItem = backButton
     }
     
@@ -368,7 +365,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             make.height.equalTo(43)
         }
         
-        
         duplicateCheckButton.snp.makeConstraints { make in
             make.centerY.equalTo(nicknameTextField.snp.centerY)
             make.right.equalToSuperview().inset(30)
@@ -427,7 +423,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         tagContainerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.height.equalToSuperview() // tagScrollView의 높이에 맞춤
+            make.height.equalToSuperview()
             make.left.equalToSuperview()
         }
         

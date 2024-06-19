@@ -386,7 +386,6 @@ class DetailViewController: UIViewController {
                 updatePinButtonState()
                 profileStackView.isHidden = false
             }
-            // 현재 사용자가 작성자인지 여부에 따라 메뉴 설정
             setupMenu()
         }
     }
@@ -552,11 +551,11 @@ class DetailViewController: UIViewController {
         subTextContainer.snp.makeConstraints {
             $0.top.equalTo(mainTitleLabel.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(129)
+            $0.height.greaterThanOrEqualTo(130).priority(.low)
         }
         
         subTextLabel.snp.makeConstraints {
-            $0.top.leading.trailing.equalTo(subTextContainer)
+            $0.edges.equalTo(subTextContainer)
         }
         
         textLabelLine.snp.makeConstraints {
@@ -598,7 +597,7 @@ class DetailViewController: UIViewController {
         }
         
         moneyCountainer.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(24)
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(16)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(90)
         }
@@ -628,18 +627,18 @@ class DetailViewController: UIViewController {
         }
         
         friendTitle.snp.makeConstraints {
-            $0.top.equalTo(moneyCountainer.snp.bottom).offset(30)
+            $0.top.equalTo(moneyCountainer.snp.bottom).offset(16)
             $0.leading.equalTo(contentView).offset(16)
         }
         
         friendCollectionView.snp.makeConstraints {
-            $0.top.equalTo(friendTitle.snp.bottom).offset(20)
+            $0.top.equalTo(friendTitle.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(65)
         }
         
         bottomLogo.snp.makeConstraints {
-            $0.top.equalTo(friendCollectionView.snp.bottom).offset(30)
+            $0.top.equalTo(friendCollectionView.snp.bottom).offset(24)
             $0.width.equalTo(135)
             $0.height.equalTo(18)
             $0.centerX.equalToSuperview()
@@ -850,7 +849,7 @@ class DetailViewController: UIViewController {
     @objc func moneyMoveButtonTapped() {
         let spendVC = SpendingListViewController()
         spendVC.pinLog = self.pinLog
-        spendVC.shouldShowEditButton = false
+//        spendVC.shouldShowEditButton = false 세미:편집은 셀 스와이프로, 새 지출 내역작성은 펜버튼으로 진행(테이블뷰가 있으면 펜버튼이 보이고, 입력전으로 테이블뷰가 없으면 펜버튼이 없게 만들어서 shouldShowEditButton 기능이 불필요할 것 같아서 주석처리했습니다)
         spendVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(spendVC, animated: true)
     }

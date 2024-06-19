@@ -21,6 +21,7 @@ class SpendingTableViewCell: UITableViewCell {
     let expenseContent: UILabel = {
         let expenseContent = UILabel()
         expenseContent.font = UIFont.systemFont(ofSize: 17)
+        expenseContent.numberOfLines = 2
         
         return expenseContent
     }()
@@ -29,12 +30,15 @@ class SpendingTableViewCell: UITableViewCell {
         let memo = UILabel()
         memo.font = UIFont.systemFont(ofSize: 12)
         memo.numberOfLines = 2
+        
         return memo
     }()
     
     let expenseAmount: UILabel = {
         let expenseAmount = UILabel()
         expenseAmount.font = UIFont.systemFont(ofSize: 17)
+        expenseAmount.adjustsFontSizeToFitWidth = true
+        expenseAmount.textAlignment = .right
         
         return expenseAmount
     }()
@@ -64,27 +68,28 @@ class SpendingTableViewCell: UITableViewCell {
     func makeConstraints() {
         
         categoryImageView.snp.makeConstraints {
-            $0.top.equalTo(contentView.snp.top).inset(8)
             $0.leading.equalTo(contentView.safeAreaLayoutGuide).inset(32)
             $0.height.width.equalTo(44)
+            $0.centerY.equalTo(contentView)
         }
         
         expenseContent.snp.makeConstraints {
             $0.top.equalTo(contentView.snp.top).inset(12)
             $0.leading.equalTo(categoryImageView.snp.trailing).offset(12)
+            $0.trailing.equalTo(expenseAmount.snp.leading)
         }
         
         memo.snp.makeConstraints {
             $0.top.equalTo(expenseContent.snp.bottom).offset(4)
             $0.leading.equalTo(expenseContent.snp.leading)
-            $0.width.equalTo(195)
             $0.trailing.equalTo(expenseAmount.snp.leading)
-
+            $0.bottom.equalTo(contentView).inset(12)
         }
         
         expenseAmount.snp.makeConstraints {
             $0.centerY.equalTo(contentView.snp.centerY)
             $0.leading.equalTo(memo.snp.trailing).offset(12)
+            $0.width.equalTo(80)
             $0.trailing.equalTo(contentView.safeAreaLayoutGuide).inset(32)
         }
         

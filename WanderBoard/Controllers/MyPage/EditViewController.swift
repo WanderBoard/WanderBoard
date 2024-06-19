@@ -17,18 +17,33 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     let doneButton = UIButton()
     let addImage = UIImageView()
     let profile = UIImageView()
-    var myName = UITextField().then(){
-        $0.textColor = .font
-        $0.font = UIFont.systemFont(ofSize: 13)
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = CGColor(gray: 0, alpha: 1)
-        $0.layer.cornerRadius = 10
-        $0.backgroundColor = .clear
-        $0.textAlignment = .center
-        $0.clearButtonMode = .whileEditing
-        $0.keyboardType = .default
-        $0.returnKeyType = .done
-    }
+    
+    private let nicknameTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = " 닉네임을 입력하세요"
+        textField.borderStyle = .none
+        textField.layer.borderWidth = 1
+        textField.layer.cornerRadius = 10
+        textField.layer.borderColor = UIColor.black.cgColor
+        textField.autocapitalizationType = .none
+        
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 45))
+        textField.leftView = paddingView
+        textField.leftViewMode = .always
+        
+        return textField
+    }()
+    
+    private let duplicateCheckButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("중복확인", for: .normal)
+        button.backgroundColor = .black
+        button.setTitleColor(.systemBackground, for: .normal)
+        button.layer.cornerRadius = 10
+        button.layer.masksToBounds = true
+        return button
+    }()
+    
     let nameAlert = UILabel()
     var IDArea = UIView()
     var IDIcon = UIImageView()
@@ -78,9 +93,11 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         profile.layer.cornerRadius = 53
         profile.backgroundColor = .lightgray
         
-        myName.placeholder = previousName
-        myName.clearButtonMode = .never // x 버튼 비활성화
-        myName.delegate = self
+        nicknameTextField.placeholder = previousName
+        nicknameTextField.clearButtonMode = .never
+        nicknameTextField.delegate = self
+        
+        duplicateCheckButton.addTarget(self, action: #selector(duplicateCheckTapped), for: .touchUpInside)
         
         IDIcon.contentMode = .scaleAspectFit
         
@@ -150,24 +167,24 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         }
         
         switch userData.authProvider {
-        case AuthProviderOption.google.rawValue:
-            self.IDIcon.image = UIImage(named: "googleLogo")
-        case AuthProviderOption.apple.rawValue:
-            self.IDIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
-        case AuthProviderOption.kakao.rawValue:
-            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-            self.IDIcon.tintColor = iconColor
-        case AuthProviderOption.email.rawValue:
-            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-            self.IDIcon.tintColor = iconColor // 이메일 로그인은 추가 안함, 카카오랑 같은 아이콘 뜨도록 설정
-        default:
-            print("등록된 로그인 정보가 없습니다")
+            case AuthProviderOption.google.rawValue:
+                self.IDIcon.image = UIImage(named: "googleLogo")
+            case AuthProviderOption.apple.rawValue:
+                self.IDIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
+            case AuthProviderOption.kakao.rawValue:
+                self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+                self.IDIcon.tintColor = iconColor
+            case AuthProviderOption.email.rawValue:
+                self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+                self.IDIcon.tintColor = iconColor // 이메일 로그인은 추가 안함, 카카오랑 같은 아이콘 뜨도록 설정
+            default:
+                print("등록된 로그인 정보가 없습니다")
         }
     }
     
     override func constraintLayout() {
         super.constraintLayout() //부모뷰의 설정을 가져온다
-        [profile, addImage, myName, nameAlert, IDArea, subLine, subTitle, connectButton, subLine2, withdrawalB].forEach(){
+        [profile, addImage, nicknameTextField, nameAlert, duplicateCheckButton, IDArea, subLine, subTitle, connectButton, subLine2, withdrawalB].forEach(){
             view.addSubview($0)
         }
         logo.snp.makeConstraints(){
@@ -191,21 +208,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             
         }
         
-        myName.snp.makeConstraints(){
-            $0.top.equalTo(profile.snp.bottom).offset(27)
-            $0.horizontalEdges.equalTo(view).inset(95)
-            $0.height.equalTo(44)
-            $0.centerX.equalTo(view)
-        }
-        nameAlert.snp.makeConstraints(){
-            $0.centerX.equalTo(view)
-            $0.top.equalTo(myName.snp.bottom).offset(9)
-        }
-        IDArea.snp.makeConstraints(){
-            $0.top.equalTo(nameAlert.snp.bottom).offset(30)
-            $0.centerX.equalTo(view)
-            $0.width.lessThanOrEqualTo(view).inset(30)
-        }
         IDArea.addSubview(myID)
         IDArea.addSubview(IDIcon)
         IDIcon.snp.makeConstraints(){
@@ -213,15 +215,43 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             $0.centerY.equalTo(IDArea)
             $0.width.height.equalTo(22)
         }
+        
+        IDArea.snp.makeConstraints(){
+            $0.top.equalTo(profile.snp.bottom).offset(24)
+            $0.centerX.equalTo(view)
+            $0.width.lessThanOrEqualTo(view).inset(30)
+        }
+        
         myID.snp.makeConstraints(){
             $0.centerY.equalTo(IDArea)
             $0.left.equalTo(IDIcon.snp.right).offset(10)
             $0.right.equalTo(IDArea)
         }
+        
+        nicknameTextField.snp.makeConstraints(){
+            $0.top.equalTo(IDArea.snp.bottom).offset(36)
+            $0.left.equalToSuperview().inset(30)
+            $0.right.equalTo(duplicateCheckButton.snp.left).offset(-10)
+            $0.height.equalTo(43)
+            //$0.centerX.equalTo(view)
+        }
+        
+        duplicateCheckButton.snp.makeConstraints { make in
+            make.centerY.equalTo(nicknameTextField.snp.centerY)
+            make.right.equalToSuperview().inset(30)
+            make.height.equalTo(45)
+            make.width.equalTo(100)
+        }
+        
+        nameAlert.snp.makeConstraints(){
+            $0.top.equalTo(nicknameTextField.snp.bottom).offset(10)
+            $0.left.equalToSuperview().inset(30)
+        }
+        
         subLine.snp.makeConstraints(){
-            $0.left.right.equalTo(view).inset(16)
+            $0.left.right.equalTo(view).inset(24)
             $0.height.equalTo(1)
-            $0.top.equalTo(IDIcon.snp.bottom).offset(15)
+            $0.top.equalTo(nameAlert.snp.bottom).offset(15)
         }
         subTitle.snp.makeConstraints(){
             $0.top.equalTo(subLine.snp.bottom).offset(25)
@@ -234,6 +264,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             $0.height.equalTo(44)
         }
         connectButton.addSubview(iconImageView)
+        
         iconImageView.snp.makeConstraints(){
             $0.left.equalTo(connectButton.titleLabel!.snp.right).offset(5)
             $0.centerY.equalToSuperview()
@@ -252,7 +283,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     
     @objc func moveToMyPage() {
         // 이미지와 이름 저장
-        let nameToSave = myName.text?.isEmpty ?? true ? previousName : myName.text
+        let nameToSave = nicknameTextField.text?.isEmpty ?? true ? previousName : nicknameTextField.text
         
         Task {
             do {
@@ -333,75 +364,66 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         }
     }
     
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let currentText = textField.text ?? ""
-        guard let stringRange = Range(range, in: currentText) else { return false }
-        let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
-        
-        // Step 1: 글자 수 체크
-        if updatedText.isEmpty {
-            nameAlert.text = "😗 닉네임을 입력해주세요\n입력하신 닉네임은 다른 사용자에게 노출됩니다"
-            nameAlert.textColor = .darkgray
-            doneButton.isEnabled = false
-            return true
+    @objc private func duplicateCheckTapped() {
+        guard let nickname = nicknameTextField.text, !nickname.isEmpty else {
+            showAlert(title: "😗", message: "변경할 닉네임을 입력해주세요. \n입력하신 닉네임은 다른 사용자에게 노출됩니다.🤭")
+            return
         }
         
-        if updatedText.count < 2 || updatedText.count > 16 {
-            nameAlert.text = "😗 글자 수를 맞춰주세요 (2자 이상, 16자 이하)"
-            nameAlert.textColor = .darkgray
-            doneButton.isEnabled = false
-            return true
-        }
-        
-        // Step 2: 특수문자 포함 여부 체크 (공백과 특수문자만 체크)
-        let nicknamePattern = "^[a-zA-Z0-9가-힣]*$"
+        // 특수문자 검증
+        let nicknamePattern = "^[a-zA-Z0-9가-힣]+$"
         let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
-        if !nicknamePredicate.evaluate(with: updatedText) {
-            nameAlert.text = "🤬 닉네임에 특수문자나 공백을 포함할 수 없습니다"
-            nameAlert.textColor = .red
-            doneButton.titleLabel?.textColor = .lightGray
-            doneButton.isEnabled = false
-            return true
+        if !nicknamePredicate.evaluate(with: nickname) {
+            showAlert(title: "🤬", message: "닉네임에 특수문자를 포함할 수 없습니다.")
+            return
         }
         
-        nameAlert.text = ""
-        doneButton.isEnabled = false
-        
-        // 중복 체크는 텍스트 편집이 끝난 후에 수행합니다.
-        return true
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        let nickname = textField.text ?? ""
-        
-        // 글자 수 및 특수문자 체크 통과한 후 Firestore에서 닉네임 중복 체크
-        if nickname.count >= 2 && nickname.count <= 16 {
-            let nicknamePattern = "^[a-zA-Z0-9가-힣]+$"
-            let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
-            
-            if nicknamePredicate.evaluate(with: nickname) {
-                Task {
-                    do {
-                        let isDuplicate = try await FirestoreManager.shared.checkDisplayNameExists(displayName: nickname)
-                        if isDuplicate {
-                            nameAlert.text = "😱 아쉬워요.. 다른 사용자가 먼저 등록했어요"
-                            nameAlert.textColor = .red
-                            doneButton.titleLabel?.textColor = .lightGray
-                            doneButton.isEnabled = false
-                        } else {
-                            nameAlert.text = "😁 사용할 수 있는 닉네임입니다!"
-                            nameAlert.textColor = .font
-                            doneButton.isEnabled = true
-                        }
-                    } catch {
-                        let alert = UIAlertController(title: "😵‍💫", message: "닉네임 확인 중 오류가 발생했습니다: \(error.localizedDescription)", preferredStyle: .alert)
-                        let confirm = UIAlertAction(title: "확인", style: .default)
-                        alert.addAction(confirm)
-                        present(alert, animated: true, completion: nil)
-                    }
+        Task {
+            do {
+                let isDuplicate = try await FirestoreManager.shared.checkDisplayNameExists(displayName: nickname)
+                if isDuplicate {
+                    showAlert(title: "😱", message: "아쉽네요. 다른 사용자가 먼저 등록했어요")
+                } else {
+                    showConfirmationAlert(title: "😁\n\(nickname)", message: "당신만의 멋진 닉네임이네요. \n이 닉네임을 사용하시겠습니까?", nickname: nickname)
                 }
+            } catch {
+                showAlert(title: "😵‍💫", message: "닉네임 확인 중 오류가 발생했습니다: \(error.localizedDescription)")
             }
         }
+    }
+    
+    private func updateDuplicateCheckButtonState() {
+        let nicknameLength = nicknameTextField.text?.count ?? 0
+        let isValidLength = nicknameLength >= 2 && nicknameLength <= 16
+        duplicateCheckButton.isEnabled = isValidLength
+        duplicateCheckButton.backgroundColor = isValidLength ? .black : .babygray
+        duplicateCheckButton.setTitleColor(isValidLength ? .white : .black, for: .normal)
+        
+    }
+    
+    private func showConfirmationAlert(title: String, message: String, nickname: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let useAction = UIAlertAction(title: "사용", style: .default) { [weak self] _ in
+            guard let self = self else { return }
+            self.nicknameTextField.isEnabled = false
+            self.duplicateCheckButton.isEnabled = false
+            self.duplicateCheckButton.backgroundColor = UIColor(named: "babygray")
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { [weak self] _ in
+            guard let self = self else { return }
+            self.nicknameTextField.text = ""
+            self.nicknameTextField.isEnabled = true
+            self.duplicateCheckButton.isEnabled = true
+            self.duplicateCheckButton.backgroundColor = .babygray
+            self.nicknameTextField.textColor = .black
+        }
+        
+        alert.addAction(useAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true, completion: nil)
     }
     
     //작성완료시 엔터 누르면 키보드 내려가기
@@ -435,8 +457,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         present(alert, animated: true, completion: nil)
     }
     
-    
-    
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true, completion: nil)
         
@@ -464,7 +484,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         nameAlert.textColor = nameAlertColor
         
         let myNameColor = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
-        myName.layer.borderColor = myNameColor
+        nicknameTextField.layer.borderColor = myNameColor
         
         let profileColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
         profile.backgroundColor = profileColor
@@ -499,7 +519,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         self.present(confirmAlert, animated: true, completion: nil)
     }
-
+    
     private func performAccountDeletion() {
         guard let user = Auth.auth().currentUser else { return }
         let userId = user.uid
@@ -523,7 +543,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             }
         }
     }
-
+    
     // 로그인 화면으로 이동하는 함수
     func navigateToLoginScreen() {
         DispatchQueue.main.async {
@@ -534,7 +554,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             self.view.window?.makeKeyAndVisible()
         }
     }
-
+    
     // 오류 메시지를 표시하는 함수
     func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
         DispatchQueue.main.async {

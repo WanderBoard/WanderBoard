@@ -39,6 +39,16 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         return imageView
     }()
     
+    private let emailIcon = UIImageView()
+    
+    private let emailLabel: UILabel = {
+        let label = UILabel()
+        label.text = "이메일"
+        label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        label.textAlignment = .center
+        return label
+    }()
+    
     private let nickNameLabel: UILabel = {
         let label = UILabel()
         label.text = "닉네임"
@@ -53,6 +63,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         textField.layer.borderWidth = 1
         textField.layer.cornerRadius = 10
         textField.layer.borderColor = UIColor.black.cgColor
+        textField.autocapitalizationType = .none
         
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 45))
         textField.leftView = paddingView
@@ -240,6 +251,11 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        if let user = Auth.auth().currentUser {
+            emailLabel.text = user.email
+            setEmailIcon(for: user.providerData.first?.providerID)
+        }
     }
     
     deinit {
@@ -298,6 +314,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         view.addSubview(subtitleLabel)
         view.addSubview(profileImageView)
+        view.addSubview(emailIcon)
+        view.addSubview(emailLabel)
         view.addSubview(nickNameLabel)
         view.addSubview(nicknameTextField)
         view.addSubview(nicknameHintLabel)
@@ -318,14 +336,25 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         }
         
         profileImageView.snp.makeConstraints { make in
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(16)
+            make.top.equalTo(subtitleLabel.snp.bottom).offset(24)
             make.centerX.equalToSuperview()
             make.width.equalTo(100)
             make.height.equalTo(100)
         }
         
+        emailIcon.snp.makeConstraints { make in
+            make.top.equalTo(profileImageView.snp.bottom).offset(24)
+            make.centerX.equalTo(view.snp.centerX).offset(-70)
+            make.width.height.equalTo(20)
+        }
+        
+        emailLabel.snp.makeConstraints { make in
+            make.left.equalTo(emailIcon.snp.right).offset(8)
+            make.centerY.equalTo(emailIcon.snp.centerY)
+        }
+        
         nickNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(profileImageView.snp.bottom).offset(20)
+            make.top.equalTo(emailIcon.snp.bottom).offset(20)
             make.left.equalToSuperview().inset(34)
         }
         
@@ -349,7 +378,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         }
         
         genderLabel.snp.makeConstraints { make in
-            make.top.equalTo(nicknameHintLabel.snp.bottom).offset(30)
+            make.top.equalTo(nicknameHintLabel.snp.bottom).offset(32)
             make.left.equalToSuperview().inset(34)
         }
         
@@ -374,7 +403,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         }
         
         interestsLabel.snp.makeConstraints { make in
-            make.top.equalTo(lastButton!.snp.bottom).offset(20)
+            make.top.equalTo(lastButton!.snp.bottom).offset(32)
             make.left.equalToSuperview().inset(34)
         }
         
@@ -387,9 +416,9 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         tagScrollView.snp.makeConstraints { make in
             make.top.equalTo(interestsTextField.snp.bottom).offset(16)
-            make.left.equalToSuperview()
-            make.right.equalToSuperview()
-            make.height.equalTo(50)
+            make.left.equalToSuperview()//.inset(30)
+            make.right.equalToSuperview()//.inset(30)
+            make.height.equalTo(30)
         }
         
         tagContainerView.snp.makeConstraints { make in
@@ -443,6 +472,22 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = self
         present(picker, animated: true, completion: nil)
+    }
+    
+    private func setEmailIcon(for providerID: String?) {
+        guard let providerID = providerID else { return }
+        
+        switch providerID {
+            case "google.com":
+                emailIcon.image = UIImage(named: "googleLogo")
+            case "apple.com":
+                emailIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
+            case "kakao.com":
+                emailIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+                emailIcon.tintColor = UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1)
+            default:
+                emailIcon.image = UIImage(systemName: "envelope")
+        }
     }
     
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
@@ -559,14 +604,12 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         tagScrollView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: true)
     }
     
-    
     private func updateDuplicateCheckButtonState() {
         let nicknameLength = nicknameTextField.text?.count ?? 0
         let isValidLength = nicknameLength >= 2 && nicknameLength <= 16
         duplicateCheckButton.isEnabled = isValidLength
         duplicateCheckButton.backgroundColor = isValidLength ? .black : .babygray
         duplicateCheckButton.setTitleColor(isValidLength ? .white : .black, for: .normal)
-        
     }
     
     private func showAlert(title: String, message: String) {
@@ -593,7 +636,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             self.nicknameTextField.text = ""
             self.nicknameTextField.isEnabled = true
             self.duplicateCheckButton.isEnabled = true
-            self.duplicateCheckButton.backgroundColor = .babygray // 원래 색상으로 변경
+            self.duplicateCheckButton.backgroundColor = .babygray
             self.nicknameTextField.textColor = .black
         }
         

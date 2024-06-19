@@ -338,7 +338,11 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
             
             // 필터 버튼 색상 업데이트
             if indexPath.item == currentFilterIndex {
-                cell.filterButton.backgroundColor = .babygray
+                if self.traitCollection.userInterfaceStyle == .dark {
+                    cell.filterButton.backgroundColor = .lightblack
+                } else {
+                    cell.filterButton.backgroundColor = .babygray
+                }
                 cell.filterButton.setTitleColor(.darkgray, for: .normal)
             } else {
                 cell.filterButton.backgroundColor = .clear

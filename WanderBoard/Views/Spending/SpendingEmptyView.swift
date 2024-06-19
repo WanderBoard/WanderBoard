@@ -12,12 +12,6 @@ class SpendingEmptyView: UIView {
     
     weak var delegate: SpendingEmptyViewDelegate?
     
-    private let emptyImg = UIImageView().then {
-        $0.image = UIImage(named: "emptyImg")
-        $0.tintColor = .black
-        $0.contentMode = .scaleAspectFill
-    }
-    
     private let mainLabel = UILabel().then {
         $0.text = "지출 내역을 추가하세요"
         $0.font = .boldSystemFont(ofSize: 20)
@@ -62,7 +56,7 @@ class SpendingEmptyView: UIView {
         addSubview(stackView)
         addSubview(addButton)
         
-        [emptyImg, mainLabel, subLabel].forEach {
+        [mainLabel, subLabel].forEach {
             stackView.addArrangedSubview($0)
         }
         
@@ -76,11 +70,6 @@ class SpendingEmptyView: UIView {
             $0.centerX.equalToSuperview()
             $0.width.equalTo(240)
             $0.height.equalTo(50)
-        }
-        
-        emptyImg.snp.makeConstraints {
-            $0.height.equalTo(45)
-            $0.width.equalTo(65)
         }
     }
     

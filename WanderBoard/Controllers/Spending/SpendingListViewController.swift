@@ -30,7 +30,7 @@ class SpendingListViewController: UIViewController {
     
     lazy var spendingCardbutton: UIButton = {
         let spendingCardbutton = UIButton()
-        spendingCardbutton.backgroundColor = .black
+        spendingCardbutton.backgroundColor = .font
         spendingCardbutton.layer.cornerRadius = 25
         
         return spendingCardbutton
@@ -40,7 +40,7 @@ class SpendingListViewController: UIViewController {
         let totalSpendingText = UILabel()
         totalSpendingText.text = "총 지출 금액"
         totalSpendingText.font = UIFont.systemFont(ofSize: 15)
-        totalSpendingText.textColor = .white //나중에 878787로 변경
+        totalSpendingText.textColor = .darkgray
         
         return totalSpendingText
     }()
@@ -50,7 +50,7 @@ class SpendingListViewController: UIViewController {
         totalSpendingAmount.adjustsFontSizeToFitWidth = true
         totalSpendingAmount.text = ""
         totalSpendingAmount.font = UIFont.systemFont(ofSize: 34)
-        totalSpendingAmount.textColor = .white
+        totalSpendingAmount.textColor = UIColor(named: "textColor")
         return totalSpendingAmount
     }()
     
@@ -80,7 +80,7 @@ class SpendingListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
         configureUI()
         makeConstraints()
@@ -110,14 +110,7 @@ class SpendingListViewController: UIViewController {
         super.viewWillAppear(animated)
         updateView()
         
-        navigationController?.navigationBar.tintColor = .black
-        
-        
-//        if shouldShowEditButton {
-//            navigationItem.rightBarButtonItem = penButton
-//        } else {
-//            navigationItem.rightBarButtonItem = nil
-//        } 세미: 펜버튼 자체가 테이블뷰가 있을 때만 나와서 불필요한 코드로 보여 주석처리함
+        navigationController?.navigationBar.tintColor = .font
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -184,12 +177,10 @@ class SpendingListViewController: UIViewController {
             tableView.isHidden = true
             spendingEmptyView.isHidden = false
             penButton.isHidden = true
-//            penButton.isEnabled = false 세미: 히든처리로 비활성화 불필요
         } else {
             tableView.isHidden = false
             spendingEmptyView.isHidden = true
             penButton.isHidden = false
-//            penButton.isEnabled = true 세미: 히든처리로 비활성화 불필요
         }
         tableView.reloadData()
     }
@@ -254,7 +245,7 @@ class SpendingListViewController: UIViewController {
         spendingCardbutton.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(30)
             $0.height.equalTo(203)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(25)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
         }
         
         totalSpendingText.snp.makeConstraints {

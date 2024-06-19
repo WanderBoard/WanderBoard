@@ -15,7 +15,7 @@ final class AccountDeletionManager {
     static let shared = AccountDeletionManager()
     private let db = Firestore.firestore()
     private init() { }
-
+    
     // 사용자의 데이터를 Firestore에서 삭제하는 함수 (회원 탈퇴)
     func deleteUserData(uid: String) async throws {
         let userRef = db.collection("users").document(uid)
@@ -32,13 +32,21 @@ final class AccountDeletionManager {
     
     // 특정 사용자가 참여한 PinLog에서 해당 사용자 ID를 삭제하는 함수
     func removeUserIdFromPinLogs(userId: String) async throws {
-        let snapshot = try await db.collection("pinLogs").whereField("attendeeIds", arrayContains: userId).getDocuments()
-        for document in snapshot.documents {
+        // attendeeIds에서 사용자 ID를 포함하는 문서 찾기
+        let attendeeSnapshot = try await db.collection("pinLogs").whereField("attendeeIds", arrayContains: userId).getDocuments()
+        for document in attendeeSnapshot.documents {
             var data = document.data()
             if var attendeeIds = data["attendeeIds"] as? [String] {
                 attendeeIds.removeAll { $0 == userId }
                 data["attendeeIds"] = attendeeIds
             }
+            try await document.reference.setData(data, merge: true)
+        }
+        
+        // pinnedBy에서 사용자 ID를 포함하는 문서 찾기
+        let pinnedBySnapshot = try await db.collection("pinLogs").whereField("pinnedBy", arrayContains: userId).getDocuments()
+        for document in pinnedBySnapshot.documents {
+            var data = document.data()
             if var pinnedBy = data["pinnedBy"] as? [String] {
                 pinnedBy.removeAll { $0 == userId }
                 data["pinnedBy"] = pinnedBy
@@ -76,11 +84,5 @@ final class AccountDeletionManager {
             print("사용자 데이터 삭제 중 오류 발생: \(error.localizedDescription)")
             throw error
         }
-    }
-
-    // 사용자 계정을 삭제하는 함수
-    func deleteUserAccount() async throws {
-        guard let user = Auth.auth().currentUser else { throw NSError(domain: "User not found", code: 404, userInfo: nil) }
-        try await user.delete()
     }
 }

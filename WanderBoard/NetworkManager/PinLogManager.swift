@@ -106,7 +106,7 @@ class PinLogManager {
                 return nil
             }
         }
-        print("Fetched pinLogs count: \(pinLogs.count)")
+        //print("Fetched pinLogs count: \(pinLogs.count)")
         return pinLogs
     }
     

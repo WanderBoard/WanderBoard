@@ -529,17 +529,18 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                 // 모든 사용자 데이터 삭제
                 try await AccountDeletionManager.shared.deleteUser(uid: userId, context: context)
                 
-                // 모든 데이터 삭제가 성공하면 계정 삭제 및 로그아웃
-                try await AccountDeletionManager.shared.deleteUserAccount()
+                // 모든 데이터 삭제가 성공하면 로그아웃
                 try Auth.auth().signOut()
                 
                 // 성공 알림 및 로그인 화면으로 이동
-                showAlert(title: "회원 탈퇴 완료", message: "회원 탈퇴가 완료되었습니다.") {
+                showAlert(title: "회원 탈퇴 완료", message: "회원 탈퇴가 완료되었습니다. \n 지금까지의 모든 기록이 삭제되었습니다.") {
                     self.navigateToLoginScreen()
                 }
             } catch {
                 print("회원 탈퇴 실패: \(error.localizedDescription)")
-                showAlert(title: "오류", message: "회원 탈퇴 중 오류가 발생했습니다. 다시 시도해주세요.")
+                showAlert(title: "오류", message: "회원 탈퇴 중 오류가 발생했습니다. \n 데이터가 정상적으로 삭제되지 않았을 가능성이 있습니다.") {
+                    self.navigateToLoginScreen()
+                }
             }
         }
     }

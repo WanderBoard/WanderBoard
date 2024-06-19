@@ -249,62 +249,48 @@ class AuthenticationVC: UIViewController {
                     var authDataResult: AuthDataResultModel
                     do {
                         authDataResult = try await AuthenticationManager.shared.signInWithEmailAndPassword(email: email, password: "임시비밀번호")
-                        // Firestore에서 사용자 문서 확인
-                        let existingUser = try await FirestoreManager.shared.checkUserExists(email: email)
-                        let isProfileComplete = existingUser?.isProfileComplete ?? false
-                        
-                        if existingUser != nil {
-                            // 기존 사용자라면 displayName을 업데이트하지 않음
-                            try await FirestoreManager.shared.saveUser(
-                                uid: authDataResult.uid,
-                                email: email,
-                                displayName: nil,
-                                photoURL: result.profileImageUrl?.absoluteString,
-                                socialMediaLink: nil,
-                                authProvider: AuthProviderOption.kakao.rawValue,
-                                gender: "선택안함",
-                                interests: [],
-                                isProfileComplete: isProfileComplete, 
-                                blockedAuthors: authDataResult.blockedAuthors,
-                                hiddenPinLogs: []
-                            )
-                        } else {
-                            // 새로운 사용자라면 displayName을 포함하여 저장
-                            try await FirestoreManager.shared.saveUser(
-                                uid: authDataResult.uid,
-                                email: email,
-                                displayName: result.nickname,
-                                photoURL: result.profileImageUrl?.absoluteString,
-                                socialMediaLink: nil,
-                                authProvider: AuthProviderOption.kakao.rawValue,
-                                gender: "선택안함",
-                                interests: [],
-                                isProfileComplete: isProfileComplete, 
-                                blockedAuthors: authDataResult.blockedAuthors,
-                                hiddenPinLogs: []
-                            )
-                        }
-                        // Firestore 정보 업데이트
-                        try await UserProfileManager.shared.updateUserProfileFromFirestore()
-                        await handleSignInResult(authDataResult, isProfileComplete: isProfileComplete)
                     } catch {
                         authDataResult = try await AuthenticationManager.shared.createUserWithEmailAndPassword(email: email, password: "임시비밀번호")
-                        // 새로운 사용자라면 displayName을 포함하여 저장
+                    }
+                    
+                    let existingUser = try await FirestoreManager.shared.checkUserExists(email: email)
+                    let isProfileComplete = existingUser?.isProfileComplete ?? false
+                    
+                    let photoURL: String? = existingUser?.photoURL ?? result.profileImageUrl?.absoluteString
+                    
+                    if existingUser != nil {
                         try await FirestoreManager.shared.saveUser(
                             uid: authDataResult.uid,
                             email: email,
-                            displayName: result.nickname,
-                            photoURL: result.profileImageUrl?.absoluteString,
+                            displayName: nil,
+                            photoURL: photoURL,
                             socialMediaLink: nil,
                             authProvider: AuthProviderOption.kakao.rawValue,
                             gender: "선택안함",
                             interests: [],
-                            isProfileComplete: false, 
+                            isProfileComplete: isProfileComplete,
                             blockedAuthors: authDataResult.blockedAuthors,
-                            hiddenPinLogs: []
+                            hiddenPinLogs: authDataResult.hiddenPinLogs
                         )
-                        await handleSignUpResult(authDataResult, isProfileComplete: false)
+                    } else {
+                        try await FirestoreManager.shared.saveUser(
+                            uid: authDataResult.uid,
+                            email: email,
+                            displayName: result.nickname,
+                            photoURL: photoURL,
+                            socialMediaLink: nil,
+                            authProvider: AuthProviderOption.kakao.rawValue,
+                            gender: "선택안함",
+                            interests: [],
+                            isProfileComplete: false,
+                            blockedAuthors: authDataResult.blockedAuthors,
+                            hiddenPinLogs: authDataResult.hiddenPinLogs
+                        )
                     }
+                    
+                    // Firestore 정보 업데이트
+                    try await UserProfileManager.shared.updateUserProfileFromFirestore()
+                    await handleSignInResult(authDataResult, isProfileComplete: isProfileComplete)
                 } else {
                     print("이메일 정보가 없습니다.")
                 }

@@ -139,7 +139,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             self.isLoading = false
             switch result {
             case .success(let (logs, lastSnapshot)):
-                print("More data fetched: \(logs.count) logs")
+                //print("More data fetched: \(logs.count) logs")
                 self.allTripLogs.append(contentsOf: self.filterBlockedAuthors(from: logs))
                 self.searchedLogs = self.allTripLogs
                 self.applyFilterAndReload()
@@ -232,8 +232,7 @@ extension String {
         return self.compactMap { char -> Character? in
             guard let scalar = char.unicodeScalars.first else { return char }
             let value = scalar.value
-            
-            // 한글 음절 범위 내에서만 처리
+
             if value >= 0xAC00 && value <= 0xD7A3 {
                 let index = (value - 0xAC00) / 28 / 21
                 return initialConsonants[Int(index)]

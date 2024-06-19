@@ -200,7 +200,6 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
     
     @objc func addButtonTapped() {
-        print("buttonTapped")
         NotificationHelper.changePage(hidden: true, isEnabled: false)
         plusButton.isHidden = true
         let inputVC = DetailInputViewController()
@@ -228,8 +227,8 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             let taggedPinLogs = try await pinLogManager.fetchTaggedPinLogs(forUserId: userId)
             MyTripsViewController.taggedTripLogs = taggedPinLogs.sorted { $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast }
             
-            print("Fetched userPinLogs: \(userPinLogs)")
-            print("Fetched taggedPinLogs: \(taggedPinLogs)")
+            //print("Fetched userPinLogs: \(userPinLogs)")
+            //print("Fetched taggedPinLogs: \(taggedPinLogs)")
             updateView()
         } catch {
             print("Failed to fetch pin logs: \(error.localizedDescription)")
@@ -244,7 +243,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             }
             let pinnedLogs = try await pinLogManager.fetchPinnedPinLogs(forUserId: userId)
             MyTripsViewController.pinnedTripLogs = pinnedLogs
-            print("Fetched pinned pinLogs: \(pinnedLogs)")
+            //print("Fetched pinned pinLogs: \(pinnedLogs)")
         } catch {
             print("Failed to fetch pinned pin logs: \(error.localizedDescription)")
         }

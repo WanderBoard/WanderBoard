@@ -29,8 +29,8 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
         let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
         button.setImage(image, for: .normal)
-        button.tintColor = .white
-        button.backgroundColor = .black
+        button.tintColor = UIColor(named: "textColor")
+        button.backgroundColor = .font
         button.layer.cornerRadius = 15
         button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         return button

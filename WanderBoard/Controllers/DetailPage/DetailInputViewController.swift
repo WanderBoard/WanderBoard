@@ -91,7 +91,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.axis = .horizontal
         $0.alignment = .center
         $0.distribution = .equalSpacing
-        $0.spacing = 20
+        $0.spacing = 10
     }
     
     let publicLabel = UILabel().then {

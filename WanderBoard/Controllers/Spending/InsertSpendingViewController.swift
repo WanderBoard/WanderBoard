@@ -196,8 +196,8 @@ class InsertSpendingViewController: UIViewController {
     
     var insertedCategoryLabel: UILabel = {
         var insertedCategoryLabel = UILabel()
-        insertedCategoryLabel.text = ""
-        insertedCategoryLabel.textColor = .font
+        insertedCategoryLabel.text = "식비 / 교통비 / 숙박비 등"
+        insertedCategoryLabel.textColor = .lightgray
         insertedCategoryLabel.font = UIFont.systemFont(ofSize: 17)
         
         return insertedCategoryLabel
@@ -379,6 +379,7 @@ class InsertSpendingViewController: UIViewController {
     @objc func donePickingCategory() {
         let selectedRow = categoryPicker.selectedRow(inComponent: 0)
         insertedCategoryLabel.text = categories[selectedRow]
+        insertedCategoryLabel.textColor = .font
         updateDoneButtonState()
         hideCategoryPicker()
     }

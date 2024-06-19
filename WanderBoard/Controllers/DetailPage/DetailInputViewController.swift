@@ -115,7 +115,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     let spendingPublicSwitch = UISwitch().then {
         $0.isOn = true
-        $0.onTintColor = .black
+        $0.thumbTintColor = UIColor(named: "textColor")
+        $0.onTintColor = .font
     }
     
     let spendingPublicLabel = UILabel().then {
@@ -308,7 +309,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     let mateLabel = UILabel().then {
         $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
-        $0.textColor = .black
+        $0.textColor = .font
         
         let imageAttachment = NSTextAttachment()
         let systemImage = UIImage(systemName: "person.2")?.withTintColor(.font, renderingMode: .alwaysOriginal)
@@ -481,13 +482,13 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         scrollView.snp.makeConstraints {
             $0.top.equalTo(topContainarView.snp.bottom).offset(-40)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(40)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(20)
         }
         
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.bottom.equalTo(mateCountButton.snp.bottom).offset(50)
+            $0.bottom.equalTo(mateCountButton.snp.bottom).offset(30)
         }
         
         publicOpenStackView.snp.makeConstraints {
@@ -776,9 +777,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         spendingPublicSwitch.isOn = pinLog.isSpendingPublic
         locationLeftLabel.text = pinLog.location
         mainTextField.text = pinLog.title
-        mainTextField.textColor = .black
+        mainTextField.textColor = .font
         subTextField.text = pinLog.content
-        subTextField.textColor = .black
+        subTextField.textColor = .font
         publicSwitch.isOn = pinLog.isPublic
         spendingPublicSwitch.isOn = pinLog.isSpendingPublic
         
@@ -1330,7 +1331,7 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
 
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor.lightgray {
+        if textView.textColor == UIColor.lightgray || textView.textColor == UIColor.darkgray {
             textView.text = nil
             textView.textColor = .font
         }

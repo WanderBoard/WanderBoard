@@ -37,8 +37,8 @@ class InsertSpendingViewController: UIViewController {
     
     var titleLabel: UILabel = {
         var titleLabel = UILabel()
-        titleLabel.font = UIFont.systemFont(ofSize: 17)
-        titleLabel.text = "지출 내역 직접 입력"
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 17)
+        titleLabel.text = "지출 내역 입력"
         titleLabel.textAlignment = .center
         
         return titleLabel
@@ -64,28 +64,25 @@ class InsertSpendingViewController: UIViewController {
     let dateTextField: UITextField = {
         let textField = UITextField()
         textField.isHidden = true
-        textField.attributedPlaceholder = NSAttributedString(string: "지출 내역을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-        textField.textColor = .black
+        textField.attributedPlaceholder = NSAttributedString(string: "지출 날짜를 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightgray])
+        textField.textColor = .font
         
         return textField
     }()
     
-    
     var dateText: UILabel = {
         var dateText = UILabel()
-        dateText.backgroundColor = .babygray
         dateText.text = "날짜*"
         dateText.font = UIFont.systemFont(ofSize: 13)
-        dateText.textColor = .gray
+        dateText.textColor = .lightblack
         
         return dateText
     }()
     
     var insertedDateLabel: UILabel = {
         var insertedDateLabel = UILabel()
-        insertedDateLabel.backgroundColor = .babygray
-        insertedDateLabel.text = "yyyy.MM.dd"
-        insertedDateLabel.textColor = .lightGray
+        insertedDateLabel.text = "yyyy.mm.dd"
+        insertedDateLabel.textColor = .lightgray
         insertedDateLabel.font = UIFont.systemFont(ofSize: 17)
         
         return insertedDateLabel
@@ -94,7 +91,7 @@ class InsertSpendingViewController: UIViewController {
     var calendarImage: UIImageView = {
         var calendarImage = UIImageView()
         calendarImage.image = UIImage(systemName: "calendar")
-        calendarImage.tintColor = .black
+        calendarImage.tintColor = .font
         
         return calendarImage
     }()
@@ -109,20 +106,17 @@ class InsertSpendingViewController: UIViewController {
     
     var contentText: UILabel = {
         var contentText = UILabel()
-        
-        contentText.backgroundColor = .babygray
         contentText.text = "내용*"
         contentText.font = UIFont.systemFont(ofSize: 13)
-        contentText.textColor = .gray
+        contentText.textColor = .lightblack
         
         return contentText
     }()
     
     var contentTextField: UITextField = {
         var contentTextField = UITextField()
-        contentTextField.backgroundColor = .babygray
-        contentTextField.attributedPlaceholder = NSAttributedString(string: "지출 내역을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-        contentTextField.textColor = .black
+        contentTextField.attributedPlaceholder = NSAttributedString(string: "지출 내역을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightgray])
+        contentTextField.textColor = .font
         
         return contentTextField
     }()
@@ -137,20 +131,17 @@ class InsertSpendingViewController: UIViewController {
     
     var expenseAmountText: UILabel = {
         var expenseAmountText = UILabel()
-        
-        expenseAmountText.backgroundColor = .babygray
         expenseAmountText.text = "금액*"
         expenseAmountText.font = UIFont.systemFont(ofSize: 13)
-        expenseAmountText.textColor = .gray
+        expenseAmountText.textColor = .lightblack
         
         return expenseAmountText
     }()
     
     var expenseAmountTextField: UITextField = {
         var expenseAmountTextField = UITextField()
-        expenseAmountTextField.backgroundColor = .babygray
         expenseAmountTextField.attributedPlaceholder = NSAttributedString(string: "지출 금액을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-        expenseAmountTextField.textColor = .black
+        expenseAmountTextField.textColor = .font
         
         return expenseAmountTextField
     }()
@@ -163,7 +154,6 @@ class InsertSpendingViewController: UIViewController {
         
         return categoryButton
     }()
-    
     
     let categories = ["식비", "교통비", "문화생활비", "기념품비", "숙박비", "기타"]
     let categoryImageMapping: [String: String] = [
@@ -184,7 +174,7 @@ class InsertSpendingViewController: UIViewController {
     
     var pickerContainer: UIView =  {
         var pickerContainer = UIView()
-        pickerContainer.backgroundColor = .white
+        pickerContainer.backgroundColor = .systemBackground
         return pickerContainer
     }()
     
@@ -197,24 +187,21 @@ class InsertSpendingViewController: UIViewController {
     
     var categoryText: UILabel = {
         var categoryText = UILabel()
-        
-        categoryText.backgroundColor = .babygray
         categoryText.text = "분류*"
         categoryText.font = UIFont.systemFont(ofSize: 13)
-        categoryText.textColor = .gray
+        categoryText.textColor = .lightblack
         
         return categoryText
     }()
     
     var insertedCategoryLabel: UILabel = {
         var insertedCategoryLabel = UILabel()
-        insertedCategoryLabel.backgroundColor = .babygray
         insertedCategoryLabel.text = ""
+        insertedCategoryLabel.textColor = .font
         insertedCategoryLabel.font = UIFont.systemFont(ofSize: 17)
         
         return insertedCategoryLabel
     }()
-    
     
     var memoView: UIView = {
         var memoView = UIView()
@@ -226,31 +213,28 @@ class InsertSpendingViewController: UIViewController {
     
     var memoText: UILabel = {
         var memoText = UILabel()
-        
-        memoText.backgroundColor = .babygray
         memoText.text = "메모"
-        memoText.font = UIFont.systemFont(ofSize: 13)
-        memoText.textColor = .gray
+        memoText.font = UIFont.boldSystemFont(ofSize: 13)
+        memoText.textColor = .darkgray
         
         return memoText
     }()
     
     var memoTextField: UITextField = {
         var memoTextField = UITextField()
-        memoTextField.backgroundColor = .babygray
         memoTextField.attributedPlaceholder = NSAttributedString(string: "메모를 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
-        memoTextField.textColor = .black
+        memoTextField.textColor = .font
         
         return memoTextField
     }()
     
     lazy var saveDoneButton: UIButton = {
         var saveDoneButton = UIButton()
-        saveDoneButton.backgroundColor = .black
+        saveDoneButton.backgroundColor = .font
         saveDoneButton.setTitle("저장", for: .normal)
-        saveDoneButton.setTitleColor(.white, for: .normal)
+        saveDoneButton.setTitleColor(UIColor(named: "textColor"), for: .normal)
         saveDoneButton.setTitle("필수 값을 입력해주세요", for: .disabled)
-        saveDoneButton.setTitleColor(.gray, for: .disabled)
+        saveDoneButton.setTitleColor(.darkgray, for: .disabled)
         saveDoneButton.isEnabled = false
         saveDoneButton.addTarget(self, action: #selector(saveExpenseData), for: .touchUpInside)
         saveDoneButton.layer.cornerRadius = 15
@@ -262,13 +246,14 @@ class InsertSpendingViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
         contentTextField.delegate = self
         expenseAmountTextField.delegate = self
         
         configureUI()
         makeConstraints()
+        updateColor()
         setupDatePicker()
         setupCategoryPicker()
         
@@ -281,6 +266,40 @@ class InsertSpendingViewController: UIViewController {
             memoTextField.text = expense.memo
         }
         updateDoneButtonState()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor(){
+        //베이비그레이-커스텀블랙
+        let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+        dateButton.backgroundColor = babyGTocustomB
+        contentView.backgroundColor = babyGTocustomB
+        expenseAmountView.backgroundColor = babyGTocustomB
+        categoryButton.backgroundColor = babyGTocustomB
+        memoView.backgroundColor = babyGTocustomB
+        
+        //라이트그레이-라이트블랙
+        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        insertedDateLabel.textColor = lightGTolightB
+        dateTextField.attributedPlaceholder = NSAttributedString(string: "지출 날짜를 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : lightGTolightB!])
+        contentTextField.attributedPlaceholder = NSAttributedString(string: "지출 내역을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : lightGTolightB!])
+        expenseAmountTextField.attributedPlaceholder = NSAttributedString(string: "지출 금액을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : lightGTolightB!])
+        insertedCategoryLabel.textColor = lightGTolightB
+        memoText.textColor = lightGTolightB
+        memoTextField.attributedPlaceholder = NSAttributedString(string: "메모를 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : lightGTolightB!])
+        
+        //라이트블랙-다크그레이
+        let lightBTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightblack")
+        dateText.textColor = lightBTodarkG
+        contentText.textColor = lightBTodarkG
+        expenseAmountText.textColor = lightBTodarkG
+        categoryText.textColor = lightBTodarkG
     }
     
     // MARK: DatePicker 구성
@@ -307,7 +326,7 @@ class InsertSpendingViewController: UIViewController {
     // MARK: DatePicker Done 버튼 클릭시 동작
     @objc func donePressed() {
         insertedDateLabel.text = dateFormat(date: datePicker.date)
-        insertedDateLabel.textColor = .black
+        insertedDateLabel.textColor = .font
         updateDoneButtonState()
         dateTextField.resignFirstResponder()
     }
@@ -353,7 +372,6 @@ class InsertSpendingViewController: UIViewController {
         
         UIView.animate(withDuration: 0.3) {
             self.pickerContainer.frame = CGRect(x: 0, y: self.view.frame.height - 300, width: self.view.frame.width, height: 300)
-            
         }
     }
     
@@ -379,10 +397,8 @@ class InsertSpendingViewController: UIViewController {
     func hideCategoryPicker() {
         UIView.animate(withDuration: 0.3) {
             self.pickerContainer.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 300)
-            
         }
     }
-    
     
     // MARK: 저장Done 버튼 클릭시 SpendingListVC로 data 전달
     @objc func saveExpenseData() {
@@ -485,148 +501,106 @@ class InsertSpendingViewController: UIViewController {
     
     //MARK: Components Layout
     func makeConstraints() {
-        
         scrollView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide)
         }
-        
         scrollContentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
         }
-        
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(scrollContentView).offset(44)
             $0.leading.trailing.equalTo(scrollContentView)
             $0.height.equalTo(22)
-            
         }
-        
         dateButton.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(44)
             $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
             $0.height.equalTo(74)
-            
         }
-        
         dateText.snp.makeConstraints {
             $0.top.equalToSuperview().offset(10.5)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
-            
         }
-        
         insertedDateLabel.snp.makeConstraints {
             $0.top.equalTo(dateText.snp.bottom).offset(5)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
-            
         }
-        
         calendarImage.snp.makeConstraints {
             $0.top.equalToSuperview().offset(28.67)
             $0.trailing.equalToSuperview().inset(21)
             $0.height.width.equalTo(20)
         }
-        
         contentView.snp.makeConstraints {
             $0.top.equalTo(dateButton.snp.bottom).offset(22)
             $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
             $0.height.equalTo(74)
-            
         }
-        
         contentText.snp.makeConstraints {
             $0.top.equalToSuperview().offset(10.5)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
-            
         }
-        
         contentTextField.snp.makeConstraints {
             $0.top.equalTo(contentText.snp.bottom).offset(5)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
-            
         }
-        
         expenseAmountView.snp.makeConstraints {
             $0.top.equalTo(contentView.snp.bottom).offset(22)
             $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
             $0.height.equalTo(74)
-            
         }
-        
         expenseAmountText.snp.makeConstraints {
             $0.top.equalToSuperview().offset(10.5)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
-            
         }
-        
         expenseAmountTextField.snp.makeConstraints {
             $0.top.equalTo(expenseAmountText.snp.bottom).offset(5)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
-            
         }
-        
         categoryButton.snp.makeConstraints {
             $0.top.equalTo(expenseAmountView.snp.bottom).offset(22)
             $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
             $0.height.equalTo(74)
-            
         }
-        
         categoryText.snp.makeConstraints {
             $0.top.equalToSuperview().offset(10.5)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
-            
         }
-        
         insertedCategoryLabel.snp.makeConstraints {
             $0.top.equalTo(categoryText.snp.bottom).offset(5)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
-            
         }
-        
-        
-        
         memoView.snp.makeConstraints {
             $0.top.equalTo(categoryButton.snp.bottom).offset(22)
             $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
             $0.height.equalTo(74)
-            
         }
-        
         memoText.snp.makeConstraints {
             $0.top.equalToSuperview().offset(10.5)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
-            
         }
-        
         memoTextField.snp.makeConstraints {
             $0.top.equalTo(memoText.snp.bottom).offset(5)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
-            
         }
-        
         saveDoneButton.snp.makeConstraints {
             $0.top.equalTo(memoView.snp.bottom).offset(59)
             $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
             $0.height.equalTo(50)
             $0.bottom.equalTo(scrollContentView).offset(-20)
-            
         }
-        
     }
-    
 }
-
 
 // MARK: UIPickerViewDelegate, UIPickerViewDataSource
 extension InsertSpendingViewController : UIPickerViewDelegate, UIPickerViewDataSource {
@@ -654,17 +628,7 @@ extension InsertSpendingViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
         updateDoneButtonState()
     }
-    
 }
 
-//// MARK: Alert
-//extension UIViewController {
-//    func showAlert(title: String, message: String) {
-//        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-//        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-//        alertController.addAction(okAction)
-//        present(alertController, animated: true, completion: nil)
-//    }
-//}
 
 

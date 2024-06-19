@@ -23,8 +23,8 @@ class SpendingTableViewHeaderView: UITableViewHeaderFooterView {
     
     let dateLabel: UILabel = {
         let dateLabel = UILabel()
-        dateLabel.font = UIFont.boldSystemFont(ofSize: 17)
-        dateLabel.textColor = .black
+        dateLabel.font = UIFont.boldSystemFont(ofSize: 15)
+        dateLabel.textColor = .darkgray
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
@@ -34,19 +34,19 @@ class SpendingTableViewHeaderView: UITableViewHeaderFooterView {
     
     let dailyTotalAmountLabel: UILabel = {
         let dailyTotalAmountLabel = UILabel()
-        dailyTotalAmountLabel.font = UIFont.systemFont(ofSize: 15)
-        dailyTotalAmountLabel.textColor = .black
+        dailyTotalAmountLabel.font = UIFont.boldSystemFont(ofSize: 17)
+        dailyTotalAmountLabel.textColor = .darkgray
         dailyTotalAmountLabel.textAlignment = .right
         return dailyTotalAmountLabel
     }()
     
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
-        
-        self.contentView.backgroundColor = .lightgray
+        self.contentView.backgroundColor = .babygray
         
         configureUI()
         makeConstraints()
+        updateColor()
     }
     
     func configureUI() {
@@ -81,5 +81,18 @@ class SpendingTableViewHeaderView: UITableViewHeaderFooterView {
         dateFormatter.dateFormat = "yyyy.MM.dd"
         dateLabel.text = dateFormatter.string(from: date)
         dailyTotalAmountLabel.text =  "\(formatCurrency(dailyTotalAmount))원"
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor(){
+        //베이비그레이-커스텀블랙
+        let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+        self.contentView.backgroundColor = babyGTocustomB
     }
 }

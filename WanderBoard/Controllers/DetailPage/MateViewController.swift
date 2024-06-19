@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
 
 class MateViewController: UIViewController {
     
@@ -184,10 +185,12 @@ class MateViewController: UIViewController {
     }
     
     func fetchUsers() {
+        guard let currentUserID = Auth.auth().currentUser?.uid else { return }
+        
         MateManager.shared.fetchUserSummaries { [weak self] result in
             switch result {
             case .success(let userSummaries):
-                self?.users = userSummaries
+                self?.users = userSummaries.filter { $0.uid != currentUserID }
                 self?.filteredUsers = []
                 self?.updateNoDataView(isEmpty: true)
                 self?.tableView.reloadData()
@@ -198,9 +201,10 @@ class MateViewController: UIViewController {
     }
 
     func searchFriends(with query: String) {
+        guard let currentUserID = Auth.auth().currentUser?.uid else { return }
         let filteredByName = users.filter { $0.displayName.lowercased().contains(query.lowercased()) }
         let filteredByEmail = users.filter { $0.email.lowercased().contains(query.lowercased()) }
-        filteredUsers = Array(Set(filteredByName + filteredByEmail))
+        filteredUsers = Array(Set(filteredByName + filteredByEmail)).filter { $0.uid != currentUserID }
         updateNoDataView(isEmpty: filteredUsers.isEmpty)
         tableView.reloadData()
     }

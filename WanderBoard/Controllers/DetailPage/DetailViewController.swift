@@ -48,6 +48,8 @@ class DetailViewController: UIViewController {
     
     // 추가
     var profileImageView = UIImageView().then {
+        $0.backgroundColor = .white
+        $0.tintColor = .white
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 16
@@ -77,6 +79,8 @@ class DetailViewController: UIViewController {
         $0.font = UIFont.systemFont(ofSize: 40)
         $0.textColor = .white
         $0.numberOfLines = 2
+        $0.adjustsFontSizeToFitWidth = true
+        $0.minimumScaleFactor = 0.5
     }
     
     var dateDaysLabel = UILabel().then {
@@ -369,16 +373,19 @@ class DetailViewController: UIViewController {
     func checkId() {
         if let pinLog = pinLog {
             if isCurrentUser(pinLog: pinLog) {
-                configureView(with: pinLog)
+                Task {
+                    await configureView(with: pinLog)
+                }
                 updatePinButtonState()
                 profileStackView.isHidden = true
             } else {
                 hideAppearUIElements()
-                configureView(with: pinLog)
+                Task {
+                    await configureView(with: pinLog)
+                }
                 updatePinButtonState()
                 profileStackView.isHidden = false
             }
-            // 현재 사용자가 작성자인지 여부에 따라 메뉴 설정
             setupMenu()
         }
     }
@@ -543,11 +550,11 @@ class DetailViewController: UIViewController {
         subTextContainer.snp.makeConstraints {
             $0.top.equalTo(mainTitleLabel.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(129)
+            $0.height.greaterThanOrEqualTo(130).priority(.low)
         }
         
         subTextLabel.snp.makeConstraints {
-            $0.top.leading.trailing.equalTo(subTextContainer)
+            $0.edges.equalTo(subTextContainer)
         }
         
         textLabelLine.snp.makeConstraints {
@@ -589,7 +596,7 @@ class DetailViewController: UIViewController {
         }
         
         moneyCountainer.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(24)
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(16)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(90)
         }
@@ -619,18 +626,18 @@ class DetailViewController: UIViewController {
         }
         
         friendTitle.snp.makeConstraints {
-            $0.top.equalTo(moneyCountainer.snp.bottom).offset(30)
+            $0.top.equalTo(moneyCountainer.snp.bottom).offset(16)
             $0.leading.equalTo(contentView).offset(16)
         }
         
         friendCollectionView.snp.makeConstraints {
-            $0.top.equalTo(friendTitle.snp.bottom).offset(20)
+            $0.top.equalTo(friendTitle.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(65)
         }
         
         bottomLogo.snp.makeConstraints {
-            $0.top.equalTo(friendCollectionView.snp.bottom).offset(30)
+            $0.top.equalTo(friendCollectionView.snp.bottom).offset(24)
             $0.width.equalTo(135)
             $0.height.equalTo(18)
             $0.centerX.equalToSuperview()
@@ -638,7 +645,7 @@ class DetailViewController: UIViewController {
         }
     }
     
-    func configureView(with pinLog: PinLog) {
+    func configureView(with pinLog: PinLog) async {
         locationLabel.text = pinLog.location
         
         let dateFormatter = DateFormatter()
@@ -712,20 +719,18 @@ class DetailViewController: UIViewController {
             }
         }
         
-        // 프로필 이미지 불러오기
-        FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId) { [weak self] photoURL in
-            if let photoURL = photoURL, let url = URL(string: photoURL) {
-                self?.loadImage(from: url) { image in
-                    DispatchQueue.main.async {
-                        guard self?.locationLabel.text == pinLog.location else {
-                            return
-                        }
-                        self?.profileImageView.image = image
-                    }
-                }
-            } else {
-                self?.profileImageView.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
-            }
+        // 프로필 사진
+        if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId), let url = URL(string: photoURL) {
+            profileImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "person.circle"))
+        } else {
+            profileImageView.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
+        }
+        
+        // 백그라운드 이미지
+        if let representativeImageURL = pinLog.media.first(where: { $0.isRepresentative })?.url ?? pinLog.media.first?.url, let url = URL(string: representativeImageURL) {
+            backgroundImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "photo"))
+        } else {
+            backgroundImageView.image = UIImage(systemName: "photo")
         }
         
         friendTitle.isHidden = pinLog.attendeeIds.isEmpty
@@ -843,7 +848,7 @@ class DetailViewController: UIViewController {
     @objc func moneyMoveButtonTapped() {
         let spendVC = SpendingListViewController()
         spendVC.pinLog = self.pinLog
-        spendVC.shouldShowEditButton = false
+//        spendVC.shouldShowEditButton = false 세미:편집은 셀 스와이프로, 새 지출 내역작성은 펜버튼으로 진행(테이블뷰가 있으면 펜버튼이 보이고, 입력전으로 테이블뷰가 없으면 펜버튼이 없게 만들어서 shouldShowEditButton 기능이 불필요할 것 같아서 주석처리했습니다)
         spendVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(spendVC, animated: true)
     }
@@ -1246,6 +1251,8 @@ protocol DetailViewControllerDelegate: AnyObject {
 extension DetailViewController: DetailInputViewControllerDelegate {
     func didSavePinLog(_ pinLog: PinLog) {
         self.pinLog = pinLog
-        configureView(with: pinLog)
+        Task {
+            await configureView(with: pinLog)
+        }
     }
 }

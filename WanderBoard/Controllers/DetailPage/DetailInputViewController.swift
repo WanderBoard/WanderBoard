@@ -146,7 +146,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     let locationLeftLabel = UILabel().then {
         $0.text = "지역을 선택하세요"
         $0.font = UIFont.systemFont(ofSize: 14)
-        $0.textColor = .font
+        $0.textColor = .darkgray
     }
     
     let locationRightLabel = UIImageView().then {
@@ -165,7 +165,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     let dateLabel = UILabel().then {
         $0.text = "날짜를 선택하세요"
         $0.font = UIFont.systemFont(ofSize: 14)
-        $0.textColor = .font
+        $0.textColor = .darkgray
         $0.isHidden = false
     }
     
@@ -308,7 +308,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     let mateLabel = UILabel().then {
         $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
-        $0.textColor = .darkgray
+        $0.textColor = .black
         
         let imageAttachment = NSTextAttachment()
         let systemImage = UIImage(systemName: "person.2")?.withTintColor(.font, renderingMode: .alwaysOriginal)
@@ -744,7 +744,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let spendVC = SpendingListViewController()
         
         spendVC.pinLog = pinLog
-        spendVC.shouldShowEditButton = true
+//        spendVC.shouldShowEditButton = true
         navigationController?.pushViewController(spendVC, animated: true)
     }
     

@@ -24,10 +24,22 @@ class InsertSpendingViewController: UIViewController {
     var editingIndexPath: IndexPath?
     weak var delegate: InsertSpendingViewControllerDelegate?
     
+    var scrollView = UIScrollView().then {
+        $0.showsVerticalScrollIndicator = false
+        $0.bounces = false
+        $0.clipsToBounds = true
+        $0.layer.cornerRadius = 16
+    }
+    
+    var scrollContentView = UIView().then {
+        $0.backgroundColor = UIColor(named: "textColor")
+    }
+    
     var titleLabel: UILabel = {
         var titleLabel = UILabel()
         titleLabel.font = UIFont.systemFont(ofSize: 17)
         titleLabel.text = "지출 내역 직접 입력"
+        titleLabel.textAlignment = .center
         
         return titleLabel
     }()
@@ -52,6 +64,8 @@ class InsertSpendingViewController: UIViewController {
     let dateTextField: UITextField = {
         let textField = UITextField()
         textField.isHidden = true
+        textField.attributedPlaceholder = NSAttributedString(string: "지출 내역을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
+        textField.textColor = .black
         
         return textField
     }()
@@ -60,7 +74,7 @@ class InsertSpendingViewController: UIViewController {
     var dateText: UILabel = {
         var dateText = UILabel()
         dateText.backgroundColor = .babygray
-        dateText.text = "Date"
+        dateText.text = "날짜*"
         dateText.font = UIFont.systemFont(ofSize: 13)
         dateText.textColor = .gray
         
@@ -70,7 +84,8 @@ class InsertSpendingViewController: UIViewController {
     var insertedDateLabel: UILabel = {
         var insertedDateLabel = UILabel()
         insertedDateLabel.backgroundColor = .babygray
-        insertedDateLabel.text = ""
+        insertedDateLabel.text = "yyyy.MM.dd"
+        insertedDateLabel.textColor = .lightGray
         insertedDateLabel.font = UIFont.systemFont(ofSize: 17)
         
         return insertedDateLabel
@@ -96,7 +111,7 @@ class InsertSpendingViewController: UIViewController {
         var contentText = UILabel()
         
         contentText.backgroundColor = .babygray
-        contentText.text = "Content"
+        contentText.text = "내용*"
         contentText.font = UIFont.systemFont(ofSize: 13)
         contentText.textColor = .gray
         
@@ -106,7 +121,8 @@ class InsertSpendingViewController: UIViewController {
     var contentTextField: UITextField = {
         var contentTextField = UITextField()
         contentTextField.backgroundColor = .babygray
-        contentTextField.attributedPlaceholder = NSAttributedString(string: "지출 내역을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.black])
+        contentTextField.attributedPlaceholder = NSAttributedString(string: "지출 내역을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
+        contentTextField.textColor = .black
         
         return contentTextField
     }()
@@ -123,7 +139,7 @@ class InsertSpendingViewController: UIViewController {
         var expenseAmountText = UILabel()
         
         expenseAmountText.backgroundColor = .babygray
-        expenseAmountText.text = "Amount of Expense"
+        expenseAmountText.text = "금액*"
         expenseAmountText.font = UIFont.systemFont(ofSize: 13)
         expenseAmountText.textColor = .gray
         
@@ -133,7 +149,8 @@ class InsertSpendingViewController: UIViewController {
     var expenseAmountTextField: UITextField = {
         var expenseAmountTextField = UITextField()
         expenseAmountTextField.backgroundColor = .babygray
-        expenseAmountTextField.attributedPlaceholder = NSAttributedString(string: "지출 금액을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.black])
+        expenseAmountTextField.attributedPlaceholder = NSAttributedString(string: "지출 금액을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
+        expenseAmountTextField.textColor = .black
         
         return expenseAmountTextField
     }()
@@ -182,7 +199,7 @@ class InsertSpendingViewController: UIViewController {
         var categoryText = UILabel()
         
         categoryText.backgroundColor = .babygray
-        categoryText.text = "Category"
+        categoryText.text = "분류*"
         categoryText.font = UIFont.systemFont(ofSize: 13)
         categoryText.textColor = .gray
         
@@ -211,7 +228,7 @@ class InsertSpendingViewController: UIViewController {
         var memoText = UILabel()
         
         memoText.backgroundColor = .babygray
-        memoText.text = "Memo"
+        memoText.text = "메모"
         memoText.font = UIFont.systemFont(ofSize: 13)
         memoText.textColor = .gray
         
@@ -221,7 +238,8 @@ class InsertSpendingViewController: UIViewController {
     var memoTextField: UITextField = {
         var memoTextField = UITextField()
         memoTextField.backgroundColor = .babygray
-        memoTextField.attributedPlaceholder = NSAttributedString(string: "메모를 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.black])
+        memoTextField.attributedPlaceholder = NSAttributedString(string: "메모를 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
+        memoTextField.textColor = .black
         
         return memoTextField
     }()
@@ -229,9 +247,9 @@ class InsertSpendingViewController: UIViewController {
     lazy var saveDoneButton: UIButton = {
         var saveDoneButton = UIButton()
         saveDoneButton.backgroundColor = .black
-        saveDoneButton.setTitle("Done", for: .normal)
+        saveDoneButton.setTitle("저장", for: .normal)
         saveDoneButton.setTitleColor(.white, for: .normal)
-        saveDoneButton.setTitle("Please fill in", for: .disabled)
+        saveDoneButton.setTitle("필수 값을 입력해주세요", for: .disabled)
         saveDoneButton.setTitleColor(.gray, for: .disabled)
         saveDoneButton.isEnabled = false
         saveDoneButton.addTarget(self, action: #selector(saveExpenseData), for: .touchUpInside)
@@ -262,11 +280,7 @@ class InsertSpendingViewController: UIViewController {
             insertedCategoryLabel.text = expense.category
             memoTextField.text = expense.memo
         }
-        
         updateDoneButtonState()
-        
-        
-        
     }
     
     // MARK: DatePicker 구성
@@ -293,6 +307,7 @@ class InsertSpendingViewController: UIViewController {
     // MARK: DatePicker Done 버튼 클릭시 동작
     @objc func donePressed() {
         insertedDateLabel.text = dateFormat(date: datePicker.date)
+        insertedDateLabel.textColor = .black
         updateDoneButtonState()
         dateTextField.resignFirstResponder()
     }
@@ -438,41 +453,58 @@ class InsertSpendingViewController: UIViewController {
     
     // MARK: Components Set up
     func configureUI() {
-        self.view.addSubview(titleLabel)
-        self.view.addSubview(dateButton)
+        self.view.addSubview(scrollView)
+        scrollView.addSubview(scrollContentView)
+        scrollContentView.addSubview(titleLabel)
+        
+        scrollContentView.addSubview(dateButton)
         dateButton.addSubview(dateText)
         dateButton.addSubview(dateTextField)
         dateButton.addSubview(insertedDateLabel)
         dateButton.addSubview(calendarImage)
-        self.view.addSubview(contentView)
+        
+        scrollContentView.addSubview(contentView)
         contentView.addSubview(contentText)
         contentView.addSubview(contentTextField)
-        self.view.addSubview(expenseAmountView)
+        
+        scrollContentView.addSubview(expenseAmountView)
         expenseAmountView.addSubview(expenseAmountText)
         expenseAmountView.addSubview(expenseAmountTextField)
-        self.view.addSubview(categoryButton)
+        
+        scrollContentView.addSubview(categoryButton)
         categoryButton.addSubview(categoryText)
         categoryButton.addSubview(categoryTextField)
         categoryButton.addSubview(insertedCategoryLabel)
-        self.view.addSubview(memoView)
+        
+        scrollContentView.addSubview(memoView)
         memoView.addSubview(memoText)
         memoView.addSubview(memoTextField)
-        self.view.addSubview(saveDoneButton)
+        
+        scrollContentView.addSubview(saveDoneButton)
     }
     
     //MARK: Components Layout
     func makeConstraints() {
         
+        scrollView.snp.makeConstraints {
+            $0.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        scrollContentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalTo(scrollView.frameLayoutGuide)
+        }
+        
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(44)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(130)
+            $0.top.equalTo(scrollContentView).offset(44)
+            $0.leading.trailing.equalTo(scrollContentView)
             $0.height.equalTo(22)
             
         }
         
         dateButton.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(44)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(49.5)
+            $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
             $0.height.equalTo(74)
             
         }
@@ -499,7 +531,7 @@ class InsertSpendingViewController: UIViewController {
         
         contentView.snp.makeConstraints {
             $0.top.equalTo(dateButton.snp.bottom).offset(22)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(49.5)
+            $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
             $0.height.equalTo(74)
             
         }
@@ -520,7 +552,7 @@ class InsertSpendingViewController: UIViewController {
         
         expenseAmountView.snp.makeConstraints {
             $0.top.equalTo(contentView.snp.bottom).offset(22)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(49.5)
+            $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
             $0.height.equalTo(74)
             
         }
@@ -541,7 +573,7 @@ class InsertSpendingViewController: UIViewController {
         
         categoryButton.snp.makeConstraints {
             $0.top.equalTo(expenseAmountView.snp.bottom).offset(22)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(49.5)
+            $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
             $0.height.equalTo(74)
             
         }
@@ -564,7 +596,7 @@ class InsertSpendingViewController: UIViewController {
         
         memoView.snp.makeConstraints {
             $0.top.equalTo(categoryButton.snp.bottom).offset(22)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(49.5)
+            $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
             $0.height.equalTo(74)
             
         }
@@ -585,8 +617,9 @@ class InsertSpendingViewController: UIViewController {
         
         saveDoneButton.snp.makeConstraints {
             $0.top.equalTo(memoView.snp.bottom).offset(59)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(49.5)
+            $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
             $0.height.equalTo(50)
+            $0.bottom.equalTo(scrollContentView).offset(-20)
             
         }
         

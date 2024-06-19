@@ -208,20 +208,12 @@ class FirestoreManager {
         }
         return []
     }
-
     
-    //프로필 사진 가져오기
-    func fetchUserProfileImageURL(userId: String, completion: @escaping (String?) -> Void) {
+    // 프로필 사진 URL 가져오기
+    func fetchUserProfileImageURL(userId: String) async throws -> String? {
         let userRef = db.collection("users").document(userId)
-        userRef.getDocument { document, error in
-            if let document = document, document.exists {
-                let data = document.data()
-                let photoURL = data?["photoURL"] as? String
-                completion(photoURL)
-            } else {
-                completion(nil)
-            }
-        }
+        let document = try await userRef.getDocument()
+        return document.data()?["photoURL"] as? String
     }
     
     func fetchUserDisplayName(userId: String, completion: @escaping (String?) -> Void) {

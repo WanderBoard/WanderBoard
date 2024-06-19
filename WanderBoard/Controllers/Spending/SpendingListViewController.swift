@@ -12,7 +12,8 @@ import FirebaseAuth
 
 class SpendingListViewController: UIViewController {
     var pinLog: PinLog?
-    var shouldShowEditButton: Bool = true
+//    var shouldShowEditButton: Bool = true
+//세미: 펜버튼 자체가 테이블뷰가 있을 때만 나와서 불필요한 코드로 보여 주석처리함
     
     // MARK: Components
     var dailyExpenses: [DailyExpenses] = []
@@ -116,7 +117,7 @@ class SpendingListViewController: UIViewController {
 //            navigationItem.rightBarButtonItem = penButton
 //        } else {
 //            navigationItem.rightBarButtonItem = nil
-//        }
+//        } 세미: 펜버튼 자체가 테이블뷰가 있을 때만 나와서 불필요한 코드로 보여 주석처리함
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -183,12 +184,12 @@ class SpendingListViewController: UIViewController {
             tableView.isHidden = true
             spendingEmptyView.isHidden = false
             penButton.isHidden = true
-//            penButton.isEnabled = false
+//            penButton.isEnabled = false 세미: 히든처리로 비활성화 불필요
         } else {
             tableView.isHidden = false
             spendingEmptyView.isHidden = true
             penButton.isHidden = false
-//            penButton.isEnabled = true
+//            penButton.isEnabled = true 세미: 히든처리로 비활성화 불필요
         }
         tableView.reloadData()
     }

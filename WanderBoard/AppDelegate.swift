@@ -29,7 +29,7 @@ import KakaoSDKAuth
             return false
         }
         
-        KakaoSDK.initSDK(appKey: "fdaab28c4efeacf52167771728104865")
+        KakaoSDK.initSDK(appKey: "bc1969cc0cd1ae85004329699d424b47")
         
         window = UIWindow(frame: UIScreen.main.bounds)
         configureInitialViewController()

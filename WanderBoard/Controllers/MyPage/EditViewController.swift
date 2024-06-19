@@ -254,12 +254,12 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             $0.top.equalTo(nameAlert.snp.bottom).offset(15)
         }
         subTitle.snp.makeConstraints(){
-            $0.top.equalTo(subLine.snp.bottom).offset(25)
-            $0.left.equalTo(subLine.snp.left).offset(16)
+            $0.top.equalTo(subLine.snp.bottom).offset(20)
+            $0.left.equalTo(subLine.snp.left)
         }
         connectButton.snp.makeConstraints(){
             $0.centerY.equalTo(subTitle)
-            $0.right.equalTo(subLine.snp.right).inset(16)
+            $0.right.equalTo(subLine.snp.right)
             $0.width.equalTo(121)
             $0.height.equalTo(44)
         }
@@ -364,84 +364,33 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         }
     }
     
-    //한글체크코드
-    func koreaLangCheck(_ input: String) -> Bool {
-        let pattern = "^[가-힣a-zA-Z\\s]*$"
-        if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) {
-            let range = NSRange(location: 0, length: input.utf16.count)
-            if regex.firstMatch(in: input, options: [], range: range) != nil {
-                return true
-            }
-        }
-        return false
-    }
-    
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let currentText = textField.text ?? ""
-        guard let stringRange = Range(range, in: currentText) else { return false }
-        let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
-        
-        // Step 1: 글자 수 체크
-        if updatedText.isEmpty {
-            nameAlert.text = "😗 닉네임을 입력해주세요\n입력하신 닉네임은 다른 사용자에게 노출됩니다"
-            nameAlert.textColor = .darkgray
-            doneButton.isEnabled = false
-            return true
+    @objc private func duplicateCheckTapped() {
+        guard let nickname = nicknameTextField.text, !nickname.isEmpty else {
+            showAlert(title: "😗", message: "변경할 닉네임을 입력해주세요. \n입력하신 닉네임은 다른 사용자에게 노출됩니다.🤭")
+            return
         }
         
-        if updatedText.count < 2 || updatedText.count > 16 {
-            nameAlert.text = "😗 글자 수를 맞춰주세요 (2자 이상, 16자 이하)"
-            nameAlert.textColor = .darkgray
-            doneButton.isEnabled = false
-            return true
+        // 특수문자 검증
+        let nicknamePattern = "^[a-zA-Z0-9가-힣]+$"
+        let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
+        if !nicknamePredicate.evaluate(with: nickname) {
+            showAlert(title: "🤬", message: "닉네임에 특수문자를 포함할 수 없습니다.")
+            return
         }
         
-        // Step 2: 특수문자 포함 여부 체크 (공백과 특수문자만 체크)
-        if !koreaLangCheck(updatedText) {
-            nameAlert.text = "🤬 닉네임에 특수문자나 공백을 포함할 수 없습니다"
-            nameAlert.textColor = .red
-            doneButton.titleLabel?.textColor = .lightgray
-            doneButton.isEnabled = false
-            return true
-        }
-        
-        nameAlert.text = ""
-        doneButton.isEnabled = false
-        
-        // 중복 체크는 텍스트 편집이 끝난 후에 수행합니다.
-        return true
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        let nickname = textField.text ?? ""
-        
-        // 글자 수 및 특수문자 체크 통과한 후 Firestore에서 닉네임 중복 체크
-        if nickname.count >= 2 && nickname.count <= 16 && koreaLangCheck(nickname) {
-                Task {
-                    do {
-                        let isDuplicate = try await FirestoreManager.shared.checkDisplayNameExists(displayName: nickname)
-                        if isDuplicate {
-                            nameAlert.text = "😱 아쉬워요.. 다른 사용자가 먼저 등록했어요"
-                            nameAlert.textColor = .red
-                            doneButton.titleLabel?.textColor = .lightGray
-                            doneButton.isEnabled = false
-                        } else {
-                            nameAlert.text = "😁 사용할 수 있는 닉네임입니다!"
-                            nameAlert.textColor = .font
-                            doneButton.isEnabled = true
-                        }
-                    } catch {
-                        let alert = UIAlertController(title: "😵‍💫", message: "닉네임 확인 중 오류가 발생했습니다: \(error.localizedDescription)", preferredStyle: .alert)
-                        let confirm = UIAlertAction(title: "확인", style: .default)
-                        alert.addAction(confirm)
-                        present(alert, animated: true, completion: nil)
-                    }
-
+        Task {
+            do {
+                let isDuplicate = try await FirestoreManager.shared.checkDisplayNameExists(displayName: nickname)
+                if isDuplicate {
+                    showAlert(title: "😱", message: "아쉽네요. 다른 사용자가 먼저 등록했어요")
+                } else {
+                    showConfirmationAlert(title: "😁\n\(nickname)", message: "당신만의 멋진 닉네임이네요. \n이 닉네임을 사용하시겠습니까?", nickname: nickname)
                 }
             } catch {
                 showAlert(title: "😵‍💫", message: "닉네임 확인 중 오류가 발생했습니다: \(error.localizedDescription)")
             }
         }
+    }
     
     private func updateDuplicateCheckButtonState() {
         let nicknameLength = nicknameTextField.text?.count ?? 0

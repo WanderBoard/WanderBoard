@@ -18,7 +18,7 @@ class FilterCollectionViewCell: UICollectionViewCell {
         $0.setTitleColor(.darkgray, for: .normal)
         $0.titleLabel?.font = .systemFont(ofSize: 12, weight: .regular)
         $0.layer.cornerRadius = 12
-        $0.layer.borderColor = UIColor.lightgray.cgColor
+        $0.layer.borderColor = UIColor.babygray.cgColor
         $0.layer.borderWidth = 1
     }
 
@@ -43,7 +43,7 @@ class FilterCollectionViewCell: UICollectionViewCell {
     }
     
     func updateColor(){
-        let lineColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        let lineColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "babygray")
         filterButton.layer.borderColor = lineColor?.cgColor
     }
 }

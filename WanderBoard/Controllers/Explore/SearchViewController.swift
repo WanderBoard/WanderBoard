@@ -115,7 +115,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             self.isLoading = false
             switch result {
             case .success(let (logs, lastSnapshot)):
-                print("Initial data fetched: \(logs.count) logs")
                 self.allTripLogs = self.filterBlockedAuthors(from: logs)
                 self.searchedLogs = self.allTripLogs
                 self.allTripLogs.sort { ($0.pinCount ?? 0) > ($1.pinCount ?? 0) }

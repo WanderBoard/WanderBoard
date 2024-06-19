@@ -167,7 +167,6 @@ class ExploreViewController: UIViewController, PageIndexed {
         guard let recentCell = tableView.dequeueReusableCell(withIdentifier: RecentTableViewCell.identifier) as? RecentTableViewCell else { return }
         recentCell.configure(with: recentLogs)
         recentCellHeight = recentCell.calculateCollectionViewHeight()
-        //print("Calculated recentCellHeight: \(recentCellHeight)")
     }
     
     @objc func searchButtonTapped(_ sender: UIButton) {

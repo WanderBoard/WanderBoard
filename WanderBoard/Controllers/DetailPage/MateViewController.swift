@@ -42,7 +42,7 @@ class MateViewController: UIViewController {
     }()
     
     let tableView = UITableView().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = UIColor(named: "textColor")
         $0.register(MateTableViewCell.self, forCellReuseIdentifier: MateTableViewCell.identifier)
     }
     
@@ -51,7 +51,7 @@ class MateViewController: UIViewController {
     }
     
     let imageView = UIImageView().then {
-        $0.image = UIImage(named: "emptyImg")
+        $0.image = UIImage(named: "searchImage")?.withTintColor(.font)
         $0.contentMode = .scaleAspectFill
         $0.isHidden = true
     }
@@ -59,8 +59,8 @@ class MateViewController: UIViewController {
     let noDataMainTitle = UILabel().then {
         $0.text = "검색결과가 없습니다"
         $0.textAlignment = .center
-        $0.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
-        $0.textColor = .black
+        $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        $0.textColor = .font
         $0.isHidden = true
     }
     
@@ -68,7 +68,7 @@ class MateViewController: UIViewController {
         $0.text = "검색을 통해 메이트를 추가해주세요"
         $0.textAlignment = .center
         $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = .lightgray
+        $0.textColor = .darkgray
         $0.isHidden = true
     }
     
@@ -89,7 +89,7 @@ class MateViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.tintColor = .font
         navigationItem.largeTitleDisplayMode = .never
     }
     

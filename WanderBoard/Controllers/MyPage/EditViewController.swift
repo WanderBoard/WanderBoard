@@ -333,6 +333,18 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         }
     }
     
+    //한글체크코드
+    func koreaLangCheck(_ input: String) -> Bool {
+        let pattern = "^[가-힣a-zA-Z\\s]*$"
+        if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) {
+            let range = NSRange(location: 0, length: input.utf16.count)
+            if regex.firstMatch(in: input, options: [], range: range) != nil {
+                return true
+            }
+        }
+        return false
+    }
+    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentText = textField.text ?? ""
         guard let stringRange = Range(range, in: currentText) else { return false }
@@ -354,12 +366,10 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         }
         
         // Step 2: 특수문자 포함 여부 체크 (공백과 특수문자만 체크)
-        let nicknamePattern = "^[a-zA-Z0-9가-힣]*$"
-        let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
-        if !nicknamePredicate.evaluate(with: updatedText) {
+        if !koreaLangCheck(updatedText) {
             nameAlert.text = "🤬 닉네임에 특수문자나 공백을 포함할 수 없습니다"
             nameAlert.textColor = .red
-            doneButton.titleLabel?.textColor = .lightGray
+            doneButton.titleLabel?.textColor = .lightgray
             doneButton.isEnabled = false
             return true
         }
@@ -375,11 +385,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let nickname = textField.text ?? ""
         
         // 글자 수 및 특수문자 체크 통과한 후 Firestore에서 닉네임 중복 체크
-        if nickname.count >= 2 && nickname.count <= 16 {
-            let nicknamePattern = "^[a-zA-Z0-9가-힣]+$"
-            let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
-            
-            if nicknamePredicate.evaluate(with: nickname) {
+        if nickname.count >= 2 && nickname.count <= 16 && koreaLangCheck(nickname) {
                 Task {
                     do {
                         let isDuplicate = try await FirestoreManager.shared.checkDisplayNameExists(displayName: nickname)
@@ -402,7 +408,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                 }
             }
         }
-    }
     
     //작성완료시 엔터 누르면 키보드 내려가기
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

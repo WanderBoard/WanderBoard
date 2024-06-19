@@ -571,10 +571,10 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         tagLabel.sizeToFit()
         let tagWidth = tagLabel.frame.width + 16
         
-        tagLabel.snp.makeConstraints { make in
-            make.height.equalTo(30)
-            make.width.equalTo(tagWidth)
-        }
+//        tagLabel.snp.makeConstraints { make in
+//            make.height.equalTo(30)
+//            make.width.equalTo(tagWidth)
+//        }
         
         tagContainerView.addSubview(tagLabel)
         

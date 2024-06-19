@@ -280,11 +280,7 @@ class InsertSpendingViewController: UIViewController {
             insertedCategoryLabel.text = expense.category
             memoTextField.text = expense.memo
         }
-        
         updateDoneButtonState()
-        
-        
-        
     }
     
     // MARK: DatePicker 구성

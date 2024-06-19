@@ -386,7 +386,6 @@ class DetailViewController: UIViewController {
                 updatePinButtonState()
                 profileStackView.isHidden = false
             }
-            // 현재 사용자가 작성자인지 여부에 따라 메뉴 설정
             setupMenu()
         }
     }
@@ -552,11 +551,11 @@ class DetailViewController: UIViewController {
         subTextContainer.snp.makeConstraints {
             $0.top.equalTo(mainTitleLabel.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(129)
+            $0.height.greaterThanOrEqualTo(130).priority(.low)
         }
         
         subTextLabel.snp.makeConstraints {
-            $0.top.leading.trailing.equalTo(subTextContainer)
+            $0.edges.equalTo(subTextContainer)
         }
         
         textLabelLine.snp.makeConstraints {
@@ -598,7 +597,7 @@ class DetailViewController: UIViewController {
         }
         
         moneyCountainer.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(24)
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(16)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(90)
         }
@@ -628,18 +627,18 @@ class DetailViewController: UIViewController {
         }
         
         friendTitle.snp.makeConstraints {
-            $0.top.equalTo(moneyCountainer.snp.bottom).offset(30)
+            $0.top.equalTo(moneyCountainer.snp.bottom).offset(16)
             $0.leading.equalTo(contentView).offset(16)
         }
         
         friendCollectionView.snp.makeConstraints {
-            $0.top.equalTo(friendTitle.snp.bottom).offset(20)
+            $0.top.equalTo(friendTitle.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(contentView)
             $0.height.equalTo(65)
         }
         
         bottomLogo.snp.makeConstraints {
-            $0.top.equalTo(friendCollectionView.snp.bottom).offset(30)
+            $0.top.equalTo(friendCollectionView.snp.bottom).offset(24)
             $0.width.equalTo(135)
             $0.height.equalTo(18)
             $0.centerX.equalToSuperview()

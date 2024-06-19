@@ -424,12 +424,37 @@ extension SpendingListViewController: SpendingEmptyViewDelegate {
 extension SpendingListViewController: InsertSpendingViewControllerDelegate {
     func didUpdateExpense(_ expense: Expense, at indexPath: IndexPath?) {
         if let indexPath = indexPath {
-            dailyExpenses[indexPath.section].expenses[indexPath.row] = expense
-            tableView.reloadRows(at: [indexPath], with: .automatic)
-            updateHeaderView(forSection: indexPath.section, withDeletedExpense: expense)
-        } else {
-            NotificationCenter.default.post(name: .newExpenseData, object: nil, userInfo: ["expense": expense])
-        }
+            let originalDate = dailyExpenses[indexPath.section].date
+                        let newDate = expense.date
+                        
+                        if Calendar.current.isDate(originalDate, inSameDayAs: newDate) {
+                            // 날짜가 동일한 경우
+                            dailyExpenses[indexPath.section].expenses[indexPath.row] = expense
+                            tableView.reloadRows(at: [indexPath], with: .automatic)
+                        } else {
+                            // 날짜가 다른 경우
+                            dailyExpenses[indexPath.section].expenses.remove(at: indexPath.row)
+                            if dailyExpenses[indexPath.section].expenses.isEmpty {
+                                dailyExpenses.remove(at: indexPath.section)
+                                tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
+                            } else {
+                                tableView.deleteRows(at: [indexPath], with: .automatic)
+                            }
+                            
+                            if let newIndex = dailyExpenses.firstIndex(where: { Calendar.current.isDate($0.date, inSameDayAs: newDate) }) {
+                                dailyExpenses[newIndex].expenses.append(expense)
+                                tableView.insertRows(at: [IndexPath(row: dailyExpenses[newIndex].expenses.count - 1, section: newIndex)], with: .automatic)
+                            } else {
+                                let newDailyExpense = DailyExpenses(date: newDate, expenses: [expense])
+                                dailyExpenses.append(newDailyExpense)
+                                dailyExpenses.sort { $0.date > $1.date }
+                                tableView.reloadData()
+                            }
+                        }
+                        updateHeaderView(forSection: indexPath.section, withDeletedExpense: expense)
+                    } else {
+                        NotificationCenter.default.post(name: .newExpenseData, object: nil, userInfo: ["expense": expense])
+                    }
         updateTotalSpendingAmount()
         tableView.reloadData()
         updateView()

@@ -182,11 +182,13 @@ class SpendingListViewController: UIViewController {
         if dailyExpenses.isEmpty {
             tableView.isHidden = true
             spendingEmptyView.isHidden = false
-            penButton.isEnabled = false
+            penButton.isHidden = true
+//            penButton.isEnabled = false
         } else {
             tableView.isHidden = false
             spendingEmptyView.isHidden = true
-            penButton.isEnabled = true
+            penButton.isHidden = false
+//            penButton.isEnabled = true
         }
         tableView.reloadData()
     }
@@ -250,9 +252,8 @@ class SpendingListViewController: UIViewController {
     func makeConstraints() {
         spendingCardbutton.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(30)
-            $0.width.equalTo(344)
             $0.height.equalTo(203)
-            $0.leading.equalTo(view.safeAreaLayoutGuide).inset(25)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(25)
         }
         
         totalSpendingText.snp.makeConstraints {
@@ -369,7 +370,7 @@ extension SpendingListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80 //메모에 따라 늘어나도록 스택뷰...해줘야할듯 합니다
+        return UITableView.automaticDimension
 
     }
     

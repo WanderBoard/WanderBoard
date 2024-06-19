@@ -746,7 +746,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let spendVC = SpendingListViewController()
         
         spendVC.pinLog = pinLog
-        spendVC.shouldShowEditButton = true
+//        spendVC.shouldShowEditButton = true
         navigationController?.pushViewController(spendVC, animated: true)
     }
     

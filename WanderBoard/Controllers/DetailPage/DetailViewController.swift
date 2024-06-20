@@ -528,7 +528,7 @@ class DetailViewController: UIViewController {
         scrollView.snp.makeConstraints {
             $0.top.equalTo(backgroundImageView.snp.bottom).offset(-16)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(16)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(30)
         }
         
         contentView.snp.makeConstraints {
@@ -929,7 +929,30 @@ class DetailViewController: UIViewController {
     }
     
     func sharePinLog() {
+        guard !selectedImages.isEmpty else {
+            return
+        }
         
+        let imagesToShare = selectedImages.map { $0.0 }
+        let tempDirectory = FileManager.default.temporaryDirectory
+        var imageURLs: [URL] = []
+        
+        for (index, image) in imagesToShare.enumerated() {
+            let imageData = image.jpegData(compressionQuality: 1.0)
+            let imageURL = tempDirectory.appendingPathComponent("image\(index).jpg")
+            try? imageData?.write(to: imageURL)
+            imageURLs.append(imageURL)
+        }
+        
+        let activityViewController = UIActivityViewController(activityItems: imageURLs, applicationActivities: nil)
+        activityViewController.excludedActivityTypes = [
+            .addToReadingList,
+            .assignToContact,
+            .saveToCameraRoll,
+            .print
+        ]
+        
+        self.present(activityViewController, animated: true, completion: nil)
     }
     
     func editPinLog() {
@@ -1169,13 +1192,12 @@ extension DetailViewController: UIScrollViewDelegate {
             if offset > 0 {
                 UIView.animate(withDuration: 0.3, delay: 0, options: [.beginFromCurrentState, .allowUserInteraction], animations: {
                     self.locationStackView.isHidden = true
-                    self.profileStackView.isHidden = true
                     self.dateStackView.isHidden = true
                     
                     self.scrollView.snp.remakeConstraints {
                         $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-16)
                         $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(16)
+                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(30)
                     }
                     
                     self.contentView.snp.remakeConstraints {
@@ -1194,13 +1216,12 @@ extension DetailViewController: UIScrollViewDelegate {
             } else {
                 UIView.animate(withDuration: 0.3, delay: 0, options: [.beginFromCurrentState, .allowUserInteraction], animations: {
                     self.locationStackView.isHidden = false
-                    self.profileStackView.isHidden = false
                     self.dateStackView.isHidden = false
                     
                     self.scrollView.snp.remakeConstraints {
                         $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-16)
                         $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(16)
+                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(30)
                     }
                     
                     self.contentView.snp.remakeConstraints {
@@ -1212,7 +1233,6 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.backgroundImageView.snp.updateConstraints {
                         $0.height.equalTo(515)
                     }
-                    
                     
                     self.view.layoutIfNeeded()
                 }, completion: nil)

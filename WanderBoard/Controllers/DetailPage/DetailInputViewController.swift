@@ -64,7 +64,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.bounces = false
         $0.backgroundColor = UIColor(named: "textColor")
         $0.clipsToBounds = true
-        $0.layer.cornerRadius = 40
+        $0.layer.cornerRadius = 16
     }
     
     let contentView = UIView().then {
@@ -402,6 +402,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         setupNavigationBar()
         requestPhotoLibraryAccess()
         updateColor()
+        setupKeyboard()
         
         mainTextField.delegate = self
         subTextField.delegate = self
@@ -476,7 +477,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         topContainarView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.height.equalTo(150)
+            $0.height.equalTo(view.safeAreaLayoutGuide.snp.height).multipliedBy(1.5 / 9.0)
         }
         
         scrollView.snp.makeConstraints {
@@ -516,7 +517,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         topLine.snp.makeConstraints {
-            $0.top.equalTo(publicView.snp.bottom).offset(20)
+            $0.top.equalTo(publicView.snp.bottom)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(1)
         }
@@ -620,6 +621,15 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             updateColor()
         }
+    }
+    
+    func setupKeyboard() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+            view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     func updateColor(){
@@ -1328,10 +1338,11 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
 
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor.lightgray || textView.textColor == UIColor.darkgray {
+        if textView.textColor == UIColor.lightgray {
             textView.text = nil
             textView.textColor = .font
         }
+        adjustScrollForKeyboard(textView)
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -1341,7 +1352,7 @@ extension DetailInputViewController: UITextViewDelegate {
             } else if textView == subTextField {
                 textView.text = "기록을 담아 주세요."
             }
-            textView.textColor = .font
+            textView.textColor = .lightgray
         }
     }
     
@@ -1357,16 +1368,11 @@ extension DetailInputViewController: UITextViewDelegate {
         }
     }
     
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if text == "\n" {
-            if textView == mainTextField {
-                subTextField.becomeFirstResponder()
-            } else if textView == subTextField {
-                textView.resignFirstResponder()
-            }
-            return false
-        }
-        return true
+    private func adjustScrollForKeyboard(_ textView: UITextView) {
+        let keyboardHeight: CGFloat = 260 // Approximate keyboard height
+        let textViewBottom = textView.convert(textView.bounds, to: view).maxY
+        let offset = max(0, textViewBottom - (view.frame.height - keyboardHeight - 20))
+        scrollView.setContentOffset(CGPoint(x: 0, y: offset), animated: true)
     }
 }
 

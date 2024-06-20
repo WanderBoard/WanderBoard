@@ -330,29 +330,30 @@ class InsertSpendingViewController: UIViewController {
         memoTextField.delegate = self
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
     @objc func keyboardWillShow(_ notification: Notification) {
         guard let userInfo = notification.userInfo,
-              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-              let activeField = view.currentFirstResponder() as? UITextField else { return }
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
         
         let keyboardHeight = keyboardFrame.height
         let contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
         
-        scrollView.contentInset = contentInset
-        scrollView.scrollIndicatorInsets = contentInset
-        
-        var visibleRect = view.frame
-        visibleRect.size.height -= keyboardHeight
-        
-        let activeFieldFrame = activeField.convert(activeField.bounds, to: view)
-        if !visibleRect.contains(activeFieldFrame.origin) {
-            scrollView.scrollRectToVisible(activeFieldFrame, animated: true)
+        UIView.animate(withDuration: 0.3) {
+            self.scrollView.contentInset = contentInset
+            self.scrollView.scrollIndicatorInsets = contentInset
         }
     }
     
+    
     @objc func keyboardWillHide(_ notification: Notification) {
-        scrollView.contentInset = .zero
-        scrollView.scrollIndicatorInsets = .zero
+        UIView.animate(withDuration: 0.3) {
+            self.scrollView.contentInset = .zero
+            self.scrollView.scrollIndicatorInsets = .zero
+        }
     }
     
     @objc func dismissKeyboard() {
@@ -686,14 +687,6 @@ extension Notification.Name {
 extension InsertSpendingViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
         updateDoneButtonState()
-        scrollView.setContentOffset(.zero, animated: true)
-    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        guard let activeField = view.currentFirstResponder() as? UITextField else { return }
-        let keyboardHeight = view.frame.height / 3
-        let contentOffset = CGPoint(x: 0, y: activeField.frame.origin.y - keyboardHeight)
-        scrollView.setContentOffset(contentOffset, animated: true)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

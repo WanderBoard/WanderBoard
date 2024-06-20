@@ -34,7 +34,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate, MK
             if CLLocationManager.locationServicesEnabled() {
                 DispatchQueue.main.async {
                     let status = self.locationManager.authorizationStatus
-                    print("Authorization status: \(status.rawValue)")
                     switch status {
                     case .notDetermined:
                         print("Requesting 'When In Use' authorization")
@@ -66,7 +65,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate, MK
 
     @objc func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         DispatchQueue.main.async {
-            print("Authorization status changed: \(status.rawValue)")
             switch status {
             case .notDetermined:
                 print("Requesting 'When In Use' authorization")

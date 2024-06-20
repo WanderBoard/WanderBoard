@@ -24,6 +24,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     private var selectedCompletion: MKLocalSearchCompletion?
     private let pinLogManager = PinLogManager()
     private var savedPinLogId: String?
+    var pinLocations: [CLLocationCoordinate2D] = []
+
 
     init(region: MKCoordinateRegion, startDate: Date, endDate: Date, onLocationSelected: @escaping (CLLocationCoordinate2D, String) -> Void) {
         self.viewModel = MapViewModel(region: region)
@@ -45,6 +47,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         centerMapOnUserLocation()
         setupTableView()
         setupPlaceInfoView()
+        addPinsToMap()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.navigationItem.rightBarButtonItem?.isEnabled = true
@@ -62,6 +65,16 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             isFirstLoad = false
         }
         placeInfoView.savePinButton.addTarget(self, action: #selector(savePinTapped), for: .touchUpInside)
+        
+        for location in pinLocations {
+            addPinToMap(location: location, address: "")
+        }
+
+        // Center map on the first pin location
+        if let firstLocation = pinLocations.first {
+            let region = MKCoordinateRegion(center: firstLocation, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+            mapView.setRegion(region, animated: true)
+        }
 
     }
 
@@ -76,6 +89,14 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMapTap(_:)))
         mapView.addGestureRecognizer(tapGesture)
     }
+    
+    func addPinsToMap() {
+        for location in pinLocations {
+            addPinToMap(location: location, address: "")
+        }
+    }
+    
+    
     
     private func setupPlaceInfoView() {
         view.addSubview(placeInfoView)

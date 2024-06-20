@@ -145,7 +145,7 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
         return expenseAmountText
     }()
     
-    var expenseAmountTextField: UITextField = {
+    lazy var expenseAmountTextField: UITextField = {
         var expenseAmountTextField = UITextField()
         expenseAmountTextField.attributedPlaceholder = NSAttributedString(string: "지출 금액을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
         expenseAmountTextField.textColor = .font
@@ -154,7 +154,7 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
         
-        let amountDoneButton = UIBarButtonItem(title: "Done", style: .done, target: InsertSpendingViewController.self, action: #selector(amountDoneButtonTapped))
+        let amountDoneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(amountDoneButtonTapped))
         let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         toolbar.items = [flexSpace, amountDoneButton]
         
@@ -467,6 +467,7 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
     
 // MARK: 금액 입력 키보드 Done 누르고 닫기
     @objc func amountDoneButtonTapped() {
+        updateDoneButtonState()
         expenseAmountTextField.resignFirstResponder()
     }
     

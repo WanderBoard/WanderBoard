@@ -64,7 +64,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.bounces = false
         $0.backgroundColor = UIColor(named: "textColor")
         $0.clipsToBounds = true
-        $0.layer.cornerRadius = 16
+        $0.layer.cornerRadius = 40
     }
     
     let contentView = UIView().then {
@@ -216,6 +216,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         $0.font = UIFont.systemFont(ofSize: 16)
         $0.isScrollEnabled = false
+        $0.returnKeyType = .default
     }
     
     let locationButton = UIButton().then {
@@ -402,7 +403,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         setupNavigationBar()
         requestPhotoLibraryAccess()
         updateColor()
-        setupKeyboard()
         
         mainTextField.delegate = self
         subTextField.delegate = self
@@ -410,6 +410,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         if let pinLog = pinLog {
             configureView(with: pinLog)
         }
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -477,7 +480,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         topContainarView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.height.equalTo(view.safeAreaLayoutGuide.snp.height).multipliedBy(1.5 / 9.0)
+            $0.height.equalTo(150)
         }
         
         scrollView.snp.makeConstraints {
@@ -517,7 +520,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         topLine.snp.makeConstraints {
-            $0.top.equalTo(publicView.snp.bottom)
+            $0.top.equalTo(publicView.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(1)
         }
@@ -623,15 +626,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
     }
     
-    func setupKeyboard() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-            view.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc func dismissKeyboard() {
-        view.endEditing(true)
-    }
-    
     func updateColor(){
         
         //베이비그레이-커스텀블랙
@@ -682,6 +676,10 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
         
         mateCountButton.addTarget(self, action: #selector(showMatePicker), for: .touchUpInside)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     @objc func publicOpenButtonTapped() {
@@ -755,7 +753,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     func setupNavigationBar() {
         let closeButton = ButtonFactory.createXButton(target: self, action: #selector(dismissDetailView))
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: closeButton)
-        
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = doneButton
         navigationController?.navigationBar.tintColor = .white
@@ -1349,7 +1346,6 @@ extension DetailInputViewController: UITextViewDelegate {
             textView.text = nil
             textView.textColor = .font
         }
-        adjustScrollForKeyboard(textView)
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -1375,11 +1371,19 @@ extension DetailInputViewController: UITextViewDelegate {
         }
     }
     
-    private func adjustScrollForKeyboard(_ textView: UITextView) {
-        let keyboardHeight: CGFloat = 260 // Approximate keyboard height
-        let textViewBottom = textView.convert(textView.bounds, to: view).maxY
-        let offset = max(0, textViewBottom - (view.frame.height - keyboardHeight - 20))
-        scrollView.setContentOffset(CGPoint(x: 0, y: offset), animated: true)
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        // 첫 번째 텍스트 필드에서 던 버튼을 누르면 두 번째 텍스트 필드로 포커스를 이동
+        if textView == mainTextField && text == "\n" {
+            subTextField.becomeFirstResponder()
+            return false
+        }
+        
+        // 두 번째 텍스트 필드에서는 리턴 키가 줄바꿈이 되도록 허용
+        if textView == subTextField && text == "\n" {
+            return true
+        }
+        
+        return true
     }
 }
 

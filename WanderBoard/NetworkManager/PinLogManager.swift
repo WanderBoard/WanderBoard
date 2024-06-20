@@ -134,25 +134,6 @@ class PinLogManager {
         return Array(logs.prefix(10))
     }
     
-//    func fetchPinLogsWithoutLocation(forUserId userId: String) async throws -> [PinLog] {
-//        let querySnapshot = try await Firestore.firestore().collection("pinLogs").whereField("authorId", isEqualTo: userId).getDocuments()
-//        var pinLogs: [PinLog] = []
-//        for document in querySnapshot.documents {
-//            if let pinLog = try? document.data(as: PinLog.self) {
-//                var logWithoutLocation = pinLog
-//                logWithoutLocation.media = pinLog.media.map { media in
-//                    var newMedia = media
-//                    newMedia.latitude = nil
-//                    newMedia.longitude = nil
-//                    return newMedia
-//                }
-//                pinLogs.append(logWithoutLocation)
-//            }
-//        }
-//        return pinLogs
-//    }
-    
-    //무한스크롤 검색뷰
     func fetchInitialData(pageSize: Int, completion: @escaping (Result<([PinLog], DocumentSnapshot?), Error>) -> Void) {
         db.collection("pinLogs")
             .whereField("isPublic", isEqualTo: true)
@@ -171,7 +152,6 @@ class PinLogManager {
             }
     }
     
-    //무한스크롤 검색뷰
     func fetchMoreData(pageSize: Int, lastSnapshot: DocumentSnapshot, completion: @escaping (Result<([PinLog], DocumentSnapshot?), Error>) -> Void) {
         db.collection("pinLogs")
             .whereField("isPublic", isEqualTo: true)

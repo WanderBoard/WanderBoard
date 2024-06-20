@@ -20,7 +20,7 @@ class GallaryInPutCollectionViewCell: UICollectionViewCell {
     let addButton = UIButton(type: .system)
     
     let deleteButton = UIButton(type: .custom).then {
-        $0.setImage(UIImage(systemName: "xmark")?.withTintColor(.black, renderingMode: .alwaysOriginal), for: .normal)
+        $0.setImage(UIImage(systemName: "xmark")?.withTintColor(.darkgray, renderingMode: .alwaysOriginal), for: .normal)
         $0.backgroundColor = .babygray
         $0.layer.cornerRadius = 12
         $0.clipsToBounds = true

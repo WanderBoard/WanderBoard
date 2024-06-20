@@ -275,7 +275,7 @@ class SpendingListViewController: UIViewController {
         }
         
         spendingEmptyView.snp.makeConstraints {
-            $0.top.equalTo(spendingCardbutton.snp.bottom)
+            $0.top.equalTo(spendingCardbutton.snp.bottom).offset(20)
             $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }

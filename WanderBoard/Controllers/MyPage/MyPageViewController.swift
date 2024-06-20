@@ -11,6 +11,7 @@ import Then
 import CoreData
 import FirebaseAuth
 import FirebaseFirestore
+import Kingfisher
 
 class MyPageViewController: BaseViewController, PageIndexed {
     var pageIndex: Int?
@@ -245,7 +246,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         // userData가 있으면 userData에 맞게 업데이트
         //userData가 없을 경우 위의 기능은 정상적으로 수행하고 만약 값이 있을 경우엔 중괄호 내부의 역할을 수행해줄것을 요청
         if let userData = userData {
-            profile.image = UIImage(named: "\(String(describing: userData.photoURL))")
+            profile.kf.setImage(with: URL(string: userData.photoURL ?? ""), placeholder: UIImage(named: "defaultProfileImage"))
             myName.text = userData.displayName
             myID.text = userData.email
         }
@@ -268,14 +269,10 @@ class MyPageViewController: BaseViewController, PageIndexed {
         guard let userData = userData else { return }
         myName.text = userData.displayName
         myID.text = userData.email
-
-        // URLSession을 사용해서 URL 이미지 다운로드 후 프로필 이미지에 설정해준다.
+        
+        // Kingfisher를 사용하여 이미지 캐싱
         if let photoURLString = userData.photoURL, let photoURL = URL(string: photoURLString) {
-            downloadImage(from: photoURL) { [weak self] image in
-                DispatchQueue.main.async {
-                    self?.profile.image = image ?? UIImage(named: "defaultProfileImage")
-                }
-            }
+            profile.kf.setImage(with: photoURL, placeholder: UIImage(named: "defaultProfileImage"))
         } else {
             profile.image = UIImage(named: "defaultProfileImage")
         }

@@ -99,7 +99,7 @@ class PinLogManager {
         let pinLogs = snapshot.documents.compactMap { document -> PinLog? in
             do {
                 let pinLog = try document.data(as: PinLog.self)
-                print("Fetched pinLog: \(pinLog)")
+                //print("Fetched pinLog: \(pinLog)")
                 return pinLog
             } catch {
                 print("Error decoding document: \(document.documentID), error: \(error)")

@@ -133,11 +133,11 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             $0.edges.equalToSuperview()
         }
 
-        collectionView.addSubview(emptyView)
+        view.addSubview(emptyView)
         
         emptyView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(120)
             $0.centerX.equalToSuperview()
+            $0.centerY.equalToSuperview()
             $0.height.equalTo(300)
             $0.width.equalTo(300)
         }
@@ -151,7 +151,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         
         stackView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview().offset(-50)
+            $0.centerY.equalToSuperview()
         }
         
         addButton.snp.makeConstraints {

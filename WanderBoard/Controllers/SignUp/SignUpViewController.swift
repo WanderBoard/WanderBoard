@@ -26,17 +26,12 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
         
-        let configuration = UIImage.SymbolConfiguration(pointSize: 30, weight: .thin)
-        let image = UIImage(systemName: "person.fill", withConfiguration: configuration)
-        
-        imageView.image = image
+        imageView.image = UIImage(named: "profileImage")
         imageView.contentMode = .scaleAspectFill
         imageView.tintColor = UIColor(named: "ButtonColor")
         imageView.isUserInteractionEnabled = true
         imageView.layer.cornerRadius = 50
-        imageView.layer.borderColor = UIColor(named: "ButtonColor")?.cgColor
         imageView.clipsToBounds = true
-        imageView.layer.borderWidth = 1
         return imageView
     }()
     
@@ -45,7 +40,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let emailLabel: UILabel = {
         let label = UILabel()
         label.text = "이메일"
-        label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         label.textAlignment = .center
         return label
     }()
@@ -53,7 +48,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let nickNameLabel: UILabel = {
         let label = UILabel()
         label.text = "닉네임"
-        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        label.font = UIFont.systemFont(ofSize: 13, weight: .bold)
         return label
     }()
     
@@ -86,6 +81,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         button.setTitle("중복확인", for: .normal)
         button.layer.cornerRadius = 10
         button.layer.masksToBounds = true
+
         
         return button
     }()
@@ -93,7 +89,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let genderLabel: UILabel = {
         let label = UILabel()
         label.text = "성별"
-        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        label.font = UIFont.systemFont(ofSize: 13, weight: .bold)
         return label
     }()
     
@@ -102,28 +98,28 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         return titles.map { title in
             var configuration = UIButton.Configuration.filled()
             configuration.title = title
-            configuration.baseBackgroundColor = title == "선택안함" ? .black : .white
-            configuration.baseForegroundColor = title == "선택안함" ? .white : .black
+            configuration.baseBackgroundColor = title == "선택안함" ? .font : UIColor(named: "textColor")
+            configuration.baseForegroundColor = title == "선택안함" ? UIColor(named: "textColor") : .font
             configuration.cornerStyle = .capsule
             if title != "선택안함" {
-                configuration.background.strokeColor = .black
+                configuration.background.strokeColor = UIColor(named: "textColor")
                 configuration.background.strokeWidth = 1
             }
             
             let button = UIButton(configuration: configuration, primaryAction: nil)
-            button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .bold)
             button.isSelected = title == "선택안함"
             button.configurationUpdateHandler = { button in
                 var updatedConfiguration = button.configuration
-                updatedConfiguration?.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
+                updatedConfiguration?.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15)
                 if button.isSelected {
-                    updatedConfiguration?.baseBackgroundColor = .black
-                    updatedConfiguration?.baseForegroundColor = .white
+                    updatedConfiguration?.baseBackgroundColor = .font
+                    updatedConfiguration?.baseForegroundColor = UIColor(named: "textColor")
                     updatedConfiguration?.background.strokeWidth = 0
                 } else {
-                    updatedConfiguration?.baseBackgroundColor = .white
-                    updatedConfiguration?.baseForegroundColor = .black
-                    updatedConfiguration?.background.strokeColor = .black
+                    updatedConfiguration?.baseBackgroundColor = UIColor(named: "textColor")
+                    updatedConfiguration?.baseForegroundColor = .font
+                    updatedConfiguration?.background.strokeColor = .font
                     updatedConfiguration?.background.strokeWidth = 1
                 }
                 button.configuration = updatedConfiguration
@@ -135,7 +131,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let interestsLabel: UILabel = {
         let label = UILabel()
         label.text = "관심 여행지"
-        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        label.font = UIFont.systemFont(ofSize: 13, weight: .bold)
         return label
     }()
     
@@ -145,7 +141,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         textField.borderStyle = .none
         textField.layer.borderWidth = 1
         textField.layer.cornerRadius = 10
-        textField.layer.borderColor = UIColor.black.cgColor
+        textField.layer.borderColor = UIColor.font.cgColor
         textField.isUserInteractionEnabled = true
         
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 45))
@@ -169,7 +165,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         var configuration = UIButton.Configuration.plain()
         configuration.image = UIImage(systemName: "circle")
         configuration.imagePadding = 8
-        configuration.baseForegroundColor = .black
+        configuration.baseForegroundColor = .font
         
         let button = UIButton(configuration: configuration, primaryAction: nil)
         button.isEnabled = false
@@ -178,7 +174,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             string: " 이용약관 및 개인정보처리방침 ",
             attributes: [
                 .font: UIFont.systemFont(ofSize: 12),
-                .foregroundColor: UIColor.black
+                .foregroundColor: UIColor.font
             ]
         )
         
@@ -186,7 +182,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             string: "(필수)",
             attributes: [
                 .font: UIFont.systemFont(ofSize: 12),
-                .foregroundColor: UIColor.gray
+                .foregroundColor: UIColor.darkgray
             ]
         )
         
@@ -207,7 +203,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         let button = UIButton(type: .system)
         button.setTitle("확인하기 ＞", for: .normal)
         button.titleLabel?.font.withSize(10)
-        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(.font, for: .normal)
         return button
     }()
     
@@ -271,8 +267,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     func setupNavigationBar() {
         self.navigationController?.setNavigationBarHidden(false, animated: false)
         self.navigationController?.navigationBar.prefersLargeTitles = false
-        self.navigationController?.navigationBar.tintColor = .black
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        self.navigationController?.navigationBar.tintColor = .font
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.font]
         
         let backButton = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(backButtonTapped))
         self.navigationItem.leftBarButtonItem = backButton
@@ -316,7 +312,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private func setupViews() {
         
         signUpButton.isEnabled = false
-        signUpButton.backgroundColor = .babygray
+        let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+        signUpButton.backgroundColor = babyGTocustomB
         
         view.addSubview(subtitleLabel)
         view.addSubview(profileImageView)
@@ -342,50 +339,50 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         }
         
         profileImageView.snp.makeConstraints { make in
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(24)
+            make.top.equalTo(subtitleLabel.snp.bottom).offset(15)
             make.centerX.equalToSuperview()
-            make.width.equalTo(100)
-            make.height.equalTo(100)
+            make.width.equalTo(106)
+            make.height.equalTo(106)
         }
         
         emailIcon.snp.makeConstraints { make in
-            make.top.equalTo(profileImageView.snp.bottom).offset(24)
+            make.top.equalTo(profileImageView.snp.bottom).offset(16)
             make.centerX.equalTo(view.snp.centerX).offset(-70)
-            make.width.height.equalTo(20)
+            make.width.height.equalTo(18)
         }
         
         emailLabel.snp.makeConstraints { make in
-            make.left.equalTo(emailIcon.snp.right).offset(8)
+            make.left.equalTo(emailIcon.snp.right).offset(15)
             make.centerY.equalTo(emailIcon.snp.centerY)
         }
         
         nickNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(emailIcon.snp.bottom).offset(20)
-            make.left.equalToSuperview().inset(34)
+            make.top.equalTo(emailIcon.snp.bottom).offset(30)
+            make.left.equalToSuperview().inset(48)
         }
         
         nicknameTextField.snp.makeConstraints { make in
             make.top.equalTo(nickNameLabel.snp.bottom).offset(10)
-            make.left.equalToSuperview().inset(30)
+            make.left.equalToSuperview().inset(32)
             make.right.equalTo(duplicateCheckButton.snp.left).offset(-10)
-            make.height.equalTo(43)
+            make.height.equalTo(44)
         }
         
         duplicateCheckButton.snp.makeConstraints { make in
             make.centerY.equalTo(nicknameTextField.snp.centerY)
-            make.right.equalToSuperview().inset(30)
-            make.height.equalTo(45)
+            make.right.equalToSuperview().inset(32)
+            make.height.equalTo(44)
             make.width.equalTo(100)
         }
         
         nicknameHintLabel.snp.makeConstraints { make in
             make.top.equalTo(nicknameTextField.snp.bottom).offset(8)
-            make.left.equalToSuperview().inset(34)
+            make.left.equalToSuperview().inset(32)
         }
         
         genderLabel.snp.makeConstraints { make in
-            make.top.equalTo(nicknameHintLabel.snp.bottom).offset(32)
-            make.left.equalToSuperview().inset(34)
+            make.top.equalTo(nicknameHintLabel.snp.bottom).offset(41)
+            make.left.equalToSuperview().inset(48)
         }
         
         var lastButton: UIButton?
@@ -400,31 +397,31 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
                     make.centerY.equalTo(genderLabel.snp.centerY)
                 }
                 if index == genderButtons.count - 1 {
-                    make.right.equalToSuperview().inset(30)
+                    make.right.equalToSuperview().inset(32)
                 }
-                make.height.equalTo(45)
+                make.height.equalTo(44)
             }
             lastButton = button
             button.addTarget(self, action: #selector(selectGender(_:)), for: .touchUpInside)
         }
         
         interestsLabel.snp.makeConstraints { make in
-            make.top.equalTo(lastButton!.snp.bottom).offset(32)
-            make.left.equalToSuperview().inset(34)
+            make.top.equalTo(lastButton!.snp.bottom).offset(30)
+            make.left.equalToSuperview().inset(48)
         }
         
         interestsTextField.snp.makeConstraints { make in
             make.top.equalTo(interestsLabel.snp.bottom).offset(10)
-            make.left.equalToSuperview().inset(30)
-            make.right.equalToSuperview().inset(30)
-            make.height.equalTo(43)
+            make.left.equalToSuperview().inset(32)
+            make.right.equalToSuperview().inset(32)
+            make.height.equalTo(44)
         }
         
         tagScrollView.snp.makeConstraints { make in
-            make.top.equalTo(interestsTextField.snp.bottom).offset(16)
-            make.left.equalToSuperview()//.inset(30)
-            make.right.equalToSuperview()//.inset(30)
-            make.height.equalTo(30)
+            make.top.equalTo(interestsTextField.snp.bottom).offset(10)
+            make.left.equalToSuperview()
+            make.right.equalToSuperview()
+            make.height.equalTo(36)
         }
         
         tagContainerView.snp.makeConstraints { make in
@@ -435,18 +432,18 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         privacyCheckBox.snp.makeConstraints { make in
             make.bottom.equalTo(signUpButton.snp.top).offset(-16)
-            make.left.equalToSuperview().inset(30)
+            make.left.equalToSuperview().inset(32)
         }
         
         privacyPolicyButton.snp.makeConstraints { make in
             make.bottom.equalTo(signUpButton.snp.top).offset(-16)
-            make.right.equalToSuperview().inset(30)
+            make.right.equalToSuperview().inset(32)
         }
         
         signUpButton.snp.makeConstraints { make in
-            make.left.equalToSuperview().inset(30)
-            make.right.equalToSuperview().inset(30)
-            make.height.equalTo(50)
+            make.left.equalToSuperview().inset(32)
+            make.right.equalToSuperview().inset(32)
+            make.height.equalTo(44)
             make.bottom.equalToSuperview().inset(30)
         }
         
@@ -490,9 +487,14 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
                 emailIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
             case "kakao.com":
                 emailIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-                emailIcon.tintColor = UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1)
+                emailIcon.tintColor = UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
+            let iconColor = traitCollection.userInterfaceStyle == .dark ? UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1) : UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
+            emailIcon.tintColor = iconColor
             default:
-                emailIcon.image = UIImage(systemName: "envelope")
+            emailIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+            emailIcon.tintColor = UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
+            let iconColor = traitCollection.userInterfaceStyle == .dark ? UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1) : UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
+            emailIcon.tintColor = iconColor
         }
     }
     
@@ -570,17 +572,15 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         tagLabel.text = text
         tagLabel.font = UIFont.systemFont(ofSize: 14)
         tagLabel.textColor = .darkgray
-        tagLabel.backgroundColor = .babygray
+        
+        let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+        tagLabel.backgroundColor = babyGTocustomB
         tagLabel.layer.cornerRadius = 10
         tagLabel.clipsToBounds = true
         tagLabel.textAlignment = .center
         tagLabel.sizeToFit()
         _ = tagLabel.frame.width + 16
         
-//        tagLabel.snp.makeConstraints { make in
-//            make.height.equalTo(30)
-//            make.width.equalTo(tagWidth)
-//        }
         
         tagContainerView.addSubview(tagLabel)
         
@@ -614,8 +614,9 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         let nicknameLength = nicknameTextField.text?.count ?? 0
         let isValidLength = nicknameLength >= 2 && nicknameLength <= 16
         duplicateCheckButton.isEnabled = isValidLength
-        duplicateCheckButton.backgroundColor = isValidLength ? .black : .babygray
-        duplicateCheckButton.setTitleColor(isValidLength ? .white : .black, for: .normal)
+        let lightGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "lightgray")
+               duplicateCheckButton.backgroundColor = isValidLength ? .font : lightGTocustomB
+               duplicateCheckButton.setTitleColor(isValidLength ? UIColor(named: "textColor") : .darkgray, for: .normal)
     }
     
     private func showAlert(title: String, message: String) {
@@ -633,7 +634,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             guard let self = self else { return }
             self.nicknameTextField.isEnabled = false
             self.duplicateCheckButton.isEnabled = false
-            self.duplicateCheckButton.backgroundColor = UIColor(named: "babygray")
+            let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+            self.duplicateCheckButton.backgroundColor = babyGTocustomB
             self.updateSignUpButtonState()
         }
         
@@ -642,8 +644,10 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             self.nicknameTextField.text = ""
             self.nicknameTextField.isEnabled = true
             self.duplicateCheckButton.isEnabled = true
-            self.duplicateCheckButton.backgroundColor = .babygray
-            self.nicknameTextField.textColor = .black
+            let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
+            self.duplicateCheckButton.backgroundColor = lightGTodarkG
+            let darkGTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
+            self.nicknameTextField.textColor = darkGTolightG
         }
         
         alert.addAction(useAction)
@@ -675,14 +679,21 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     @objc private func updatePrivacyPolicyButtonState() {
         privacyPolicyButton.isEnabled = !privacyCheckBox.isSelected
-        privacyPolicyButton.setTitleColor(privacyCheckBox.isSelected ? .lightGray : .black, for: .normal)
+        privacyPolicyButton.setTitleColor(privacyCheckBox.isSelected ? .lightGray : .font, for: .normal)
     }
     
     private func updateSignUpButtonState() {
         let isFormValid = nicknameTextField.isEnabled == false && privacyCheckBox.isSelected
         signUpButton.isEnabled = isFormValid
-        signUpButton.backgroundColor = isFormValid ? .black : .babygray
-        signUpButton.setTitleColor(isFormValid ? .white : .black, for: .normal )
+        let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+        signUpButton.backgroundColor = isFormValid ? .font : babyGTocustomB
+        signUpButton.setTitleColor(isFormValid ? UIColor(named: "texrColor") : .darkgray, for: .normal )
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+        }
     }
     
     @objc private func signUpTapped() {

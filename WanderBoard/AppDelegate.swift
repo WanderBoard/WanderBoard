@@ -18,6 +18,12 @@ import KakaoSDKAuth
  class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    
+     //앱 가로모드 금지 설정
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+             
+             return UIInterfaceOrientationMask.portrait
+         }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         

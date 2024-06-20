@@ -482,7 +482,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         scrollView.snp.makeConstraints {
             $0.top.equalTo(topContainarView.snp.bottom).offset(-40)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(20)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(40)
         }
         
         contentView.snp.makeConstraints {
@@ -1362,6 +1362,18 @@ extension DetailInputViewController: UITextViewDelegate {
             UIView.setAnimationsEnabled(true)
             textView.layoutIfNeeded()
         }
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" {
+            if textView == mainTextField {
+                subTextField.becomeFirstResponder()
+            } else if textView == subTextField {
+                textView.resignFirstResponder()
+            }
+            return false
+        }
+        return true
     }
 }
 

@@ -552,7 +552,7 @@ class DetailViewController: UIViewController {
         scrollView.snp.makeConstraints {
             $0.top.equalTo(backgroundImageView.snp.bottom).offset(-16)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(16)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(30)
         }
         
         contentView.snp.makeConstraints {
@@ -1226,13 +1226,12 @@ extension DetailViewController: UIScrollViewDelegate {
             if offset > 0 {
                 UIView.animate(withDuration: 0.3, delay: 0, options: [.beginFromCurrentState, .allowUserInteraction], animations: {
                     self.locationStackView.isHidden = true
-                    self.profileStackView.isHidden = true
                     self.dateStackView.isHidden = true
                     
                     self.scrollView.snp.remakeConstraints {
                         $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-16)
                         $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(16)
+                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(30)
                     }
                     
                     self.contentView.snp.remakeConstraints {
@@ -1251,13 +1250,12 @@ extension DetailViewController: UIScrollViewDelegate {
             } else {
                 UIView.animate(withDuration: 0.3, delay: 0, options: [.beginFromCurrentState, .allowUserInteraction], animations: {
                     self.locationStackView.isHidden = false
-                    self.profileStackView.isHidden = false
                     self.dateStackView.isHidden = false
                     
                     self.scrollView.snp.remakeConstraints {
                         $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-16)
                         $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(16)
+                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(30)
                     }
                     
                     self.contentView.snp.remakeConstraints {
@@ -1269,7 +1267,6 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.backgroundImageView.snp.updateConstraints {
                         $0.height.equalTo(515)
                     }
-                    
                     
                     self.view.layoutIfNeeded()
                 }, completion: nil)

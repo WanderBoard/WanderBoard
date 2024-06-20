@@ -59,8 +59,12 @@ class MyPageViewController: BaseViewController, PageIndexed {
     func fetchUserData() {
         Task {
             do {
-                if let authUser = try? AuthenticationManager.shared.getAuthenticatedUser(), let email = authUser.email {
-                    userData = try await FirestoreManager.shared.checkUserExists(email: email)
+                if let authUser = try? AuthenticationManager.shared.getAuthenticatedUser() {
+                    var userData = try await FirestoreManager.shared.checkUserExistsByUID(uid: authUser.uid)
+                    if userData == nil {
+                        userData = try await FirestoreManager.shared.checkUserExists(email: authUser.email ?? "")
+                    }
+                    self.userData = userData
                     DispatchQueue.main.async {
                         self.updateUI()
                     }
@@ -128,7 +132,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         view.addSubview(scrollView)
         
         scrollView.snp.makeConstraints(){
-            $0.edges.equalTo(view.safeAreaLayoutGuide)
+            $0.edges.equalTo(view)
         }
         
         scrollView.addSubview(contentView)
@@ -206,10 +210,11 @@ class MyPageViewController: BaseViewController, PageIndexed {
         let barButtonItem = UIBarButtonItem(customView: editButton)
         self.navigationItem.rightBarButtonItem = barButtonItem
         
+        profile.image = UIImage(named: "profileImage")
         profile.layer.cornerRadius = 53
         profile.clipsToBounds = true
         profile.contentMode = .scaleAspectFill
-        profile.backgroundColor = .lightgray
+
         
         myName.font = UIFont.boldSystemFont(ofSize: 20)
         myName.textColor = .font
@@ -248,8 +253,17 @@ class MyPageViewController: BaseViewController, PageIndexed {
         if let userData = userData {
             profile.kf.setImage(with: URL(string: userData.photoURL ?? ""), placeholder: UIImage(named: "defaultProfileImage"))
             myName.text = userData.displayName
-            myID.text = userData.email
+            if isProxyEmail(userData.email) {
+                myID.text = "이메일 비공개"
+            } else {
+                myID.text = userData.email
+            }
         }
+    }
+    
+    func isProxyEmail(_ email: String?) -> Bool {
+        guard let email = email else { return false }
+        return email.contains("@privaterelay.appleid.com")
     }
     
     func setGradient() {
@@ -268,21 +282,29 @@ class MyPageViewController: BaseViewController, PageIndexed {
     func updateUI() {
         guard let userData = userData else { return }
         myName.text = userData.displayName
-        myID.text = userData.email
+
+        if isProxyEmail(userData.email) {
+            myID.text = "이메일 비공개"
+        } else {
+            myID.text = userData.email
+        }
         
-        // Kingfisher를 사용하여 이미지 캐싱
+        //URLSession 사용해서 URL 이미지 다운로드 후 프로필 이미지에 설정해준다.
         if let photoURLString = userData.photoURL, let photoURL = URL(string: photoURLString) {
-            profile.kf.setImage(with: photoURL, placeholder: UIImage(named: "defaultProfileImage"))
+            downloadImage(from: photoURL) { [weak self] image in
+                DispatchQueue.main.async {
+                    self?.profile.image = image
+                }
+            }
         } else {
             profile.image = UIImage(named: "defaultProfileImage")
         }
     }
     
-    // 이미지 다운로드 메서드
+    //이미지 다운로드 메서드
     private func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data, error == nil else {
-                print("이미지 다운로드 실패: \(error?.localizedDescription ?? "Unknown error")")
                 completion(nil)
                 return
             }
@@ -376,9 +398,9 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                          self.navigationController?.pushViewController(blockVC, animated: true)
                          blockVC.navigationItem.title = "차단관리"
                     case 4:
+                        NotificationHelper.changePage(hidden: true, isEnabled: false)
                         let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
                         let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-                            NotificationHelper.changePage(hidden: true, isEnabled: false)
                             self.handleLogout() // 로그아웃 처리
                         }
                         let close = UIAlertAction(title: "취소", style: .destructive, handler: nil)

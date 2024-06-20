@@ -716,7 +716,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         if let selectedImage = selectedImage {
             imageData = selectedImage.jpegData(compressionQuality: 0.75)!
         } else {
-            let defaultImage = UIImage(systemName: "person.circle")!
+            let defaultImage = UIImage(named: "profileImage")!
             imageData = defaultImage.jpegData(compressionQuality: 0.75)!
         }
         

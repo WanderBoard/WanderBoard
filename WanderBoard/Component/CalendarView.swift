@@ -58,7 +58,7 @@ struct CalendarView: View {
                 
                 let days = generateDaysInMonth(for: currentMonth)
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 15) {
-                    ForEach(days, id: \.self) { date in
+                    ForEach(Array(days.enumerated()), id: \.offset) { index, date in
                         Text(date != nil ? "\(calendar.component(.day, from: date!))" : "")
                             .frame(width: 30, height: 30)
                             .background(getBackgroundColor(for: date))

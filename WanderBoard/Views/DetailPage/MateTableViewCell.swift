@@ -82,7 +82,7 @@ class MateTableViewCell: UITableViewCell {
         if let photoURL = user.photoURL, let url = URL(string: photoURL) {
             profileImageView.kf.setImage(with: url)
         } else {
-            profileImageView.image = UIImage(named: "defaultProfileImage")
+            profileImageView.image = UIImage(named: "profileImage")
         }
         
         updateAddButton()

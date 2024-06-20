@@ -18,8 +18,9 @@ class SingleDayCalendarHostingController: UIViewController {
 
     private lazy var hostingController: UIHostingController<SingleDayCalendarView> = {
         let calendarView = SingleDayCalendarView(onDateSelected: { [weak self] date in
-            self?.delegate?.didSelectDate(date)
-//            self?.dismiss(animated: true, completion: nil)
+            guard let self = self else { return }
+            self.delegate?.didSelectDate(date)
+            //self.dismiss(animated: true, completion: nil)  // 이 줄을 추가합니다.
         })
         let controller = UIHostingController(rootView: calendarView)
         addChild(controller)

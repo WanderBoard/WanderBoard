@@ -299,6 +299,7 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
         
         setupUI()
+        newSetupConstraints()
         setupMapViewController()
         setupConstraints()
         setupCollectionView()
@@ -933,7 +934,7 @@ class DetailViewController: UIViewController {
                 do {
                     try await self.pinLogManager.deletePinLog(pinLogId: pinLog.id!)
                     self.delegate?.didUpdatePinLog()
-                    self.navigationController?.popViewController(animated: true)
+                    self.dismiss(animated: true, completion: nil)
                 } catch {
                     print("Failed to delete pin log: \(error.localizedDescription)")
                 }
@@ -989,7 +990,7 @@ class DetailViewController: UIViewController {
             do {
                 try await AuthenticationManager.shared.blockAuthor(authorId: authorId)
                 delegate?.didBlockAuthor(authorId)
-                self.navigationController?.popViewController(animated: true)
+                self.dismiss(animated: true, completion: nil)
             } catch {
                 print("Failed to block author: \(error)")
             }
@@ -1002,7 +1003,7 @@ class DetailViewController: UIViewController {
             do {
                 try await AuthenticationManager.shared.hidePinLog(pinLogId: pinLogId)
                 delegate?.didHidePinLog(pinLogId)
-                self.navigationController?.popViewController(animated: true)
+                self.dismiss(animated: true, completion: nil)
             } catch {
                 print("Failed to hide pin log: \(error)")
             }

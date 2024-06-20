@@ -526,7 +526,7 @@ class DetailViewController: UIViewController {
         backgroundImageView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.height.equalTo(530)
+            $0.height.equalTo(view.safeAreaLayoutGuide.snp.height).multipliedBy(6.5 / 9.0)
         }
         
         topContentView.snp.makeConstraints {
@@ -1237,13 +1237,14 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.contentView.snp.remakeConstraints {
                         $0.edges.equalTo(self.scrollView.contentLayoutGuide)
                         $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                        $0.bottom.equalTo(self.bottomLogo.snp.bottom).offset(30)
+                        $0.bottom.equalTo(self.bottomLogo.snp.bottom)
                     }
                     
-                    self.backgroundImageView.snp.updateConstraints {
-                        $0.height.equalTo(150)
+                    self.backgroundImageView.snp.remakeConstraints {
+                        $0.top.equalToSuperview()
+                        $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
+                        $0.height.equalTo(self.view.safeAreaLayoutGuide.snp.height).multipliedBy(1.5 / 9.0)
                     }
-                    
                     
                     self.view.layoutIfNeeded()
                 }, completion: nil)
@@ -1261,11 +1262,13 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.contentView.snp.remakeConstraints {
                         $0.edges.equalTo(self.scrollView.contentLayoutGuide)
                         $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                        $0.bottom.equalTo(self.bottomLogo.snp.bottom).offset(30)
+                        $0.bottom.equalTo(self.bottomLogo.snp.bottom)
                     }
                     
-                    self.backgroundImageView.snp.updateConstraints {
-                        $0.height.equalTo(515)
+                    self.backgroundImageView.snp.remakeConstraints {
+                        $0.top.equalToSuperview()
+                        $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
+                        $0.height.equalTo(self.view.safeAreaLayoutGuide.snp.height).multipliedBy(6.5 / 9.0)
                     }
                     
                     self.view.layoutIfNeeded()

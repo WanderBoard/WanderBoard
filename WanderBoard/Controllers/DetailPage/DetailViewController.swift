@@ -354,17 +354,45 @@ class DetailViewController: UIViewController {
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
     
     // 핀 버튼
-    lazy var pinButton = UIButton().then {
+    lazy var pinButton = UIButton(type: .system).then {
+//        let imageConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular) // 이미지 크기 조정
+//        let image = UIImage(systemName: "pin.circle", withConfiguration: imageConfig)
         $0.setImage(UIImage(systemName: "pin.circle"), for: .normal)
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.tintColor = .white
         $0.isHidden = true
+        $0.translatesAutoresizingMaskIntoConstraints = false
         $0.addTarget(self, action: #selector(pinButtonTapped), for: .touchUpInside)
     }
     
-    func newSetupConstraints() {
+    private func newSetupConstraints() {
+        let closeButton = ButtonFactory.createXButton(target: self, action: #selector(dismissDetailView))
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: closeButton)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pinButton)
+        
+        NSLayoutConstraint.activate([
+            pinButton.widthAnchor.constraint(equalToConstant: 30), // 원하는 너비로 설정
+            pinButton.heightAnchor.constraint(equalToConstant: 30) // 원하는 높이로 설정
+        ])
+    }
+    
+//    private func newSetupConstraints() {
+//        //let closeButton = ButtonFactory.createXButton(target: self, action: #selector(dismissDetailView))
+//        
+//        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
+//        navigationController?.navigationBar.tintColor = UIColor.white
+//        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pinButton)
+//        
+//        NSLayoutConstraint.activate([
+//            pinButton.widthAnchor.constraint(equalToConstant: 30), // 원하는 너비로 설정
+//            pinButton.heightAnchor.constraint(equalToConstant: 30) // 원하는 높이로 설정
+//        ])
+//    }
+    
+    @objc func dismissDetailView(_ sender:UIButton) {
+        dismiss(animated: true)
     }
     
     func checkId() {

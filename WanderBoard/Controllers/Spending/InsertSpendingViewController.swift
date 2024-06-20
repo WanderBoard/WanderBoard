@@ -434,14 +434,12 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
         categoryPicker.snp.makeConstraints {
             $0.top.equalTo(toolbar!.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
-        }
-        pickerContainer.translatesAutoresizingMaskIntoConstraints = false
-        pickerContainer.snp.makeConstraints {
             $0.height.equalTo(360)
         }
 
+        pickerContainer.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: 360)
+
         view.addSubview(pickerContainer)
-        pickerContainer.isHidden = true
     }
     
     // MARK: CategoryButton 클릭시 CategoryPicker 보여줌
@@ -549,6 +547,7 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
             }
         }
     }
+    
     
     // MARK: Components Set up
     func configureUI() {
@@ -692,7 +691,6 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
         }
-        
         saveDoneButton.snp.makeConstraints {
             $0.top.equalTo(memoView.snp.bottom).offset(60)
             $0.leading.trailing.equalTo(scrollContentView).inset(50)

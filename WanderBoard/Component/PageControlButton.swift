@@ -152,7 +152,9 @@ struct PageControlButton: View {
                 .frame(width: selectedIndex == index ? widthForIndex(index) : 44, height: 44) // 선택되지 않은 버튼의 크기 고정
                 .background(Color("PageCtrlUnselectedBG"))
                 .clipShape(Capsule())
+                .disabled(selectedIndex == index)
                 .onTapGesture {
+                    guard selectedIndex != index else { return }
                     withAnimation(.interactiveSpring) {
                         selectedIndex = index
                     }
@@ -217,6 +219,6 @@ struct PageControlButton: View {
     }
 }
 
-#Preview {
-    PageControlButton()
-}
+//#Preview {
+//    PageControlButton()
+//}

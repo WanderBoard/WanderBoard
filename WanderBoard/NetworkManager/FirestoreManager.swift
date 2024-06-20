@@ -23,6 +23,11 @@ class FirestoreManager {
         return nil
     }
     
+    func checkUserExistsByUID(uid: String) async throws -> User? {
+        let documentSnapshot = try await db.collection("users").document(uid).getDocument()
+        return try? documentSnapshot.data(as: User.self)
+    }
+    
     // displayName 중복 검증 메서드
     func checkDisplayNameExists(displayName: String) async throws -> Bool {
         let querySnapshot = try await db.collection("users").whereField("displayName", isEqualTo: displayName).getDocuments()
@@ -30,7 +35,6 @@ class FirestoreManager {
     }
 
     func saveUser(uid: String, email: String, displayName: String? = nil, photoURL: String? = nil, socialMediaLink: String? = nil, authProvider: String, gender: String = "선택안함", interests: [String] = [], isProfileComplete: Bool, blockedAuthors: [String], hiddenPinLogs:[String]) async throws {
-        
         guard !email.isEmpty else {
             throw NSError(domain: "SaveUserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Email is empty. Cannot save user data."])
         }
@@ -131,12 +135,13 @@ class FirestoreManager {
     }
 
     // 이메일 가져오기 애플을 위해서...;
-    private func fetchEmailFromFirestore(uid: String) async throws -> String? {
+    func fetchEmailFromFirestore(uid: String) async throws -> String? {
         let userRef = Firestore.firestore().collection("users").document(uid)
         let document = try await userRef.getDocument()
-        let email = document.data()?["email"] as? String
+        guard let data = document.data(), let email = data["email"] as? String, !email.isEmpty else {
+            return nil
+        }
         return email
-
     }
     
     //내가 핀 얼만큼 찍었는가 계산

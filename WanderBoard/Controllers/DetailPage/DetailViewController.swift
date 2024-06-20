@@ -925,7 +925,30 @@ class DetailViewController: UIViewController {
     }
     
     func sharePinLog() {
+        guard !selectedImages.isEmpty else {
+            return
+        }
         
+        let imagesToShare = selectedImages.map { $0.0 }
+        let tempDirectory = FileManager.default.temporaryDirectory
+        var imageURLs: [URL] = []
+        
+        for (index, image) in imagesToShare.enumerated() {
+            let imageData = image.jpegData(compressionQuality: 1.0)
+            let imageURL = tempDirectory.appendingPathComponent("image\(index).jpg")
+            try? imageData?.write(to: imageURL)
+            imageURLs.append(imageURL)
+        }
+        
+        let activityViewController = UIActivityViewController(activityItems: imageURLs, applicationActivities: nil)
+        activityViewController.excludedActivityTypes = [
+            .addToReadingList,
+            .assignToContact,
+            .saveToCameraRoll,
+            .print
+        ]
+        
+        self.present(activityViewController, animated: true, completion: nil)
     }
     
     func editPinLog() {

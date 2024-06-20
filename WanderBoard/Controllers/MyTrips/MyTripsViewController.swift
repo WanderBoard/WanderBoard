@@ -133,11 +133,11 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             $0.edges.equalToSuperview()
         }
 
-        collectionView.addSubview(emptyView)
+        view.addSubview(emptyView)
         
         emptyView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(120)
             $0.centerX.equalToSuperview()
+            $0.centerY.equalToSuperview()
             $0.height.equalTo(300)
             $0.width.equalTo(300)
         }
@@ -151,7 +151,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         
         stackView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview().offset(-50)
+            $0.centerY.equalToSuperview()
         }
         
         addButton.snp.makeConstraints {
@@ -200,11 +200,11 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
     
     @objc func addButtonTapped() {
-        NotificationHelper.changePage(hidden: true, isEnabled: false)
-        plusButton.isHidden = true
         let inputVC = DetailInputViewController()
         inputVC.delegate = self
-        navigationController?.pushViewController(inputVC, animated: false)
+        let navController = UINavigationController(rootViewController: inputVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true)
     }
     
     @objc func filterButtonTapped(sender: UIButton) {
@@ -402,15 +402,16 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        NotificationHelper.changePage(hidden: true, isEnabled: false)
-        plusButton.isHidden = true
         let detailVC = DetailViewController()
         
         let filteredTripLogs = filterTripLogs()
         let selectedTripLog = filteredTripLogs[indexPath.item]
         
         detailVC.pinLog = selectedTripLog
-        navigationController?.pushViewController(detailVC, animated: false)
+        
+        let navController = UINavigationController(rootViewController: detailVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true)
     }
 }
 

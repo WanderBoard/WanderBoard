@@ -216,6 +216,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         $0.font = UIFont.systemFont(ofSize: 16)
         $0.isScrollEnabled = false
+        $0.returnKeyType = .default
     }
     
     let locationButton = UIButton().then {
@@ -409,6 +410,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         if let pinLog = pinLog {
             configureView(with: pinLog)
         }
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -674,6 +678,10 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         mateCountButton.addTarget(self, action: #selector(showMatePicker), for: .touchUpInside)
     }
     
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
     @objc func publicOpenButtonTapped() {
         let isHidden = publicView.isHidden
         let newHeight: CGFloat = isHidden ? 90 : 0
@@ -743,9 +751,15 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     
     func setupNavigationBar() {
+        let closeButton = ButtonFactory.createXButton(target: self, action: #selector(dismissDetailView))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: closeButton)
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = doneButton
         navigationController?.navigationBar.tintColor = .white
+    }
+    
+    @objc func dismissDetailView(_ sender:UIButton) {
+        dismiss(animated: true)
     }
     
     func updateLocationLabel(with address: String) {
@@ -1328,7 +1342,7 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
 
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor.lightgray || textView.textColor == UIColor.darkgray {
+        if textView.textColor == UIColor.lightgray {
             textView.text = nil
             textView.textColor = .font
         }
@@ -1341,7 +1355,7 @@ extension DetailInputViewController: UITextViewDelegate {
             } else if textView == subTextField {
                 textView.text = "기록을 담아 주세요."
             }
-            textView.textColor = .font
+            textView.textColor = .lightgray
         }
     }
     
@@ -1358,14 +1372,17 @@ extension DetailInputViewController: UITextViewDelegate {
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if text == "\n" {
-            if textView == mainTextField {
-                subTextField.becomeFirstResponder()
-            } else if textView == subTextField {
-                textView.resignFirstResponder()
-            }
+        // 첫 번째 텍스트 필드에서 던 버튼을 누르면 두 번째 텍스트 필드로 포커스를 이동
+        if textView == mainTextField && text == "\n" {
+            subTextField.becomeFirstResponder()
             return false
         }
+        
+        // 두 번째 텍스트 필드에서는 리턴 키가 줄바꿈이 되도록 허용
+        if textView == subTextField && text == "\n" {
+            return true
+        }
+        
         return true
     }
 }

@@ -88,7 +88,8 @@ class BlockViewController: UIViewController {
         imageView.snp.makeConstraints {
             $0.centerX.equalTo(noDataView)
             $0.centerY.equalTo(noDataView).offset(-40)
-            $0.width.height.equalTo(60)
+            $0.height.equalTo(35)
+            $0.width.equalTo(55)
         }
 
         noDataMainTitle.snp.makeConstraints {

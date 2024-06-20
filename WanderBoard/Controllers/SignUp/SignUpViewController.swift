@@ -15,13 +15,13 @@ import FirebaseStorage
 class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UITextFieldDelegate {
     
     var uid: String?
-    private let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "프로필 설정"
-        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        label.textAlignment = .center
-        return label
-    }()
+//    private let subtitleLabel: UILabel = {
+//        let label = UILabel()
+//        label.text = "프로필 설정"
+//        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+//        label.textAlignment = .center
+//        return label
+//    }()
     
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
@@ -315,7 +315,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
         signUpButton.backgroundColor = babyGTocustomB
         
-        view.addSubview(subtitleLabel)
+        //view.addSubview(subtitleLabel)
         view.addSubview(profileImageView)
         view.addSubview(emailIcon)
         view.addSubview(emailLabel)
@@ -333,13 +333,14 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         view.addSubview(privacyPolicyButton)
         view.addSubview(signUpButton)
         
-        subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
-            make.centerX.equalToSuperview()
-        }
+//        subtitleLabel.snp.makeConstraints { make in
+//            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
+//            make.centerX.equalToSuperview()
+//        }
         
         profileImageView.snp.makeConstraints { make in
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(15)
+
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             make.centerX.equalToSuperview()
             make.width.equalTo(106)
             make.height.equalTo(106)
@@ -357,8 +358,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         }
         
         nickNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(emailIcon.snp.bottom).offset(30)
-            make.left.equalToSuperview().inset(48)
+            make.top.equalTo(emailIcon.snp.bottom).offset(16)
+            make.left.equalToSuperview().inset(34)
         }
         
         nicknameTextField.snp.makeConstraints { make in
@@ -406,8 +407,10 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         }
         
         interestsLabel.snp.makeConstraints { make in
-            make.top.equalTo(lastButton!.snp.bottom).offset(30)
+
+            make.top.equalTo(lastButton!.snp.bottom).offset(24)
             make.left.equalToSuperview().inset(48)
+
         }
         
         interestsTextField.snp.makeConstraints { make in
@@ -579,8 +582,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         tagLabel.clipsToBounds = true
         tagLabel.textAlignment = .center
         tagLabel.sizeToFit()
-        _ = tagLabel.frame.width + 16
-        
+
+        let tagWidth = tagLabel.frame.width + 32
         
         tagContainerView.addSubview(tagLabel)
         
@@ -592,6 +595,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             } else {
                 make.left.equalToSuperview().inset(30)
             }
+            make.width.equalTo(tagWidth)
         }
         
         tagContainerView.snp.remakeConstraints { make in

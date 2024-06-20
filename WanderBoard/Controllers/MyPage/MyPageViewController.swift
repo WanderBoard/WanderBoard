@@ -207,7 +207,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
         
         profile.layer.cornerRadius = 53
         profile.clipsToBounds = true
-        profile.contentMode = .scaleAspectFill
         profile.backgroundColor = .lightgray
         
         myName.font = UIFont.boldSystemFont(ofSize: 20)

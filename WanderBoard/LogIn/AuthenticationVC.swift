@@ -326,21 +326,33 @@ class AuthenticationVC: UIViewController {
             do {
                 let helper = SignInWithAppleHelper()
                 let result = try await helper.startSignInWithAppleFlow()
+                let email = result.email ?? "\(result.uid)@privaterelay.appleid.com"
                 let authDataResult = try await AuthenticationManager.shared.signInWithApple(tokens: result)
-                let existingUser = try await FirestoreManager.shared.checkUserExists(email: result.email ?? "")
+                let existingUser = try await FirestoreManager.shared.checkUserExists(email: email)
                 let isProfileComplete = existingUser?.isProfileComplete ?? false
                 if let existingUser = existingUser {
                     await handleSignInResult(AuthDataResultModel(user: existingUser, authProvider: .apple), isProfileComplete: isProfileComplete)
                 } else {
-                    try await FirestoreManager.shared.saveUser(uid: authDataResult.uid, email: result.email ?? "", authProvider: AuthProviderOption.apple.rawValue, gender: "선택안함", interests: [], isProfileComplete: false, blockedAuthors: authDataResult.blockedAuthors, hiddenPinLogs: [])
+                    try await FirestoreManager.shared.saveUser(
+                        uid: authDataResult.uid,
+                        email: email,
+                        displayName: result.displayName,
+                        photoURL: nil,
+                        authProvider: AuthProviderOption.apple.rawValue,
+                        gender: "선택안함",
+                        interests: [],
+                        isProfileComplete: false,
+                        blockedAuthors: authDataResult.blockedAuthors,
+                        hiddenPinLogs: []
+                    )
                     await handleSignUpResult(authDataResult, isProfileComplete: false)
                 }
             } catch {
-                print("Apple 로그인 실패: \(error)")
+                ErrorUtility.shared.presentErrorAlert(with: "Apple 로그인 중 문제가 발생했습니다. 다시 시도해주세요.")
             }
         }
     }
-    
+
     // 로그인 결과 처리
     private func handleSignInResult(_ authDataResult: AuthDataResultModel, isProfileComplete: Bool) async {
         UserDefaults.standard.set(true, forKey: "isLoggedIn")

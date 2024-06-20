@@ -8,16 +8,6 @@
 import Foundation
 import UIKit
 
-//
-//  TableViewHeaderView.swift
-//  WanderBoard
-//
-//  Created by t2023-m0049 on 6/3/24.
-//
-
-import Foundation
-import UIKit
-
 class SpendingTableViewHeaderView: UITableViewHeaderFooterView {
     static let identifier = "SpendingTableViewHeaderView"
     

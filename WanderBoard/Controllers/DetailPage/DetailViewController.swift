@@ -354,21 +354,45 @@ class DetailViewController: UIViewController {
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
     
     // 핀 버튼
-    lazy var pinButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "pin.circle"), for: .normal)
-        button.snp.makeConstraints { make in
-            make.width.height.equalTo(44)
-        }
-        button.tintColor = .white
-        button.isHidden = true
-        button.addTarget(self, action: #selector(pinButtonTapped), for: .touchUpInside)
-        return button
-    }()
+    lazy var pinButton = UIButton(type: .system).then {
+//        let imageConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular) // 이미지 크기 조정
+//        let image = UIImage(systemName: "pin.circle", withConfiguration: imageConfig)
+        $0.setImage(UIImage(systemName: "pin.circle"), for: .normal)
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+        $0.tintColor = .white
+        $0.isHidden = true
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.addTarget(self, action: #selector(pinButtonTapped), for: .touchUpInside)
+    }
     
-    func newSetupConstraints() {
-        let barButtonItem = UIBarButtonItem(customView: pinButton)
-        self.navigationItem.rightBarButtonItem = barButtonItem
+    private func newSetupConstraints() {
+        let closeButton = ButtonFactory.createXButton(target: self, action: #selector(dismissDetailView))
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: closeButton)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pinButton)
+        
+        NSLayoutConstraint.activate([
+            pinButton.widthAnchor.constraint(equalToConstant: 30), // 원하는 너비로 설정
+            pinButton.heightAnchor.constraint(equalToConstant: 30) // 원하는 높이로 설정
+        ])
+    }
+    
+//    private func newSetupConstraints() {
+//        //let closeButton = ButtonFactory.createXButton(target: self, action: #selector(dismissDetailView))
+//        
+//        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
+//        navigationController?.navigationBar.tintColor = UIColor.white
+//        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pinButton)
+//        
+//        NSLayoutConstraint.activate([
+//            pinButton.widthAnchor.constraint(equalToConstant: 30), // 원하는 너비로 설정
+//            pinButton.heightAnchor.constraint(equalToConstant: 30) // 원하는 높이로 설정
+//        ])
+//    }
+    
+    @objc func dismissDetailView(_ sender:UIButton) {
+        dismiss(animated: true)
     }
     
     func checkId() {
@@ -858,8 +882,13 @@ class DetailViewController: UIViewController {
         guard let pinLog = pinLog else { return }
         if isCurrentUser(pinLog: pinLog) {
             // 현재 사용자가 작성자인 경우
-            let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.sharePinLog()
+            //게시물 공유 기능은 나중에
+//            let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+//                self.sharePinLog()
+//            }
+            
+            let instaAction = UIAction(title: "이미지 공유하기", image: UIImage(systemName: "photo.on.rectangle.angled")) { _ in
+                self.instaConnect()
             }
             
             let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { _ in
@@ -872,13 +901,13 @@ class DetailViewController: UIViewController {
                 attributes: .destructive) { _ in
                     self.deletePinLog()
                 }
-            optionsButton.menu = UIMenu(title: "", children: [shareAction, editAction, deleteAction])
+            optionsButton.menu = UIMenu(title: "", children: [instaAction, editAction, deleteAction])
         } else {
             // 다른 사람의 글인 경우
-            let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.sharePinLog()
-            }
-            
+            //게시물 공유 기능은 나중에
+//          let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+//                self.sharePinLog()
+//          }
             let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "person.slash.fill")) { _ in
                 let reportAlert = UIAlertController(title: "", message: "작성자를 차단하시겠습니까? \n 차단한 작성자의 글이 보이지 않게됩니다.", preferredStyle: .alert)
                 reportAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
@@ -906,7 +935,7 @@ class DetailViewController: UIViewController {
                 self.present(reportAlert, animated: true, completion: nil)
             }
             
-            optionsButton.menu = UIMenu(title: "", children: [shareAction, blockAction, hideAction, reportAction])
+            optionsButton.menu = UIMenu(title: "", children: [blockAction, hideAction, reportAction])
         }
     }
     
@@ -928,7 +957,12 @@ class DetailViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    func sharePinLog() {
+    //나중 구현
+//    func sharePinLog() {
+//
+//    }
+    
+    func instaConnect() {
         guard !selectedImages.isEmpty else {
             return
         }

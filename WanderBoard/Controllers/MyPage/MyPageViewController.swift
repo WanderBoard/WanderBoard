@@ -11,6 +11,7 @@ import Then
 import CoreData
 import FirebaseAuth
 import FirebaseFirestore
+import Kingfisher
 
 class MyPageViewController: BaseViewController, PageIndexed {
     var pageIndex: Int?
@@ -250,7 +251,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         // userData가 있으면 userData에 맞게 업데이트
         //userData가 없을 경우 위의 기능은 정상적으로 수행하고 만약 값이 있을 경우엔 중괄호 내부의 역할을 수행해줄것을 요청
         if let userData = userData {
-            profile.image = UIImage(named: "\(String(describing: userData.photoURL))")
+            profile.kf.setImage(with: URL(string: userData.photoURL ?? ""), placeholder: UIImage(named: "defaultProfileImage"))
             myName.text = userData.displayName
             if isProxyEmail(userData.email) {
                 myID.text = "이메일 비공개"
@@ -281,6 +282,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     func updateUI() {
         guard let userData = userData else { return }
         myName.text = userData.displayName
+
         if isProxyEmail(userData.email) {
             myID.text = "이메일 비공개"
         } else {

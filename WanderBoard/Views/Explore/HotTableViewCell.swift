@@ -53,7 +53,7 @@ class HotTableViewCell: UITableViewCell {
         $0.scrollDirection = .horizontal
         $0.minimumLineSpacing = 20
         $0.itemSize = .init(width: 240, height: 320)
-        $0.sectionInset = .init(top: 0, left: 30, bottom: 5, right: 10)
+        $0.sectionInset = .init(top: 10, left: 30, bottom: 5, right: 10)
     }
     
     var hotPinLogs: [PinLog] = [] {
@@ -83,13 +83,13 @@ class HotTableViewCell: UITableViewCell {
         
         hotView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(20)
-            $0.leading.equalToSuperview().inset(30)
+            $0.leading.equalToSuperview().inset(32)
             $0.trailing.equalToSuperview()
             $0.height.equalTo(400)
         }
         
         hotLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(20)
+            $0.top.equalToSuperview().inset(15)
             $0.leading.equalToSuperview().inset(40)
         }
         

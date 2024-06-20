@@ -354,17 +354,21 @@ class DetailViewController: UIViewController {
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
     
     // 핀 버튼
-    lazy var pinButton = UIButton().then {
-        $0.setImage(UIImage(systemName: "pin.circle"), for: .normal)
-        $0.contentMode = .scaleAspectFill
-        $0.clipsToBounds = true
-        $0.tintColor = .white
-        $0.isHidden = true
-        $0.addTarget(self, action: #selector(pinButtonTapped), for: .touchUpInside)
-    }
+    lazy var pinButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "pin.circle"), for: .normal)
+        button.snp.makeConstraints { make in
+            make.width.height.equalTo(44)
+        }
+        button.tintColor = .white
+        button.isHidden = true
+        button.addTarget(self, action: #selector(pinButtonTapped), for: .touchUpInside)
+        return button
+    }()
     
     func newSetupConstraints() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pinButton)
+        let barButtonItem = UIBarButtonItem(customView: pinButton)
+        self.navigationItem.rightBarButtonItem = barButtonItem
     }
     
     func checkId() {

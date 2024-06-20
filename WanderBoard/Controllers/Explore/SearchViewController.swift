@@ -38,8 +38,8 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
     
     let collectionViewFlowLayout = UICollectionViewFlowLayout().then {
         $0.scrollDirection = .vertical
-        $0.minimumLineSpacing = 10
-        $0.sectionInset = .init(top: 20, left: 30, bottom: 20, right: 30)
+        $0.minimumLineSpacing = 16
+        $0.sectionInset = .init(top: 13, left: 24, bottom: 0, right: 24)
         
         let screenWidth = UIScreen.main.bounds.width
         let inset: CGFloat = 30
@@ -47,7 +47,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         let numberOfItemsPerRow: CGFloat = 2
         
         let itemWidth = (screenWidth - 2 * inset - (numberOfItemsPerRow - 1) * spacing) / numberOfItemsPerRow
-        let itemHeight = itemWidth * 110 / 160
+        let itemHeight = itemWidth * 117 / 170
         
         $0.itemSize = CGSize(width: itemWidth, height: itemHeight)
     }

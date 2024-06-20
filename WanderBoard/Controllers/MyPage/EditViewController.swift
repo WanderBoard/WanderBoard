@@ -15,7 +15,16 @@ import CoreData
 class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewControllerDelegate {
     
     let doneButton = UIButton()
-    let addImage = UIImageView()
+    let addImage = UIImageView().then(){
+        $0.image = UIImage(systemName: "plus")
+        $0.tintColor = UIColor(named: "textColorSub")
+    }
+    let addImageLayer = UIView().then(){
+        $0.backgroundColor = UIColor(white: 1, alpha: 0.7)
+        $0.clipsToBounds = true
+        $0.layer.cornerRadius = 53
+    }
+    
     let profile = UIImageView()
     
     private let nicknameTextField: UITextField = {
@@ -37,7 +46,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     private let duplicateCheckButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("중복확인", for: .normal)
-        button.backgroundColor = .black
+        button.backgroundColor = .font
         button.setTitleColor(.systemBackground, for: .normal)
         button.layer.cornerRadius = 10
         button.layer.masksToBounds = true
@@ -49,10 +58,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     var IDIcon = UIImageView()
     var myID = UILabel()
     let subLine = UIView()
-    let subTitle = UILabel()
-    let connectButton = UIButton()
-    let iconImageView = UIImageView()
-    let subLine2 = UIView()
     let withdrawalB = UIButton()
     var previousImage: UIImage?
     var previousName: String = ""
@@ -67,14 +72,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(tapGestureRecognizer:)))
         profile.isUserInteractionEnabled = true
         profile.addGestureRecognizer(tapGestureRecognizer)
-        
-        //마이컨트롤러에 이미지가 있는지 확인. 존재하면 불러오고 없으면 회색배경에 +아이콘
-        if let existingImage = previousImage {
-            profile.image = existingImage
-            addImage.tintColor = UIColor.clear
-        } else {
-            addImage.tintColor = UIColor.font
-        }
     }
     
     override func configureUI(){
@@ -85,13 +82,10 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let barButtonItem = UIBarButtonItem(customView: doneButton)
         self.navigationItem.rightBarButtonItem = barButtonItem
         
-        addImage.image = UIImage(systemName: "plus")
-        addImage.tintColor = UIColor(named: "textColorSub")
-        
+        profile.image = UIImage(named: "profileImage")
         profile.clipsToBounds = true
         profile.contentMode = .scaleAspectFill
         profile.layer.cornerRadius = 53
-        profile.backgroundColor = .lightgray
         
         nicknameTextField.placeholder = previousName
         nicknameTextField.clearButtonMode = .never
@@ -111,33 +105,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         subLine.backgroundColor = .babygray
         subLine.layer.cornerRadius = 10
-        
-        subTitle.text = "인스타그램"
-        subTitle.font = UIFont.boldSystemFont(ofSize: 15)
-        subTitle.textColor = .font
-        
-        connectButton.backgroundColor = .clear
-        connectButton.setTitle("연결하기", for: .normal)
-        connectButton.titleLabel?.font = UIFont.systemFont(ofSize: 13)
-        connectButton.setTitleColor(.font, for: .normal)
-        connectButton.setImage(UIImage(named: "instagramLogo"), for: .normal)
-        if let imageView = connectButton.imageView {
-            imageView.snp.makeConstraints {
-                $0.width.height.equalTo(24) // 이미지 크기를 24x24로 설정
-                $0.left.equalToSuperview().offset(10)
-                $0.centerY.equalToSuperview()
-                let label = connectButton.titleLabel
-                $0.right.equalTo(label!.snp.left).offset(-10)
-            }
-        }
-        
-        iconImageView.image = UIImage(systemName: "chevron.right")
-        iconImageView.tintColor = .font
-        iconImageView.contentMode = .scaleAspectFit
-        
-        subLine2.backgroundColor = .babygray
-        subLine2.layer.cornerRadius = 10
-        
+
         withdrawalB.setTitle("회원탈퇴", for: .normal)
         withdrawalB.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         withdrawalB.setTitleColor(UIColor(named: "lightgray"), for: .normal)
@@ -184,7 +152,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     
     override func constraintLayout() {
         super.constraintLayout() //부모뷰의 설정을 가져온다
-        [profile, addImage, nicknameTextField, nameAlert, duplicateCheckButton, IDArea, subLine, subTitle, connectButton, subLine2, withdrawalB].forEach(){
+        [profile, addImage, nicknameTextField, nameAlert, duplicateCheckButton, IDArea, subLine, withdrawalB].forEach(){
             view.addSubview($0)
         }
         logo.snp.makeConstraints(){
@@ -199,13 +167,17 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             $0.top.equalTo(view).offset(112)
             $0.width.height.equalTo(106)
         }
-        
+        profile.addSubview(addImageLayer)
         profile.addSubview(addImage)
+        
+        addImageLayer.snp.makeConstraints(){
+            $0.edges.equalToSuperview()
+        }
+        
         addImage.snp.makeConstraints(){
             $0.centerX.equalToSuperview()
-            $0.width.height.equalTo(21)
+            $0.width.height.equalTo(25)
             $0.centerY.equalToSuperview()
-            
         }
         
         IDArea.addSubview(myID)
@@ -253,30 +225,9 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             $0.height.equalTo(1)
             $0.top.equalTo(nameAlert.snp.bottom).offset(15)
         }
-        subTitle.snp.makeConstraints(){
-            $0.top.equalTo(subLine.snp.bottom).offset(20)
-            $0.left.equalTo(subLine.snp.left)
-        }
-        connectButton.snp.makeConstraints(){
-            $0.centerY.equalTo(subTitle)
-            $0.right.equalTo(subLine.snp.right)
-            $0.width.equalTo(121)
-            $0.height.equalTo(44)
-        }
-        connectButton.addSubview(iconImageView)
-        
-        iconImageView.snp.makeConstraints(){
-            $0.left.equalTo(connectButton.titleLabel!.snp.right).offset(5)
-            $0.centerY.equalToSuperview()
-            $0.height.equalTo(20)
-        }
-        subLine2.snp.makeConstraints(){
-            $0.left.right.equalTo(view).inset(16)
-            $0.height.equalTo(1)
-            $0.top.equalTo(connectButton.snp.bottom).offset(15)
-        }
+       
         withdrawalB.snp.makeConstraints(){
-            $0.top.equalTo(subLine2.snp.bottom).offset(15)
+            $0.top.equalTo(subLine.snp.bottom).offset(15)
             $0.right.equalTo(subLine.snp.right).inset(16)
         }
     }
@@ -396,9 +347,9 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let nicknameLength = nicknameTextField.text?.count ?? 0
         let isValidLength = nicknameLength >= 2 && nicknameLength <= 16
         duplicateCheckButton.isEnabled = isValidLength
-        duplicateCheckButton.backgroundColor = isValidLength ? .black : .babygray
-        duplicateCheckButton.setTitleColor(isValidLength ? .white : .black, for: .normal)
-        
+        let lightGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "lightgray")
+               duplicateCheckButton.backgroundColor = isValidLength ? .font : lightGTocustomB
+               duplicateCheckButton.setTitleColor(isValidLength ? UIColor(named: "textColor") : .darkgray, for: .normal)
     }
     
     private func showConfirmationAlert(title: String, message: String, nickname: String) {
@@ -408,7 +359,8 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             guard let self = self else { return }
             self.nicknameTextField.isEnabled = false
             self.duplicateCheckButton.isEnabled = false
-            self.duplicateCheckButton.backgroundColor = UIColor(named: "babygray")
+            let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+            self.duplicateCheckButton.backgroundColor = babyGTocustomB
         }
         
         let cancelAction = UIAlertAction(title: "취소", style: .cancel) { [weak self] _ in
@@ -416,8 +368,10 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             self.nicknameTextField.text = ""
             self.nicknameTextField.isEnabled = true
             self.duplicateCheckButton.isEnabled = true
-            self.duplicateCheckButton.backgroundColor = .babygray
-            self.nicknameTextField.textColor = .black
+            let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
+            self.duplicateCheckButton.backgroundColor = lightGTodarkG
+            let darkGTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
+            self.nicknameTextField.textColor = darkGTolightG
         }
         
         alert.addAction(useAction)
@@ -432,12 +386,13 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         return true
     }
     
-    
     @objc func imageViewTapped(tapGestureRecognizer: UITapGestureRecognizer){
         //하단에서 이미지선택지 알람 등장(액션시트)
         let alert = UIAlertController(title: "프로필 사진 변경", message: nil, preferredStyle: .actionSheet)
         let changeToDefault = UIAlertAction(title: "기본으로 변경", style: .default) { _ in
-            self.profile.image = nil
+            self.profile.image = UIImage(named: "profileImage")
+            self.addImageLayer.backgroundColor = UIColor(white: 1, alpha: 0.7)
+            self.addImage.image = UIImage(systemName: "plus")
             self.addImage.tintColor = UIColor.textColorSub
         }
         let selectImage = UIAlertAction(title: "새로운 사진 등록", style: .default) { _ in
@@ -450,11 +405,15 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             self.present(picker, animated: true, completion: nil)
         }
         let cancel = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        self.addImageLayer.backgroundColor = UIColor(white: 1, alpha: 0)
+        self.addImage.tintColor = UIColor.clear
         
         [changeToDefault, selectImage, cancel].forEach(){
             alert.addAction($0)
         }
         present(alert, animated: true, completion: nil)
+        self.addImageLayer.backgroundColor = UIColor(white: 1, alpha: 0)
+        self.addImage.tintColor = UIColor.clear
     }
     
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
@@ -467,6 +426,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                 DispatchQueue.main.async {
                     if let selectedImage = image as? UIImage {
                         self?.profile.image = selectedImage
+                        self?.addImageLayer.backgroundColor = .clear
                         self?.addImage.tintColor = UIColor.clear
                     }
                 }
@@ -478,7 +438,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         super.updateColor()
         let lineBackgroundColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "babygray")
         subLine.backgroundColor = lineBackgroundColor
-        subLine2.backgroundColor = lineBackgroundColor
         
         let nameAlertColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
         nameAlert.textColor = nameAlertColor
@@ -486,16 +445,12 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let myNameColor = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
         nicknameTextField.layer.borderColor = myNameColor
         
-        let profileColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
-        profile.backgroundColor = profileColor
-        
         //카카오톡 한정으로 다크모드시 아이콘 색상 변경
         let iconColor = traitCollection.userInterfaceStyle == .dark ? UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1) : UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
         IDIcon.tintColor = iconColor
         setIcon()
         
         let connectButtonColor = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
-        connectButton.layer.borderColor = connectButtonColor
         
         let withdrawalColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
         withdrawalB.setTitleColor(withdrawalColor, for: .normal)

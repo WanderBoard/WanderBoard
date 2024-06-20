@@ -17,7 +17,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     
     let scrollView = UIScrollView()
     let contentView = UIView()
-    let editButton = UIButton()
+    let editButton = UIButton(type: .system)
     var profile = UIImageView()
     var myName = UILabel()
     var myID = UILabel()
@@ -199,12 +199,10 @@ class MyPageViewController: BaseViewController, PageIndexed {
     }
     
     override func configureUI() {
-        
-        editButton.setImage(UIImage(systemName: "pencil.circle"), for: .normal)
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
+        let image = UIImage(systemName: "pencil.circle", withConfiguration: imageConfig)
+        editButton.setImage(image, for: .normal)
         editButton.tintColor = .font
-        editButton.imageView?.snp.makeConstraints(){
-            $0.width.height.equalTo(25)
-        }
         editButton.addTarget(self, action: #selector(edit), for: .touchUpInside)
         let barButtonItem = UIBarButtonItem(customView: editButton)
         self.navigationItem.rightBarButtonItem = barButtonItem

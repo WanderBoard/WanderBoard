@@ -72,17 +72,17 @@ class SpendingTableViewCell: UITableViewCell {
         expenseContent.snp.makeConstraints {
             $0.top.equalTo(contentView.snp.top).inset(12)
             $0.leading.equalTo(categoryImageView.snp.trailing).offset(12)
-            $0.trailing.equalTo(expenseAmount.snp.leading)
+            $0.trailing.lessThanOrEqualTo(expenseAmount.snp.leading).offset(-12) // 변경된 부분
         }
         memo.snp.makeConstraints {
             $0.top.equalTo(expenseContent.snp.bottom).offset(4)
             $0.leading.equalTo(expenseContent.snp.leading)
-            $0.trailing.equalTo(expenseAmount.snp.leading)
+            $0.trailing.lessThanOrEqualTo(expenseAmount.snp.leading).offset(-12) // 변경된 부분
             $0.bottom.equalTo(contentView).inset(12)
         }
         expenseAmount.snp.makeConstraints {
             $0.centerY.equalTo(contentView.snp.centerY)
-            $0.leading.equalTo(memo.snp.trailing).offset(12)
+            $0.leading.greaterThanOrEqualTo(memo.snp.trailing).offset(12) // 변경된 부분
             $0.width.equalTo(80)
             $0.trailing.equalTo(contentView.safeAreaLayoutGuide).inset(32)
         }

@@ -458,7 +458,6 @@ class DetailViewController: UIViewController {
         } else {
             pinButton.setImage(UIImage(systemName: "pin.circle"), for: .normal)
         }
-        print("Current pinnedBy: \(pinnedBy)")
     }
     
     func setupUI() {
@@ -544,7 +543,7 @@ class DetailViewController: UIViewController {
         contentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.bottom.equalTo(bottomLogo.snp.bottom).offset(10)
+            $0.bottom.equalToSuperview()
         }
         
         optionsButton.snp.makeConstraints {
@@ -1223,7 +1222,8 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.contentView.snp.remakeConstraints {
                         $0.edges.equalTo(self.scrollView.contentLayoutGuide)
                         $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                        $0.bottom.equalTo(self.bottomLogo.snp.bottom)
+                        //$0.bottom.equalTo(self.bottomLogo.snp.bottom)
+                        $0.bottom.equalToSuperview()
                     }
                     
                     self.backgroundImageView.snp.remakeConstraints {
@@ -1248,7 +1248,8 @@ extension DetailViewController: UIScrollViewDelegate {
                     self.contentView.snp.remakeConstraints {
                         $0.edges.equalTo(self.scrollView.contentLayoutGuide)
                         $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                        $0.bottom.equalTo(self.bottomLogo.snp.bottom)
+                        //$0.bottom.equalTo(self.bottomLogo.snp.bottom)
+                        $0.bottom.equalToSuperview()
                     }
                     
                     self.backgroundImageView.snp.remakeConstraints {

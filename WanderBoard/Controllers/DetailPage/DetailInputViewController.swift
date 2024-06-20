@@ -753,9 +753,16 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     
     func setupNavigationBar() {
+        let closeButton = ButtonFactory.createXButton(target: self, action: #selector(dismissDetailView))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: closeButton)
+        
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = doneButton
         navigationController?.navigationBar.tintColor = .white
+    }
+    
+    @objc func dismissDetailView(_ sender:UIButton) {
+        dismiss(animated: true)
     }
     
     func updateLocationLabel(with address: String) {

@@ -26,7 +26,7 @@ class HotCollectionViewCell: UICollectionViewCell {
     
     private let blackView = UIImageView().then {
         $0.backgroundColor = .black.withAlphaComponent(0.4)
-        $0.layer.cornerRadius = 20
+        $0.layer.cornerRadius = 30
     }
     
     private let dateLabel = UILabel().then {

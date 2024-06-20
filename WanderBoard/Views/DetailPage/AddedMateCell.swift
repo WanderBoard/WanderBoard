@@ -58,6 +58,11 @@ class AddedMateCell: UICollectionViewCell {
         stackView.snp.makeConstraints {
             $0.center.equalToSuperview()
         }
+        
+        removeButton.snp.makeConstraints {
+            $0.height.equalTo(15)
+            $0.width.equalTo(15)
+        }
     }
     
     func configure(with user: UserSummary) {

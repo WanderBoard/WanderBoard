@@ -372,16 +372,16 @@ final class AuthenticationManager {
     func presentSignUpViewController(with uid: String) {
         DispatchQueue.main.async {
             let signUpVC = SignUpViewController()
+            signUpVC.modalPresentationStyle = .fullScreen
             signUpVC.uid = uid  // UID 전달
-            let navController = UINavigationController(rootViewController: signUpVC)
-            navController.modalPresentationStyle = .fullScreen
+//            let navController = UINavigationController(rootViewController: signUpVC)
+//            navController.modalPresentationStyle = .fullScreen
             UIApplication.shared.connectedScenes
                 .compactMap { $0 as? UIWindowScene }
                 .flatMap { $0.windows }
                 .first { $0.isKeyWindow }?
                 .rootViewController?
-                .present(navController, animated: true, completion: nil)
-        }
+                .present(signUpVC, animated: true, completion: nil)        }
     }
     
     private func switchRootView(to viewController: UIViewController) {
@@ -390,7 +390,7 @@ final class AuthenticationManager {
                 .compactMap({ $0 as? UIWindowScene })
                 .flatMap({ $0.windows })
                 .first(where: { $0.isKeyWindow }) else { return }
-            window.rootViewController = UINavigationController(rootViewController: viewController)
+            window.rootViewController = viewController
             window.makeKeyAndVisible()
         }
     }

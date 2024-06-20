@@ -854,8 +854,13 @@ class DetailViewController: UIViewController {
         guard let pinLog = pinLog else { return }
         if isCurrentUser(pinLog: pinLog) {
             // 현재 사용자가 작성자인 경우
-            let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.sharePinLog()
+            //게시물 공유 기능은 나중에
+//            let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+//                self.sharePinLog()
+//            }
+            
+            let instaAction = UIAction(title: "이미지 공유하기", image: UIImage(systemName: "photo.on.rectangle.angled")) { _ in
+                self.instaConnect()
             }
             
             let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { _ in
@@ -868,13 +873,13 @@ class DetailViewController: UIViewController {
                 attributes: .destructive) { _ in
                     self.deletePinLog()
                 }
-            optionsButton.menu = UIMenu(title: "", children: [shareAction, editAction, deleteAction])
+            optionsButton.menu = UIMenu(title: "", children: [instaAction, editAction, deleteAction])
         } else {
             // 다른 사람의 글인 경우
-            let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.sharePinLog()
-            }
-            
+            //게시물 공유 기능은 나중에
+//          let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+//                self.sharePinLog()
+//          }
             let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "person.slash.fill")) { _ in
                 let reportAlert = UIAlertController(title: "", message: "작성자를 차단하시겠습니까? \n 차단한 작성자의 글이 보이지 않게됩니다.", preferredStyle: .alert)
                 reportAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
@@ -902,7 +907,7 @@ class DetailViewController: UIViewController {
                 self.present(reportAlert, animated: true, completion: nil)
             }
             
-            optionsButton.menu = UIMenu(title: "", children: [shareAction, blockAction, hideAction, reportAction])
+            optionsButton.menu = UIMenu(title: "", children: [blockAction, hideAction, reportAction])
         }
     }
     
@@ -924,7 +929,12 @@ class DetailViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    func sharePinLog() {
+    //나중 구현
+//    func sharePinLog() {
+//
+//    }
+    
+    func instaConnect() {
         guard !selectedImages.isEmpty else {
             return
         }

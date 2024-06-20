@@ -439,7 +439,7 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
         pickerContainer.snp.makeConstraints {
             $0.height.equalTo(360)
         }
-        
+
         view.addSubview(pickerContainer)
         pickerContainer.isHidden = true
     }
@@ -549,7 +549,6 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
             }
         }
     }
-    
     
     // MARK: Components Set up
     func configureUI() {
@@ -693,6 +692,7 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
         }
+        
         saveDoneButton.snp.makeConstraints {
             $0.top.equalTo(memoView.snp.bottom).offset(60)
             $0.leading.trailing.equalTo(scrollContentView).inset(50)

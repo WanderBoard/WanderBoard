@@ -36,7 +36,7 @@ class SingleDayCalendarHostingController: UIViewController {
         view.addSubview(hostingController.view)
         hostingController.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.height.equalTo(460)
+//            make.height.equalTo(460)
         }
     }
 }

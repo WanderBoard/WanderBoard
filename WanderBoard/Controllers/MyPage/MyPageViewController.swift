@@ -379,9 +379,9 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                          self.navigationController?.pushViewController(blockVC, animated: true)
                          blockVC.navigationItem.title = "차단관리"
                     case 4:
-                        NotificationHelper.changePage(hidden: true, isEnabled: false)
                         let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
                         let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                            NotificationHelper.changePage(hidden: true, isEnabled: false)
                             self.handleLogout() // 로그아웃 처리
                         }
                         let close = UIAlertAction(title: "취소", style: .destructive, handler: nil)

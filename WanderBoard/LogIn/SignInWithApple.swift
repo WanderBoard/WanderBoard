@@ -17,6 +17,7 @@ struct SignInWithAppleResult {
     let firstName: String?
     let lastName: String?
     let fullName: String?
+    let uid: String
 
     var displayName: String? {
         if let firstName = firstName, let lastName = lastName {
@@ -41,6 +42,7 @@ struct SignInWithAppleResult {
         self.firstName = appleIDCredential.fullName?.givenName
         self.lastName = appleIDCredential.fullName?.familyName
         self.fullName = [appleIDCredential.fullName?.givenName, appleIDCredential.fullName?.familyName].compactMap { $0 }.joined(separator: " ")
+        self.uid = appleIDCredential.user
     }
 }
 
@@ -56,7 +58,7 @@ final class SignInWithAppleHelper: NSObject {
             self.startSignInWithAppleFlow(viewController: viewController)
         }
     }
-    
+//    @privaterelay.appleid.com
     @MainActor
     private func startSignInWithAppleFlow(viewController: UIViewController? = nil) {
         guard let topVC = viewController ?? Utilities.shared.topViewController() else {

@@ -14,6 +14,7 @@ import FirebaseStorage
 
 class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UITextFieldDelegate {
     
+    var uid: String?
     private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.text = "프로필 설정"
@@ -130,7 +131,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             return button
         }
     }()
-    
     
     private let interestsLabel: UILabel = {
         let label = UILabel()
@@ -253,6 +253,13 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         if let user = Auth.auth().currentUser {
             emailLabel.text = user.email
             setEmailIcon(for: user.providerData.first?.providerID)
+        } else if let uid = uid {
+            Task {
+                let email = try? await AuthenticationManager.shared.fetchEmailFromFirestore(uid: uid)
+                DispatchQueue.main.async {
+                    self.emailLabel.text = email
+                }
+            }
         }
     }
     
@@ -263,6 +270,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     func setupNavigationBar() {
         self.navigationController?.setNavigationBarHidden(false, animated: false)
+        self.navigationController?.navigationBar.prefersLargeTitles = false
         self.navigationController?.navigationBar.tintColor = .black
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         
@@ -568,6 +576,11 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         tagLabel.textAlignment = .center
         tagLabel.sizeToFit()
         _ = tagLabel.frame.width + 16
+        
+//        tagLabel.snp.makeConstraints { make in
+//            make.height.equalTo(30)
+//            make.width.equalTo(tagWidth)
+//        }
         
         tagContainerView.addSubview(tagLabel)
         

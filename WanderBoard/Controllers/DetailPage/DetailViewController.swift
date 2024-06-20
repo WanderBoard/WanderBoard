@@ -195,7 +195,7 @@ class DetailViewController: UIViewController {
     
     let mapAllButton = UIButton().then {
         var config = UIButton.Configuration.plain()
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
         let symbolImage = UIImage(systemName: "arrow.down.left.and.arrow.up.right", withConfiguration: symbolConfiguration)
         config.image = symbolImage
         config.background.backgroundColor = UIColor(white: 1, alpha: 0.5)
@@ -208,7 +208,7 @@ class DetailViewController: UIViewController {
     
     let albumAllButton = UIButton().then {
         var config = UIButton.Configuration.plain()
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
         let symbolImage = UIImage(systemName: "arrow.down.left.and.arrow.up.right", withConfiguration: symbolConfiguration)
         config.image = symbolImage
         config.background.backgroundColor = UIColor(white: 1, alpha: 0.5)

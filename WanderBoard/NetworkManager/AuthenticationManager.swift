@@ -316,9 +316,9 @@ final class AuthenticationManager {
             let authDataResult = try await signIn(credential: credential)
             
             // 이메일 가져오기
-            var email = tokens.email ?? ""
+            var email = tokens.email ?? "\(tokens.uid)@privaterelay.appleid.com"
             if email.isEmpty {
-                email = try await fetchEmailFromFirestore(uid: authDataResult.uid) ?? ""
+                email = try await FirestoreManager.shared.fetchEmailFromFirestore(uid: authDataResult.uid) ?? ""
             }
 
             if email.isEmpty {
@@ -327,7 +327,11 @@ final class AuthenticationManager {
             }
 
             // Firestore에서 사용자 문서 확인
-            let existingUser = try await FirestoreManager.shared.checkUserExists(email: email)
+            var existingUser = try await FirestoreManager.shared.checkUserExistsByUID(uid: authDataResult.uid)
+            if existingUser == nil {
+                existingUser = try await FirestoreManager.shared.checkUserExists(email: email)
+            }
+            
             let isProfileComplete = existingUser?.isProfileComplete ?? false
 
             // 사용자 문서가 존재하면 로그인 처리
@@ -336,7 +340,7 @@ final class AuthenticationManager {
                     if isProfileComplete {
                         switchRootView(to: PageViewController())
                     } else {
-                        presentSignUpViewController()
+                        presentSignUpViewController(with: authDataResult.uid)
                     }
                 }
             } else {
@@ -354,7 +358,7 @@ final class AuthenticationManager {
                     hiddenPinLogs: authDataResult.hiddenPinLogs
                 )
                 await MainActor.run {
-                    presentSignUpViewController()
+                    presentSignUpViewController(with: authDataResult.uid) // 수정: uid 인수 전달
                 }
             }
 
@@ -365,16 +369,18 @@ final class AuthenticationManager {
         }
     }
 
-    private func presentSignUpViewController() {
+    func presentSignUpViewController(with uid: String) {
         DispatchQueue.main.async {
             let signUpVC = SignUpViewController()
-            signUpVC.modalPresentationStyle = .formSheet
+            signUpVC.uid = uid  // UID 전달
+            let navController = UINavigationController(rootViewController: signUpVC)
+            navController.modalPresentationStyle = .fullScreen
             UIApplication.shared.connectedScenes
                 .compactMap { $0 as? UIWindowScene }
                 .flatMap { $0.windows }
                 .first { $0.isKeyWindow }?
                 .rootViewController?
-                .present(signUpVC, animated: true, completion: nil)
+                .present(navController, animated: true, completion: nil)
         }
     }
     
@@ -392,12 +398,11 @@ final class AuthenticationManager {
     func fetchEmailFromFirestore(uid: String) async throws -> String? {
         let userRef = Firestore.firestore().collection("users").document(uid)
         let document = try await userRef.getDocument()
-        guard let data = document.data(), let email = data["email"] as? String, !email.isEmpty else {
-            return nil
-        }
+        let email = document.data()?["email"] as? String
         return email
-    }
 
+    }
+    
     // 파이어베이스에 인증 요청
     private func signIn(credential: AuthCredential) async throws -> AuthDataResultModel {
         do {

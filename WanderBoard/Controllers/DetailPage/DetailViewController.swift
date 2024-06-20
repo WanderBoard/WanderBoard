@@ -19,6 +19,7 @@ import Contacts
 import CoreLocation
 import ImageIO
 
+
 class DetailViewController: UIViewController {
     
     weak var delegate: DetailViewControllerDelegate?
@@ -307,7 +308,6 @@ class DetailViewController: UIViewController {
         updateColor()
         
         //한빛
-        newSetupConstraints()
         checkId()
         
         view.backgroundColor = .systemBackground
@@ -353,23 +353,19 @@ class DetailViewController: UIViewController {
     
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
     
-    // 핀 버튼
     lazy var pinButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "pin.circle"), for: .normal)
-        button.snp.makeConstraints { make in
-            make.width.height.equalTo(44)
-        }
         button.tintColor = .white
-        button.isHidden = true
+        
         button.addTarget(self, action: #selector(pinButtonTapped), for: .touchUpInside)
+        button.isHidden = true
+        
+        let barButtonItem = UIBarButtonItem(customView: button)
+        self.navigationItem.rightBarButtonItem = barButtonItem
+        
         return button
     }()
-    
-    func newSetupConstraints() {
-        let barButtonItem = UIBarButtonItem(customView: pinButton)
-        self.navigationItem.rightBarButtonItem = barButtonItem
-    }
     
     func checkId() {
         if let pinLog = pinLog {

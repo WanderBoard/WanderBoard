@@ -216,7 +216,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         $0.font = UIFont.systemFont(ofSize: 16)
         $0.isScrollEnabled = false
-        $0.returnKeyType = .default
     }
     
     let locationButton = UIButton().then {
@@ -412,6 +411,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
         view.addGestureRecognizer(tapGesture)
     }
     
@@ -480,7 +480,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         topContainarView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.height.equalTo(150)
+            $0.height.equalTo(140)
         }
         
         scrollView.snp.makeConstraints {
@@ -619,6 +619,13 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
     }
     
+    @objc func dismissKeyboard(_ sender: UITapGestureRecognizer) {
+        let location = sender.location(in: self.view)
+        if !self.galleryCollectionView.frame.contains(location) && !self.mateCollectionView.frame.contains(location) {
+            view.endEditing(true)
+        }
+    }
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
@@ -676,10 +683,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
         
         mateCountButton.addTarget(self, action: #selector(showMatePicker), for: .touchUpInside)
-    }
-    
-    @objc func dismissKeyboard() {
-        view.endEditing(true)
     }
     
     @objc func publicOpenButtonTapped() {
@@ -1372,13 +1375,11 @@ extension DetailInputViewController: UITextViewDelegate {
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        // 첫 번째 텍스트 필드에서 던 버튼을 누르면 두 번째 텍스트 필드로 포커스를 이동
         if textView == mainTextField && text == "\n" {
             subTextField.becomeFirstResponder()
             return false
         }
         
-        // 두 번째 텍스트 필드에서는 리턴 키가 줄바꿈이 되도록 허용
         if textView == subTextField && text == "\n" {
             return true
         }
@@ -1386,5 +1387,4 @@ extension DetailInputViewController: UITextViewDelegate {
         return true
     }
 }
-
 

@@ -21,7 +21,7 @@ class CalendarHostingController: UIViewController {
     private lazy var hostingController: UIHostingController<CalendarView> = {
         let calendarView = CalendarView(onDatesSelected: { [weak self] startDate, endDate in
             self?.delegate?.didSelectDates(startDate: startDate, endDate: endDate)
-            self?.dismiss(animated: true, completion: nil)
+            //self?.dismiss(animated: true, completion: nil)
         })
         let controller = UIHostingController(rootView: calendarView)
         addChild(controller)

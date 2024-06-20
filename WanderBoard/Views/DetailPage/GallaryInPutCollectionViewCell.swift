@@ -41,6 +41,7 @@ class GallaryInPutCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        self.isUserInteractionEnabled = true
     }
     
     required init?(coder: NSCoder) {

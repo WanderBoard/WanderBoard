@@ -691,7 +691,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         signUpButton.isEnabled = isFormValid
         let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
         signUpButton.backgroundColor = isFormValid ? .font : babyGTocustomB
-        signUpButton.setTitleColor(isFormValid ? UIColor(named: "texrColor") : .darkgray, for: .normal )
+        signUpButton.setTitleColor(isFormValid ? UIColor(named: "textColor") : .darkgray, for: .normal )
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -716,7 +716,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         if let selectedImage = selectedImage {
             imageData = selectedImage.jpegData(compressionQuality: 0.75)!
         } else {
-            let defaultImage = UIImage(systemName: "person.circle")!
+            let defaultImage = UIImage(named: "profileImage")!
             imageData = defaultImage.jpegData(compressionQuality: 0.75)!
         }
         

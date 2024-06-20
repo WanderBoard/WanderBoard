@@ -450,7 +450,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         IDIcon.tintColor = iconColor
         setIcon()
         
-        let connectButtonColor = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
+        _ = traitCollection.userInterfaceStyle == .dark ? CGColor(gray: 100, alpha: 1) : CGColor(gray: 0, alpha: 1)
         
         let withdrawalColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
         withdrawalB.setTitleColor(withdrawalColor, for: .normal)

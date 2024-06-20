@@ -200,11 +200,8 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     }
     
     @objc func addButtonTapped() {
-        NotificationHelper.changePage(hidden: true, isEnabled: false)
-        plusButton.isHidden = true
         let inputVC = DetailInputViewController()
         inputVC.delegate = self
-        //navigationController?.pushViewController(inputVC, animated: false)
         let navController = UINavigationController(rootViewController: inputVC)
         navController.modalPresentationStyle = .fullScreen
         present(navController, animated: true)

@@ -234,12 +234,10 @@ extension ExploreViewController: HotTableViewCellDelegate {
     }
     
     func hotTableViewCell(_ cell: HotTableViewCell, didSelectItemAt indexPath: IndexPath) {
-        NotificationHelper.changePage(hidden: true, isEnabled: false)
         let detailVC = DetailViewController()
         let hotPinLog = cell.hotPinLogs[indexPath.item]
         detailVC.pinLog = hotPinLog
         detailVC.delegate = self
-        //navigationController?.pushViewController(detailVC, animated: false)
         let navController = UINavigationController(rootViewController: detailVC)
         navController.modalPresentationStyle = .fullScreen
         present(navController, animated: true)
@@ -248,12 +246,10 @@ extension ExploreViewController: HotTableViewCellDelegate {
 
 extension ExploreViewController: RecentTableViewCellDelegate {
     func recentTableViewCell(_ cell: RecentTableViewCell, didSelectItemAt indexPath: IndexPath) {
-        NotificationHelper.changePage(hidden: true, isEnabled: false)
         let detailVC = DetailViewController()
         let selectedPinLog = cell.recentLogs[indexPath.item]
         detailVC.pinLog = selectedPinLog
         detailVC.delegate = self
-        //navigationController?.pushViewController(detailVC, animated: false)
         let navController = UINavigationController(rootViewController: detailVC)
         navController.modalPresentationStyle = .fullScreen
         present(navController, animated: true)

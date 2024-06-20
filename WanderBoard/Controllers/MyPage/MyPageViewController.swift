@@ -296,7 +296,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 }
             }
         } else {
-            profile.image = UIImage(named: "defaultProfileImage")
+            profile.image = UIImage(named: "profileImage")
         }
     }
     
@@ -337,7 +337,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     //에딧창에서 추가해준 이름과 사진 불러오기
     func updateUserData(name: String, image: UIImage?) {
         myName.text = name
-        profile.image = image ?? UIImage(named: "defaultProfileImage")
+        profile.image = image ?? UIImage(named: "profileImage")
     }
 }
 

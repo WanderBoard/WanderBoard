@@ -24,11 +24,11 @@ class TutorialViewController: UIPageViewController {
     }
     
     private func setupPages() {
-        let page1 = ContentsPageViewController(title: "기록하고 싶은 인상깊은 순간이 있나요?", subTitle: "당신의 추억도, 통장도 소중하니깐.", detailTitle: "여행한 장소와 사진, 느낀 점을 알려주세요. \n  WonderBoard에선 여행 경비도 기록할 수 있어 \n  여행에 사용한 금액 역시 확인 가능합니다.", imageName: "tutorial1", showXButton: true)
+        let page1 = ContentsPageViewController(title: "기록하고 싶은 인상깊은 순간이 있나요?", subTitle: "당신의 추억도, 통장도 소중하니깐", detailTitle: "일지, 사진, 경비, 친구 \n 이 모든 것을 한번에 기록하고 공유!", imageName: "tutorial1", showXButton: true)
         
-        let page2 = ContentsPageViewController(title: "사람들의 공유된 순간을 만나보세요!", subTitle: "어디든 갈 수 있어요. ", detailTitle: "지도나 사진을 눌러 다른 사람들의 이야기를 확인해보세요. \n  WonderBoard에서는 세상의 모든 기록을 확인할 수 있습니다.", imageName: "tutorial2", showXButton: true)
+        let page2 = ContentsPageViewController(title: "사람들의 공유된 순간을 만나보세요!", subTitle: "멋진 곳, 당신도 갈 수 있어요", detailTitle: "다른 사람의 핀에서 사진 클릭! \n 사진 촬영 장소가 지도에 짠!", imageName: "tutorial2", showXButton: true)
         
-        let page3 = ContentsPageViewController(title: "지출 내역을 분류하고 관리해요 ", subTitle: "여행 중 소비내역을 한눈에 파악할 수 있어요.", detailTitle: "지출 내역을 입력하면 날짜별로 지출 내역이 기록됩니다. \n 소중한 당신의 통장을 위해 기록해보세요.", imageName: "tutorial3", showXButton: false, showWanderButton: true)
+        let page3 = ContentsPageViewController(title: "지출 내역을 분류하고 관리해요", subTitle: "여행 중 지출 내역을 한눈에 파악할 수 있어요", detailTitle: "지출 내역 입력 & 날짜별 정리 \n 총 지출 금액 파악 가능", imageName: "tutorial3", showXButton: false, showWanderButton: true)
         
         pages.append(page1)
         pages.append(page2)
@@ -42,8 +42,8 @@ class TutorialViewController: UIPageViewController {
         
         pageControl.numberOfPages = pages.count
         pageControl.currentPage = initialPage
-        pageControl.currentPageIndicatorTintColor = .black
-        pageControl.pageIndicatorTintColor = .gray
+        pageControl.currentPageIndicatorTintColor = .font
+        pageControl.pageIndicatorTintColor = .lightgray
         pageControl.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(pageControl)
     }
@@ -53,6 +53,19 @@ class TutorialViewController: UIPageViewController {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
             $0.centerX.equalTo(view.snp.centerX)
         }
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor(){
+        //라이트그레이-라이트블랙
+        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        pageControl.pageIndicatorTintColor = lightGTolightB
     }
 }
 

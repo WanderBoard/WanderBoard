@@ -185,13 +185,13 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         IDIcon.snp.makeConstraints(){
             $0.left.equalTo(IDArea)
             $0.centerY.equalTo(IDArea)
-            $0.width.height.equalTo(22)
+            $0.width.height.equalTo(18)
         }
         
         IDArea.snp.makeConstraints(){
             $0.top.equalTo(profile.snp.bottom).offset(24)
             $0.centerX.equalTo(view)
-            $0.width.lessThanOrEqualTo(view).inset(30)
+            $0.width.lessThanOrEqualTo(view).inset(32)
         }
         
         myID.snp.makeConstraints(){

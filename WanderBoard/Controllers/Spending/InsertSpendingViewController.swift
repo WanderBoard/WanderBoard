@@ -142,6 +142,16 @@ class InsertSpendingViewController: UIViewController {
         var expenseAmountTextField = UITextField()
         expenseAmountTextField.attributedPlaceholder = NSAttributedString(string: "지출 금액을 입력하세요", attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
         expenseAmountTextField.textColor = .font
+        expenseAmountTextField.keyboardType = .numberPad
+        
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        
+        let amountDoneButton = UIBarButtonItem(title: "Done", style: .done, target: InsertSpendingViewController.self, action: #selector(amountDoneButtonTapped))
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        toolbar.items = [flexSpace, amountDoneButton]
+        
+        expenseAmountTextField.inputAccessoryView = toolbar
         
         return expenseAmountTextField
     }()
@@ -425,6 +435,12 @@ class InsertSpendingViewController: UIViewController {
         updateDoneButtonState()
         hideCategoryPicker()
     }
+    
+// MARK: 금액 입력 키보드 Done 누르고 닫기
+    @objc func amountDoneButtonTapped() {
+        expenseAmountTextField.resignFirstResponder()
+    }
+    
     
     //MARK: 필수입력값 입력 완료시 저장Done버튼 활성화
     func updateDoneButtonState() {

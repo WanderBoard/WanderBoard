@@ -209,9 +209,11 @@ class MyPageViewController: BaseViewController, PageIndexed {
         let barButtonItem = UIBarButtonItem(customView: editButton)
         self.navigationItem.rightBarButtonItem = barButtonItem
         
+        profile.image = UIImage(named: "profileImage")
         profile.layer.cornerRadius = 53
         profile.clipsToBounds = true
-        profile.backgroundColor = .lightgray
+        profile.contentMode = .scaleAspectFill
+
         
         myName.font = UIFont.boldSystemFont(ofSize: 20)
         myName.textColor = .font

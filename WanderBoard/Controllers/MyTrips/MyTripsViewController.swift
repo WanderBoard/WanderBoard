@@ -402,15 +402,16 @@ extension MyTripsViewController: UICollectionViewDataSource, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        NotificationHelper.changePage(hidden: true, isEnabled: false)
-        plusButton.isHidden = true
         let detailVC = DetailViewController()
         
         let filteredTripLogs = filterTripLogs()
         let selectedTripLog = filteredTripLogs[indexPath.item]
         
         detailVC.pinLog = selectedTripLog
-        navigationController?.pushViewController(detailVC, animated: false)
+        
+        let navController = UINavigationController(rootViewController: detailVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true)
     }
 }
 

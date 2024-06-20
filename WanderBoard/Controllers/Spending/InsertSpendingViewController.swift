@@ -256,6 +256,7 @@ class InsertSpendingViewController: UIViewController {
         updateColor()
         setupDatePicker()
         setupCategoryPicker()
+        setupKeyboard()
         
         if let expense = expenseToEdit {
             datePicker.date = expense.date
@@ -315,6 +316,47 @@ class InsertSpendingViewController: UIViewController {
         
         dateTextField.inputAccessoryView = toolBar
         dateTextField.inputView = datePicker
+    }
+    
+    func setupKeyboard() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+        
+        contentTextField.delegate = self
+        expenseAmountTextField.delegate = self
+        memoTextField.delegate = self
+    }
+    
+    @objc func keyboardWillShow(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+              let activeField = view.currentFirstResponder() as? UITextField else { return }
+        
+        let keyboardHeight = keyboardFrame.height
+        let contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+        
+        scrollView.contentInset = contentInset
+        scrollView.scrollIndicatorInsets = contentInset
+        
+        var visibleRect = view.frame
+        visibleRect.size.height -= keyboardHeight
+        
+        let activeFieldFrame = activeField.convert(activeField.bounds, to: view)
+        if !visibleRect.contains(activeFieldFrame.origin) {
+            scrollView.scrollRectToVisible(activeFieldFrame, animated: true)
+        }
+    }
+    
+    @objc func keyboardWillHide(_ notification: Notification) {
+        scrollView.contentInset = .zero
+        scrollView.scrollIndicatorInsets = .zero
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     // MARK: DateButton 클릭시 동작
@@ -505,87 +547,103 @@ class InsertSpendingViewController: UIViewController {
         scrollView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide)
         }
+        
         scrollContentView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
         }
+        
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(scrollContentView).offset(44)
             $0.leading.trailing.equalTo(scrollContentView)
             $0.height.equalTo(22)
         }
+        
         dateButton.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(44)
-            $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
+            $0.leading.trailing.equalTo(scrollContentView).inset(50)
             $0.height.equalTo(74)
         }
+        
         dateText.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(10.5)
+            $0.top.equalToSuperview().offset(10)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
         }
+        
         insertedDateLabel.snp.makeConstraints {
             $0.top.equalTo(dateText.snp.bottom).offset(5)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
         }
+        
         calendarImage.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(28.67)
+            $0.centerY.equalToSuperview()
             $0.trailing.equalToSuperview().inset(21)
             $0.height.width.equalTo(20)
         }
-        contentView.snp.makeConstraints {
-            $0.top.equalTo(dateButton.snp.bottom).offset(22)
-            $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
-            $0.height.equalTo(74)
-        }
-        contentText.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(10.5)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(24)
-        }
-        contentTextField.snp.makeConstraints {
-            $0.top.equalTo(contentText.snp.bottom).offset(5)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(24)
-        }
-        expenseAmountView.snp.makeConstraints {
-            $0.top.equalTo(contentView.snp.bottom).offset(22)
-            $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
-            $0.height.equalTo(74)
-        }
-        expenseAmountText.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(10.5)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(24)
-        }
-        expenseAmountTextField.snp.makeConstraints {
-            $0.top.equalTo(expenseAmountText.snp.bottom).offset(5)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(24)
-        }
+        
         categoryButton.snp.makeConstraints {
-            $0.top.equalTo(expenseAmountView.snp.bottom).offset(22)
-            $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
+            $0.top.equalTo(dateButton.snp.bottom).offset(22)
+            $0.leading.trailing.equalTo(scrollContentView).inset(50)
             $0.height.equalTo(74)
         }
+        
         categoryText.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(10.5)
+            $0.top.equalToSuperview().offset(10)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
         }
+        
         insertedCategoryLabel.snp.makeConstraints {
             $0.top.equalTo(categoryText.snp.bottom).offset(5)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
         }
-        memoView.snp.makeConstraints {
+        
+        contentView.snp.makeConstraints {
             $0.top.equalTo(categoryButton.snp.bottom).offset(22)
-            $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
+            $0.leading.trailing.equalTo(scrollContentView).inset(50)
+            $0.height.equalTo(74)
+        }
+        
+        contentText.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(11)
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(24)
+        }
+        
+        contentTextField.snp.makeConstraints {
+            $0.top.equalTo(contentText.snp.bottom).offset(5)
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(24)
+        }
+        
+        expenseAmountView.snp.makeConstraints {
+            $0.top.equalTo(contentView.snp.bottom).offset(22)
+            $0.leading.trailing.equalTo(scrollContentView).inset(50)
+            $0.height.equalTo(74)
+        }
+        
+        expenseAmountText.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(10)
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(24)
+        }
+        
+        expenseAmountTextField.snp.makeConstraints {
+            $0.top.equalTo(expenseAmountText.snp.bottom).offset(5)
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(24)
+        }
+        
+        memoView.snp.makeConstraints {
+            $0.top.equalTo(expenseAmountView.snp.bottom).offset(22)
+            $0.leading.trailing.equalTo(scrollContentView).inset(50)
             $0.height.equalTo(74)
         }
         memoText.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(10.5)
+            $0.top.equalToSuperview().offset(10)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(24)
         }
@@ -595,8 +653,8 @@ class InsertSpendingViewController: UIViewController {
             $0.height.equalTo(24)
         }
         saveDoneButton.snp.makeConstraints {
-            $0.top.equalTo(memoView.snp.bottom).offset(59)
-            $0.leading.trailing.equalTo(scrollContentView).inset(49.5)
+            $0.top.equalTo(memoView.snp.bottom).offset(60)
+            $0.leading.trailing.equalTo(scrollContentView).inset(50)
             $0.height.equalTo(50)
             $0.bottom.equalTo(scrollContentView).offset(-20)
         }
@@ -628,8 +686,42 @@ extension Notification.Name {
 extension InsertSpendingViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
         updateDoneButtonState()
+        scrollView.setContentOffset(.zero, animated: true)
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        guard let activeField = view.currentFirstResponder() as? UITextField else { return }
+        let keyboardHeight = view.frame.height / 3
+        let contentOffset = CGPoint(x: 0, y: activeField.frame.origin.y - keyboardHeight)
+        scrollView.setContentOffset(contentOffset, animated: true)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        switch textField {
+        case contentTextField:
+            expenseAmountTextField.becomeFirstResponder()
+        case expenseAmountTextField:
+            memoTextField.becomeFirstResponder()
+        case memoTextField:
+            memoTextField.resignFirstResponder()
+        default:
+            textField.resignFirstResponder()
+        }
+        return true
     }
 }
 
-
+extension UIView {
+    func currentFirstResponder() -> UIResponder? {
+        if self.isFirstResponder {
+            return self
+        }
+        for subview in self.subviews {
+            if let responder = subview.currentFirstResponder() {
+                return responder
+            }
+        }
+        return nil
+    }
+}
 

@@ -14,7 +14,7 @@ class ContentsPageViewController: UIViewController {
         
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.spacing = 20
+        stackView.spacing = 10
         stackView.alignment = .center
         
         return stackView
@@ -54,6 +54,9 @@ class ContentsPageViewController: UIViewController {
     }()
     
     private var imageView = UIImageView()
+    private let backImage = UIImageView().then(){
+        $0.image = UIImage(named: "BImage")
+    }
     private var showXButton: Bool
     private var showWanderButton: Bool
     
@@ -92,23 +95,23 @@ class ContentsPageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
         configureUI()
         makeConstraints()
-//        setGradient()
+        setGradient()
     }
     
     
     private func configureUI() {
         
         imageView.contentMode = .scaleAspectFill
-        
+        view.addSubview(backImage)
         view.addSubview(stackView)
         stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(subTitleLabel)
         stackView.addArrangedSubview(detailTitleLabel)
-        stackView.addArrangedSubview(imageView)
+        view.addSubview(imageView)
         
         if showXButton {
             view.addSubview(xButton)
@@ -142,8 +145,9 @@ class ContentsPageViewController: UIViewController {
         
         stackView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(100)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(80)
             $0.width.equalToSuperview().inset(20)
+
         }
         
         if showXButton {
@@ -166,10 +170,11 @@ class ContentsPageViewController: UIViewController {
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(stackView.snp.top)
             $0.centerX.equalToSuperview()
+            
         }
         
         subTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(12)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(stackView.snp.width)
         }
@@ -178,28 +183,33 @@ class ContentsPageViewController: UIViewController {
             $0.top.equalTo(subTitleLabel.snp.bottom).offset(7)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(stackView.snp.width)
+            $0.height.equalTo(40)
         }
         
         imageView.snp.makeConstraints {
-            $0.top.equalTo(detailTitleLabel.snp.bottom).offset(30)
+            $0.top.equalTo(stackView.snp.bottom).offset(30)
             $0.centerX.equalToSuperview()
-            $0.width.height.equalTo(view).multipliedBy(0.6)
-//            $0.bottom.equalTo(view)
+            $0.width.height.equalTo(view).multipliedBy(0.78)
+        }
+        backImage.snp.makeConstraints(){
+            $0.height.equalTo(view).multipliedBy(0.7)
+            $0.horizontalEdges.equalTo(view)
+            $0.bottom.equalTo(view)
         }
     }
     
-//    private func setGradient() {
-//        let maskedView = UIView(frame: CGRect(x: 0, y: 722, width: 393, height: 130))
-//        let gradientLayer = CAGradientLayer()
-//        
-//        maskedView.backgroundColor = view.backgroundColor
-//        gradientLayer.frame = maskedView.bounds
-//        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.98), UIColor.white.cgColor, UIColor.white.cgColor]
-//        gradientLayer.locations = [0, 0.05, 0.8, 1]
-//        maskedView.layer.mask = gradientLayer
-//        view.addSubview(maskedView)
-//        maskedView.isUserInteractionEnabled = false
-//    }
+    func setGradient() {
+        let maskedView = UIView(frame: CGRect(x: 0, y: ( view.frame.height - 150), width: view.frame.height, height: 150))
+        let gradientLayer = CAGradientLayer()
+        
+        maskedView.backgroundColor = view.backgroundColor
+        gradientLayer.frame = maskedView.bounds
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.7), UIColor.white.cgColor, UIColor.white.cgColor]
+        gradientLayer.locations = [0, 0.5, 0.9, 1]
+        maskedView.layer.mask = gradientLayer
+        view.addSubview(maskedView)
+        maskedView.isUserInteractionEnabled = false
+    }
     
     @objc private func xButtonTapped() {
         let alert = UIAlertController(title: nil, message: "정말 튜토리얼을 종료하시겠습니까?", preferredStyle: .alert)

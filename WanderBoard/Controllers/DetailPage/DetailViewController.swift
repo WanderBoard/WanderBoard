@@ -19,6 +19,7 @@ import Contacts
 import CoreLocation
 import ImageIO
 
+
 class DetailViewController: UIViewController {
     
     weak var delegate: DetailViewControllerDelegate?
@@ -307,7 +308,6 @@ class DetailViewController: UIViewController {
         updateColor()
         
         //한빛
-        newSetupConstraints()
         checkId()
         
         view.backgroundColor = .systemBackground
@@ -355,8 +355,6 @@ class DetailViewController: UIViewController {
     
     // 핀 버튼
     lazy var pinButton = UIButton(type: .system).then {
-//        let imageConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular) // 이미지 크기 조정
-//        let image = UIImage(systemName: "pin.circle", withConfiguration: imageConfig)
         $0.setImage(UIImage(systemName: "pin.circle"), for: .normal)
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
@@ -377,19 +375,6 @@ class DetailViewController: UIViewController {
             pinButton.heightAnchor.constraint(equalToConstant: 30) // 원하는 높이로 설정
         ])
     }
-    
-//    private func newSetupConstraints() {
-//        //let closeButton = ButtonFactory.createXButton(target: self, action: #selector(dismissDetailView))
-//        
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
-//        navigationController?.navigationBar.tintColor = UIColor.white
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pinButton)
-//        
-//        NSLayoutConstraint.activate([
-//            pinButton.widthAnchor.constraint(equalToConstant: 30), // 원하는 너비로 설정
-//            pinButton.heightAnchor.constraint(equalToConstant: 30) // 원하는 높이로 설정
-//        ])
-//    }
     
     @objc func dismissDetailView(_ sender:UIButton) {
         dismiss(animated: true)

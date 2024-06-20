@@ -26,7 +26,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         let imageView = UIImageView()
         
         let configuration = UIImage.SymbolConfiguration(pointSize: 30, weight: .thin)
-        let image = UIImage(systemName: "person.fill", withConfiguration: configuration)
+        let image = UIImage(systemName: "profileImage", withConfiguration: configuration)
         
         imageView.image = image
         imageView.contentMode = .scaleAspectFill

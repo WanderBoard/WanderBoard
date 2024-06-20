@@ -64,7 +64,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.bounces = false
         $0.backgroundColor = UIColor(named: "textColor")
         $0.clipsToBounds = true
-        $0.layer.cornerRadius = 40
+        $0.layer.cornerRadius = 16
     }
     
     let contentView = UIView().then {

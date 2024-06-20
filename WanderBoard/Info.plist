@@ -36,6 +36,8 @@
 	</array>
 	<key>MKDirectionsApplicationSupportedModes</key>
 	<array/>
+    <key>MinimumOSVersion</key>
+    <string>16.0</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

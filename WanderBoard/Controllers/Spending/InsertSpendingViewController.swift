@@ -409,12 +409,12 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
     func setupCategoryPicker() {
         toolbar = UIToolbar()
         toolbar?.sizeToFit()
-
+        
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(donePickingCategory))
         doneButton.tintColor = .black
         toolbar?.setItems([flexibleSpace, doneButton], animated: true)
-
+        
         categoryPicker.delegate = self
         categoryPicker.dataSource = self
         
@@ -422,24 +422,26 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
         categoryTextField.inputAccessoryView = toolbar
         
         categoryButton.addTarget(self, action: #selector(showCategoryPicker), for: .touchUpInside)
-
+        
         pickerContainer.addSubview(toolbar!)
         pickerContainer.addSubview(categoryPicker)
-
+        
         toolbar!.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
             $0.height.equalTo(44)
         }
-
+        
         categoryPicker.snp.makeConstraints {
             $0.top.equalTo(toolbar!.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
+        }
+        pickerContainer.translatesAutoresizingMaskIntoConstraints = false
+        pickerContainer.snp.makeConstraints {
             $0.height.equalTo(360)
         }
-
-        pickerContainer.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: 360)
-
+        
         view.addSubview(pickerContainer)
+        pickerContainer.isHidden = true
     }
     
     // MARK: CategoryButton 클릭시 CategoryPicker 보여줌

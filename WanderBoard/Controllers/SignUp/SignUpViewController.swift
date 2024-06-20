@@ -15,13 +15,6 @@ import FirebaseStorage
 class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UITextFieldDelegate {
     
     var uid: String?
-//    private let subtitleLabel: UILabel = {
-//        let label = UILabel()
-//        label.text = "프로필 설정"
-//        label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-//        label.textAlignment = .center
-//        return label
-//    }()
     
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
@@ -34,14 +27,14 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         imageView.clipsToBounds = true
         return imageView
     }()
-    
+    private let emailArea = UIView()
     private let emailIcon = UIImageView()
-    
     private let emailLabel: UILabel = {
         let label = UILabel()
         label.text = "이메일"
         label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         label.textAlignment = .center
+        label.numberOfLines = 1
         return label
     }()
     
@@ -107,7 +100,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             }
             
             let button = UIButton(configuration: configuration, primaryAction: nil)
-            button.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .regular)
             button.isSelected = title == "선택안함"
             button.configurationUpdateHandler = { button in
                 var updatedConfiguration = button.configuration
@@ -315,10 +308,10 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
         signUpButton.backgroundColor = babyGTocustomB
         
-        //view.addSubview(subtitleLabel)
         view.addSubview(profileImageView)
-        view.addSubview(emailIcon)
-        view.addSubview(emailLabel)
+        view.addSubview(emailArea)
+        emailArea.addSubview(emailIcon)
+        emailArea.addSubview(emailLabel)
         view.addSubview(nickNameLabel)
         view.addSubview(nicknameTextField)
         view.addSubview(nicknameHintLabel)
@@ -333,32 +326,32 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         view.addSubview(privacyPolicyButton)
         view.addSubview(signUpButton)
         
-//        subtitleLabel.snp.makeConstraints { make in
-//            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
-//            make.centerX.equalToSuperview()
-//        }
-        
         profileImageView.snp.makeConstraints { make in
-
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             make.centerX.equalToSuperview()
             make.width.equalTo(106)
             make.height.equalTo(106)
         }
+        emailArea.snp.makeConstraints(){
+            $0.top.equalTo(profileImageView.snp.bottom).offset(30)
+            $0.centerX.equalTo(view)
+            $0.width.lessThanOrEqualTo(view).inset(32)
+        }
         
         emailIcon.snp.makeConstraints { make in
-            make.top.equalTo(profileImageView.snp.bottom).offset(16)
-            make.centerX.equalTo(view.snp.centerX).offset(-70)
+            make.left.equalTo(emailArea)
+            make.centerY.equalTo(emailArea)
             make.width.height.equalTo(18)
         }
         
         emailLabel.snp.makeConstraints { make in
-            make.left.equalTo(emailIcon.snp.right).offset(15)
-            make.centerY.equalTo(emailIcon.snp.centerY)
+            make.left.equalTo(emailIcon.snp.right).offset(10)
+            make.centerY.equalTo(emailArea)
+            make.right.equalTo(emailArea)
         }
         
         nickNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(emailIcon.snp.bottom).offset(16)
+            make.top.equalTo(emailArea.snp.bottom).offset(20)
             make.left.equalToSuperview().inset(34)
         }
         
@@ -490,12 +483,10 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
                 emailIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
             case "kakao.com":
                 emailIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-                emailIcon.tintColor = UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
             let iconColor = traitCollection.userInterfaceStyle == .dark ? UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1) : UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
             emailIcon.tintColor = iconColor
             default:
             emailIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-            emailIcon.tintColor = UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
             let iconColor = traitCollection.userInterfaceStyle == .dark ? UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1) : UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
             emailIcon.tintColor = iconColor
         }

@@ -270,7 +270,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     func setupNavigationBar() {
         self.navigationController?.setNavigationBarHidden(false, animated: false)
-        self.navigationController?.navigationBar.prefersLargeTitles = false
         self.navigationController?.navigationBar.tintColor = .black
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         

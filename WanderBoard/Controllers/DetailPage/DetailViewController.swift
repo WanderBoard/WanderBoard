@@ -371,8 +371,6 @@ class DetailViewController: UIViewController {
     }
     
     private func newSetupConstraints() {
-//        let closeButton = ButtonFactory.createXButton(target: self, action: #selector(dismissDetailView))
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: closeButton)
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pinButton)
         
@@ -810,8 +808,6 @@ class DetailViewController: UIViewController {
         let galleryDetailVC = GalleryDetailViewController()
         galleryDetailVC.selectedImages = selectedImages.map { $0.0 }
         navigationController?.pushViewController(galleryDetailVC, animated: true)
-//        galleryDetailVC.modalPresentationStyle = .fullScreen
-//        present(galleryDetailVC, animated: true, completion: nil)
     }
     
     @objc func showMapViewController() {

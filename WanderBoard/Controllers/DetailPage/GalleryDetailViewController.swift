@@ -24,12 +24,6 @@ class GalleryDetailViewController: UIViewController {
         $0.pageIndicatorTintColor = .lightGray
     }
     
-    //    let closeButton = UIButton().then {
-    //        $0.setImage(UIImage(systemName: "xmark"), for: .normal)
-    //        $0.tintColor = .font
-    //        $0.setTitleColor(.black, for: .normal)
-    //    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -37,8 +31,6 @@ class GalleryDetailViewController: UIViewController {
         setupScrollView()
         updateColor()
         setupNavigationBar()
-        
-        //closeButton.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
     }
     
     private func setupNavigationBar() {
@@ -67,7 +59,6 @@ class GalleryDetailViewController: UIViewController {
         view.backgroundColor = .white
         view.addSubview(scrollView)
         view.addSubview(pageControl)
-        //        view.addSubview(closeButton)
     }
     
     func setupConstraints() {
@@ -82,12 +73,6 @@ class GalleryDetailViewController: UIViewController {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
             $0.centerX.equalToSuperview()
         }
-        
-        //        closeButton.snp.makeConstraints {
-        //            $0.top.equalTo(view.safeAreaLayoutGuide).inset(20)
-        //            $0.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
-        //            $0.width.height.equalTo(30)
-        //        }
     }
     
     func setupScrollView() {

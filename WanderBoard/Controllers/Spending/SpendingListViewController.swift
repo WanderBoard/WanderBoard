@@ -18,16 +18,6 @@ class SpendingListViewController: UIViewController {
     // MARK: Components
     var dailyExpenses: [DailyExpenses] = []
     
-//    lazy var backButton: UIBarButtonItem = {
-//        let button = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(handleBackButtonTapped))
-//        return button
-//    }()
-//    
-//    lazy var penButton: UIBarButtonItem = {
-//        let button = UIBarButtonItem(image: UIImage(systemName: "pencil"), style: .plain, target: self, action: #selector(handlePenButtonTapped))
-//        return button
-//    }()
-    
     lazy var spendingCardbutton: UIButton = {
         let spendingCardbutton = UIButton()
         spendingCardbutton.backgroundColor = .font
@@ -110,8 +100,6 @@ class SpendingListViewController: UIViewController {
         tableView.reloadData()
         
         // 네비게이션 바 아이템 설정
-//        navigationItem.leftBarButtonItem = backButton
-//        navigationItem.rightBarButtonItem = penButton
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(handlePenButtonTapped))
     }
     
@@ -122,13 +110,10 @@ class SpendingListViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .font
     }
     
-//    override func viewWillDisappear(_ animated: Bool) {
-//        super.viewWillDisappear(animated)
-//        if let navigationController = navigationController,
-//           navigationController.viewControllers.contains(where: { $0 is DetailViewController }) {
-//            navigationItem.rightBarButtonItem = penButton
-//        }
-//    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        handleBackButtonTapped()
+    }
     
     func loadExpensesFromFirestore() {
         let db = Firestore.firestore()
@@ -410,7 +395,6 @@ extension SpendingListViewController: UITableViewDelegate {
 
 extension SpendingListViewController: SpendingEmptyViewDelegate {
     func didTapAddButton() {
-        //penButton.isEnabled = true
         let inputVC = InsertSpendingViewController()
         inputVC.delegate = self
         inputVC.modalPresentationStyle = .automatic

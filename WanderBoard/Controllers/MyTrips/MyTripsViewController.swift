@@ -25,12 +25,12 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     static var taggedTripLogs: [PinLog] = [] // 태그 된 아이디들 불러오는
     
     lazy var plusButton = UIButton(type: .system).then {
-        let imageConfig = UIImage.SymbolConfiguration(weight: .medium)
+        let imageConfig = UIImage.SymbolConfiguration(weight: .regular)
         let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
         $0.setImage(image, for: .normal)
         $0.tintColor = UIColor(named: "textColor")
         $0.backgroundColor = .font
-        $0.layer.cornerRadius = 22
+        $0.layer.cornerRadius = 18
         $0.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
     
@@ -110,6 +110,23 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         }
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        // 플러스 버튼의 터치 영역을 확장
+        let hitAreaSize = CGSize(width: 44, height: 44)
+        let buttonSize = plusButton.bounds.size
+        let hitAreaInsets = UIEdgeInsets(
+            top: -(hitAreaSize.height - buttonSize.height) / 2,
+            left: -(hitAreaSize.width - buttonSize.width) / 2,
+            bottom: -(hitAreaSize.height - buttonSize.height) / 2,
+            right: -(hitAreaSize.width - buttonSize.width) / 2
+        )
+        plusButton.frame = plusButton.frame.inset(by: hitAreaInsets)
+        
+        print(plusButton.frame.size)
+    }
+    
     private func setupNV() {
         navigationItem.title = pageText
         
@@ -119,7 +136,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             plusButton.snp.makeConstraints {
                 $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-16)
                 $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
-                $0.size.equalTo(CGSize(width: 44, height: 44))
+                $0.size.equalTo(CGSize(width: 36, height: 36))
             }
         }
     }

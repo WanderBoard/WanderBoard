@@ -97,8 +97,9 @@ extension RecentTableViewCell: UICollectionViewDataSource, UICollectionViewDeleg
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentCollectionViewCell.identifier, for: indexPath) as! RecentCollectionViewCell
+        let log = recentLogs[indexPath.item]
         Task {
-            await cell.configure(with: recentLogs[indexPath.item])
+            await cell.configure(with: log)
         }
         return cell
     }

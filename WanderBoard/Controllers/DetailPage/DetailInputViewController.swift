@@ -29,8 +29,6 @@ protocol DetailInputViewControllerDelegate: AnyObject {
 class DetailInputViewController: UIViewController, CalendarHostingControllerDelegate {
     
     var progressViewController: ProgressViewController?
-
-    private let locationManager = LocationManager()
     var savedLocation: CLLocationCoordinate2D?
     var savedPinLogId: String?
     var savedAddress: String?
@@ -64,7 +62,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.bounces = false
         $0.backgroundColor = UIColor(named: "textColor")
         $0.clipsToBounds = true
-        $0.layer.cornerRadius = 40
+        $0.layer.cornerRadius = 20
     }
     
     let contentView = UIView().then {
@@ -417,8 +415,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        navigationController?.navigationBar.tintColor = UIColor (named: "textColor")
         navigationItem.largeTitleDisplayMode = .never
         
     }
@@ -480,7 +476,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         topContainarView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.height.equalTo(140)
+            $0.height.equalTo(150)
         }
         
         scrollView.snp.makeConstraints {
@@ -520,7 +516,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         topLine.snp.makeConstraints {
-            $0.top.equalTo(publicView.snp.bottom).offset(20)
+            $0.top.equalTo(publicView.snp.bottom).offset(5)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(1)
         }
@@ -700,43 +696,27 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let mateVC = MateViewController()
         mateVC.delegate = self
         navigationController?.pushViewController(mateVC, animated: true)
+        
     }
     
-    @objc func locationButtonTapped() {
-        Task {
-            let center: CLLocationCoordinate2D
-            if let savedLocation = savedLocation {
-                center = savedLocation
-            } else {
-                // 기본 위치 설정 (광화문)
-                center = CLLocationCoordinate2D(latitude: 37.5760222, longitude: 126.9769000)
-            }
-            
-            let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
-            
-            let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date(), onLocationSelected: { [weak self] (selectedLocation: CLLocationCoordinate2D, address: String) in
-                guard let self = self else { return }
-                self.updateLocationLabel(with: address)
-                self.savedLocation = selectedLocation
-                self.savedAddress = address
-                
-            })
-            
-            // 저장된 위치가 있으면 해당 위치에 핀을 생성
-            if let savedLocation = savedLocation, let savedAddress = savedAddress {
-                mapVC.addPinToMap(location: savedLocation, address: savedAddress)
-            }
-            
-            self.navigationController?.pushViewController(mapVC, animated: true)
-        }
+    @objc private func locationButtonTapped() {
+        presentMapViewController()
     }
     
+    private func presentMapViewController() {
+        let mapVC = MapViewController(region: MKCoordinateRegion(), startDate: Date(), endDate: Date(), onLocationSelected: { [weak self] (selectedLocation: CLLocationCoordinate2D, address: String) in
+            guard let self = self else { return }
+            self.updateLocationLabel(with: address)
+            self.savedLocation = selectedLocation
+            self.savedAddress = address
+        })
+        navigationController?.pushViewController(mapVC, animated: true)
+    }
     
     @objc func consumButtonTapped() {
         let spendVC = SpendingListViewController()
         
         spendVC.pinLog = pinLog
-//        spendVC.shouldShowEditButton = true
         navigationController?.pushViewController(spendVC, animated: true)
     }
     
@@ -751,13 +731,13 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         present(calendarVC, animated: true, completion: nil)
     }
     
-    
-    
     func setupNavigationBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
+
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = doneButton
-        navigationController?.navigationBar.tintColor = .white
+        navigationController?.navigationBar.tintColor = UIColor(named: "textColor")
+    
     }
     
     @objc func dismissDetailView(_ sender:UIButton) {
@@ -917,36 +897,27 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     @objc func doneButtonTapped() {
-        
-        navigationItem.rightBarButtonItem?.isEnabled = false
-        
         guard let locationTitle = locationLeftLabel.text, locationTitle != "지역을 선택하세요" else {
-            let alert = UIAlertController(title: "지역 선택", message: "지역을 선택해주세요.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true, completion: nil)
-            return
-        }
-        
-        guard let mainTitle = mainTextField.text, !mainTitle.isEmpty, mainTextField.textColor != .lightgray else {
-            let alert = UIAlertController(title: "제목 입력", message: "여행 제목을 입력해주세요.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true, completion: nil)
-            return
-        }
-        
-        guard !selectedImages.isEmpty else {
-            let alert = UIAlertController(title: "앨범 추가", message: "최소한 하나의 이미지를 선택해주세요.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true, completion: nil)
+            showAlert(title: "지역 선택", message: "지역을 선택해주세요.")
             return
         }
         
         guard let dateRange = dateLabel.text, dateRange != "날짜를 선택하세요" else {
-            let alert = UIAlertController(title: "날짜 선택", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true, completion: nil)
+            showAlert(title: "날짜 선택", message: "유효한 날짜를 선택해주세요.")
             return
         }
+        
+        guard let mainTitle = mainTextField.text, !mainTitle.isEmpty, mainTextField.textColor != .lightgray else {
+            showAlert(title: "제목 입력", message: "여행 제목을 입력해주세요.")
+            return
+        }
+        
+        guard !selectedImages.isEmpty else {
+            showAlert(title: "앨범 추가", message: "최소한 하나의 이미지를 선택해주세요.")
+            return
+        }
+        
+        navigationItem.rightBarButtonItem?.isEnabled = false
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -955,9 +926,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         guard dates.count == 2,
               let startDate = dateFormatter.date(from: String(dates[0])),
               let endDate = dateFormatter.date(from: String(dates[1])) else {
-            let alert = UIAlertController(title: "오류", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true, completion: nil)
+            showAlert(title: "오류", message: "유효한 날짜를 선택해주세요.")
             return
         }
         
@@ -1053,6 +1022,14 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
     }
     
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            self.navigationItem.rightBarButtonItem?.isEnabled = true
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
     func calculateTotalSpendingAmount() -> Int {
         return expenses.flatMap { $0.expenses }.reduce(0) { $0 + $1.expenseAmount }
     }
@@ -1140,12 +1117,46 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     @objc func showPHPicker() {
-        var config = PHPickerConfiguration()
-        config.selectionLimit = 10 - selectedImages.count
-        config.filter = .images
-        let picker = PHPickerViewController(configuration: config)
-        picker.delegate = self
-        present(picker, animated: true, completion: nil)
+        PHPhotoLibrary.requestAuthorization { status in
+            DispatchQueue.main.async {
+                switch status {
+                case .authorized, .limited:
+                    var config = PHPickerConfiguration()
+                    config.selectionLimit = 10 - self.selectedImages.count
+                    config.filter = .images
+                    let picker = PHPickerViewController(configuration: config)
+                    picker.delegate = self
+                    self.present(picker, animated: true, completion: nil)
+                case .denied, .restricted:
+                    self.showPhotoAccessDeniedAlert()
+                case .notDetermined:
+                    // 권한 요청 후 결과를 기다리므로 추가 처리 불필요
+                    break
+                @unknown default:
+                    fatalError("새로운 권한 상태")
+                }
+            }
+        }
+    }
+
+    private func showPhotoAccessDeniedAlert() {
+        let alertController = UIAlertController(
+            title: "사진 접근 권한 필요",
+            message: "사진을 선택하려면 설정에서 사진 접근 권한을 허용해주세요.",
+            preferredStyle: .alert
+        )
+        let settingsAction = UIAlertAction(title: "설정으로 이동", style: .default) { (_) in
+            guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                return
+            }
+            if UIApplication.shared.canOpenURL(settingsUrl) {
+                UIApplication.shared.open(settingsUrl, completionHandler: nil)
+            }
+        }
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        alertController.addAction(settingsAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
     }
     
     private func fetchAddress(for location: CLLocationCoordinate2D, completion: @escaping (String) -> Void) {
@@ -1344,11 +1355,19 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
 
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor.lightgray {
-            textView.text = nil
-            textView.textColor = .font
-        }
-    }
+        let placeholderColor: UIColor = {
+                   if traitCollection.userInterfaceStyle == .dark {
+                       return UIColor.darkgray
+                   } else {
+                       return UIColor.lightgray
+                   }
+               }()
+
+               if textView.textColor == placeholderColor {
+                   textView.text = nil
+                   textView.textColor = .lightgray
+               }
+           }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {

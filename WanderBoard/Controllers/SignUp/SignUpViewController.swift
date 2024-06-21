@@ -19,7 +19,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
         
-        imageView.image = UIImage(named: "profileImage")
+        imageView.image = UIImage(systemName: "person.crop.circle")
         imageView.contentMode = .scaleAspectFill
         imageView.tintColor = UIColor(named: "ButtonColor")
         imageView.isUserInteractionEnabled = true
@@ -28,7 +28,9 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         return imageView
     }()
     private let emailArea = UIView()
-    private let emailIcon = UIImageView()
+    private let emailIcon = UIImageView().then(){
+        $0.contentMode = .scaleAspectFit
+    }
     private let emailLabel: UILabel = {
         let label = UILabel()
         label.text = "이메일"
@@ -516,7 +518,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         let nicknamePattern = "^[a-zA-Z0-9가-힣]+$"
         let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
         if !nicknamePredicate.evaluate(with: nickname) {
-            showAlert(title: "🤬", message: "닉네임에 특수문자를 포함할 수 없습니다.")
+            showAlert(title: "🤬", message: "닉네임에 특수문자 및 공백을 포함할 수 없습니다.")
             return
         }
         
@@ -707,7 +709,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         if let selectedImage = selectedImage {
             imageData = selectedImage.jpegData(compressionQuality: 0.75)!
         } else {
-            let defaultImage = UIImage(named: "profileImage")!
+            let defaultImage = UIImage(systemName: "person.crop.circle")!
             imageData = defaultImage.jpegData(compressionQuality: 0.75)!
         }
         

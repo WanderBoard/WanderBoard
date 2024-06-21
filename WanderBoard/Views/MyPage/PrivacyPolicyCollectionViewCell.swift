@@ -34,7 +34,7 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
     }
     
     private func setupViews() {
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = .systemBackground
         scriptLabel.numberOfLines = 0
         scriptLabel.font = UIFont.systemFont(ofSize: 13)
         scriptLabel.textColor = .label
@@ -54,7 +54,7 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
         agreeCheckBox.setTitleColor(.black, for: .normal)
         agreeCheckBox.setImage(UIImage(systemName: "circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
         agreeCheckBox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
-        agreeCheckBox.tintColor = .black
+        agreeCheckBox.tintColor = .font
         agreeCheckBox.addTarget(self, action: #selector(agreeTapped), for: .touchUpInside)
         
         agreeCheckBox.snp.makeConstraints {
@@ -67,7 +67,7 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
         disagreeCheckBox.setTitleColor(.black, for: .normal)
         disagreeCheckBox.setImage(UIImage(systemName: "circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
         disagreeCheckBox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
-        disagreeCheckBox.tintColor = .black
+        disagreeCheckBox.tintColor = .font
         disagreeCheckBox.addTarget(self, action: #selector(disagreeTapped), for: .touchUpInside)
         
         disagreeCheckBox.snp.makeConstraints {
@@ -98,12 +98,13 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
         agreeCheckBox.isUserInteractionEnabled = isEnabled
         disagreeCheckBox.isUserInteractionEnabled = isEnabled
         
-        agreeCheckBox.setTitleColor(isEnabled ? .black : .gray, for: .normal)
-        disagreeCheckBox.setTitleColor(isEnabled ? .black : .gray, for: .normal)
-        agreeCheckBox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withTintColor(isEnabled ? .black : .lightGray, renderingMode: .alwaysOriginal), for: .selected)
-        agreeCheckBox.setImage(UIImage(systemName: "circle")?.withTintColor(isEnabled ? .black : .lightGray, renderingMode: .alwaysOriginal), for: .normal)
-        disagreeCheckBox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withTintColor(isEnabled ? .black : .lightGray, renderingMode: .alwaysOriginal), for: .selected)
-        disagreeCheckBox.setImage(UIImage(systemName: "circle")?.withTintColor(isEnabled ? .black : .lightGray, renderingMode: .alwaysOriginal), for: .normal)
+        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        agreeCheckBox.setTitleColor(isEnabled ? .font : lightGTolightB, for: .normal)
+        disagreeCheckBox.setTitleColor(isEnabled ? .font : lightGTolightB, for: .normal)
+        agreeCheckBox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withTintColor((isEnabled ? .font : lightGTolightB)!, renderingMode: .alwaysOriginal), for: .selected)
+        agreeCheckBox.setImage(UIImage(systemName: "circle")?.withTintColor((isEnabled ? .font : lightGTolightB)!, renderingMode: .alwaysOriginal), for: .normal)
+        disagreeCheckBox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withTintColor((isEnabled ? .font : lightGTolightB)!, renderingMode: .alwaysOriginal), for: .selected)
+        disagreeCheckBox.setImage(UIImage(systemName: "circle")?.withTintColor((isEnabled ? .font : lightGTolightB)!, renderingMode: .alwaysOriginal), for: .normal)
         disagreeCheckBox.isHidden = !(section >= 2)
         
         if section == 0 || section == 1 {

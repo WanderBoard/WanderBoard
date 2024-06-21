@@ -1042,7 +1042,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                             return
                         }
                     }
-                    navigationController.popToRootViewController(animated: true)
+                    dismiss(animated: true, completion: nil)
                 }
             } catch {
                 let alert = UIAlertController(title: "오류", message: "데이터 저장에 실패했습니다.", preferredStyle: .alert)

@@ -56,7 +56,7 @@ class GalleryDetailViewController: UIViewController {
     }
     
     func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         view.addSubview(scrollView)
         view.addSubview(pageControl)
     }

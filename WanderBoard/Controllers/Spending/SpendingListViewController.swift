@@ -15,16 +15,6 @@ class SpendingListViewController: UIViewController {
     var dailyExpenses: [DailyExpenses] = []
     var hideEditButton: Bool = false
     
-    lazy var backButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(handleBackButtonTapped))
-        return button
-    }()
-    
-    lazy var penButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "pencil"), style: .plain, target: self, action: #selector(handlePenButtonTapped))
-        return button
-    }()
-    
     lazy var spendingCardbutton: UIButton = {
         let spendingCardbutton = UIButton()
         spendingCardbutton.backgroundColor = .font
@@ -100,11 +90,9 @@ class SpendingListViewController: UIViewController {
         
         updateView()
         tableView.reloadData()
-        
-        navigationItem.leftBarButtonItem = backButton
-        if !hideEditButton {
-            navigationItem.rightBarButtonItem = penButton
-        }
+
+        // 네비게이션 바 아이템 설정
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(handlePenButtonTapped))
     }
     
     func isCurrentUser() -> Bool {
@@ -127,10 +115,7 @@ class SpendingListViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let navigationController = navigationController,
-           navigationController.viewControllers.contains(where: { $0 is DetailViewController }) {
-            navigationItem.rightBarButtonItem = penButton
-        }
+        handleBackButtonTapped()
     }
     
     func loadExpensesFromFirestore() {
@@ -188,11 +173,11 @@ class SpendingListViewController: UIViewController {
         if dailyExpenses.isEmpty {
             tableView.isHidden = true
             spendingEmptyView.isHidden = false
-            penButton.isHidden = true
+            navigationItem.rightBarButtonItem?.isHidden = true
         } else {
             tableView.isHidden = false
             spendingEmptyView.isHidden = true
-            penButton.isHidden = false
+            navigationItem.rightBarButtonItem?.isHidden = false
         }
         tableView.reloadData()
     }
@@ -411,7 +396,6 @@ extension SpendingListViewController: UITableViewDelegate {
 
 extension SpendingListViewController: SpendingEmptyViewDelegate {
     func didTapAddButton() {
-        penButton.isEnabled = true
         let inputVC = InsertSpendingViewController()
         inputVC.delegate = self
         inputVC.modalPresentationStyle = .automatic

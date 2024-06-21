@@ -47,8 +47,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
         fetchInvitationCount()
         fetchTagData()
         
-        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        navigationItem.backBarButtonItem = backButton
         navigationItem.largeTitleDisplayMode = .never
     }
     
@@ -203,13 +201,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
 
     
     override func configureUI() {
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
-        let image = UIImage(systemName: "pencil.circle", withConfiguration: imageConfig)
-        editButton.setImage(image, for: .normal)
-        editButton.tintColor = .font
-        editButton.addTarget(self, action: #selector(edit), for: .touchUpInside)
-        let barButtonItem = UIBarButtonItem(customView: editButton)
-        self.navigationItem.rightBarButtonItem = barButtonItem
+        navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(edit)), animated: true)
         
         profile.image = UIImage(systemName: "person.crop.circle")
         profile.layer.cornerRadius = 53
@@ -399,7 +391,6 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                          self.navigationController?.pushViewController(blockVC, animated: true)
                          blockVC.navigationItem.title = "차단관리"
                     case 4:
-                        
                         let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
                         let confirm = UIAlertAction(title: "확인", style: .default) { _ in
                             NotificationHelper.changePage(hidden: true, isEnabled: false)

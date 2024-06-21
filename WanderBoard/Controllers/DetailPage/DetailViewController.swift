@@ -321,6 +321,11 @@ class DetailViewController: UIViewController {
         galleryCollectionView.reloadData()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        print(pinButton.frame.size)
+    }
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
@@ -366,14 +371,12 @@ class DetailViewController: UIViewController {
     }
     
     private func newSetupConstraints() {
-        let closeButton = ButtonFactory.createXButton(target: self, action: #selector(dismissDetailView))
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: closeButton)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pinButton)
         
         NSLayoutConstraint.activate([
-            pinButton.widthAnchor.constraint(equalToConstant: 30), // 원하는 너비로 설정
-            pinButton.heightAnchor.constraint(equalToConstant: 30) // 원하는 높이로 설정
+            pinButton.widthAnchor.constraint(equalToConstant: 44),
+            pinButton.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
     
@@ -804,8 +807,7 @@ class DetailViewController: UIViewController {
     @objc func showGalleryDetail() {
         let galleryDetailVC = GalleryDetailViewController()
         galleryDetailVC.selectedImages = selectedImages.map { $0.0 }
-        galleryDetailVC.modalPresentationStyle = .fullScreen
-        present(galleryDetailVC, animated: true, completion: nil)
+        navigationController?.pushViewController(galleryDetailVC, animated: true)
     }
     
     @objc func showMapViewController() {

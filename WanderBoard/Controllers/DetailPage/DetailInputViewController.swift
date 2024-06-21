@@ -732,8 +732,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     func setupNavigationBar() {
-        let closeButton = ButtonFactory.createXButton(target: self, action: #selector(dismissDetailView))
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: closeButton)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
 
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = doneButton

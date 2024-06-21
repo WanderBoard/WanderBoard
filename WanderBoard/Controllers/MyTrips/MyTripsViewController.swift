@@ -24,17 +24,15 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     static var pinnedTripLogs: [PinLog] = [] // 핀 찍은 로그를 저장할 새로운 배열 추가
     static var taggedTripLogs: [PinLog] = [] // 태그 된 아이디들 불러오는
     
-    lazy var plusButton: UIButton = {
-        let button = UIButton(type: .system)
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
+    lazy var plusButton = UIButton(type: .system).then {
+        let imageConfig = UIImage.SymbolConfiguration(weight: .regular)
         let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
-        button.setImage(image, for: .normal)
-        button.tintColor = UIColor(named: "textColor")
-        button.backgroundColor = .font
-        button.layer.cornerRadius = 15
-        button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
-        return button
-    }()
+        $0.setImage(image, for: .normal)
+        $0.tintColor = UIColor(named: "textColor")
+        $0.backgroundColor = .font
+        $0.layer.cornerRadius = 18
+        $0.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
+    }
     
     lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.dataSource = self
@@ -112,6 +110,23 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         }
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        // 플러스 버튼의 터치 영역을 확장
+        let hitAreaSize = CGSize(width: 44, height: 44)
+        let buttonSize = plusButton.bounds.size
+        let hitAreaInsets = UIEdgeInsets(
+            top: -(hitAreaSize.height - buttonSize.height) / 2,
+            left: -(hitAreaSize.width - buttonSize.width) / 2,
+            bottom: -(hitAreaSize.height - buttonSize.height) / 2,
+            right: -(hitAreaSize.width - buttonSize.width) / 2
+        )
+        plusButton.frame = plusButton.frame.inset(by: hitAreaInsets)
+        
+        print(plusButton.frame.size)
+    }
+    
     private func setupNV() {
         navigationItem.title = pageText
         
@@ -121,7 +136,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             plusButton.snp.makeConstraints {
                 $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-16)
                 $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
-                $0.size.equalTo(CGSize(width: 30, height: 30))
+                $0.size.equalTo(CGSize(width: 36, height: 36))
             }
         }
     }

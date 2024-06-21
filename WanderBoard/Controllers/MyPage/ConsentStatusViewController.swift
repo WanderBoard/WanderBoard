@@ -11,7 +11,7 @@ import Then
 import FirebaseFirestore
 import FirebaseAuth
 
-class ConsentStatusViewController: UIViewController {
+class ConsentStatusViewController: BaseViewController {
     
     private var sectionExpandedStatus = [false, false]
     
@@ -30,8 +30,8 @@ class ConsentStatusViewController: UIViewController {
     private let modifyButton: UIButton = {
         let button = UIButton(type: .system).then {
             $0.setTitle("변경", for: .normal)
-            $0.setTitleColor(UIColor.white, for: .normal)
-            $0.backgroundColor = .black
+            $0.setTitleColor(.font, for: .normal)
+            $0.backgroundColor = .lightgray
             $0.layer.cornerRadius = 10
         }
         return button
@@ -40,8 +40,8 @@ class ConsentStatusViewController: UIViewController {
     private let saveButton: UIButton = {
         let button = UIButton(type: .system).then {
             $0.setTitle("저장", for: .normal)
-            $0.setTitleColor(UIColor.white, for: .normal)
-            $0.backgroundColor = .black
+            $0.setTitleColor(UIColor(named: "textColor"), for: .normal)
+            $0.backgroundColor = .font
             $0.layer.cornerRadius = 10
             $0.isHidden = true
             $0.isEnabled = false
@@ -52,8 +52,8 @@ class ConsentStatusViewController: UIViewController {
     private let cancelButton: UIButton = {
         let button = UIButton(type: .system).then {
             $0.setTitle("취소", for: .normal)
-            $0.setTitleColor(UIColor.white, for: .normal)
-            $0.backgroundColor = .darkGray
+            $0.setTitleColor(UIColor(named: "textColor"), for: .normal)
+            $0.backgroundColor = .font
             $0.layer.cornerRadius = 10
             $0.isHidden = true
         }
@@ -116,6 +116,13 @@ class ConsentStatusViewController: UIViewController {
         cancelButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: .touchUpInside)
         
         fetchConsentStatus()
+        updateColor()
+    }
+    
+    override func updateColor(){
+        //라이트그레이-라이트블랙
+        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        modifyButton.backgroundColor = lightGTolightB
     }
     
     private func fetchConsentStatus() {

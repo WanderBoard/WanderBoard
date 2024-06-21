@@ -19,14 +19,14 @@ class AddedMateCell: UICollectionViewCell {
     private var user: UserSummary?
     
     let nameLabel = UILabel().then {
-        $0.textColor = #colorLiteral(red: 0.8666666746, green: 0.8666666746, blue: 0.8666666746, alpha: 1)
+        $0.textColor = .darkgray
         $0.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         $0.textAlignment = .center
     }
     
     lazy var removeButton = UIButton(type: .system).then {
         $0.setImage(UIImage(systemName: "xmark"), for: .normal)
-        $0.tintColor = #colorLiteral(red: 0.8666666746, green: 0.8666666746, blue: 0.8666666746, alpha: 1)
+        $0.tintColor = .darkgray
         $0.addTarget(self, action: #selector(didTapRemoveButton), for: .touchUpInside)
     }
     
@@ -53,7 +53,7 @@ class AddedMateCell: UICollectionViewCell {
         
         contentView.layer.cornerRadius = 15
         contentView.layer.borderWidth = 1
-        contentView.layer.borderColor = #colorLiteral(red: 0.8666666746, green: 0.8666666746, blue: 0.8666666746, alpha: 1)
+        contentView.layer.borderColor = UIColor.darkgray.cgColor
         
         stackView.snp.makeConstraints {
             $0.center.equalToSuperview()

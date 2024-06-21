@@ -64,7 +64,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.bounces = false
         $0.backgroundColor = UIColor(named: "textColor")
         $0.clipsToBounds = true
-        $0.layer.cornerRadius = 16
+        $0.layer.cornerRadius = 20
     }
     
     let contentView = UIView().then {
@@ -417,8 +417,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        navigationController?.navigationBar.tintColor = UIColor (named: "textColor")
         navigationItem.largeTitleDisplayMode = .never
         
     }
@@ -480,7 +478,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         topContainarView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.height.equalTo(140)
+            $0.height.equalTo(150)
         }
         
         scrollView.snp.makeConstraints {
@@ -520,7 +518,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         topLine.snp.makeConstraints {
-            $0.top.equalTo(publicView.snp.bottom).offset(20)
+            $0.top.equalTo(publicView.snp.bottom).offset(5)
             $0.leading.trailing.equalTo(contentView).inset(16)
             $0.height.equalTo(1)
         }
@@ -700,6 +698,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let mateVC = MateViewController()
         mateVC.delegate = self
         navigationController?.pushViewController(mateVC, animated: true)
+        
     }
     
     @objc func locationButtonTapped() {
@@ -736,7 +735,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let spendVC = SpendingListViewController()
         
         spendVC.pinLog = pinLog
-//        spendVC.shouldShowEditButton = true
         navigationController?.pushViewController(spendVC, animated: true)
     }
     
@@ -751,14 +749,14 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         present(calendarVC, animated: true, completion: nil)
     }
     
-    
-    
     func setupNavigationBar() {
         let closeButton = ButtonFactory.createXButton(target: self, action: #selector(dismissDetailView))
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: closeButton)
+
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = doneButton
-        navigationController?.navigationBar.tintColor = .white
+        navigationController?.navigationBar.tintColor = UIColor(named: "textColor")
+    
     }
     
     @objc func dismissDetailView(_ sender:UIButton) {
@@ -1345,11 +1343,19 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
 
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor.lightgray {
-            textView.text = nil
-            textView.textColor = .font
-        }
-    }
+        let placeholderColor: UIColor = {
+                   if traitCollection.userInterfaceStyle == .dark {
+                       return UIColor.darkgray
+                   } else {
+                       return UIColor.lightgray
+                   }
+               }()
+
+               if textView.textColor == placeholderColor {
+                   textView.text = nil
+                   textView.textColor = .lightgray
+               }
+           }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {

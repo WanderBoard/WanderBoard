@@ -900,36 +900,27 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     @objc func doneButtonTapped() {
-        
-        navigationItem.rightBarButtonItem?.isEnabled = false
-        
         guard let locationTitle = locationLeftLabel.text, locationTitle != "지역을 선택하세요" else {
-            let alert = UIAlertController(title: "지역 선택", message: "지역을 선택해주세요.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true, completion: nil)
-            return
-        }
-        
-        guard let mainTitle = mainTextField.text, !mainTitle.isEmpty, mainTextField.textColor != .lightgray else {
-            let alert = UIAlertController(title: "제목 입력", message: "여행 제목을 입력해주세요.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true, completion: nil)
-            return
-        }
-        
-        guard !selectedImages.isEmpty else {
-            let alert = UIAlertController(title: "앨범 추가", message: "최소한 하나의 이미지를 선택해주세요.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true, completion: nil)
+            showAlert(title: "지역 선택", message: "지역을 선택해주세요.")
             return
         }
         
         guard let dateRange = dateLabel.text, dateRange != "날짜를 선택하세요" else {
-            let alert = UIAlertController(title: "날짜 선택", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true, completion: nil)
+            showAlert(title: "날짜 선택", message: "유효한 날짜를 선택해주세요.")
             return
         }
+        
+        guard let mainTitle = mainTextField.text, !mainTitle.isEmpty, mainTextField.textColor != .lightgray else {
+            showAlert(title: "제목 입력", message: "여행 제목을 입력해주세요.")
+            return
+        }
+        
+        guard !selectedImages.isEmpty else {
+            showAlert(title: "앨범 추가", message: "최소한 하나의 이미지를 선택해주세요.")
+            return
+        }
+        
+        navigationItem.rightBarButtonItem?.isEnabled = false
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -938,9 +929,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         guard dates.count == 2,
               let startDate = dateFormatter.date(from: String(dates[0])),
               let endDate = dateFormatter.date(from: String(dates[1])) else {
-            let alert = UIAlertController(title: "오류", message: "유효한 날짜를 선택해주세요.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true, completion: nil)
+            showAlert(title: "오류", message: "유효한 날짜를 선택해주세요.")
             return
         }
         
@@ -1034,6 +1023,14 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             hideProgressView()
             navigationItem.rightBarButtonItem?.isEnabled = true
         }
+    }
+    
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            self.navigationItem.rightBarButtonItem?.isEnabled = true
+        }))
+        present(alert, animated: true, completion: nil)
     }
     
     func calculateTotalSpendingAmount() -> Int {

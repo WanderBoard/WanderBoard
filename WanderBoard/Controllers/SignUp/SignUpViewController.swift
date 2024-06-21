@@ -516,7 +516,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         let nicknamePattern = "^[a-zA-Z0-9가-힣]+$"
         let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
         if !nicknamePredicate.evaluate(with: nickname) {
-            showAlert(title: "🤬", message: "닉네임에 특수문자를 포함할 수 없습니다.")
+            showAlert(title: "🤬", message: "닉네임에 특수문자 및 공백을 포함할 수 없습니다.")
             return
         }
         

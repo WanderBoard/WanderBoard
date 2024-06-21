@@ -24,17 +24,15 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     static var pinnedTripLogs: [PinLog] = [] // 핀 찍은 로그를 저장할 새로운 배열 추가
     static var taggedTripLogs: [PinLog] = [] // 태그 된 아이디들 불러오는
     
-    lazy var plusButton: UIButton = {
-        let button = UIButton(type: .system)
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
+    lazy var plusButton = UIButton(type: .system).then {
+        let imageConfig = UIImage.SymbolConfiguration(weight: .medium)
         let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
-        button.setImage(image, for: .normal)
-        button.tintColor = UIColor(named: "textColor")
-        button.backgroundColor = .font
-        button.layer.cornerRadius = 15
-        button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
-        return button
-    }()
+        $0.setImage(image, for: .normal)
+        $0.tintColor = UIColor(named: "textColor")
+        $0.backgroundColor = .font
+        $0.layer.cornerRadius = 22
+        $0.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
+    }
     
     lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.dataSource = self
@@ -121,7 +119,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             plusButton.snp.makeConstraints {
                 $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-16)
                 $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
-                $0.size.equalTo(CGSize(width: 30, height: 30))
+                $0.size.equalTo(CGSize(width: 44, height: 44))
             }
         }
     }

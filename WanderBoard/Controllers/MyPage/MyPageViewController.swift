@@ -49,8 +49,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         fetchInvitationCount()
         fetchTagData()
         
-        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        navigationItem.backBarButtonItem = backButton
+        //let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.largeTitleDisplayMode = .never
     }
     
@@ -199,13 +198,15 @@ class MyPageViewController: BaseViewController, PageIndexed {
     }
     
     override func configureUI() {
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
-        let image = UIImage(systemName: "pencil.circle", withConfiguration: imageConfig)
-        editButton.setImage(image, for: .normal)
-        editButton.tintColor = .font
-        editButton.addTarget(self, action: #selector(edit), for: .touchUpInside)
-        let barButtonItem = UIBarButtonItem(customView: editButton)
-        self.navigationItem.rightBarButtonItem = barButtonItem
+//        let imageConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
+//        let image = UIImage(systemName: "pencil.circle", withConfiguration: imageConfig)
+//        editButton.setImage(image, for: .normal)
+//        editButton.tintColor = .font
+//        editButton.addTarget(self, action: #selector(edit), for: .touchUpInside)
+//        let barButtonItem = UIBarButtonItem(customView: editButton)
+//        self.navigationItem.rightBarButtonItem = barButtonItem
+        
+        navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(edit)), animated: true)
         
         profile.image = UIImage(named: "profileImage")
         profile.layer.cornerRadius = 53

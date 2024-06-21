@@ -28,9 +28,7 @@ class ExploreViewController: UIViewController, PageIndexed {
     var progressViewController: ProgressViewController?
     
     lazy var searchButton = UIButton(type: .system).then {
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
-        let image = UIImage(systemName: "magnifyingglass", withConfiguration: imageConfig)
-        $0.setImage(image, for: .normal)
+        $0.setImage(UIImage(systemName: "magnifyingglass"), for: .normal)
         $0.tintColor = .font
         $0.addTarget(self, action: #selector(searchButtonTapped), for: .touchUpInside)
     }
@@ -105,7 +103,7 @@ class ExploreViewController: UIViewController, PageIndexed {
             searchButton.snp.makeConstraints {
                 $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-16)
                 $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
-                $0.size.equalTo(CGSize(width: 30, height: 30))
+                $0.size.equalTo(CGSize(width: 44, height: 44))
             }
         }
     }

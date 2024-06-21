@@ -14,23 +14,20 @@ class SpendingTableViewCell: UITableViewCell {
     let categoryImageView: UIImageView = {
         let categoryImageView = UIImageView()
         categoryImageView.tintColor = .lightgray
-        
         return categoryImageView
     }()
     
     let expenseContent: UILabel = {
         let expenseContent = UILabel()
         expenseContent.font = UIFont.systemFont(ofSize: 15)
-        expenseContent.numberOfLines = 2
-        
+        expenseContent.numberOfLines = 1
         return expenseContent
     }()
     
     let memo: UILabel = {
         let memo = UILabel()
         memo.font = UIFont.systemFont(ofSize: 12)
-        memo.numberOfLines = 2
-        
+        memo.numberOfLines = 1
         return memo
     }()
     
@@ -39,14 +36,19 @@ class SpendingTableViewCell: UITableViewCell {
         expenseAmount.font = UIFont.systemFont(ofSize: 17)
         expenseAmount.adjustsFontSizeToFitWidth = true
         expenseAmount.textAlignment = .right
-        
         return expenseAmount
     }()
     
+    let expenseStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 4
+        stackView.alignment = .leading
+        return stackView
+    }()
     
     override init(style: SpendingTableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
         configureUI()
         makeConstraints()
         updateColor()
@@ -58,9 +60,11 @@ class SpendingTableViewCell: UITableViewCell {
     
     func configureUI() {
         contentView.addSubview(categoryImageView)
-        contentView.addSubview(expenseContent)
-        contentView.addSubview(memo)
+        contentView.addSubview(expenseStackView)
         contentView.addSubview(expenseAmount)
+        
+        expenseStackView.addArrangedSubview(expenseContent)
+        expenseStackView.addArrangedSubview(memo)
     }
     
     func makeConstraints() {
@@ -69,20 +73,16 @@ class SpendingTableViewCell: UITableViewCell {
             $0.height.width.equalTo(44)
             $0.centerY.equalTo(contentView)
         }
-        expenseContent.snp.makeConstraints {
-            $0.top.equalTo(contentView.snp.top).inset(12)
+        
+        expenseStackView.snp.makeConstraints {
+            $0.centerY.equalTo(contentView)
             $0.leading.equalTo(categoryImageView.snp.trailing).offset(12)
-            $0.trailing.lessThanOrEqualTo(expenseAmount.snp.leading).offset(-12) // 변경된 부분
+            $0.trailing.lessThanOrEqualTo(expenseAmount.snp.leading).offset(-12)
         }
-        memo.snp.makeConstraints {
-            $0.top.equalTo(expenseContent.snp.bottom).offset(4)
-            $0.leading.equalTo(expenseContent.snp.leading)
-            $0.trailing.lessThanOrEqualTo(expenseAmount.snp.leading).offset(-12) // 변경된 부분
-            $0.bottom.equalTo(contentView).inset(12)
-        }
+        
         expenseAmount.snp.makeConstraints {
             $0.centerY.equalTo(contentView.snp.centerY)
-            $0.leading.greaterThanOrEqualTo(memo.snp.trailing).offset(12) // 변경된 부분
+            $0.leading.greaterThanOrEqualTo(expenseStackView.snp.trailing).offset(12)
             $0.width.equalTo(80)
             $0.trailing.equalTo(contentView.safeAreaLayoutGuide).inset(32)
         }
@@ -96,8 +96,28 @@ class SpendingTableViewCell: UITableViewCell {
     }
     
     func updateColor(){
-        //라이트그레이-다크그레이
         let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
         categoryImageView.tintColor = lightGTodarkG
+    }
+    
+    func configure(with expense: Expense) {
+        expenseContent.text = expense.expenseContent
+        memo.text = expense.memo
+        expenseAmount.text = "\(formatCurrency(expense.expenseAmount))원"
+        categoryImageView.image = UIImage(systemName: expense.imageName)
+        
+        if expense.memo.isEmpty {
+            memo.isHidden = true
+            expenseStackView.spacing = 0
+        } else {
+            memo.isHidden = false
+            expenseStackView.spacing = 4
+        }
+    }
+    
+    func formatCurrency(_ amount: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }

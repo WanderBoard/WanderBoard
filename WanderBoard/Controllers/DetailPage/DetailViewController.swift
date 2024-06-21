@@ -228,6 +228,13 @@ class DetailViewController: UIViewController {
         $0.clipsToBounds = true
     }
     
+    let noDataLabel = UILabel().then {
+        $0.text = "지출 내역이 없습니다."
+        $0.font = UIFont.systemFont(ofSize: 15)
+        $0.textColor = .darkgray
+        $0.isHidden = true
+    }
+    
     var moneyCountTitle = UILabel().then {
         $0.text = "0000000"
         $0.font = UIFont.systemFont(ofSize: 20)
@@ -488,6 +495,7 @@ class DetailViewController: UIViewController {
         contentView.addSubview(moneyCountainer)
         moneyCountainer.addSubview(consumStackView)
         moneyCountainer.addSubview(consumMainStackView)
+        moneyCountainer.addSubview(noDataLabel)
         moneyCountainer.addSubview(moneyCountSubTitle)
         maxConsumView.addSubview(maxConsumptionLabel)
         contentView.addSubview(friendTitle)
@@ -614,6 +622,10 @@ class DetailViewController: UIViewController {
             $0.height.equalTo(90)
         }
         
+        noDataLabel.snp.makeConstraints {
+            $0.center.equalToSuperview()
+        }
+        
         moneyCountSubTitle.snp.makeConstraints {
             $0.bottom.equalTo(moneyCountTitle)
             $0.leading.equalTo(moneyCountTitle.snp.trailing).offset(5)
@@ -672,37 +684,23 @@ class DetailViewController: UIViewController {
         mainTitleLabel.text = pinLog.title
         subTextLabel.text = pinLog.content
         
-        if pinLog.isSpendingPublic {
+        if pinLog.isSpendingPublic || isCurrentUser(pinLog: pinLog) {
             if let totalSpendingAmount = pinLog.totalSpendingAmount, totalSpendingAmount > 0 {
                 moneyCountTitle.text = "\(formatCurrency(totalSpendingAmount))원"
                 maxConsumptionLabel.text = "최고금액 지출 : \(formatCurrency(pinLog.maxSpendingAmount ?? 0))원"
                 moneyCountainer.isHidden = false
                 moneyCountSubTitle.isHidden = false
                 consumMainStackView.isHidden = false
+                noDataLabel.isHidden = true
             } else {
-                let noDataLabel = UILabel().then {
-                    $0.text = "지출 내역이 없습니다."
-                    $0.font = UIFont.systemFont(ofSize: 15)
-                    $0.textColor = .darkgray
-                }
-                moneyCountainer.addSubview(noDataLabel)
-                noDataLabel.snp.makeConstraints {
-                    $0.center.equalToSuperview()
-                }
+                noDataLabel.isHidden = false
                 moneyCountainer.isHidden = false
                 moneyCountSubTitle.isHidden = true
                 consumMainStackView.isHidden = true
             }
         } else {
-            let privateLabel = UILabel().then {
-                $0.text = "지출 내역이 비공개입니다."
-                $0.font = UIFont.systemFont(ofSize: 15)
-                $0.textColor = .darkgray
-            }
-            moneyCountainer.addSubview(privateLabel)
-            privateLabel.snp.makeConstraints {
-                $0.center.equalToSuperview()
-            }
+            noDataLabel.text = "지출 내역이 비공개입니다."
+            noDataLabel.isHidden = false
             moneyCountainer.isHidden = false
             moneyCountSubTitle.isHidden = true
             consumMainStackView.isHidden = true
@@ -736,7 +734,7 @@ class DetailViewController: UIViewController {
         if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId), let url = URL(string: photoURL) {
             profileImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "person.crop.circle"))
         } else {
-            profileImageView.image = UIImage(systemName: "person.crop.circle") // 기본 프로필 이미지
+            profileImageView.image = UIImage(systemName: "person.crop.circle")
         }
         
         // 백그라운드 이미지
@@ -749,6 +747,7 @@ class DetailViewController: UIViewController {
         friendTitle.isHidden = pinLog.attendeeIds.isEmpty
         friendCollectionView.isHidden = pinLog.attendeeIds.isEmpty
     }
+    
     
     
     //프로필 이미지
@@ -989,7 +988,9 @@ class DetailViewController: UIViewController {
         if let pinLog = self.pinLog {
             inputVC.pinLog = pinLog
         }
-        navigationController?.pushViewController(inputVC, animated: true)
+        let navController = UINavigationController(rootViewController: inputVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true, completion: nil)
     }
     
     func reportPinLog() {

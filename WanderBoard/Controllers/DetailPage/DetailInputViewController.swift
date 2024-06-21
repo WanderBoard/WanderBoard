@@ -1365,18 +1365,33 @@ extension DetailInputViewController: UITextViewDelegate {
 
                if textView.textColor == placeholderColor {
                    textView.text = nil
-                   textView.textColor = .lightgray
+                   textView.textColor = .font
                }
            }
     
     func textViewDidEndEditing(_ textView: UITextView) {
+        let placeholderColor: UIColor = {
+                   if traitCollection.userInterfaceStyle == .dark {
+                       return UIColor.darkgray
+                   } else {
+                       return UIColor.lightgray
+                   }
+               }()
+        
         if textView.text.isEmpty {
-            if textView == mainTextField {
-                textView.text = "여행 제목을 입력해주세요."
-            } else if textView == subTextField {
-                textView.text = "기록을 담아 주세요."
-            }
-            textView.textColor = .lightgray
+                    let placeholderText: String = {
+                        if textView == mainTextField {
+                            return "여행 제목을 입력해주세요."
+                        } else if textView == subTextField {
+                            return "기록을 담아 주세요."
+                        } else {
+                            return ""
+                        }
+                    }()
+            textView.text = placeholderText
+            textView.textColor = placeholderColor
+        } else {
+            textView.textColor = .font
         }
     }
     

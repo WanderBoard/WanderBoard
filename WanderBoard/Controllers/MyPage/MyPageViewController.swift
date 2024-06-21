@@ -211,7 +211,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
         let barButtonItem = UIBarButtonItem(customView: editButton)
         self.navigationItem.rightBarButtonItem = barButtonItem
         
-        profile.image = UIImage(systemName: "person.crop.circle.fill")
+        profile.image = UIImage(systemName: "person.crop.circle")
         profile.layer.cornerRadius = 53
         profile.clipsToBounds = true
         profile.contentMode = .scaleAspectFill
@@ -258,7 +258,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 myID.text = "이메일 비공개"
             } else {
                 myID.text = userData.email
-                profile.image = UIImage(systemName: "person.crop.circle.fill")
+                profile.image = UIImage(systemName: "person.crop.circle")
             }
         }
     }
@@ -298,7 +298,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 }
             }
         } else {
-            profile.image = UIImage(systemName: "person.crop.circle.fill")
+            profile.image = UIImage(systemName: "person.crop.circle")
         }
     }
     
@@ -339,7 +339,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     //에딧창에서 추가해준 이름과 사진 불러오기
     func updateUserData(name: String, image: UIImage?) {
         myName.text = name
-        profile.image = image ?? UIImage(systemName: "person.crop.circle.fill")
+        profile.image = image ?? UIImage(systemName: "person.crop.circle")
     }
 }
 

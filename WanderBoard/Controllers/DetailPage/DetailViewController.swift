@@ -731,9 +731,9 @@ class DetailViewController: UIViewController {
         
         // 프로필 사진
         if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId), let url = URL(string: photoURL) {
-            profileImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "person.crop.circle.fill"))
+            profileImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "person.crop.circle"))
         } else {
-            profileImageView.image = UIImage(systemName: "person.crop.circle.fill") // 기본 프로필 이미지
+            profileImageView.image = UIImage(systemName: "person.crop.circle") // 기본 프로필 이미지
         }
         
         // 백그라운드 이미지

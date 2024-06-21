@@ -24,6 +24,9 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     static var pinnedTripLogs: [PinLog] = [] // 핀 찍은 로그를 저장할 새로운 배열 추가
     static var taggedTripLogs: [PinLog] = [] // 태그 된 아이디들 불러오는
     
+    var blockedAuthors: [String] = [] //차단친구 관리
+    var hiddenPinLogs: [String] = []  //숨긴 글 관리
+    
     lazy var plusButton = UIButton(type: .system).then {
         let imageConfig = UIImage.SymbolConfiguration(weight: .regular)
         let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
@@ -104,6 +107,9 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         plusButton.isHidden = false
 
         Task {
+            self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
+            self.hiddenPinLogs = try await AuthenticationManager.shared.getHiddenPinLogs()
+            
             await loadData()
             await loadPinnedData() // 핀 찍은 데이터 로드
             updateView()
@@ -204,11 +210,11 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     func filterTripLogs() -> [PinLog] {
         switch currentFilterIndex {
         case 0:
-            return MyTripsViewController.tripLogs
+            return filterBlockedAndHiddenLogs(from: MyTripsViewController.tripLogs)
         case 1:
-            return MyTripsViewController.taggedTripLogs
+            return filterBlockedAndHiddenLogs(from: MyTripsViewController.taggedTripLogs)
         case 2:
-            return MyTripsViewController.pinnedTripLogs
+            return filterBlockedAndHiddenLogs(from: MyTripsViewController.pinnedTripLogs)
         default:
             return []
         }
@@ -228,6 +234,10 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         updateView()
     }
     
+    private func filterBlockedAndHiddenLogs(from logs: [PinLog]) -> [PinLog] {
+        return logs.filter { !blockedAuthors.contains($0.authorId) && !hiddenPinLogs.contains($0.id ?? "") }
+    }
+    
     func loadData() async {
         do {
             guard let userId = Auth.auth().currentUser?.uid else {
@@ -236,20 +246,18 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             }
             // 사용자가 작성한 핀로그 가져오기
             let userPinLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
-            MyTripsViewController.tripLogs = userPinLogs.sorted { $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast }
+            MyTripsViewController.tripLogs = filterBlockedAndHiddenLogs(from: userPinLogs).sorted { $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast }
             
             // 태그된 핀로그 가져오기
             let taggedPinLogs = try await pinLogManager.fetchTaggedPinLogs(forUserId: userId)
-            MyTripsViewController.taggedTripLogs = taggedPinLogs.sorted { $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast }
+            MyTripsViewController.taggedTripLogs = filterBlockedAndHiddenLogs(from: taggedPinLogs).sorted { $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast }
             
-            //print("Fetched userPinLogs: \(userPinLogs)")
-            //print("Fetched taggedPinLogs: \(taggedPinLogs)")
             updateView()
         } catch {
             print("Failed to fetch pin logs: \(error.localizedDescription)")
         }
     }
-    
+
     func loadPinnedData() async {
         do {
             guard let userId = Auth.auth().currentUser?.uid else {
@@ -257,8 +265,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
                 return
             }
             let pinnedLogs = try await pinLogManager.fetchPinnedPinLogs(forUserId: userId)
-            MyTripsViewController.pinnedTripLogs = pinnedLogs
-            //print("Fetched pinned pinLogs: \(pinnedLogs)")
+            MyTripsViewController.pinnedTripLogs = filterBlockedAndHiddenLogs(from: pinnedLogs)
         } catch {
             print("Failed to fetch pinned pin logs: \(error.localizedDescription)")
         }

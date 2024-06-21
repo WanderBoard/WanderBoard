@@ -24,7 +24,7 @@ class PrivacyPolicyViewController: BaseViewController {
     
     private let topBar: UIView = {
         let view = UIView()
-        view.backgroundColor = .black
+        view.backgroundColor = .systemBackground
         view.layer.cornerRadius = 2
         return view
     }()
@@ -39,8 +39,8 @@ class PrivacyPolicyViewController: BaseViewController {
     private let agreeButton: UIButton = {
         let button = UIButton(type: .system).then {
             $0.setTitle("확인", for: .normal)
-            $0.setTitleColor(UIColor.white, for: .normal)
-            $0.backgroundColor = .lightGray
+            $0.setTitleColor(.font, for: .normal)
+            $0.backgroundColor = .lightgray
             $0.layer.cornerRadius = 10
             $0.isEnabled = false
         }
@@ -68,27 +68,6 @@ class PrivacyPolicyViewController: BaseViewController {
         tableView.register(PrivacyPolicySectionHeaderView.self, forHeaderFooterViewReuseIdentifier: PrivacyPolicySectionHeaderView.identifier)
         tableView.contentInsetAdjustmentBehavior = .never
         tableView.showsVerticalScrollIndicator = false
-        
-//        topBar.snp.makeConstraints {
-//            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
-//            $0.centerX.equalTo(view)
-//            $0.width.equalTo(60)
-//            $0.height.equalTo(4)
-//        }
-//
-//        tableView.snp.makeConstraints {
-//            $0.top.equalTo(topBar.snp.bottom).offset(16)
-//            $0.left.equalTo(view).offset(32)
-//            $0.right.equalTo(view).offset(-32)
-//            $0.bottom.equalTo(view).offset(-100)
-//        }
-//
-//        agreeButton.snp.makeConstraints {
-//            $0.left.equalTo(view).inset(32)
-//            $0.right.equalTo(view).inset(32)
-//            $0.height.equalTo(50)
-//            $0.bottom.equalTo(view).inset(60)
-//        }
 
         agreeButton.addTarget(self, action: #selector(agreeButtonTapped), for: .touchUpInside)
     }
@@ -107,12 +86,12 @@ class PrivacyPolicyViewController: BaseViewController {
         }
 
         mandatoryAgreeCheckbox.snp.makeConstraints {
-            $0.top.equalTo(allAgreeCheckbox.snp.bottom).offset(16)
+            $0.top.equalTo(allAgreeCheckbox.snp.bottom).offset(20)
             $0.left.equalTo(view).offset(32)
         }
 
         optionalAgreeCheckbox.snp.makeConstraints {
-            $0.top.equalTo(mandatoryAgreeCheckbox.snp.bottom).offset(8)
+            $0.top.equalTo(mandatoryAgreeCheckbox.snp.bottom).offset(10)
             $0.left.equalTo(view).offset(32)
         }
 
@@ -131,31 +110,37 @@ class PrivacyPolicyViewController: BaseViewController {
         }
     }
     
+    override func updateColor(){
+        //라이트그레이-라이트블랙
+        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        agreeButton.backgroundColor = lightGTolightB
+    }
+    
     private func setupCheckboxes() {
         allAgreeCheckbox.setTitle("  모두 동의", for: .normal)
-        allAgreeCheckbox.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold) // 수정: 폰트 사이즈 및 두께 설정
-        allAgreeCheckbox.setTitleColor(.black, for: .normal)
+        allAgreeCheckbox.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold) // 수정: 폰트 사이즈 및 두께 설정
+        allAgreeCheckbox.setTitleColor(.font, for: .normal)
         allAgreeCheckbox.setImage(UIImage(systemName: "circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
         allAgreeCheckbox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
-        allAgreeCheckbox.tintColor = .black
+        allAgreeCheckbox.tintColor = .font
         allAgreeCheckbox.addTarget(self, action: #selector(allAgreeTapped), for: .touchUpInside)
         view.addSubview(allAgreeCheckbox)
 
         mandatoryAgreeCheckbox.setTitle(" (필수) 이용약관 및 개인정보처리방침", for: .normal)
         mandatoryAgreeCheckbox.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .regular) // 수정: 폰트 사이즈 및 두께 설정
-        mandatoryAgreeCheckbox.setTitleColor(.black, for: .normal)
+        mandatoryAgreeCheckbox.setTitleColor(.font, for: .normal)
         mandatoryAgreeCheckbox.setImage(UIImage(systemName: "circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
         mandatoryAgreeCheckbox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
-        mandatoryAgreeCheckbox.tintColor = .black
+        mandatoryAgreeCheckbox.tintColor = .font
         mandatoryAgreeCheckbox.addTarget(self, action: #selector(mandatoryAgreeTapped), for: .touchUpInside)
         view.addSubview(mandatoryAgreeCheckbox)
 
         optionalAgreeCheckbox.setTitle(" (선택) 마케팅활용동의 외", for: .normal)
         optionalAgreeCheckbox.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .regular) // 수정: 폰트 사이즈 및 두께 설정
-        optionalAgreeCheckbox.setTitleColor(.black, for: .normal)
+        optionalAgreeCheckbox.setTitleColor(.font, for: .normal)
         optionalAgreeCheckbox.setImage(UIImage(systemName: "circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
         optionalAgreeCheckbox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
-        optionalAgreeCheckbox.tintColor = .black
+        optionalAgreeCheckbox.tintColor = .font
         optionalAgreeCheckbox.addTarget(self, action: #selector(optionalAgreeTapped), for: .touchUpInside)
         view.addSubview(optionalAgreeCheckbox)
     }
@@ -224,7 +209,8 @@ class PrivacyPolicyViewController: BaseViewController {
     private func checkCompletionStatus() {
         let isAllRequiredSectionsCompleted = sectionAgreeStatus[0] && sectionAgreeStatus[1]
         agreeButton.isEnabled = isAllRequiredSectionsCompleted
-        agreeButton.backgroundColor = agreeButton.isEnabled ? .black : .lightGray
+        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        agreeButton.backgroundColor = agreeButton.isEnabled ? .font : lightGTolightB
     }
 }
 

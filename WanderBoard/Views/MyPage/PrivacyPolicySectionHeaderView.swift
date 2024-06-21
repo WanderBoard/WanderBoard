@@ -22,6 +22,7 @@ class PrivacyPolicySectionHeaderView: UITableViewHeaderFooterView {
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
         setupViews()
+        updateColor()
     }
 
     required init?(coder: NSCoder) {
@@ -37,14 +38,13 @@ class PrivacyPolicySectionHeaderView: UITableViewHeaderFooterView {
         titleStackView.isUserInteractionEnabled = false
         
         contentView.addSubview(titleStackView)
-        contentView.backgroundColor = .babygray
         contentView.layer.cornerRadius = 10
         
         titleLabel.font = UIFont.systemFont(ofSize: 14)
-        titleLabel.textColor = .darkgray
+        titleLabel.textColor = .font
         
         arrowImageView.image = UIImage(systemName: "chevron.right")
-        arrowImageView.tintColor = .darkgray
+        arrowImageView.tintColor = .font
         
         titleStackView.addArrangedSubview(titleLabel)
         titleStackView.addArrangedSubview(arrowImageView)
@@ -81,6 +81,19 @@ class PrivacyPolicySectionHeaderView: UITableViewHeaderFooterView {
         isExpanded.toggle()
         updateArrowImage()
         delegate?.didTapHeader(in: section)
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor(){
+        //베이비그레이-커스텀블랙
+        let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
+        contentView.backgroundColor = babyGTocustomB
     }
 }
 

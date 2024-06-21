@@ -24,15 +24,14 @@ class BlockedUserTableViewCell: UITableViewCell {
     }
     
     let nicknameLabel = UILabel().then {
-        $0.textColor = .black
+        $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
         $0.numberOfLines = 2
     }
     
     lazy var unblockButton = UIButton(type: .system).then {
         $0.setTitle("차단 해제", for: .normal)
-        $0.setTitleColor(.black, for: .normal)
-        $0.backgroundColor = .lightGray
+        $0.setTitleColor(.darkgray, for: .normal)
         $0.layer.cornerRadius = 22
         $0.addTarget(self, action: #selector(didTapUnblockButton), for: .touchUpInside)
     }
@@ -40,6 +39,7 @@ class BlockedUserTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
+        updateColor()
     }
     
     required init?(coder: NSCoder) {
@@ -69,6 +69,18 @@ class BlockedUserTableViewCell: UITableViewCell {
             $0.width.equalTo(110)
             $0.height.equalTo(44)
         }
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    func updateColor(){
+        //베이비그레이-라이트블랙
+        let babyGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "babygray")
+        unblockButton.backgroundColor = babyGTolightB
     }
     
     func configure(with user: BlockedUserSummary) {

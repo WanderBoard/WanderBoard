@@ -55,13 +55,13 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         
     private let mainLabel = UILabel().then {
         $0.text = ""
-        $0.font = .boldSystemFont(ofSize: 20)
+        $0.font = .boldSystemFont(ofSize: 17)
         $0.textAlignment = .center
     }
         
     private let subLabel = UILabel().then {
         $0.text = ""
-        $0.font = .systemFont(ofSize: 16)
+        $0.font = .systemFont(ofSize: 15)
         $0.textColor = .darkgray
         $0.textAlignment = .center
         $0.numberOfLines = 2
@@ -75,7 +75,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         
     lazy var addButton = UIButton().then {
         $0.setTitle("여행 추가하기", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
+        $0.titleLabel?.font = .systemFont(ofSize: 14, weight: .bold)
         $0.setTitleColor(.black, for: .normal)
         $0.backgroundColor = .babygray
         $0.layer.cornerRadius = 26

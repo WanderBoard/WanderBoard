@@ -59,7 +59,7 @@ class MateViewController: UIViewController {
     let noDataMainTitle = UILabel().then {
         $0.text = "검색결과가 없습니다"
         $0.textAlignment = .center
-        $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        $0.font = UIFont.systemFont(ofSize: 17, weight: .bold)
         $0.textColor = .font
         $0.isHidden = true
     }
@@ -67,7 +67,7 @@ class MateViewController: UIViewController {
     let noDataSubTitle = UILabel().then {
         $0.text = "검색을 통해 메이트를 추가해주세요"
         $0.textAlignment = .center
-        $0.font = UIFont.systemFont(ofSize: 16)
+        $0.font = UIFont.systemFont(ofSize: 15)
         $0.textColor = .darkgray
         $0.isHidden = true
     }
@@ -84,6 +84,7 @@ class MateViewController: UIViewController {
         fetchUsers()
         
         updateNoDataView(isEmpty: true)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -104,7 +105,7 @@ class MateViewController: UIViewController {
         noDataView.addSubview(noDataMainTitle)
         noDataView.addSubview(noDataSubTitle)
         
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
     }
 
     func setupConstraints() {
@@ -135,7 +136,7 @@ class MateViewController: UIViewController {
         imageView.snp.makeConstraints {
             $0.centerX.equalTo(noDataView)
             $0.centerY.equalTo(noDataView).offset(-40)
-            $0.width.height.equalTo(60)
+            $0.width.height.equalTo(45)
         }
         
         noDataMainTitle.snp.makeConstraints {

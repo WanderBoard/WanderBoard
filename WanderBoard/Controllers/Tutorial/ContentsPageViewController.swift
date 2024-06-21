@@ -55,7 +55,7 @@ class ContentsPageViewController: UIViewController {
     
     private var imageView = UIImageView()
     private let backImage = UIImageView().then(){
-        $0.image = UIImage(named: "BImage")
+        $0.image = UIImage(named: "bImage")
     }
     private var showXButton: Bool
     private var showWanderButton: Bool

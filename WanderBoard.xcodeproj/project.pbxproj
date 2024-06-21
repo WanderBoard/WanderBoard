@@ -871,8 +871,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = U68CWSQ94X;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WanderBoard/Info.plist;
-				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "앱이 사용자의 위치를 항상 사용할 때 권한이 필요합니다.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱이 사용자의 위치를 사용할 때 권한이 필요합니다.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱이 사용자의 위치를 사용하여 지도에서 현재 위치를 표시하고, 보다 나은 사용자 경험을 제공하기 위해 위치 접근 권한이 필요합니다. 앱은 사용자의 위치 정보를 다른 용도로 사용하지 않습니다.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "앱이 사진을 저장하기 위해 사진 라이브러리에 접근할 때 권한이 필요합니다.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "앱이 사용자의 사진 라이브러리에 접근할 때 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -912,8 +911,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = U68CWSQ94X;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WanderBoard/Info.plist;
-				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "앱이 사용자의 위치를 항상 사용할 때 권한이 필요합니다.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱이 사용자의 위치를 사용할 때 권한이 필요합니다.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱이 사용자의 위치를 사용하여 지도에서 현재 위치를 표시하고, 보다 나은 사용자 경험을 제공하기 위해 위치 접근 권한이 필요합니다. 앱은 사용자의 위치 정보를 다른 용도로 사용하지 않습니다.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "앱이 사진을 저장하기 위해 사진 라이브러리에 접근할 때 권한이 필요합니다.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "앱이 사용자의 사진 라이브러리에 접근할 때 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

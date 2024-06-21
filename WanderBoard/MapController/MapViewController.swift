@@ -58,7 +58,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         }
         viewModel.searchResultsHandler = { [weak self] _ in
             self?.tableView.reloadData()
-            self?.adjustTableViewHeight(to: min(self?.viewModel.searchResults.count ?? 0, 7))
+            self?.adjustTableViewHeight(to: min(self?.viewModel.searchResults.count ?? 0, 8))
         }
         if isFirstLoad {
             viewModel.checkLocationAuthorization()
@@ -95,8 +95,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             addPinToMap(location: location, address: "")
         }
     }
-    
-    
     
     private func setupPlaceInfoView() {
         view.addSubview(placeInfoView)
@@ -191,7 +189,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         let locationButton = UIButton(type: .system)
         locationButton.setImage(UIImage(systemName: "location.circle.fill"), for: .normal)
         locationButton.tintColor = .black
-        locationButton.addTarget(self, action: #selector(centerMapOnUserLocation), for: .touchUpInside)
+        locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
         view.addSubview(locationButton)
         locationButton.snp.makeConstraints { make in
             make.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
@@ -199,11 +197,50 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             make.width.height.equalTo(50)
         }
     }
+    
+    @objc private func locationButtonTapped() {
+        let status = locationManager.authorizationStatus
+        if status == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
+        } else if status == .authorizedWhenInUse {
+            centerMapOnUserLocation()
+        } else {
+            showLocationSettingsAlert()
+        }
+    }
+    
+    private func showLocationSettingsAlert() {
+        let alertController = UIAlertController(
+            title: "위치 접근 필요",
+            message: "설정에서 위치 접근을 허용해 주세요.",
+            preferredStyle: .alert
+        )
+        let settingsAction = UIAlertAction(title: "설정", style: .default) { (_) in
+            guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                return
+            }
+            if UIApplication.shared.canOpenURL(settingsUrl) {
+                UIApplication.shared.open(settingsUrl, completionHandler: { (success) in
+                    print("Settings opened: \(success)")
+                })
+            }
+        }
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        alertController.addAction(settingsAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
 
     @objc private func centerMapOnUserLocation() {
         if let location = locationManager.location {
             let region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
             mapView.setRegion(region, animated: true)
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
+            centerMapOnUserLocation()
         }
     }
 

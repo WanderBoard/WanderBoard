@@ -29,8 +29,6 @@ protocol DetailInputViewControllerDelegate: AnyObject {
 class DetailInputViewController: UIViewController, CalendarHostingControllerDelegate {
     
     var progressViewController: ProgressViewController?
-
-    private let locationManager = LocationManager()
     var savedLocation: CLLocationCoordinate2D?
     var savedPinLogId: String?
     var savedAddress: String?
@@ -702,35 +700,19 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         navigationController?.pushViewController(mateVC, animated: true)
     }
     
-    @objc func locationButtonTapped() {
-        Task {
-            let center: CLLocationCoordinate2D
-            if let savedLocation = savedLocation {
-                center = savedLocation
-            } else {
-                // 기본 위치 설정 (광화문)
-                center = CLLocationCoordinate2D(latitude: 37.5760222, longitude: 126.9769000)
-            }
-            
-            let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
-            
-            let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date(), onLocationSelected: { [weak self] (selectedLocation: CLLocationCoordinate2D, address: String) in
-                guard let self = self else { return }
-                self.updateLocationLabel(with: address)
-                self.savedLocation = selectedLocation
-                self.savedAddress = address
-                
-            })
-            
-            // 저장된 위치가 있으면 해당 위치에 핀을 생성
-            if let savedLocation = savedLocation, let savedAddress = savedAddress {
-                mapVC.addPinToMap(location: savedLocation, address: savedAddress)
-            }
-            
-            self.navigationController?.pushViewController(mapVC, animated: true)
-        }
+    @objc private func locationButtonTapped() {
+        presentMapViewController()
     }
     
+    private func presentMapViewController() {
+        let mapVC = MapViewController(region: MKCoordinateRegion(), startDate: Date(), endDate: Date(), onLocationSelected: { [weak self] (selectedLocation: CLLocationCoordinate2D, address: String) in
+            guard let self = self else { return }
+            self.updateLocationLabel(with: address)
+            self.savedLocation = selectedLocation
+            self.savedAddress = address
+        })
+        navigationController?.pushViewController(mapVC, animated: true)
+    }
     
     @objc func consumButtonTapped() {
         let spendVC = SpendingListViewController()

@@ -818,6 +818,8 @@ class DetailViewController: UIViewController {
         let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
         }
         mapVC.pinLocations = selectedImages.compactMap { $0.2 }
+        mapVC.shouldHideSearch = true
+        
         if let navigationController = self.navigationController {
             navigationController.pushViewController(mapVC, animated: true)
         } else {

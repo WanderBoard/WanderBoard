@@ -25,6 +25,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     private let pinLogManager = PinLogManager()
     private var savedPinLogId: String?
     var pinLocations: [CLLocationCoordinate2D] = []
+    var shouldHideSearch: Bool = false
 
 
     init(region: MKCoordinateRegion, startDate: Date, endDate: Date, onLocationSelected: @escaping (CLLocationCoordinate2D, String) -> Void) {
@@ -70,12 +71,19 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             addPinToMap(location: location, address: "")
         }
 
-        // Center map on the first pin location
         if let firstLocation = pinLocations.first {
             let region = MKCoordinateRegion(center: firstLocation, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
             mapView.setRegion(region, animated: true)
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
+        if shouldHideSearch {
+            navigationItem.titleView = nil
+            navigationItem.rightBarButtonItem = nil
+        }
     }
 
     private func setupMapView() {

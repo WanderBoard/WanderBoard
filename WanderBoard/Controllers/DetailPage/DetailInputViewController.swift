@@ -1120,12 +1120,46 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     @objc func showPHPicker() {
-        var config = PHPickerConfiguration()
-        config.selectionLimit = 10 - selectedImages.count
-        config.filter = .images
-        let picker = PHPickerViewController(configuration: config)
-        picker.delegate = self
-        present(picker, animated: true, completion: nil)
+        PHPhotoLibrary.requestAuthorization { status in
+            DispatchQueue.main.async {
+                switch status {
+                case .authorized, .limited:
+                    var config = PHPickerConfiguration()
+                    config.selectionLimit = 10 - self.selectedImages.count
+                    config.filter = .images
+                    let picker = PHPickerViewController(configuration: config)
+                    picker.delegate = self
+                    self.present(picker, animated: true, completion: nil)
+                case .denied, .restricted:
+                    self.showPhotoAccessDeniedAlert()
+                case .notDetermined:
+                    // 권한 요청 후 결과를 기다리므로 추가 처리 불필요
+                    break
+                @unknown default:
+                    fatalError("새로운 권한 상태")
+                }
+            }
+        }
+    }
+
+    private func showPhotoAccessDeniedAlert() {
+        let alertController = UIAlertController(
+            title: "사진 접근 권한 필요",
+            message: "사진을 선택하려면 설정에서 사진 접근 권한을 허용해주세요.",
+            preferredStyle: .alert
+        )
+        let settingsAction = UIAlertAction(title: "설정으로 이동", style: .default) { (_) in
+            guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                return
+            }
+            if UIApplication.shared.canOpenURL(settingsUrl) {
+                UIApplication.shared.open(settingsUrl, completionHandler: nil)
+            }
+        }
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        alertController.addAction(settingsAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
     }
     
     private func fetchAddress(for location: CLLocationCoordinate2D, completion: @escaping (String) -> Void) {

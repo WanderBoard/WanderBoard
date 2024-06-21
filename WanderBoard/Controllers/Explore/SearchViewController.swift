@@ -10,6 +10,7 @@ import SnapKit
 import Then
 import FirebaseFirestore
 
+@MainActor
 class SearchViewController: UIViewController, UISearchBarDelegate {
     
     //이미지 캐싱
@@ -197,7 +198,8 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentCollectionViewCell.identifier, for: indexPath) as? RecentCollectionViewCell else { return UICollectionViewCell() }
-        Task { await cell.configure(with: searchedLogs[indexPath.item]) }
+        let log = searchedLogs[indexPath.item]
+        Task { await cell.configure(with: log) }
         return cell
     }
 

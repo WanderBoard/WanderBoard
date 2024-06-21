@@ -818,6 +818,8 @@ class DetailViewController: UIViewController {
         let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
         }
         mapVC.pinLocations = selectedImages.compactMap { $0.2 }
+        mapVC.shouldHideSearch = true
+        
         if let navigationController = self.navigationController {
             navigationController.pushViewController(mapVC, animated: true)
         } else {
@@ -856,9 +858,14 @@ class DetailViewController: UIViewController {
     }
     
     @objc func moneyMoveButtonTapped() {
+        guard let pinLog = self.pinLog else {
+            print("PinLog is nil")
+            return
+        }
+        
         let spendVC = SpendingListViewController()
-        spendVC.pinLog = self.pinLog
-//        spendVC.shouldShowEditButton = false 세미:편집은 셀 스와이프로, 새 지출 내역작성은 펜버튼으로 진행(테이블뷰가 있으면 펜버튼이 보이고, 입력전으로 테이블뷰가 없으면 펜버튼이 없게 만들어서 shouldShowEditButton 기능이 불필요할 것 같아서 주석처리했습니다)
+        spendVC.pinLog = pinLog
+        spendVC.hideEditButton = !isCurrentUser(pinLog: pinLog)
         spendVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(spendVC, animated: true)
     }

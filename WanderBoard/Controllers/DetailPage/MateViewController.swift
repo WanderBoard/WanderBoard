@@ -263,6 +263,8 @@ extension MateViewController: MateTableViewCellDelegate {
                 addedMates.removeAll { $0.uid == filteredUsers[index].uid }
             }
             addedMatesCollectionView.reloadData()
+            updateAddedMatesCollectionViewVisibility()
+            addedMatesCollectionView.layoutIfNeeded()
         }
     }
 }
@@ -306,6 +308,8 @@ extension MateViewController: AddedMateCellDelegate {
                 tableView.reloadRows(at: [IndexPath(row: filteredIndex, section: 0)], with: .automatic)
             }
             addedMatesCollectionView.reloadData()
+            updateAddedMatesCollectionViewVisibility()
+            addedMatesCollectionView.layoutIfNeeded()
         }
     }
 }

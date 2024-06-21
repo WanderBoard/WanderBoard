@@ -209,7 +209,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             $0.left.equalToSuperview().inset(30)
             $0.right.equalTo(duplicateCheckButton.snp.left).offset(-10)
             $0.height.equalTo(43)
-            //$0.centerX.equalTo(view)
         }
         
         duplicateCheckButton.snp.makeConstraints { make in

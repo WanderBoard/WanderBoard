@@ -396,8 +396,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         setupConstraints()
         actionButton()
         setupTextView()
-        setupCollectionView()
         setupNavigationBar()
+        setupCollectionView()
         requestPhotoLibraryAccess()
         updateColor()
         
@@ -416,6 +416,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationItem.largeTitleDisplayMode = .never
+        
+        setupNavigationBar()
         
     }
     
@@ -897,31 +899,31 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     @objc func doneButtonTapped() {
-        guard let locationTitle = locationLeftLabel.text, locationTitle != "지역을 선택하세요" else {
+        guard let locationTitle = locationLeftLabel.text, !locationTitle.isEmpty, locationTitle != "지역을 선택하세요" else {
             showAlert(title: "지역 선택", message: "지역을 선택해주세요.")
             return
         }
-        
+
         guard let dateRange = dateLabel.text, dateRange != "날짜를 선택하세요" else {
             showAlert(title: "날짜 선택", message: "유효한 날짜를 선택해주세요.")
             return
         }
-        
+
         guard let mainTitle = mainTextField.text, !mainTitle.isEmpty, mainTextField.textColor != .lightgray else {
             showAlert(title: "제목 입력", message: "여행 제목을 입력해주세요.")
             return
         }
-        
+
         guard !selectedImages.isEmpty else {
             showAlert(title: "앨범 추가", message: "최소한 하나의 이미지를 선택해주세요.")
             return
         }
-        
+
         navigationItem.rightBarButtonItem?.isEnabled = false
-        
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        
+
         let dates = dateRange.split(separator: " ~ ")
         guard dates.count == 2,
               let startDate = dateFormatter.date(from: String(dates[0])),
@@ -929,7 +931,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             showAlert(title: "오류", message: "유효한 날짜를 선택해주세요.")
             return
         }
-        
+
         let title = mainTextField.text ?? ""
         let content = subTextField.text ?? ""
         let isPublic = publicSwitch.isOn
@@ -939,15 +941,15 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let longitude = savedLocation?.longitude ?? 0.0
         let totalSpendingAmount = calculateTotalSpendingAmount()
         let maxSpendingAmount = calculateMaxSpendingAmount()
-        
+
         let imageLocations = selectedImages.compactMap { $0.2 }
-        
+
         showProgressView()
-        
+
         Task {
             do {
                 var pinLog: PinLog
-                
+
                 if let existingPinLog = self.pinLog {
                     pinLog = existingPinLog
                     pinLog.location = locationTitle
@@ -984,9 +986,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                                     isSpendingPublic: isSpendingPublic,
                                     maxSpendingAmount: maxSpendingAmount,
                                     expenses: expenses)
-                    
+
                 }
-                
+
                 // 선택된 대표 이미지가 있으면 설정
                 if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
                     for i in 0..<selectedImages.count {
@@ -995,23 +997,18 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                 } else if !selectedImages.isEmpty {
                     selectedImages[0].1 = true
                 }
-                
+
                 let isRepresentativeFlags = selectedImages.map { $0.1 }
-                
+
                 let savedPinLog = try await pinLogManager.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations, isRepresentativeFlags: isRepresentativeFlags)
                 self.savedPinLogId = savedPinLog.id
                 self.pinLog = savedPinLog
                 delegate?.didSavePinLog(savedPinLog)
 
-                if let navigationController = self.navigationController {
-                    for viewController in navigationController.viewControllers {
-                        if viewController is MyTripsViewController {
-                            navigationController.popToViewController(viewController, animated: true)
-                            return
-                        }
-                    }
-                    dismiss(animated: true, completion: nil)
-                }
+                hideProgressView()
+                navigationItem.rightBarButtonItem?.isEnabled = true
+
+                dismiss(animated: true, completion: nil)
             } catch {
                 let alert = UIAlertController(title: "오류", message: "데이터 저장에 실패했습니다.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "확인", style: .default))

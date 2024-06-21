@@ -82,7 +82,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let barButtonItem = UIBarButtonItem(customView: doneButton)
         self.navigationItem.rightBarButtonItem = barButtonItem
         
-        profile.image = UIImage(named: "person.crop.circle.fill")
+        profile.image = UIImage(named: "person.crop.circle")
         profile.clipsToBounds = true
         profile.contentMode = .scaleAspectFill
         profile.layer.cornerRadius = 53
@@ -390,7 +390,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         //하단에서 이미지선택지 알람 등장(액션시트)
         let alert = UIAlertController(title: "프로필 사진 변경", message: nil, preferredStyle: .actionSheet)
         let changeToDefault = UIAlertAction(title: "기본으로 변경", style: .default) { _ in
-            self.profile.image = UIImage(systemName: "person.crop.circle.fill")
+            self.profile.image = UIImage(systemName: "person.crop.circle")
             self.addImageLayer.backgroundColor = UIColor(white: 1, alpha: 0.7)
             self.addImage.image = UIImage(systemName: "plus")
             self.addImage.tintColor = UIColor.textColorSub

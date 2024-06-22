@@ -36,7 +36,7 @@ class RecentCollectionViewCell: UICollectionViewCell {
     
     private let dateLabel = UILabel().then {
         $0.textColor = .white
-        $0.font = UIFont.systemFont(ofSize: 10)
+        $0.font = UIFont.systemFont(ofSize: 11)
         $0.textAlignment = .center
     }
     

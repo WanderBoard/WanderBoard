@@ -18,7 +18,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "person.crop.circle")
+        imageView.image = UIImage(named: "profileImg")
         imageView.contentMode = .scaleAspectFill
         imageView.tintColor = UIColor(named: "ButtonColor")
         imageView.isUserInteractionEnabled = true
@@ -711,7 +711,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         if let selectedImage = selectedImage {
             imageData = selectedImage.jpegData(compressionQuality: 0.75)!
         } else {
-            let defaultImage = UIImage(systemName: "person.crop.circle")!
+            let defaultImage = UIImage(named: "profileImg")!
             imageData = defaultImage.jpegData(compressionQuality: 0.75)!
         }
         

@@ -203,7 +203,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     override func configureUI() {
         navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(edit)), animated: true)
         
-        profile.image = UIImage(systemName: "person.crop.circle")
+        profile.backgroundColor = .black
         profile.layer.cornerRadius = 53
         profile.clipsToBounds = true
         profile.contentMode = .scaleAspectFill
@@ -250,7 +250,8 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 myID.text = "이메일 비공개"
             } else {
                 myID.text = userData.email
-                profile.image = UIImage(systemName: "person.crop.circle")
+                //profile.image = UIImage(named: "profileImg")
+                profile.backgroundColor = .white
             }
         }
     }
@@ -290,7 +291,8 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 }
             }
         } else {
-            profile.image = UIImage(systemName: "person.crop.circle")
+            //profile.image = UIImage(named: "profileImg")
+            profile.backgroundColor = .white
         }
     }
     
@@ -331,7 +333,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     //에딧창에서 추가해준 이름과 사진 불러오기
     func updateUserData(name: String, image: UIImage?) {
         myName.text = name
-        profile.image = image ?? UIImage(systemName: "person.crop.circle")
+        profile.image = image ?? UIImage(named: "profileImg")
     }
 }
 

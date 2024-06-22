@@ -407,7 +407,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         //하단에서 이미지선택지 알람 등장(액션시트)
         let alert = UIAlertController(title: "프로필 사진 변경", message: nil, preferredStyle: .actionSheet)
         let changeToDefault = UIAlertAction(title: "기본으로 변경", style: .default) { _ in
-            self.profile.image = UIImage(systemName: "person.crop.circle")
+            self.profile.image = UIImage(named: "profileImg")
             self.addImageLayer.backgroundColor = UIColor(white: 1, alpha: 0.7)
             self.addImage.image = UIImage(systemName: "plus")
             self.addImage.tintColor = UIColor.textColorSub

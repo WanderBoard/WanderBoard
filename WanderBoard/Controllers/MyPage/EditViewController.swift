@@ -82,7 +82,16 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let barButtonItem = UIBarButtonItem(customView: doneButton)
         self.navigationItem.rightBarButtonItem = barButtonItem
         
-        profile.image = UIImage(named: "person.crop.circle")
+        if let photoURLString = userData?.photoURL, let photoURL = URL(string: photoURLString) {
+                downloadImage(from: photoURL) { [weak self] image in
+                    DispatchQueue.main.async {
+                        self?.profile.image = image
+                    }
+                }
+        } else {
+            profile.image = UIImage(named: "profileImg")
+        }
+        //profile.image = UIImage(named: "profileImg")
         profile.clipsToBounds = true
         profile.contentMode = .scaleAspectFill
         profile.layer.cornerRadius = 53
@@ -110,6 +119,17 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         withdrawalB.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         withdrawalB.setTitleColor(UIColor(named: "lightgray"), for: .normal)
         withdrawalB.addTarget(self, action: #selector(TappedWithdrawalB), for: .touchUpInside)
+    }
+    
+    // 이미지 다운로드 메서드 추가
+    private func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else {
+                completion(nil)
+                return
+            }
+            completion(UIImage(data: data))
+        }.resume()
     }
     
     func getUserLogin() -> AuthDataResultModel? {
@@ -390,7 +410,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         //하단에서 이미지선택지 알람 등장(액션시트)
         let alert = UIAlertController(title: "프로필 사진 변경", message: nil, preferredStyle: .actionSheet)
         let changeToDefault = UIAlertAction(title: "기본으로 변경", style: .default) { _ in
-            self.profile.image = UIImage(systemName: "person.crop.circle")
+            self.profile.image = UIImage(named: "profileImg")
             self.addImageLayer.backgroundColor = UIColor(white: 1, alpha: 0.7)
             self.addImage.image = UIImage(systemName: "plus")
             self.addImage.tintColor = UIColor.textColorSub

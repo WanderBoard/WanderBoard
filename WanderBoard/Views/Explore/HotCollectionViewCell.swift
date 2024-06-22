@@ -111,9 +111,10 @@ class HotCollectionViewCell: UICollectionViewCell {
         
         // 프로필 사진
         if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: hotLog.authorId), let url = URL(string: photoURL) {
-            profile.kf.setImage(with: url, placeholder: UIImage(systemName: "person.crop.circle"))
+            profile.kf.setImage(with: url)
         } else {
-            profile.image = UIImage(systemName: "person.crop.circle") // 기본 프로필 이미지
+            //profile.image = UIImage(named: "profileImg") // 기본 프로필 이미지
+            profile.backgroundColor = .white
         }
     }
     

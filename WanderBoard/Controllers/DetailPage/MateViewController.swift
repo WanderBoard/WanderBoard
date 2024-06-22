@@ -203,7 +203,12 @@ class MateViewController: UIViewController {
     func searchFriends(with query: String) {
         guard let currentUserID = Auth.auth().currentUser?.uid else { return }
         let filteredByName = users.filter { $0.displayName.lowercased().contains(query.lowercased()) }
-        let filteredByEmail = users.filter { $0.email.lowercased().contains(query.lowercased()) }
+        let filteredByEmail: [UserSummary]
+        if query.contains("@") {
+            filteredByEmail = users.filter { $0.email.lowercased().contains(query.lowercased()) }
+        } else {
+            filteredByEmail = []
+        }
         filteredUsers = Array(Set(filteredByName + filteredByEmail)).filter { $0.uid != currentUserID }
         updateNoDataView(isEmpty: filteredUsers.isEmpty)
         tableView.reloadData()

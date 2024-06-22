@@ -15,9 +15,11 @@ import CoreData
 class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewControllerDelegate {
     
     let doneButton = UIButton()
-    let addImage = UIImageView().then(){
-        $0.image = UIImage(systemName: "plus")
-        $0.tintColor = UIColor(named: "textColorSub")
+    let addImage = UIImageView().then {
+        let config = UIImage.SymbolConfiguration(weight: .bold)
+        $0.image = UIImage(systemName: "plus", withConfiguration: config)
+        $0.tintColor = .lightblack
+        $0.contentMode = .scaleAspectFit
     }
     let addImageLayer = UIView().then(){
         $0.backgroundColor = UIColor(white: 1, alpha: 0.7)
@@ -72,26 +74,19 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(tapGestureRecognizer:)))
         profile.isUserInteractionEnabled = true
         profile.addGestureRecognizer(tapGestureRecognizer)
+        
+        doneButton.isEnabled = false
     }
     
     override func configureUI(){
         doneButton.setTitle("Done", for: .normal)
-        doneButton.setTitleColor(.font, for: .normal)
+        doneButton.setTitleColor(.lightgray, for: .normal)
         doneButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         doneButton.addTarget(self, action: #selector(moveToMyPage), for: .touchUpInside)
         let barButtonItem = UIBarButtonItem(customView: doneButton)
         self.navigationItem.rightBarButtonItem = barButtonItem
         
-        if let photoURLString = userData?.photoURL, let photoURL = URL(string: photoURLString) {
-                downloadImage(from: photoURL) { [weak self] image in
-                    DispatchQueue.main.async {
-                        self?.profile.image = image
-                    }
-                }
-        } else {
-            profile.image = UIImage(named: "profileImg")
-        }
-        //profile.image = UIImage(named: "profileImg")
+        profile.image = previousImage
         profile.clipsToBounds = true
         profile.contentMode = .scaleAspectFill
         profile.layer.cornerRadius = 53
@@ -119,17 +114,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         withdrawalB.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         withdrawalB.setTitleColor(UIColor(named: "lightgray"), for: .normal)
         withdrawalB.addTarget(self, action: #selector(TappedWithdrawalB), for: .touchUpInside)
-    }
-    
-    // 이미지 다운로드 메서드 추가
-    private func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data, error == nil else {
-                completion(nil)
-                return
-            }
-            completion(UIImage(data: data))
-        }.resume()
     }
     
     func getUserLogin() -> AuthDataResultModel? {
@@ -225,7 +209,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             $0.left.equalToSuperview().inset(30)
             $0.right.equalTo(duplicateCheckButton.snp.left).offset(-10)
             $0.height.equalTo(43)
-            //$0.centerX.equalTo(view)
         }
         
         duplicateCheckButton.snp.makeConstraints { make in
@@ -337,7 +320,12 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     
     @objc private func duplicateCheckTapped() {
         guard let nickname = nicknameTextField.text, !nickname.isEmpty else {
-            showAlert(title: "😗", message: "변경할 닉네임을 입력해주세요. \n입력하신 닉네임은 다른 사용자에게 노출됩니다.🤭")
+            showAlert(title: "😗", message: "변경할 닉네임을 입력해주세요 \n입력하신 닉네임은 다른 사용자에게 노출됩니다")
+            return
+        }
+        
+        if nickname.count < 2 || nickname.count > 16 {
+            showAlert(title: "😱", message: "글자 수를 맞춰주세요 \n 닉네임은 2자 이상, 16자 이하여야 합니다")
             return
         }
         
@@ -345,7 +333,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let nicknamePattern = "^[a-zA-Z0-9가-힣]+$"
         let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
         if !nicknamePredicate.evaluate(with: nickname) {
-            showAlert(title: "🤬", message: "닉네임에 특수문자를 포함할 수 없습니다.")
+            showAlert(title: "🤬", message: "닉네임에 특수문자를 포함할 수 없습니다")
             return
         }
         
@@ -353,9 +341,9 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             do {
                 let isDuplicate = try await FirestoreManager.shared.checkDisplayNameExists(displayName: nickname)
                 if isDuplicate {
-                    showAlert(title: "😱", message: "아쉽네요. 다른 사용자가 먼저 등록했어요")
+                    showAlert(title: "😱", message: "아쉽네요.. 다른 사용자가 먼저 등록했어요")
                 } else {
-                    showConfirmationAlert(title: "😁\n\(nickname)", message: "당신만의 멋진 닉네임이네요. \n이 닉네임을 사용하시겠습니까?", nickname: nickname)
+                    showConfirmationAlert(title: "😁\n\(nickname)", message: "당신만의 멋진 닉네임이네요! \n이 닉네임을 사용하시겠습니까?", nickname: nickname)
                 }
             } catch {
                 showAlert(title: "😵‍💫", message: "닉네임 확인 중 오류가 발생했습니다: \(error.localizedDescription)")
@@ -381,23 +369,32 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             self.duplicateCheckButton.isEnabled = false
             let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
             self.duplicateCheckButton.backgroundColor = babyGTocustomB
+            updateDoneButtonState()
         }
         
         let cancelAction = UIAlertAction(title: "취소", style: .cancel) { [weak self] _ in
             guard let self = self else { return }
-            self.nicknameTextField.text = ""
             self.nicknameTextField.isEnabled = true
             self.duplicateCheckButton.isEnabled = true
-            let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
-            self.duplicateCheckButton.backgroundColor = lightGTodarkG
-            let darkGTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
-            self.nicknameTextField.textColor = darkGTolightG
         }
         
         alert.addAction(useAction)
         alert.addAction(cancelAction)
         
         present(alert, animated: true, completion: nil)
+    }
+    
+    //저장버튼은 이 경우에서만 활성화 되도록
+    private func updateDoneButtonState() {
+        let isImageSelected = profile.image != previousImage
+        let isNicknameVaild = isNicknameValid(nicknameTextField.text)
+        doneButton.isEnabled = isImageSelected || isNicknameVaild
+        doneButton.setTitleColor(.font, for: .normal)
+    }
+    
+    private func isNicknameValid(_ nickname: String?) -> Bool {
+        guard let nickname = nickname, !nickname.isEmpty else { return false }
+        return nickname.count >= 2 && nickname.count <= 16 && nickname.range(of: "^[a-zA-Z0-9가-힣]+$", options: .regularExpression) != nil
     }
     
     //작성완료시 엔터 누르면 키보드 내려가기
@@ -414,6 +411,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             self.addImageLayer.backgroundColor = UIColor(white: 1, alpha: 0.7)
             self.addImage.image = UIImage(systemName: "plus")
             self.addImage.tintColor = UIColor.textColorSub
+            self.updateDoneButtonState()
         }
         let selectImage = UIAlertAction(title: "새로운 사진 등록", style: .default) { _ in
             var configuration = PHPickerConfiguration()
@@ -432,8 +430,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             alert.addAction($0)
         }
         present(alert, animated: true, completion: nil)
-        self.addImageLayer.backgroundColor = UIColor(white: 1, alpha: 0)
-        self.addImage.tintColor = UIColor.clear
     }
     
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
@@ -447,11 +443,12 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                     if let selectedImage = image as? UIImage {
                         self?.profile.image = selectedImage
                         self?.addImageLayer.backgroundColor = .clear
-                        self?.addImage.tintColor = UIColor.clear
+                        self?.addImage.tintColor = .clear
                     }
                 }
             }
         }
+        updateDoneButtonState()
     }
     
     override func updateColor() {
@@ -474,6 +471,10 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         let withdrawalColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
         withdrawalB.setTitleColor(withdrawalColor, for: .normal)
+        
+        let doneButtonCollor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+        doneButton.setTitleColor(doneButtonCollor, for: .normal)
+        
     }
     
     // ManagedObjectContext 가져오기

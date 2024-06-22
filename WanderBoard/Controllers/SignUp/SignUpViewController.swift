@@ -18,7 +18,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
-        
         imageView.image = UIImage(named: "profileImg")
         imageView.contentMode = .scaleAspectFill
         imageView.tintColor = UIColor(named: "ButtonColor")
@@ -27,10 +26,13 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         imageView.clipsToBounds = true
         return imageView
     }()
+    
     private let emailArea = UIView()
+    
     private let emailIcon = UIImageView().then(){
         $0.contentMode = .scaleAspectFit
     }
+    
     private let emailLabel: UILabel = {
         let label = UILabel()
         label.text = "이메일"
@@ -354,7 +356,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         nickNameLabel.snp.makeConstraints { make in
             make.top.equalTo(emailArea.snp.bottom).offset(20)
-            make.left.equalToSuperview().inset(34)
+            make.left.equalToSuperview().inset(48)
         }
         
         nicknameTextField.snp.makeConstraints { make in

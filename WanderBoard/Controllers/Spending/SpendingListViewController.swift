@@ -110,7 +110,6 @@ class SpendingListViewController: UIViewController {
         if hideEditButton {
             navigationItem.rightBarButtonItem = nil
         }
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {

@@ -209,7 +209,8 @@ class MateViewController: UIViewController {
         } else {
             filteredByEmail = []
         }
-        filteredUsers = Array(Set(filteredByName + filteredByEmail)).filter { $0.uid != currentUserID }
+        let combinedFilteredUsers = Array(Set(filteredByName + filteredByEmail))
+        filteredUsers = combinedFilteredUsers.filter { $0.uid != currentUserID && !$0.displayName.isEmpty && !$0.email.isEmpty }
         updateNoDataView(isEmpty: filteredUsers.isEmpty)
         tableView.reloadData()
     }

@@ -24,7 +24,7 @@ class LoginDirectorView: UIViewController {
     }
     let subLabel = UILabel().then(){
         $0.text = "로그인을 통해 당신의 여행 기록을 추가하고 \n 사람들과 소중한 순간을 공유해보세요"
-        $0.textColor = .darkgray
+        $0.textColor = .lightblack
         $0.font = UIFont.systemFont(ofSize: 15)
         $0.numberOfLines = 2
         $0.textAlignment = .center
@@ -95,7 +95,7 @@ class LoginDirectorView: UIViewController {
         let Bcolor = traitCollection.userInterfaceStyle == .dark ? UIColor(white: 0, alpha: 0.9) : UIColor(white: 1, alpha: 0.9)
         backGroundView.backgroundColor = Bcolor
         
-        let subLabelColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
+        let subLabelColor = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "lightblack")
         subLabel.textColor = subLabelColor
     }
 }

@@ -13,7 +13,7 @@ class RecentTableViewCell: UITableViewCell {
     weak var delegate: RecentTableViewCellDelegate?
     
     var logCount: Int = 0
-    var recentLogs: [PinLog] = []
+    var recentLogs: [PinLogSummary] = []
     var isLoadingMoreLogs = false
     
     let recentLabel = UILabel().then {
@@ -76,7 +76,7 @@ class RecentTableViewCell: UITableViewCell {
         layoutIfNeeded()
     }
 
-    func configure(with logs: [PinLog]) {
+    func configure(with logs: [PinLogSummary]) {
         recentLogs = logs
         logCount = logs.count
         recentCollectionView.reloadData()

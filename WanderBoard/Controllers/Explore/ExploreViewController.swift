@@ -15,8 +15,8 @@ class ExploreViewController: UIViewController, PageIndexed {
     var pageIndex: Int?
     var pageText: String?
     
-    var recentLogs: [PinLog] = []
-    var hotLogs: [PinLog] = []
+    var recentLogs: [PinLogSummary] = []
+    var hotLogs: [PinLogSummary] = []
     var blockedAuthors: [String] = []
     var hiddenPinLogs: [String] = []
     
@@ -82,15 +82,19 @@ class ExploreViewController: UIViewController, PageIndexed {
     }
 
     private func loadData() {
-        
         showProgressView()
         
         Task {
+            do {
 //            try await Task.sleep(nanoseconds: 3_000_000_000) // 프로그레스뷰 테스트용 강제지연 3초
-            self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
-            self.hiddenPinLogs = try await AuthenticationManager.shared.getHiddenPinLogs()
-            await loadHotData()
-            loadRecentData()
+                self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
+                self.hiddenPinLogs = try await AuthenticationManager.shared.getHiddenPinLogs()
+                
+                await loadHotData()
+                loadRecentData()
+            } catch {
+                print("Failed to fetch user data: \(error.localizedDescription)")
+            }
             hideProgressView()
         }
     }
@@ -134,7 +138,7 @@ class ExploreViewController: UIViewController, PageIndexed {
         maskedView.isUserInteractionEnabled = false
     }
     
-    private func filterBlockedAndHiddenLogs(from logs: [PinLog]) -> [PinLog] {
+    private func filterBlockedAndHiddenLogs(from logs: [PinLogSummary]) -> [PinLogSummary] {
         return logs.filter { !blockedAuthors.contains($0.authorId) && !hiddenPinLogs.contains($0.id ?? "") }
     }
     
@@ -143,23 +147,24 @@ class ExploreViewController: UIViewController, PageIndexed {
             switch result {
             case .success(let (logs, snapshot)):
                 self.recentLogs = self.filterBlockedAndHiddenLogs(from: logs)
-                self.recentLogs.sort { ($0.createdAt ?? Date.distantPast) > ($1.createdAt ?? Date.distantPast) }
+                self.recentLogs.sort { $0.createdAt > $1.createdAt }
                 self.calculateRecentCellHeight()
                 self.lastSnapshot = snapshot
                 DispatchQueue.main.async {
-                    self.tableView.reloadData()
+                    let indexPath = IndexPath(row: 1, section: 0)
+                    self.tableView.reloadRows(at: [indexPath], with: .automatic)
                 }
             case .failure(let error):
                 print("Failed to fetch initial data: \(error.localizedDescription)")
             }
         }
     }
-    
+
     func loadHotData() async {
         do {
             let logs = try await pinLogManager.fetchHotPinLogs()
             await MainActor.run {
-                self.hotLogs = filterBlockedAndHiddenLogs(from: logs)
+                self.hotLogs = self.filterBlockedAndHiddenLogs(from: logs)
                 let indexPath = IndexPath(row: 0, section: 0)
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
@@ -233,8 +238,9 @@ extension ExploreViewController: HotTableViewCellDelegate {
     
     func hotTableViewCell(_ cell: HotTableViewCell, didSelectItemAt indexPath: IndexPath) {
         let detailVC = DetailViewController()
-        let hotPinLog = cell.hotPinLogs[indexPath.item]
-        detailVC.pinLog = hotPinLog
+        let hotPinLogSummary = cell.hotPinLogs[indexPath.item]
+        
+        detailVC.pinLogId = hotPinLogSummary.id
         detailVC.delegate = self
         let navController = UINavigationController(rootViewController: detailVC)
         navController.modalPresentationStyle = .fullScreen
@@ -244,9 +250,10 @@ extension ExploreViewController: HotTableViewCellDelegate {
 
 extension ExploreViewController: RecentTableViewCellDelegate {
     func recentTableViewCell(_ cell: RecentTableViewCell, didSelectItemAt indexPath: IndexPath) {
+        let selectedPinLogSummary = cell.recentLogs[indexPath.item]
+        
         let detailVC = DetailViewController()
-        let selectedPinLog = cell.recentLogs[indexPath.item]
-        detailVC.pinLog = selectedPinLog
+        detailVC.pinLogId = selectedPinLogSummary.id
         detailVC.delegate = self
         let navController = UINavigationController(rootViewController: detailVC)
         navController.modalPresentationStyle = .fullScreen
@@ -257,16 +264,16 @@ extension ExploreViewController: RecentTableViewCellDelegate {
         guard let lastSnapshot = lastSnapshot, !isLoading else {
             return
         }
-
+        
         isLoading = true
-
+        
         pinLogManager.fetchMoreData(pageSize: 30, lastSnapshot: lastSnapshot) { result in
             self.isLoading = false
             switch result {
             case .success(let (newLogs, newSnapshot)):
                 let filteredNewLogs = self.filterBlockedAndHiddenLogs(from: newLogs)
                 self.recentLogs.append(contentsOf: filteredNewLogs)
-                self.recentLogs.sort { ($0.createdAt ?? Date.distantPast) > ($1.createdAt ?? Date.distantPast) }
+                self.recentLogs.sort { $0.createdAt > $1.createdAt }
                 self.calculateRecentCellHeight()
                 self.lastSnapshot = newSnapshot
                 DispatchQueue.main.async {
@@ -275,7 +282,6 @@ extension ExploreViewController: RecentTableViewCellDelegate {
                         cell.updateItemCount(self.recentLogs.count)
                     }
                 }
-                //print("Loaded more logs, total count: \(self.recentLogs.count)")
             case .failure(let error):
                 print("Failed to fetch more data: \(error.localizedDescription)")
             }
@@ -291,13 +297,22 @@ extension ExploreViewController: DetailViewControllerDelegate {
     }
     
     func didUpdatePinButton(_ updatedPinLog: PinLog) {
+        let updatedPinLogSummary = PinLogSummary(
+            id: updatedPinLog.id,
+            location: updatedPinLog.location,
+            startDate: updatedPinLog.startDate,
+            representativeMediaURL: updatedPinLog.media.first { $0.isRepresentative }?.url,
+            authorId: updatedPinLog.authorId,
+            createdAt: updatedPinLog.createdAt ?? Date()
+        )
+        
         if let index = recentLogs.firstIndex(where: { $0.id == updatedPinLog.id }) {
-            recentLogs[index] = updatedPinLog
+            recentLogs[index] = updatedPinLogSummary
             tableView.reloadData()
         }
         
         if let hotIndex = hotLogs.firstIndex(where: { $0.id == updatedPinLog.id }) {
-            hotLogs[hotIndex] = updatedPinLog
+            hotLogs[hotIndex] = updatedPinLogSummary
             tableView.reloadData()
         }
     }

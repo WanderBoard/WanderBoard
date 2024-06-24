@@ -103,6 +103,7 @@
 		9592A3D92C1F436500CF6FD6 /* BlockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9592A3D82C1F436500CF6FD6 /* BlockTableViewCell.swift */; };
 		FB0C32442C14C2D000DD2F00 /* WanderBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FB0C32422C14C2D000DD2F00 /* WanderBoard.xcdatamodeld */; };
 		FB3793AD2C1D6854009C1268 /* AccountDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */; };
+		FB4D9A532C285D8B00A31424 /* MyTripPinLogSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB4D9A522C285D8B00A31424 /* MyTripPinLogSummary.swift */; };
 		FB501A642C1F2CB70083E796 /* BlockedUserSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB501A632C1F2CB70083E796 /* BlockedUserSummary.swift */; };
 		FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */; };
 		FB9A3AD62C1984A200E1EAA2 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */; };
@@ -200,6 +201,7 @@
 		9592A3D82C1F436500CF6FD6 /* BlockTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockTableViewCell.swift; sourceTree = "<group>"; };
 		FB0C32432C14C2D000DD2F00 /* WanderBoard.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WanderBoard.xcdatamodel; sourceTree = "<group>"; };
 		FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionManager.swift; sourceTree = "<group>"; };
+		FB4D9A522C285D8B00A31424 /* MyTripPinLogSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTripPinLogSummary.swift; sourceTree = "<group>"; };
 		FB501A632C1F2CB70083E796 /* BlockedUserSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUserSummary.swift; sourceTree = "<group>"; };
 		FB9A3AD32C1984A200E1EAA2 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
 		FB9A3AD42C1984A200E1EAA2 /* NotificationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
@@ -366,6 +368,7 @@
 				4D21E85A2C1B39E7002FDBC9 /* UserSummary.swift */,
 				FB501A632C1F2CB70083E796 /* BlockedUserSummary.swift */,
 				FBB8AC772C22AB9100B62256 /* PinLogSummary.swift */,
+				FB4D9A522C285D8B00A31424 /* MyTripPinLogSummary.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -705,6 +708,7 @@
 				2A76551D2C06EE1000D8A098 /* ErrorUtility.swift in Sources */,
 				2A18AB122C147D6C00E88171 /* PlaceInfoView.swift in Sources */,
 				2A1D31EC2C1C108800288C71 /* CalendarView.swift in Sources */,
+				FB4D9A532C285D8B00A31424 /* MyTripPinLogSummary.swift in Sources */,
 				4DB75A052C13416E001813C3 /* GalleryDetailViewController.swift in Sources */,
 				2A76552C2C073F2F00D8A098 /* SignInWithKakao.swift in Sources */,
 				FB9A3AD52C1984A200E1EAA2 /* PageViewController.swift in Sources */,

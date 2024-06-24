@@ -18,8 +18,8 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
     
     var searchKeyword: String?
     
-    var allTripLogs: [PinLog] = []
-    var searchedLogs: [PinLog] = []
+    var allTripLogs: [PinLogSummary] = []
+    var searchedLogs: [PinLogSummary] = []
     
     var blockedAuthors: [String] = []
     var hiddenPinLogs: [String] = []
@@ -82,10 +82,6 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         }
     }
     
-    private func filterBlockedAuthors(from logs: [PinLog]) -> [PinLog] {
-        return logs.filter { !blockedAuthors.contains($0.authorId) }
-    }
-    
     private func applyFilterAndReload() {
         DispatchQueue.main.async {
             var filteredLogs = self.allTripLogs.filter { !self.blockedAuthors.contains($0.authorId) && !self.hiddenPinLogs.contains($0.id ?? "") }
@@ -113,6 +109,10 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
         }
     }
     
+    private func filterBlockedAndHiddenLogs(from logs: [PinLogSummary]) -> [PinLogSummary] {
+        return logs.filter { !blockedAuthors.contains($0.authorId) && !hiddenPinLogs.contains($0.id ?? "") }
+    }
+    
     func loadAllData() async {
         isLoading = true
         pinLogManager.fetchInitialData(pageSize: pageSize) { [weak self] result in
@@ -120,9 +120,9 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             self.isLoading = false
             switch result {
             case .success(let (logs, lastSnapshot)):
-                self.allTripLogs = self.filterBlockedAuthors(from: logs)
+                self.allTripLogs = self.filterBlockedAndHiddenLogs(from: logs)
+                self.allTripLogs.sort { $0.startDate > $1.startDate }
                 self.searchedLogs = self.allTripLogs
-                self.allTripLogs.sort { ($0.pinCount ?? 0) > ($1.pinCount ?? 0) }
                 self.applyFilterAndReload()
                 self.lastDocumentSnapshot = lastSnapshot
             case .failure(let error):
@@ -130,7 +130,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             }
         }
     }
-    
+        
     private func fetchMoreData() {
         guard !isLoading, let lastSnapshot = lastDocumentSnapshot else { return }
         
@@ -140,8 +140,7 @@ class SearchViewController: UIViewController, UISearchBarDelegate {
             self.isLoading = false
             switch result {
             case .success(let (logs, lastSnapshot)):
-                //print("More data fetched: \(logs.count) logs")
-                self.allTripLogs.append(contentsOf: self.filterBlockedAuthors(from: logs))
+                self.allTripLogs.append(contentsOf: self.filterBlockedAndHiddenLogs(from: logs))
                 self.searchedLogs = self.allTripLogs
                 self.applyFilterAndReload()
                 self.lastDocumentSnapshot = lastSnapshot
@@ -207,7 +206,7 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         NotificationHelper.changePage(hidden: true, isEnabled: false)
         let detailVC = DetailViewController()
         let selectedItem = searchedLogs[indexPath.item]
-        detailVC.pinLog = selectedItem
+        detailVC.pinLogId = selectedItem.id
         detailVC.delegate = self
         navigationController?.pushViewController(detailVC, animated: true)
     }
@@ -260,9 +259,17 @@ extension SearchViewController: DetailViewControllerDelegate {
     }
     
     func didUpdatePinButton(_ updatedPinLog: PinLog) {
-        print("Received updated pin log via delegate")
+        let updatedPinLogSummary = PinLogSummary(
+            id: updatedPinLog.id,
+            location: updatedPinLog.location,
+            startDate: updatedPinLog.startDate,
+            representativeMediaURL: updatedPinLog.media.first { $0.isRepresentative }?.url,
+            authorId: updatedPinLog.authorId,
+            createdAt: updatedPinLog.createdAt ?? Date()
+        )
+        
         if let index = searchedLogs.firstIndex(where: { $0.id == updatedPinLog.id }) {
-            searchedLogs[index] = updatedPinLog
+            searchedLogs[index] = updatedPinLogSummary
             collectionView.reloadData()
         }
     }

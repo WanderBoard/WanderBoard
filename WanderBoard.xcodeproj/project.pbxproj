@@ -302,6 +302,40 @@
 			path = Component;
 			sourceTree = "<group>";
 		};
+		4D13BB9C2C29262B004AE016 /* Gallery */ = {
+			isa = PBXGroup;
+			children = (
+				4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */,
+				4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */,
+			);
+			path = Gallery;
+			sourceTree = "<group>";
+		};
+		4D13BB9D2C292638004AE016 /* MateDetail */ = {
+			isa = PBXGroup;
+			children = (
+				4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */,
+				4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */,
+			);
+			path = MateDetail;
+			sourceTree = "<group>";
+		};
+		4D13BB9E2C29269D004AE016 /* MateInput */ = {
+			isa = PBXGroup;
+			children = (
+				4D21E8582C1AB960002FDBC9 /* MateTableViewCell.swift */,
+				4D21E85E2C1B4C8A002FDBC9 /* AddedMateCell.swift */,
+			);
+			path = MateInput;
+			sourceTree = "<group>";
+		};
+		4D13BB9F2C2926B8004AE016 /* DetailView */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = DetailView;
+			sourceTree = "<group>";
+		};
 		4D9D8B432C05B1BD0043E7DF = {
 			isa = PBXGroup;
 			children = (
@@ -363,11 +397,11 @@
 			isa = PBXGroup;
 			children = (
 				2A9BED2B2C08B6C60032C403 /* PinLog.swift */,
+				FBB8AC772C22AB9100B62256 /* PinLogSummary.swift */,
 				2A9BED2D2C08B71D0032C403 /* Invitation.swift */,
 				2A8AB1792C1240E500C5244F /* User.swift */,
 				4D21E85A2C1B39E7002FDBC9 /* UserSummary.swift */,
 				FB501A632C1F2CB70083E796 /* BlockedUserSummary.swift */,
-				FBB8AC772C22AB9100B62256 /* PinLogSummary.swift */,
 				FB4D9A522C285D8B00A31424 /* MyTripPinLogSummary.swift */,
 			);
 			path = Models;
@@ -506,12 +540,10 @@
 		4DC759922C2064AD00976FAA /* DetailPage */ = {
 			isa = PBXGroup;
 			children = (
-				4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */,
-				4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */,
-				4DFA37662C07712D001B03F8 /* FriendCollectionViewCell.swift */,
-				4D8947342C0F357C0057F083 /* FriendInputCollectionViewCell.swift */,
-				4D21E85E2C1B4C8A002FDBC9 /* AddedMateCell.swift */,
-				4D21E8582C1AB960002FDBC9 /* MateTableViewCell.swift */,
+				4D13BB9F2C2926B8004AE016 /* DetailView */,
+				4D13BB9C2C29262B004AE016 /* Gallery */,
+				4D13BB9D2C292638004AE016 /* MateDetail */,
+				4D13BB9E2C29269D004AE016 /* MateInput */,
 			);
 			path = DetailPage;
 			sourceTree = "<group>";

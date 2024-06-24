@@ -762,47 +762,64 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
-        let storageRef = Storage.storage().reference().child("profileImages/\(uid).jpg")
-        
-        let imageData: Data
-        
+        // selectedImage가 있으면 설정, 없으면 기본 이미지 설정
         if let selectedImage = selectedImage {
-            imageData = selectedImage.jpegData(compressionQuality: 0.75)!
-        } else {
-            let defaultImage = UIImage(named: "profileImg")!
-            imageData = defaultImage.jpegData(compressionQuality: 0.75)!
+            profileImageView.image = selectedImage
         }
         
-        storageRef.putData(imageData, metadata: nil) { metadata, error in
-            if let error = error {
-                print("Error uploading profile image: \(error)")
-                return
-            }
-            
-            storageRef.downloadURL { url, error in
-                guard let downloadURL = url else {
-                    print("Error getting download URL: \(error?.localizedDescription ?? "Unknown error")")
+        // 임시 뷰 생성 및 캡쳐
+        let temporaryView = UIView(frame: profileImageView.bounds)
+        temporaryView.backgroundColor = profileImageView.backgroundColor
+        let tempImageView = UIImageView(image: profileImageView.image)
+        tempImageView.frame = profileImageView.bounds
+        tempImageView.layer.cornerRadius = profileImageView.layer.cornerRadius
+        tempImageView.clipsToBounds = true
+        temporaryView.addSubview(tempImageView)
+        
+        let tempLabel = UILabel(frame: nameLabel.frame)
+        tempLabel.text = nameLabel.text
+        tempLabel.font = nameLabel.font
+        tempLabel.textColor = nameLabel.textColor
+        tempLabel.textAlignment = nameLabel.textAlignment
+        tempLabel.center = tempImageView.center
+        temporaryView.addSubview(tempLabel)
+        
+        let profileImageWithLabel = temporaryView.asImage()
+        
+        let storageRef = Storage.storage().reference().child("profileImages/\(uid).jpg")
+        
+        if let imageData = profileImageWithLabel.jpegData(compressionQuality: 0.75) {
+            storageRef.putData(imageData, metadata: nil) { metadata, error in
+                if let error = error {
+                    print("Error uploading profile image: \(error)")
                     return
                 }
                 
-                Firestore.firestore().collection("users").document(uid).updateData([
-                    "displayName": nickname,
-                    "photoURL": downloadURL.absoluteString,
-                    "gender": self.gender,
-                    "interests": self.interestTags,
-                    "isProfileComplete": true,
-                    "isLoggedIn": true,
-                    "agreedToTerms": self.agreedToTerms,
-                    "agreedToPrivacyPolicy": self.agreedToPrivacyPolicy,
-                    "agreedToMarketing": self.agreedToMarketing,
-                    "agreedToThirdParty": self.agreedToThirdParty,
-                    "joinedDate": FieldValue.serverTimestamp()
-                ]) { error in
-                    if let error = error {
-                        print("Error updating user data: \(error)")
+                storageRef.downloadURL { url, error in
+                    guard let downloadURL = url else {
+                        print("Error getting download URL: \(error?.localizedDescription ?? "Unknown error")")
                         return
                     }
-                    self.switchToPageViewController()
+                    
+                    Firestore.firestore().collection("users").document(uid).updateData([
+                        "displayName": nickname,
+                        "photoURL": downloadURL.absoluteString,
+                        "gender": self.gender,
+                        "interests": self.interestTags,
+                        "isProfileComplete": true,
+                        "isLoggedIn": true,
+                        "agreedToTerms": self.agreedToTerms,
+                        "agreedToPrivacyPolicy": self.agreedToPrivacyPolicy,
+                        "agreedToMarketing": self.agreedToMarketing,
+                        "agreedToThirdParty": self.agreedToThirdParty,
+                        "joinedDate": FieldValue.serverTimestamp()
+                    ]) { error in
+                        if let error = error {
+                            print("Error updating user data: \(error)")
+                            return
+                        }
+                        self.switchToPageViewController()
+                    }
                 }
             }
         }
@@ -838,5 +855,14 @@ extension SignUpViewController {
 extension UIViewController {
     override open func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
+    }
+}
+
+extension UIView {
+    func asImage() -> UIImage {
+        let renderer = UIGraphicsImageRenderer(bounds: bounds)
+        return renderer.image { rendererContext in
+            layer.render(in: rendererContext.cgContext)
+        }
     }
 }

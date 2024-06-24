@@ -31,7 +31,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window?.makeKeyAndVisible()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                self.window?.rootViewController = AuthenticationVC()
+                self.window?.rootViewController = PageViewController()
                 self.window?.makeKeyAndVisible()
             }
             return

@@ -27,6 +27,8 @@ class DetailViewController: UIViewController {
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
     var selectedFriends: [UIImage] = []
     
+    //로직 변경하면서 핀로그 id만 가져오도록
+    var pinLogId: String?
     var pinLog: PinLog?
     let pinLogManager = PinLogManager()
     
@@ -317,6 +319,7 @@ class DetailViewController: UIViewController {
         
         //한빛
         checkId()
+        loadData() //id로 데이터 불러오기
         
         view.backgroundColor = .systemBackground
     }
@@ -326,11 +329,6 @@ class DetailViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
         
         galleryCollectionView.reloadData()
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        print(pinButton.frame.size)
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -362,6 +360,20 @@ class DetailViewController: UIViewController {
         maxConsumptionLabel.textColor = darkBTolightG
         moneyMoveButton.tintColor = darkBTolightG
         maxConsumptionLabel.textColor = darkBTolightG
+    }
+    
+    //id로 데이터 불러오기 - 한빛
+    func loadData() {
+        guard let pinLogId = pinLogId else { return }
+        pinLogManager.fetchPinLog(by: pinLogId) { [weak self] result in
+            switch result {
+            case .success(let pinLog):
+                self?.pinLog = pinLog
+                self?.checkId() // 데이터 로드 후 UI 업데이트
+            case .failure(let error):
+                print("Failed to fetch pin log: \(error)")
+            }
+        }
     }
     
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
@@ -911,7 +923,7 @@ class DetailViewController: UIViewController {
             }
             
             let hideAction = UIAction(title: "게시글 숨기기", image: UIImage(systemName: "eye.slash.circle")) { _ in
-                let hideAlert = UIAlertController(title: "", message: "게시물을 숨기시겠습니까? \n 숨긴 게시글은 다시 볼 수 없습니다.", preferredStyle: .alert)
+                let hideAlert = UIAlertController(title: "", message: "게시글을 숨기시겠습니까? \n 숨긴 게시글은 다시 볼 수 없습니다.", preferredStyle: .alert)
                 hideAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
                 hideAlert.addAction(UIAlertAction(title: "숨기기", style: .destructive, handler: { [weak self] _ in
                     self?.hidePinLog()

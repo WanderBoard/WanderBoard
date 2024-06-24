@@ -19,14 +19,37 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
         
-        imageView.image = UIImage(named: "profileImage")
-        imageView.contentMode = .scaleAspectFill
-        imageView.tintColor = UIColor(named: "ButtonColor")
+//        imageView.image = UIImage(named: "profileImage")
+//        imageView.contentMode = .scaleAspectFill
+//        imageView.tintColor = UIColor(named: "ButtonColor")
         imageView.isUserInteractionEnabled = true
         imageView.layer.cornerRadius = 50
         imageView.clipsToBounds = true
+        
+        let backgroundColors = [
+            UIColor(named: "ProfileBackgroundColor1"),
+            UIColor(named: "ProfileBackgroundColor2"),
+            UIColor(named: "ProfileBackgroundColor3"),
+            UIColor(named: "ProfileBackgroundColor4"),
+            UIColor(named: "ProfileBackgroundColor5"),
+            UIColor(named: "ProfileBackgroundColor6"),
+            UIColor(named: "ProfileBackgroundColor7")
+        ]
+        
+        imageView.backgroundColor = backgroundColors.randomElement()!
+        
         return imageView
     }()
+    
+    private let nameLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 30, weight: .medium)
+        label.textColor = .black
+        label.textAlignment = .center
+        
+        return label
+    }()
+    
     private let emailArea = UIView()
     private let emailIcon = UIImageView()
     private let emailLabel: UILabel = {
@@ -302,6 +325,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         }
     }
     
+    
+    
     private func setupViews() {
         
         signUpButton.isEnabled = false
@@ -309,6 +334,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         signUpButton.backgroundColor = babyGTocustomB
         
         view.addSubview(profileImageView)
+        profileImageView.addSubview(nameLabel)
         view.addSubview(emailArea)
         emailArea.addSubview(emailIcon)
         emailArea.addSubview(emailLabel)
@@ -332,6 +358,14 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             make.width.equalTo(106)
             make.height.equalTo(106)
         }
+        
+        nameLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
+            make.width.equalTo(profileImageView.snp.width).multipliedBy(0.8)
+            make.height.equalTo(profileImageView.snp.height).multipliedBy(0.5)
+        }
+        
         emailArea.snp.makeConstraints(){
             $0.top.equalTo(profileImageView.snp.bottom).offset(30)
             $0.centerX.equalTo(view)
@@ -627,6 +661,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         let useAction = UIAlertAction(title: "사용", style: .default) { [weak self] _ in
             guard let self = self else { return }
+            
+            self.confirmButtonTapped(with: nickname)
             self.nicknameTextField.isEnabled = false
             self.duplicateCheckButton.isEnabled = false
             let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
@@ -649,6 +685,23 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         alert.addAction(cancelAction)
         
         present(alert, animated: true, completion: nil)
+    }
+    
+    private func confirmButtonTapped(with nickname: String) {
+        let shortNickname = String(nickname.prefix(2))
+        nameLabel.text = shortNickname
+        
+        let backgroundColors = [
+            UIColor(named: "ProfileBackgroundColor1"),
+            UIColor(named: "ProfileBackgroundColor2"),
+            UIColor(named: "ProfileBackgroundColor3"),
+            UIColor(named: "ProfileBackgroundColor4"),
+            UIColor(named: "ProfileBackgroundColor5"),
+            UIColor(named: "ProfileBackgroundColor6"),
+            UIColor(named: "ProfileBackgroundColor7")
+        ]
+        
+        profileImageView.backgroundColor = backgroundColors.randomElement()!
     }
     
     @objc private func selectGender(_ sender: UIButton) {

@@ -86,14 +86,12 @@ import KakaoSDKAuth
                      DispatchQueue.main.async {
                          if isProfileComplete {
                              self.window?.rootViewController = PageViewController()
-                         } else {
-                             self.window?.rootViewController = AuthenticationVC()
-                         }
+                         } 
                          self.window?.makeKeyAndVisible()
                      }
                  } else {
                      DispatchQueue.main.async {
-                         self.window?.rootViewController = AuthenticationVC()
+                         self.window?.rootViewController = PageViewController()
                          self.window?.makeKeyAndVisible()
                      }
                  }
@@ -106,7 +104,7 @@ import KakaoSDKAuth
              window?.makeKeyAndVisible()
              
              DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                 self.window?.rootViewController = AuthenticationVC()
+                 self.window?.rootViewController = PageViewController()
                  self.window?.makeKeyAndVisible()
              }
              return

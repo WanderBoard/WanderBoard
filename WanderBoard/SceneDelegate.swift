@@ -25,12 +25,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             // 사용자가 로그인된 상태
             initialViewController = PageViewController()
         } else {
-            // 사용자 로그아웃 상태 시 LaunchViewController를 3초 동안 보여준 후 AuthenticationVC로 이동
             initialViewController = LaunchViewController()
             window?.rootViewController = initialViewController
             window?.makeKeyAndVisible()
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.4) {
                 self.window?.rootViewController = PageViewController()
                 self.window?.makeKeyAndVisible()
             }

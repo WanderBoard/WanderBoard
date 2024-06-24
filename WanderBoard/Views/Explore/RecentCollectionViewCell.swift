@@ -36,7 +36,7 @@ class RecentCollectionViewCell: UICollectionViewCell {
     
     private let dateLabel = UILabel().then {
         $0.textColor = .white
-        $0.font = UIFont.systemFont(ofSize: 10)
+        $0.font = UIFont.systemFont(ofSize: 11)
         $0.textAlignment = .center
     }
     
@@ -99,7 +99,7 @@ class RecentCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func configure(with recentLog: PinLog) async {
+    func configure(with recentLog: PinLogSummary) async {
         localLabel.text = recentLog.location
         dateLabel.text = formatDate(recentLog.startDate)
         
@@ -107,11 +107,12 @@ class RecentCollectionViewCell: UICollectionViewCell {
         backImg.image = nil
         
         // 대표 이미지
-        if let imageUrl = recentLog.media.first(where: { $0.isRepresentative })?.url ?? recentLog.media.first?.url, let url = URL(string: imageUrl) {
-            backImg.kf.setImage(with: url, placeholder: UIImage(systemName: "photo"))
+        if let imageUrl = recentLog.representativeMediaURL, let url = URL(string: imageUrl) {
+            backImg.kf.setImage(with: url)
         } else {
-            backImg.image = UIImage(systemName: "photo") // 임시 기본 이미지
+            backImg.backgroundColor = .black
         }
+
     }
     
     private func loadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {

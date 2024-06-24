@@ -102,7 +102,7 @@ struct PinLog: Identifiable, Codable {
     var totalSpendingAmount: Int? //핀로그당 사용한 최종금액 - 시안
     var isSpendingPublic: Bool
     var maxSpendingAmount: Int?
-    var expenses: [DailyExpenses]? // 지출 데이터 추가 (옵셔널)
+    var expenses: [DailyExpenses]?
     
     init(id: String? = nil, location: String, address: String, latitude: Double, longitude: Double, startDate: Date, endDate: Date, title: String, content: String, media: [Media], authorId: String, attendeeIds: [String], isPublic: Bool, createdAt: Date?, pinCount:Int?, pinnedBy: [String]? = [],  totalSpendingAmount: Int?, isSpendingPublic: Bool, maxSpendingAmount: Int?, expenses: [DailyExpenses]? = nil) {
         

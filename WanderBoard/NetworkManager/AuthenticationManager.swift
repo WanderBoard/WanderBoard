@@ -141,7 +141,8 @@ final class AuthenticationManager {
     // 차단된 작성자 목록 가져오기
     func getBlockedAuthors() async throws -> [String] {
         guard let currentUser = Auth.auth().currentUser else {
-            throw URLError(.badServerResponse)
+//            throw URLError(.badServerResponse)
+            return []
         }
         return try await FirestoreManager.shared.getBlockedAuthors(userId: currentUser.uid)
     }
@@ -156,7 +157,8 @@ final class AuthenticationManager {
     
     func getHiddenPinLogs() async throws -> [String] {
         guard let currentUser = Auth.auth().currentUser else {
-            throw URLError(.badServerResponse)
+//            throw URLError(.badServerResponse)
+            return []
         }
         return try await FirestoreManager.shared.getHiddenPinLogs(userId: currentUser.uid)
     }

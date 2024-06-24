@@ -214,7 +214,7 @@ class ContentsPageViewController: UIViewController {
     @objc private func xButtonTapped() {
         let alert = UIAlertController(title: nil, message: "정말 튜토리얼을 종료하시겠습니까?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "예", style: .default, handler: { _ in
-            let nextVC = AuthenticationVC()
+            let nextVC = PageViewController()
             nextVC.modalPresentationStyle = .fullScreen
             self.present(nextVC, animated: true)
 
@@ -224,7 +224,7 @@ class ContentsPageViewController: UIViewController {
     }
     
     @objc private func wanderButtonTapped() {
-        let nextVC = AuthenticationVC()
+        let nextVC = PageViewController()
         nextVC.modalPresentationStyle = .fullScreen
         self.present(nextVC, animated: true)
     }

@@ -98,7 +98,7 @@ class MateTableViewCell: UITableViewCell {
         if let photoURL = user.photoURL, let url = URL(string: photoURL) {
             profileImageView.kf.setImage(with: url)
         } else {
-            profileImageView.image = UIImage(systemName: "person.crop.circle")
+            profileImageView.image = UIImage(named: "profileImg")
         }
         
         updateAddButton()

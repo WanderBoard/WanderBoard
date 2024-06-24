@@ -209,8 +209,15 @@ class PrivacyPolicyViewController: BaseViewController {
     private func checkCompletionStatus() {
         let isAllRequiredSectionsCompleted = sectionAgreeStatus[0] && sectionAgreeStatus[1]
         agreeButton.isEnabled = isAllRequiredSectionsCompleted
-        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
-        agreeButton.backgroundColor = agreeButton.isEnabled ? .font : lightGTolightB
+        
+        if agreeButton.isEnabled {
+            agreeButton.backgroundColor = .black
+            agreeButton.setTitleColor(.white, for: .normal)
+        } else {
+            let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+            agreeButton.backgroundColor = lightGTolightB
+            agreeButton.setTitleColor(.black, for: .normal)
+        }
     }
 }
 

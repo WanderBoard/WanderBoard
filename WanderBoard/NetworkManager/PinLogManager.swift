@@ -94,6 +94,117 @@ class PinLogManager {
         try await documentRef.delete()
     }
     
+    //디테일뷰에 아이디로 데이터 가져오기
+    func fetchPinLog(by id: String, completion: @escaping (Result<PinLog, Error>) -> Void) {
+        let documentRef = db.collection("pinLogs").document(id)
+        documentRef.getDocument { document, error in
+            if let error = error {
+                completion(.failure(error))
+            } else if let document = document, document.exists {
+                do {
+                    let pinLog = try document.data(as: PinLog.self)
+                    completion(.success(pinLog))
+                } catch {
+                    completion(.failure(error))
+                }
+            } else {
+                completion(.failure(NSError(domain: "PinLog not found", code: 404, userInfo: nil)))
+            }
+        }
+    }
+    
+    func fetchSpendingPublicPinLogs() async throws -> [PinLog] {
+        let snapshot = try await db.collection("pinLogs")
+            .whereField("isSpendingPublic", isEqualTo: true)
+            .getDocuments()
+        return snapshot.documents.compactMap { try? $0.data(as: PinLog.self) }
+    }
+    
+    //MARK: - Explore, SearchViewController 관련 함수
+
+    func fetchHotPinLogs() async throws -> [PinLogSummary] {
+        let snapshot = try await db.collection("pinLogs")
+            .whereField("pinCount", isGreaterThan: 0)
+            .limit(to: 10)
+            .getDocuments()
+        
+        return snapshot.documents.compactMap { document in
+            let data = document.data()
+            let location = data["location"] as? String ?? ""
+            let startDate = (data["startDate"] as? Timestamp)?.dateValue() ?? Date()
+            let representativeMediaURL = (data["media"] as? [[String: Any]])?.first { $0["isRepresentative"] as? Bool == true }?["url"] as? String
+            let authorId = data["authorId"] as? String ?? ""
+            let createdAt = (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+            
+            return PinLogSummary(id: document.documentID, location: location, startDate: startDate, representativeMediaURL: representativeMediaURL, authorId: authorId, createdAt: createdAt)
+        }
+    }
+    
+    func fetchInitialData(pageSize: Int, completion: @escaping (Result<([PinLogSummary], DocumentSnapshot?), Error>) -> Void) {
+        db.collection("pinLogs")
+            .order(by: "createdAt", descending: true)
+            .limit(to: pageSize)
+            .getDocuments { (snapshot, error) in
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    var pinLogSummaries: [PinLogSummary] = []
+                    var lastDocumentSnapshot: DocumentSnapshot? = nil
+                    
+                    for document in snapshot!.documents {
+                        let data = document.data()
+                        let representativeMediaURL = (data["media"] as? [[String: Any]])?.first { $0["isRepresentative"] as? Bool == true }?["url"] as? String
+                        
+                        let pinLogSummary = PinLogSummary(
+                            id: document.documentID,
+                            location: data["location"] as? String ?? "",
+                            startDate: (data["startDate"] as? Timestamp)?.dateValue() ?? Date(),
+                            representativeMediaURL: representativeMediaURL,
+                            authorId: data["authorId"] as? String ?? "",
+                            createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+                        )
+                        pinLogSummaries.append(pinLogSummary)
+                    }
+                    
+                    lastDocumentSnapshot = snapshot!.documents.last
+                    completion(.success((pinLogSummaries, lastDocumentSnapshot)))
+                }
+            }
+    }
+    
+    func fetchMoreData(pageSize: Int, lastSnapshot: DocumentSnapshot, completion: @escaping (Result<([PinLogSummary], DocumentSnapshot?), Error>) -> Void) {
+        db.collection("pinLogs")
+            .order(by: "createdAt", descending: true)
+            .start(afterDocument: lastSnapshot)
+            .limit(to: pageSize)
+            .getDocuments { (snapshot, error) in
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    var pinLogSummaries: [PinLogSummary] = []
+                    var lastDocumentSnapshot: DocumentSnapshot? = nil
+                    
+                    for document in snapshot!.documents {
+                        let data = document.data()
+                        let representativeMediaURL = (data["media"] as? [[String: Any]])?.first { $0["isRepresentative"] as? Bool == true }?["url"] as? String
+                        
+                        let pinLogSummary = PinLogSummary(
+                            id: document.documentID,
+                            location: data["location"] as? String ?? "",
+                            startDate: (data["startDate"] as? Timestamp)?.dateValue() ?? Date(),
+                            representativeMediaURL: representativeMediaURL,
+                            authorId: data["authorId"] as? String ?? "",
+                            createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+                        )
+                        pinLogSummaries.append(pinLogSummary)
+                    }
+                    
+                    lastDocumentSnapshot = snapshot!.documents.last
+                    completion(.success((pinLogSummaries, lastDocumentSnapshot)))
+                }
+            }
+    }
+    
     func fetchPinLogs(forUserId userId: String) async throws -> [PinLog] {
         let snapshot = try await db.collection("pinLogs").whereField("authorId", isEqualTo: userId).getDocuments()
         let pinLogs = snapshot.documents.compactMap { document -> PinLog? in
@@ -106,69 +217,7 @@ class PinLogManager {
                 return nil
             }
         }
-        //print("Fetched pinLogs count: \(pinLogs.count)")
         return pinLogs
-    }
-    
-    func fetchPublicPinLogs() async throws -> [PinLog] {
-        let snapshot = try await db.collection("pinLogs")
-            .whereField("isPublic", isEqualTo: true)
-            .getDocuments()
-        return snapshot.documents.compactMap { try? $0.data(as: PinLog.self) }
-    }
-    
-    func fetchSpendingPublicPinLogs() async throws -> [PinLog] {
-        let snapshot = try await db.collection("pinLogs")
-            .whereField("isSpendingPublic", isEqualTo: true)
-            .getDocuments()
-        return snapshot.documents.compactMap { try? $0.data(as: PinLog.self) }
-    }
-    
-    func fetchHotPinLogs() async throws -> [PinLog] {
-        let snapshot = try await db.collection("pinLogs")
-            .whereField("pinCount", isGreaterThan: 0)
-            .getDocuments()
-        
-        var logs = snapshot.documents.compactMap { try? $0.data(as: PinLog.self) }
-        logs.shuffle()
-        return Array(logs.prefix(10))
-    }
-    
-    func fetchInitialData(pageSize: Int, completion: @escaping (Result<([PinLog], DocumentSnapshot?), Error>) -> Void) {
-        db.collection("pinLogs")
-            .whereField("isPublic", isEqualTo: true)
-            .limit(to: pageSize)
-            .getDocuments { (querySnapshot, error) in
-                if let error = error {
-                    completion(.failure(error))
-                } else {
-                    guard let snapshot = querySnapshot else { return }
-                    let logs = snapshot.documents.compactMap { document -> PinLog? in
-                        try? document.data(as: PinLog.self)
-                    }
-                    let lastSnapshot = snapshot.documents.last
-                    completion(.success((logs, lastSnapshot)))
-                }
-            }
-    }
-    
-    func fetchMoreData(pageSize: Int, lastSnapshot: DocumentSnapshot, completion: @escaping (Result<([PinLog], DocumentSnapshot?), Error>) -> Void) {
-        db.collection("pinLogs")
-            .whereField("isPublic", isEqualTo: true)
-            .start(afterDocument: lastSnapshot)
-            .limit(to: pageSize)
-            .getDocuments { (querySnapshot, error) in
-                if let error = error {
-                    completion(.failure(error))
-                } else {
-                    guard let snapshot = querySnapshot else { return }
-                    let logs = snapshot.documents.compactMap { document -> PinLog? in
-                        try? document.data(as: PinLog.self)
-                    }
-                    let lastSnapshot = snapshot.documents.last
-                    completion(.success((logs, lastSnapshot)))
-                }
-            }
     }
     
     // 핀 찍은 데이터만 가져오기

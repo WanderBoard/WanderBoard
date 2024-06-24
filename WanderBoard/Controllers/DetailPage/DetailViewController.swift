@@ -27,6 +27,8 @@ class DetailViewController: UIViewController {
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
     var selectedFriends: [UIImage] = []
     
+    //로직 변경하면서 핀로그 id만 가져오도록
+    var pinLogId: String?
     var pinLog: PinLog?
     let pinLogManager = PinLogManager()
     
@@ -317,6 +319,7 @@ class DetailViewController: UIViewController {
         
         //한빛
         checkId()
+        loadData() //id로 데이터 불러오기
         
         view.backgroundColor = .systemBackground
     }
@@ -326,11 +329,6 @@ class DetailViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
         
         galleryCollectionView.reloadData()
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        print(pinButton.frame.size)
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -362,6 +360,20 @@ class DetailViewController: UIViewController {
         maxConsumptionLabel.textColor = darkBTolightG
         moneyMoveButton.tintColor = darkBTolightG
         maxConsumptionLabel.textColor = darkBTolightG
+    }
+    
+    //id로 데이터 불러오기 - 한빛
+    func loadData() {
+        guard let pinLogId = pinLogId else { return }
+        pinLogManager.fetchPinLog(by: pinLogId) { [weak self] result in
+            switch result {
+            case .success(let pinLog):
+                self?.pinLog = pinLog
+                self?.checkId() // 데이터 로드 후 UI 업데이트
+            case .failure(let error):
+                print("Failed to fetch pin log: \(error)")
+            }
+        }
     }
     
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
@@ -424,7 +436,10 @@ class DetailViewController: UIViewController {
     }
     
     @objc func pinButtonTapped() {
-        guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else { return }
+        guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else {
+            showLoginAlert()
+            return
+        }
         
         var updatedPinnedBy = pinLog.pinnedBy ?? []
         var updatedPinCount = pinLog.pinCount ?? 0
@@ -456,6 +471,29 @@ class DetailViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    func showLoginAlert() {
+        let alert = UIAlertController(title: "로그인", message: "로그인 시 이용 가능한 기능입니다.\n로그인 하시겠습니까?", preferredStyle: .alert)
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        cancelAction.setValue(UIColor.black, forKey: "titleTextColor")
+        
+        let confirmAction = UIAlertAction(title: "확인", style: .default, handler: { [weak self] _ in
+            self?.navigateToLogin()
+        })
+        confirmAction.setValue(UIColor.black, forKey: "titleTextColor")
+        
+        alert.addAction(cancelAction)
+        alert.addAction(confirmAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func navigateToLogin() {
+        let loginVC = AuthenticationVC()
+        loginVC.modalPresentationStyle = .fullScreen
+        present(loginVC, animated: true, completion: nil)
     }
     
     func updatePinButtonState() {
@@ -732,9 +770,9 @@ class DetailViewController: UIViewController {
         
         // 프로필 사진
         if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId), let url = URL(string: photoURL) {
-            profileImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "person.crop.circle"))
+            profileImageView.kf.setImage(with: url)
         } else {
-            profileImageView.image = UIImage(systemName: "person.crop.circle")
+            profileImageView.image = UIImage(named: "profileImg") // 기본 프로필 이미지
         }
         
         // 백그라운드 이미지
@@ -814,7 +852,7 @@ class DetailViewController: UIViewController {
             print("No location data available.")
             return
         }
-
+        
         let region = MKCoordinateRegion(center: firstLocation, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
         let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
         }
@@ -827,7 +865,7 @@ class DetailViewController: UIViewController {
             present(mapVC, animated: true, completion: nil)
         }
     }
-
+    
     
     func setupActionButton() {
         albumAllButton.addTarget(self, action: #selector(showGalleryDetail), for: .touchUpInside)
@@ -876,9 +914,9 @@ class DetailViewController: UIViewController {
         if isCurrentUser(pinLog: pinLog) {
             // 현재 사용자가 작성자인 경우
             //게시물 공유 기능은 나중에
-//            let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-//                self.sharePinLog()
-//            }
+            //        let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+            //            self.sharePinLog()
+            //        }
             
             let instaAction = UIAction(title: "이미지 공유하기", image: UIImage(systemName: "photo.on.rectangle.angled")) { _ in
                 self.instaConnect()
@@ -895,12 +933,12 @@ class DetailViewController: UIViewController {
                     self.deletePinLog()
                 }
             optionsButton.menu = UIMenu(title: "", children: [instaAction, editAction, deleteAction])
-        } else {
+        } else if Auth.auth().currentUser != nil {
             // 다른 사람의 글인 경우
             //게시물 공유 기능은 나중에
-//          let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-//                self.sharePinLog()
-//          }
+            //      let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+            //            self.sharePinLog()
+            //      }
             let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "person.slash.fill")) { _ in
                 let reportAlert = UIAlertController(title: "", message: "작성자를 차단하시겠습니까? \n 차단한 작성자의 글이 보이지 않게됩니다.", preferredStyle: .alert)
                 reportAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
@@ -911,7 +949,7 @@ class DetailViewController: UIViewController {
             }
             
             let hideAction = UIAction(title: "게시글 숨기기", image: UIImage(systemName: "eye.slash.circle")) { _ in
-                let hideAlert = UIAlertController(title: "", message: "게시물을 숨기시겠습니까? \n 숨긴 게시글은 다시 볼 수 없습니다.", preferredStyle: .alert)
+                let hideAlert = UIAlertController(title: "", message: "게시글을 숨기시겠습니까? \n 숨긴 게시글은 다시 볼 수 없습니다.", preferredStyle: .alert)
                 hideAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
                 hideAlert.addAction(UIAlertAction(title: "숨기기", style: .destructive, handler: { [weak self] _ in
                     self?.hidePinLog()
@@ -929,6 +967,9 @@ class DetailViewController: UIViewController {
             }
             
             optionsButton.menu = UIMenu(title: "", children: [blockAction, hideAction, reportAction])
+        } else {
+            optionsButton.menu = nil
+            optionsButton.isHidden = true
         }
     }
     
@@ -951,9 +992,9 @@ class DetailViewController: UIViewController {
     }
     
     //나중 구현
-//    func sharePinLog() {
-//
-//    }
+    //    func sharePinLog() {
+    //
+    //    }
     
     func instaConnect() {
         guard !selectedImages.isEmpty else {
@@ -1097,7 +1138,7 @@ class DetailViewController: UIViewController {
     private func setupMapViewController() {
         let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001))
         mapViewController = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
-
+            
         }
         guard let mapVC = mapViewController else { return }
         addChild(mapVC)

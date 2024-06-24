@@ -48,6 +48,21 @@ class MyPageViewController: BaseViewController, PageIndexed {
         fetchTagData()
         
         navigationItem.largeTitleDisplayMode = .never
+        
+        //로그인 하지 않을 경우의 액션을 정의 -> 로그인디렉터뷰 보여주기
+        if Auth.auth().currentUser == nil {
+            let loginDirectorView = LoginDirectorView()
+            addChild(loginDirectorView)
+            view.addSubview(loginDirectorView.view)
+            loginDirectorView.view.frame = view.bounds
+            loginDirectorView.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            
+            loginDirectorView.view.snp.makeConstraints {
+                $0.edges.equalToSuperview()
+            }
+            navigationItem.rightBarButtonItem = .none
+            loginDirectorView.didMove(toParent: self)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {

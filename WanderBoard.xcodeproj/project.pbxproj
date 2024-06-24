@@ -332,13 +332,6 @@
 			path = MateInput;
 			sourceTree = "<group>";
 		};
-		4D13BB9F2C2926B8004AE016 /* DetailView */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = DetailView;
-			sourceTree = "<group>";
-		};
 		4D9D8B432C05B1BD0043E7DF = {
 			isa = PBXGroup;
 			children = (
@@ -543,7 +536,6 @@
 		4DC759922C2064AD00976FAA /* DetailPage */ = {
 			isa = PBXGroup;
 			children = (
-				4D13BB9F2C2926B8004AE016 /* DetailView */,
 				4D13BB9C2C29262B004AE016 /* Gallery */,
 				4D13BB9D2C292638004AE016 /* MateDetail */,
 				4D13BB9E2C29269D004AE016 /* MateInput */,

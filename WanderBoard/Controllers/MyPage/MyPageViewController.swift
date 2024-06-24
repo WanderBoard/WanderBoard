@@ -141,9 +141,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
             }
         }
     }
-
-    
-    
     
     override func constraintLayout() {
         view.addSubview(scrollView)
@@ -436,7 +433,7 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     private func navigateToLogOutVC() {
-        let logOutVC = ExploreViewController()
+        let logOutVC = PageViewController()
         if let transition = self.transition {
             self.navigationController?.view.layer.add(transition, forKey: kCATransition)
         }

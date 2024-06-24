@@ -689,7 +689,13 @@ class DetailViewController: UIViewController {
         dateFormatter.dateFormat = "yyyy.MM.dd"
         
         dateStartLabel.text = dateFormatter.string(from: pinLog.startDate)
-        dateEndLabel.text = dateFormatter.string(from: pinLog.endDate)
+        if pinLog.startDate == pinLog.endDate {
+            dateEndLabel.text = ""
+            dateLineLabel.isHidden = true
+        } else {
+            dateEndLabel.text = dateFormatter.string(from: pinLog.endDate)
+            dateLineLabel.isHidden = false
+        }
         
         let duration = Calendar.current.dateComponents([.day], from: pinLog.startDate, to: pinLog.endDate).day ?? 0
         dateDaysLabel.text = "\(duration + 1) Days"
@@ -886,58 +892,47 @@ class DetailViewController: UIViewController {
     @objc func setupMenu() {
         guard let pinLog = pinLog else { return }
         if isCurrentUser(pinLog: pinLog) {
-            // 현재 사용자가 작성자인 경우
-            //게시물 공유 기능은 나중에
-//            let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-//                self.sharePinLog()
-//            }
-            
-            let instaAction = UIAction(title: "이미지 공유하기", image: UIImage(systemName: "photo.on.rectangle.angled")) { _ in
-                self.instaConnect()
+            let instaAction = UIAction(title: "이미지 공유하기", image: UIImage(systemName: "photo.on.rectangle.angled")) { [weak self] _ in
+                self?.instaConnect()
             }
             
-            let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { _ in
-                self.editPinLog()
+            let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { [weak self] _ in
+                self?.editPinLog()
             }
             
             let deleteAction = UIAction(
                 title: "삭제하기",
                 image: UIImage(systemName: "trash"),
-                attributes: .destructive) { _ in
-                    self.deletePinLog()
+                attributes: .destructive) { [weak self] _ in
+                    self?.deletePinLog()
                 }
             optionsButton.menu = UIMenu(title: "", children: [instaAction, editAction, deleteAction])
         } else {
-            // 다른 사람의 글인 경우
-            //게시물 공유 기능은 나중에
-//          let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-//                self.sharePinLog()
-//          }
-            let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "person.slash.fill")) { _ in
+            let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "person.slash.fill")) { [weak self] _ in
                 let reportAlert = UIAlertController(title: "", message: "작성자를 차단하시겠습니까? \n 차단한 작성자의 글이 보이지 않게됩니다.", preferredStyle: .alert)
                 reportAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
                 reportAlert.addAction(UIAlertAction(title: "차단", style: .destructive, handler: { [weak self] _ in
                     self?.reportPinLog()
                 }))
-                self.present(reportAlert, animated: true, completion: nil)
+                self?.present(reportAlert, animated: true, completion: nil)
             }
             
-            let hideAction = UIAction(title: "게시글 숨기기", image: UIImage(systemName: "eye.slash.circle")) { _ in
+            let hideAction = UIAction(title: "게시글 숨기기", image: UIImage(systemName: "eye.slash.circle")) { [weak self] _ in
                 let hideAlert = UIAlertController(title: "", message: "게시글을 숨기시겠습니까? \n 숨긴 게시글은 다시 볼 수 없습니다.", preferredStyle: .alert)
                 hideAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
                 hideAlert.addAction(UIAlertAction(title: "숨기기", style: .destructive, handler: { [weak self] _ in
                     self?.hidePinLog()
                 }))
-                self.present(hideAlert, animated: true, completion: nil)
+                self?.present(hideAlert, animated: true, completion: nil)
             }
             
-            let reportAction = UIAction(title: "신고하기", image: UIImage(systemName: "exclamationmark.triangle"), attributes: .destructive) { _ in
+            let reportAction = UIAction(title: "신고하기", image: UIImage(systemName: "exclamationmark.triangle"), attributes: .destructive) { [weak self] _ in
                 let reportAlert = UIAlertController(title: "", message: "작성자를 신고하시겠습니까?", preferredStyle: .alert)
                 reportAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
                 reportAlert.addAction(UIAlertAction(title: "신고", style: .destructive, handler: { [weak self] _ in
                     self?.reportPinLog()
                 }))
-                self.present(reportAlert, animated: true, completion: nil)
+                self?.present(reportAlert, animated: true, completion: nil)
             }
             
             optionsButton.menu = UIMenu(title: "", children: [blockAction, hideAction, reportAction])

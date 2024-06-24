@@ -133,7 +133,11 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         let startDate = dateFormatter.string(from: tripLog.startDate)
         let endDate = dateFormatter.string(from: tripLog.endDate)
         let duration = Calendar.current.dateComponents([.day], from: tripLog.startDate, to: tripLog.endDate).day ?? 0
-        subTitle.text = "\(startDate) - \(endDate) • \(duration + 1) days"
+        if tripLog.startDate == tripLog.endDate {
+                subTitle.text = "\(startDate) • \(duration + 1) days"
+        } else {
+            subTitle.text = "\(startDate) - \(endDate) • \(duration + 1) days"
+        }
         
         privateButton.isHidden = tripLog.isPublic
         

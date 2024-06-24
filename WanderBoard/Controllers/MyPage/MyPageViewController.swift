@@ -429,14 +429,14 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
         do {
             try Auth.auth().signOut()
             UserDefaults.standard.set(false, forKey: "isLoggedIn") // 로그인 상태 업데이트
-            navigateToAuthenticationVC()
+            navigateToLogOutVC()
         } catch let signOutError as NSError {
             print("Error signing out: %@", signOutError)
         }
     }
 
-    private func navigateToAuthenticationVC() {
-        let logOutVC = AuthenticationVC()
+    private func navigateToLogOutVC() {
+        let logOutVC = ExploreViewController()
         if let transition = self.transition {
             self.navigationController?.view.layer.add(transition, forKey: kCATransition)
         }

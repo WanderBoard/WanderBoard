@@ -107,9 +107,9 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             loginDirectorView.view.snp.makeConstraints {
                 $0.edges.equalToSuperview()
             }
-            
             loginDirectorView.didMove(toParent: self)
         }
+       
     }
     
     override func viewWillAppear(_ animated: Bool) {

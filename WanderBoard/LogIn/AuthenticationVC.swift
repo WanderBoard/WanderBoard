@@ -11,6 +11,7 @@ import AuthenticationServices
 import SnapKit
 import KakaoSDKUser
 import FirebaseFirestore
+import SwiftUI
 
 class AuthenticationVC: UIViewController {
     
@@ -114,11 +115,11 @@ class AuthenticationVC: UIViewController {
     private lazy var appleSignInButton: UIButton = {
         var configuration = UIButton.Configuration.filled()
         configuration.title = "Apple 로그인"
-        configuration.image = UIImage(named: "appleLogo")?.withRenderingMode(.alwaysOriginal)
+        configuration.image = UIImage(named: "appleLogo")?.withRenderingMode(.alwaysTemplate)
         configuration.imagePadding = 8
         configuration.imagePlacement = .all
-        configuration.baseBackgroundColor = UIColor(named: "ButtonColor")
-        configuration.baseForegroundColor = UIColor(named: "textColor")
+        configuration.baseBackgroundColor = .white//UIColor(named: "ButtonColor")
+        configuration.baseForegroundColor = .black//UIColor(named: "textColor")
         
         let button = UIButton(configuration: configuration, primaryAction: nil)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
@@ -151,8 +152,8 @@ class AuthenticationVC: UIViewController {
         label.textColor = .gray
         let text = "By clicking continue, you agree to our \nTerms of Service and Privacy Policy"
         let attributedText = NSMutableAttributedString(string: text)
-        attributedText.addAttribute(.foregroundColor, value: UIColor(named: "textColorSub") ?? .red, range: (text as NSString).range(of: "Terms of Service"))
-        attributedText.addAttribute(.foregroundColor, value: UIColor(named: "textColorSub") ?? .red, range: (text as NSString).range(of: "Privacy Policy"))
+        attributedText.addAttribute(.foregroundColor, value: UIColor(named: "textColor") ?? .red, range: (text as NSString).range(of: "Terms of Service"))
+        attributedText.addAttribute(.foregroundColor, value: UIColor(named: "textColor") ?? .red, range: (text as NSString).range(of: "Privacy Policy"))
         label.attributedText = attributedText
         label.font = UIFont.systemFont(ofSize: 12, weight: .regular)
         
@@ -161,6 +162,8 @@ class AuthenticationVC: UIViewController {
         label.isUserInteractionEnabled = true
         return label
     }()
+    
+    private var wavesHostingController: UIHostingController<SignInWavesView>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -171,6 +174,18 @@ class AuthenticationVC: UIViewController {
     }
     
     private func setupViews() {
+        
+        let wavesView = SignInWavesView()
+        let hostingController = UIHostingController(rootView: wavesView)
+        addChild(hostingController)
+        view.insertSubview(hostingController.view, at: 0)
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        hostingController.view.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        hostingController.didMove(toParent: self)
+        self.wavesHostingController = hostingController
+        
         view.addSubview(titleLabel)
         view.addSubview(logoImageView)
         view.addSubview(kakaoLoginButton)
@@ -192,7 +207,7 @@ class AuthenticationVC: UIViewController {
         }
         
         kakaoLoginButton.snp.makeConstraints { make in
-            make.bottom.equalTo(appleSignInButton.snp.top).offset(-16)
+            make.bottom.equalTo(termsLabel.snp.top).offset(-16)
             make.left.right.equalToSuperview().inset(47)
             make.height.equalTo(50)
         }
@@ -204,7 +219,7 @@ class AuthenticationVC: UIViewController {
         }
         
         googleSignInButton.snp.makeConstraints { make in
-            make.bottom.equalTo(termsLabel.snp.top).offset(-16)
+            make.bottom.equalTo(kakaoLoginButton.snp.top).offset(-16)
             make.left.right.equalToSuperview().inset(47)
             make.height.equalTo(50)
         }

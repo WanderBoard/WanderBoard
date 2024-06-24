@@ -208,7 +208,9 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let selectedItem = searchedLogs[indexPath.item]
         detailVC.pinLogId = selectedItem.id
         detailVC.delegate = self
-        navigationController?.pushViewController(detailVC, animated: true)
+        let navController = UINavigationController(rootViewController: detailVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

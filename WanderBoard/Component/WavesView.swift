@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct WavesView: View {
     
     let colors: [Color] = [Color(hex: 0xD9D9D9), Color(hex: 0x979797), Color(hex: 0x383838), Color(hex: 0x1A1C1D)]

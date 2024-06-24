@@ -917,6 +917,10 @@ class DetailViewController: UIViewController {
     
     @objc func setupMenu() {
         guard let pinLog = pinLog else { return }
+        if Auth.auth().currentUser == nil {
+            optionsButton.menu = nil
+            optionsButton.isHidden = true
+        }
         if isCurrentUser(pinLog: pinLog) {
             let instaAction = UIAction(title: "이미지 공유하기", image: UIImage(systemName: "photo.on.rectangle.angled")) { [weak self] _ in
                 self?.instaConnect()
@@ -960,11 +964,7 @@ class DetailViewController: UIViewController {
                 }))
                 self?.present(reportAlert, animated: true, completion: nil)
             }
-            
             optionsButton.menu = UIMenu(title: "", children: [blockAction, hideAction, reportAction])
-        } else {
-            optionsButton.menu = nil
-            optionsButton.isHidden = true
         }
     }
     

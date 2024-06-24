@@ -433,7 +433,7 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     private func navigateToLogOutVC() {
-        let logOutVC = PageViewController()
+        let logOutVC = AuthenticationVC()
         if let transition = self.transition {
             self.navigationController?.view.layer.add(transition, forKey: kCATransition)
         }

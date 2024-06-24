@@ -966,6 +966,7 @@ class DetailViewController: UIViewController {
             }
             optionsButton.menu = UIMenu(title: "", children: [blockAction, hideAction, reportAction])
         }
+        
     }
     
     func deletePinLog() {

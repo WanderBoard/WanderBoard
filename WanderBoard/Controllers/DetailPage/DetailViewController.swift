@@ -436,7 +436,10 @@ class DetailViewController: UIViewController {
     }
     
     @objc func pinButtonTapped() {
-        guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else { return }
+        guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else {
+            showLoginAlert()
+            return
+        }
         
         var updatedPinnedBy = pinLog.pinnedBy ?? []
         var updatedPinCount = pinLog.pinCount ?? 0
@@ -468,6 +471,29 @@ class DetailViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    func showLoginAlert() {
+        let alert = UIAlertController(title: "로그인", message: "로그인 시 이용 가능한 기능입니다.\n로그인 하시겠습니까?", preferredStyle: .alert)
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        cancelAction.setValue(UIColor.black, forKey: "titleTextColor")
+        
+        let confirmAction = UIAlertAction(title: "확인", style: .default, handler: { [weak self] _ in
+            self?.navigateToLogin()
+        })
+        confirmAction.setValue(UIColor.black, forKey: "titleTextColor")
+        
+        alert.addAction(cancelAction)
+        alert.addAction(confirmAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func navigateToLogin() {
+        let loginVC = AuthenticationVC()
+        loginVC.modalPresentationStyle = .fullScreen
+        present(loginVC, animated: true, completion: nil)
     }
     
     func updatePinButtonState() {
@@ -832,7 +858,7 @@ class DetailViewController: UIViewController {
             print("No location data available.")
             return
         }
-
+        
         let region = MKCoordinateRegion(center: firstLocation, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
         let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
         }
@@ -845,7 +871,7 @@ class DetailViewController: UIViewController {
             present(mapVC, animated: true, completion: nil)
         }
     }
-
+    
     
     func setupActionButton() {
         albumAllButton.addTarget(self, action: #selector(showGalleryDetail), for: .touchUpInside)
@@ -936,6 +962,9 @@ class DetailViewController: UIViewController {
             }
             
             optionsButton.menu = UIMenu(title: "", children: [blockAction, hideAction, reportAction])
+        } else {
+            optionsButton.menu = nil
+            optionsButton.isHidden = true
         }
     }
     
@@ -958,9 +987,9 @@ class DetailViewController: UIViewController {
     }
     
     //나중 구현
-//    func sharePinLog() {
-//
-//    }
+    //    func sharePinLog() {
+    //
+    //    }
     
     func instaConnect() {
         guard !selectedImages.isEmpty else {
@@ -1104,7 +1133,7 @@ class DetailViewController: UIViewController {
     private func setupMapViewController() {
         let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001))
         mapViewController = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
-
+            
         }
         guard let mapVC = mapViewController else { return }
         addChild(mapVC)

@@ -709,6 +709,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         profileImageView.backgroundColor = backgroundColors.randomElement()!
         
+        nameLabel.text = shortNickname.uppercased()
         
     }
     

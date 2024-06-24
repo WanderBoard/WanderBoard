@@ -19,7 +19,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.isUserInteractionEnabled = true
-        imageView.layer.cornerRadius = 50
+        imageView.layer.cornerRadius = 53
         imageView.clipsToBounds = true
         
         let backgroundColors = [
@@ -39,12 +39,17 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     private let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 30, weight: .medium)
-        label.textColor = .black
+        label.contentMode = .scaleAspectFit
+        label.font = UIFont.systemFont(ofSize: 42, weight: .semibold)
+        label.textColor = .white
         label.textAlignment = .center
-        
+//        label.textCase(.uppercase)
+//        label.translatesAutoresizingMaskIntoConstraints = false
+//        
         return label
     }()
+
+    
 
     private let emailArea = UIView()
     
@@ -362,8 +367,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         nameLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
-            make.width.equalTo(profileImageView.snp.width).multipliedBy(0.8)
-            make.height.equalTo(profileImageView.snp.height).multipliedBy(0.5)
+//            make.width.equalTo(profileImageView.snp.width).multipliedBy(0.9)
+//            make.height.equalTo(profileImageView.snp.height).multipliedBy(0.9)
         }
         
         emailArea.snp.makeConstraints(){
@@ -689,8 +694,9 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     private func confirmButtonTapped(with nickname: String) {
         let shortNickname = String(nickname.prefix(2))
-        nameLabel.text = shortNickname
         
+        nameLabel.text = shortNickname
+
         let backgroundColors = [
             UIColor(named: "ProfileBackgroundColor1"),
             UIColor(named: "ProfileBackgroundColor2"),
@@ -702,6 +708,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         ]
         
         profileImageView.backgroundColor = backgroundColors.randomElement()!
+        
+        
     }
     
     @objc private func selectGender(_ sender: UIButton) {

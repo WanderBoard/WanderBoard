@@ -492,7 +492,7 @@ class DetailViewController: UIViewController {
     
     func navigateToLogin() {
         let loginVC = AuthenticationVC()
-        loginVC.modalPresentationStyle = .fullScreen
+        loginVC.modalPresentationStyle = .automatic
         present(loginVC, animated: true, completion: nil)
     }
     
@@ -937,7 +937,7 @@ class DetailViewController: UIViewController {
                     self?.deletePinLog()
                 }
             optionsButton.menu = UIMenu(title: "", children: [instaAction, editAction, deleteAction])
-        } else {
+        } else if Auth.auth().currentUser != nil {
             let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "person.slash.fill")) { [weak self] _ in
                 let reportAlert = UIAlertController(title: "", message: "작성자를 차단하시겠습니까? \n 차단한 작성자의 글이 보이지 않게됩니다.", preferredStyle: .alert)
                 reportAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))

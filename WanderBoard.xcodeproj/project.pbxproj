@@ -97,6 +97,7 @@
 		956ED7942C0852B90001BAC6 /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78B2C0852B90001BAC6 /* MyPageViewController.swift */; };
 		956ED7962C0852B90001BAC6 /* PrivacyPolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */; };
 		956ED7972C0852B90001BAC6 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956ED78E2C0852B90001BAC6 /* SettingViewController.swift */; };
+		957790E52C29233200D23218 /* LoginDirectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 957790E42C29233200D23218 /* LoginDirectorView.swift */; };
 		9592A3D52C1F3CBD00CF6FD6 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9592A3D42C1F3CBD00CF6FD6 /* FilterCollectionViewCell.swift */; };
 		9592A3D72C1F41B400CF6FD6 /* BlockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9592A3D62C1F41B400CF6FD6 /* BlockViewController.swift */; };
 		9592A3D92C1F436500CF6FD6 /* BlockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9592A3D82C1F436500CF6FD6 /* BlockTableViewCell.swift */; };
@@ -190,6 +191,7 @@
 		956ED78B2C0852B90001BAC6 /* MyPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
 		956ED78D2C0852B90001BAC6 /* PrivacyPolicyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyViewController.swift; sourceTree = "<group>"; };
 		956ED78E2C0852B90001BAC6 /* SettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		957790E42C29233200D23218 /* LoginDirectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginDirectorView.swift; sourceTree = "<group>"; };
 		9592A3D42C1F3CBD00CF6FD6 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterCollectionViewCell.swift; sourceTree = "<group>"; };
 		9592A3D62C1F41B400CF6FD6 /* BlockViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockViewController.swift; sourceTree = "<group>"; };
 		9592A3D82C1F436500CF6FD6 /* BlockTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockTableViewCell.swift; sourceTree = "<group>"; };
@@ -291,6 +293,7 @@
 				2A7623D82C1E21130044CF05 /* WavesView.swift */,
 				2A7623DC2C1E2FE20044CF05 /* ProgressView.swift */,
 				2A7623DE2C1E3FBB0044CF05 /* ProgressViewController.swift */,
+				957790E42C29233200D23218 /* LoginDirectorView.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -660,6 +663,7 @@
 				2A7623DB2C1E21F80044CF05 /* LaunchViewController.swift in Sources */,
 				2A6B0B762C24047B009B9759 /* SingleDayCalendarView.swift in Sources */,
 				9592A3D52C1F3CBD00CF6FD6 /* FilterCollectionViewCell.swift in Sources */,
+				957790E52C29233200D23218 /* LoginDirectorView.swift in Sources */,
 				FB3793AD2C1D6854009C1268 /* AccountDeletionManager.swift in Sources */,
 				FB0C32442C14C2D000DD2F00 /* WanderBoard.xcdatamodeld in Sources */,
 				6BBE4B862C19950100A7A793 /* SpendingTableViewHeaderView.swift in Sources */,

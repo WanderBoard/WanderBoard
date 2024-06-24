@@ -26,15 +26,15 @@ class MateTableViewCell: UITableViewCell {
     }
     
     let nicknameLabel = UILabel().then {
-        $0.textColor = .black
+        $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
         $0.numberOfLines = 2
     }
     
     lazy var addButton = UIButton(type: .system).then {
         $0.setTitle("추가", for: .normal)
-        $0.setTitleColor(.black, for: .normal)
-        $0.backgroundColor = .lightgray
+        $0.setTitleColor(.darkgray, for: .normal)
+        $0.backgroundColor = .babygray
         $0.layer.cornerRadius = 22
         $0.addTarget(self, action: #selector(didTapAddButton), for: .touchUpInside)
     }
@@ -42,6 +42,7 @@ class MateTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
+        updateColor()
         
     }
     
@@ -75,6 +76,21 @@ class MateTableViewCell: UITableViewCell {
         }
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+            
+        }
+    }
+    
+    func updateColor(){
+        
+        //베이비그레이-라이트블랙
+        let babyGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "babygray")
+        addButton.backgroundColor = babyGTolightB
+    }
+    
     
     func configure(with user: UserSummary) {
         self.user = user
@@ -82,7 +98,7 @@ class MateTableViewCell: UITableViewCell {
         if let photoURL = user.photoURL, let url = URL(string: photoURL) {
             profileImageView.kf.setImage(with: url)
         } else {
-            profileImageView.image = UIImage(named: "profileImage")
+            profileImageView.image = UIImage(named: "profileImg")
         }
         
         updateAddButton()
@@ -92,8 +108,9 @@ class MateTableViewCell: UITableViewCell {
         guard let user = user else { return }
         let buttonTitle = user.isMate ? "제거" : "추가"
         addButton.setTitle(buttonTitle, for: .normal)
-        addButton.backgroundColor = user.isMate ? .black : .lightgray
-        addButton.setTitleColor(user.isMate ? .white : .black, for: .normal)
+        let babyGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "babygray")
+        addButton.backgroundColor = user.isMate ? .font : babyGTolightB
+        addButton.setTitleColor(user.isMate ? UIColor(named: "textColor") : .darkgray, for: .normal)
     }
     
     @objc private func didTapAddButton() {

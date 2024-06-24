@@ -18,7 +18,7 @@ class BlockViewController: UIViewController {
     }
 
     let tableView = UITableView().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = .clear
         $0.register(BlockedUserTableViewCell.self, forCellReuseIdentifier: BlockedUserTableViewCell.identifier)
     }
 
@@ -35,8 +35,8 @@ class BlockViewController: UIViewController {
     let noDataMainTitle = UILabel().then {
         $0.text = "차단된 유저가 없습니다"
         $0.textAlignment = .center
-        $0.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
-        $0.textColor = .black
+        $0.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+        $0.textColor = .font
         $0.isHidden = true
     }
 
@@ -55,7 +55,7 @@ class BlockViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.tintColor = .font
         navigationItem.largeTitleDisplayMode = .never
     }
 
@@ -67,7 +67,7 @@ class BlockViewController: UIViewController {
         noDataView.addSubview(imageView)
         noDataView.addSubview(noDataMainTitle)
 
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
     }
 
     func setupConstraints() {

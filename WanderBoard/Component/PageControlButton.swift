@@ -128,28 +128,28 @@ struct PageControlButton: View {
                         RoundedRectangle(cornerRadius: 30)
                             .fill(Color("PageCtrlSelectedBG"))
                             .opacity(1)
-                            .frame(width: widthForIndex(index), height: 38)
+                            .frame(width: widthForIndex(index), height: 44)
                             .padding(EdgeInsets(top: 3, leading: 4, bottom: 3, trailing: 4)) // 상하 3, 좌우 4의 패딩
                         
                         HStack {
                             Image(systemName: iconName(for: index))
                                 .foregroundColor(Color("PageCtrlSelectedText"))
-                                .font(.system(size: 15)) // 아이콘 크기 설정
-                                .frame(width: 15, height: 15) // 아이콘 크기 설정
-                            Spacer().frame(width: 5) // 아이콘과 텍스트 간격
+                                .font(.system(size: 16)) // 아이콘 크기 설정
+                                .frame(width: 16, height: 16) // 아이콘 크기 설정
+                            Spacer().frame(width: 8) // 아이콘과 텍스트 간격
                             Text(title(for: index))
                                 .foregroundColor(Color("PageCtrlSelectedText"))
-                                .font(.system(size: 8)) // 텍스트 크기 설정
+                                .font(.system(size: 12)) // 텍스트 크기 설정
                         }
                         .padding(EdgeInsets(top: 9, leading: 8, bottom: 9, trailing: 8)) // 상하 9, 좌우 8의 패딩
                     } else {
                         Image(systemName: iconName(for: index))
                             .foregroundColor(Color("PageCtrlUnselectedText"))
-                            .font(.system(size: 15)) // 아이콘 크기 설정
-                            .frame(width: 15, height: 15) // 아이콘 크기 설정
+                            .font(.system(size: 16)) // 아이콘 크기 설정
+                            .frame(width: 16, height: 16) // 아이콘 크기 설정
                     }
                 }
-                .frame(width: selectedIndex == index ? widthForIndex(index) : 44, height: 44) // 선택되지 않은 버튼의 크기 고정
+                .frame(width: selectedIndex == index ? widthForIndex(index) : 50, height: 50) // 선택되지 않은 버튼의 크기 고정
                 .background(Color("PageCtrlUnselectedBG"))
                 .clipShape(Capsule())
                 .disabled(selectedIndex == index)
@@ -163,7 +163,7 @@ struct PageControlButton: View {
                 }
             }
         }
-        .frame(width: 178, height: 44) // HStack의 크기를 고정
+        .frame(width: 200, height: 52) // HStack의 크기를 고정
         .background(Color("BackgroundColor"))
         .clipShape(Capsule())
         .shadow(color: .pageCtrlShadow, radius: 8, x: 0, y: 4)
@@ -193,10 +193,10 @@ struct PageControlButton: View {
     
     private func widthForIndex(_ index: Int) -> CGFloat {
         switch index {
-            case 0: return 83
-            case 1: return 78
-            case 2: return 83
-            default: return 83
+            case 0: return 88
+            case 1: return 84
+            case 2: return 88
+            default: return 88
         }
     }
     

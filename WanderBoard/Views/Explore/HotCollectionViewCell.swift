@@ -95,7 +95,7 @@ class HotCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func configure(with hotLog: PinLog) async {
+    func configure(with hotLog: PinLogSummary) async {
         locationLabel.text = hotLog.location
         dateLabel.text = formatDate(hotLog.startDate)
         
@@ -103,17 +103,18 @@ class HotCollectionViewCell: UICollectionViewCell {
         backImg.image = nil
         
         // 대표 이미지
-        if let imageUrl = hotLog.media.first(where: { $0.isRepresentative })?.url ?? hotLog.media.first?.url, let url = URL(string: imageUrl) {
-            backImg.kf.setImage(with: url, placeholder: UIImage(systemName: "photo"))
+        if let imageUrl = hotLog.representativeMediaURL, let url = URL(string: imageUrl) {
+            backImg.kf.setImage(with: url)
         } else {
-            backImg.image = UIImage(systemName: "photo") // 임시 기본 이미지
+            backImg.backgroundColor = .black
         }
         
         // 프로필 사진
         if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: hotLog.authorId), let url = URL(string: photoURL) {
-            profile.kf.setImage(with: url, placeholder: UIImage(systemName: "person.circle"))
+            profile.kf.setImage(with: url)
         } else {
-            profile.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
+            //profile.image = UIImage(named: "profileImg") // 기본 프로필 이미지
+            profile.backgroundColor = .white
         }
     }
     

@@ -1,0 +1,11 @@
+/* 
+  InfoPlist.strings
+  WanderBoard
+
+  Created by 김시종 on 6/22/24.
+  
+*/
+
+
+"NSLocationWhenInUseUsageDescription" = "This app uses your current location to pin places on photos. The location data is used solely for this purpose and not for any other purpose.";
+"NSPhotoLibraryUsageDescription" = "This app requires access to your photo library to allow you to upload photos and create pin logs.";

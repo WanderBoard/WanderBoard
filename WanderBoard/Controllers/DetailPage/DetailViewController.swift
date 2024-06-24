@@ -27,6 +27,8 @@ class DetailViewController: UIViewController {
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
     var selectedFriends: [UIImage] = []
     
+    //로직 변경하면서 핀로그 id만 가져오도록
+    var pinLogId: String?
     var pinLog: PinLog?
     let pinLogManager = PinLogManager()
     
@@ -228,6 +230,13 @@ class DetailViewController: UIViewController {
         $0.clipsToBounds = true
     }
     
+    let noDataLabel = UILabel().then {
+        $0.text = "지출 내역이 없습니다."
+        $0.font = UIFont.systemFont(ofSize: 15)
+        $0.textColor = .darkgray
+        $0.isHidden = true
+    }
+    
     var moneyCountTitle = UILabel().then {
         $0.text = "0000000"
         $0.font = UIFont.systemFont(ofSize: 20)
@@ -310,6 +319,7 @@ class DetailViewController: UIViewController {
         
         //한빛
         checkId()
+        loadData() //id로 데이터 불러오기
         
         view.backgroundColor = .systemBackground
     }
@@ -352,6 +362,20 @@ class DetailViewController: UIViewController {
         maxConsumptionLabel.textColor = darkBTolightG
     }
     
+    //id로 데이터 불러오기 - 한빛
+    func loadData() {
+        guard let pinLogId = pinLogId else { return }
+        pinLogManager.fetchPinLog(by: pinLogId) { [weak self] result in
+            switch result {
+            case .success(let pinLog):
+                self?.pinLog = pinLog
+                self?.checkId() // 데이터 로드 후 UI 업데이트
+            case .failure(let error):
+                print("Failed to fetch pin log: \(error)")
+            }
+        }
+    }
+    
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
     
     // 핀 버튼
@@ -366,14 +390,12 @@ class DetailViewController: UIViewController {
     }
     
     private func newSetupConstraints() {
-        let closeButton = ButtonFactory.createXButton(target: self, action: #selector(dismissDetailView))
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: closeButton)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pinButton)
         
         NSLayoutConstraint.activate([
-            pinButton.widthAnchor.constraint(equalToConstant: 30), // 원하는 너비로 설정
-            pinButton.heightAnchor.constraint(equalToConstant: 30) // 원하는 높이로 설정
+            pinButton.widthAnchor.constraint(equalToConstant: 44),
+            pinButton.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
     
@@ -485,6 +507,7 @@ class DetailViewController: UIViewController {
         contentView.addSubview(moneyCountainer)
         moneyCountainer.addSubview(consumStackView)
         moneyCountainer.addSubview(consumMainStackView)
+        moneyCountainer.addSubview(noDataLabel)
         moneyCountainer.addSubview(moneyCountSubTitle)
         maxConsumView.addSubview(maxConsumptionLabel)
         contentView.addSubview(friendTitle)
@@ -611,6 +634,10 @@ class DetailViewController: UIViewController {
             $0.height.equalTo(90)
         }
         
+        noDataLabel.snp.makeConstraints {
+            $0.center.equalToSuperview()
+        }
+        
         moneyCountSubTitle.snp.makeConstraints {
             $0.bottom.equalTo(moneyCountTitle)
             $0.leading.equalTo(moneyCountTitle.snp.trailing).offset(5)
@@ -669,37 +696,23 @@ class DetailViewController: UIViewController {
         mainTitleLabel.text = pinLog.title
         subTextLabel.text = pinLog.content
         
-        if pinLog.isSpendingPublic {
+        if pinLog.isSpendingPublic || isCurrentUser(pinLog: pinLog) {
             if let totalSpendingAmount = pinLog.totalSpendingAmount, totalSpendingAmount > 0 {
                 moneyCountTitle.text = "\(formatCurrency(totalSpendingAmount))원"
                 maxConsumptionLabel.text = "최고금액 지출 : \(formatCurrency(pinLog.maxSpendingAmount ?? 0))원"
                 moneyCountainer.isHidden = false
                 moneyCountSubTitle.isHidden = false
                 consumMainStackView.isHidden = false
+                noDataLabel.isHidden = true
             } else {
-                let noDataLabel = UILabel().then {
-                    $0.text = "지출 내역이 없습니다."
-                    $0.font = UIFont.systemFont(ofSize: 15)
-                    $0.textColor = .darkgray
-                }
-                moneyCountainer.addSubview(noDataLabel)
-                noDataLabel.snp.makeConstraints {
-                    $0.center.equalToSuperview()
-                }
+                noDataLabel.isHidden = false
                 moneyCountainer.isHidden = false
                 moneyCountSubTitle.isHidden = true
                 consumMainStackView.isHidden = true
             }
         } else {
-            let privateLabel = UILabel().then {
-                $0.text = "지출 내역이 비공개입니다."
-                $0.font = UIFont.systemFont(ofSize: 15)
-                $0.textColor = .darkgray
-            }
-            moneyCountainer.addSubview(privateLabel)
-            privateLabel.snp.makeConstraints {
-                $0.center.equalToSuperview()
-            }
+            noDataLabel.text = "지출 내역이 비공개입니다."
+            noDataLabel.isHidden = false
             moneyCountainer.isHidden = false
             moneyCountSubTitle.isHidden = true
             consumMainStackView.isHidden = true
@@ -731,9 +744,9 @@ class DetailViewController: UIViewController {
         
         // 프로필 사진
         if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId), let url = URL(string: photoURL) {
-            profileImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "person.circle"))
+            profileImageView.kf.setImage(with: url)
         } else {
-            profileImageView.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
+            profileImageView.image = UIImage(named: "profileImg") // 기본 프로필 이미지
         }
         
         // 백그라운드 이미지
@@ -746,6 +759,7 @@ class DetailViewController: UIViewController {
         friendTitle.isHidden = pinLog.attendeeIds.isEmpty
         friendCollectionView.isHidden = pinLog.attendeeIds.isEmpty
     }
+    
     
     
     //프로필 이미지
@@ -804,8 +818,7 @@ class DetailViewController: UIViewController {
     @objc func showGalleryDetail() {
         let galleryDetailVC = GalleryDetailViewController()
         galleryDetailVC.selectedImages = selectedImages.map { $0.0 }
-        galleryDetailVC.modalPresentationStyle = .fullScreen
-        present(galleryDetailVC, animated: true, completion: nil)
+        navigationController?.pushViewController(galleryDetailVC, animated: true)
     }
     
     @objc func showMapViewController() {
@@ -818,6 +831,8 @@ class DetailViewController: UIViewController {
         let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
         }
         mapVC.pinLocations = selectedImages.compactMap { $0.2 }
+        mapVC.shouldHideSearch = true
+        
         if let navigationController = self.navigationController {
             navigationController.pushViewController(mapVC, animated: true)
         } else {
@@ -856,9 +871,14 @@ class DetailViewController: UIViewController {
     }
     
     @objc func moneyMoveButtonTapped() {
+        guard let pinLog = self.pinLog else {
+            print("PinLog is nil")
+            return
+        }
+        
         let spendVC = SpendingListViewController()
-        spendVC.pinLog = self.pinLog
-//        spendVC.shouldShowEditButton = false 세미:편집은 셀 스와이프로, 새 지출 내역작성은 펜버튼으로 진행(테이블뷰가 있으면 펜버튼이 보이고, 입력전으로 테이블뷰가 없으면 펜버튼이 없게 만들어서 shouldShowEditButton 기능이 불필요할 것 같아서 주석처리했습니다)
+        spendVC.pinLog = pinLog
+        spendVC.hideEditButton = !isCurrentUser(pinLog: pinLog)
         spendVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(spendVC, animated: true)
     }
@@ -903,7 +923,7 @@ class DetailViewController: UIViewController {
             }
             
             let hideAction = UIAction(title: "게시글 숨기기", image: UIImage(systemName: "eye.slash.circle")) { _ in
-                let hideAlert = UIAlertController(title: "", message: "게시물을 숨기시겠습니까? \n 숨긴 게시글은 다시 볼 수 없습니다.", preferredStyle: .alert)
+                let hideAlert = UIAlertController(title: "", message: "게시글을 숨기시겠습니까? \n 숨긴 게시글은 다시 볼 수 없습니다.", preferredStyle: .alert)
                 hideAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
                 hideAlert.addAction(UIAlertAction(title: "숨기기", style: .destructive, handler: { [weak self] _ in
                     self?.hidePinLog()
@@ -980,7 +1000,9 @@ class DetailViewController: UIViewController {
         if let pinLog = self.pinLog {
             inputVC.pinLog = pinLog
         }
-        navigationController?.pushViewController(inputVC, animated: true)
+        let navController = UINavigationController(rootViewController: inputVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true, completion: nil)
     }
     
     func reportPinLog() {

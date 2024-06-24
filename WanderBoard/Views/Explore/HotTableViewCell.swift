@@ -56,7 +56,7 @@ class HotTableViewCell: UITableViewCell {
         $0.sectionInset = .init(top: 10, left: 30, bottom: 5, right: 10)
     }
     
-    var hotPinLogs: [PinLog] = [] {
+    var hotPinLogs: [PinLogSummary] = [] {
         didSet {
             hotCollectionView.reloadData()
         }
@@ -101,7 +101,7 @@ class HotTableViewCell: UITableViewCell {
         }
     }
     
-    func configure(with pinLogs: [PinLog]) {
+    func configure(with pinLogs: [PinLogSummary]) {
         self.hotPinLogs = pinLogs
     }
     

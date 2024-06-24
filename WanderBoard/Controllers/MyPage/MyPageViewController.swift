@@ -30,7 +30,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     let status3 = UILabel()
     let tableView = UITableView().then(){
         $0.backgroundColor = .clear
-        $0.isScrollEnabled = false //스크롤 비활성화
+        $0.isScrollEnabled = false
     }
     var userData: User?
     
@@ -38,22 +38,21 @@ class MyPageViewController: BaseViewController, PageIndexed {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        tableView.register(MyPageTableViewCell.self, forCellReuseIdentifier: MyPageTableViewCell.identifier)
-        tableView.delegate = self
-        tableView.dataSource = self
         
         configureUI()
         setGradient()
         fetchUserData()
+        setupTabelView()
         fetchAndDisplayUserPinCount() // 핀 개수 가져오기 및 UI 업데이트
         fetchInvitationCount()
         fetchTagData()
         
-        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        navigationItem.backBarButtonItem = backButton
         navigationItem.largeTitleDisplayMode = .never
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationHelper.changePage(hidden: false, isEnabled: true)
+    }
     
     func fetchUserData() {
         Task {
@@ -87,6 +86,12 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 print("태그된 핀 로그 개수를 가져오는데 실패했습니다: \(error)")
             }
         }
+    }
+    
+    func setupTabelView() {
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(MyPageTableViewCell.self, forCellReuseIdentifier: MyPageTableViewCell.identifier)
     }
     
     func fetchInvitationCount() {
@@ -123,9 +128,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     }
 
     
-    override func viewWillAppear(_ animated: Bool) {
-        NotificationHelper.changePage(hidden: false, isEnabled: true)
-    }
+    
     
     override func constraintLayout() {
         view.addSubview(scrollView)
@@ -145,7 +148,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
             $0.width.equalTo(scrollView)
             $0.height.equalTo(720)
         }
-        
         
         profile.snp.makeConstraints() {
             $0.centerX.equalTo(contentView)
@@ -194,20 +196,14 @@ class MyPageViewController: BaseViewController, PageIndexed {
             $0.top.equalTo(statusB.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview().inset(32)
             $0.bottom.equalTo(contentView).offset(-110)
-
         }
     }
+
     
     override func configureUI() {
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
-        let image = UIImage(systemName: "pencil.circle", withConfiguration: imageConfig)
-        editButton.setImage(image, for: .normal)
-        editButton.tintColor = .font
-        editButton.addTarget(self, action: #selector(edit), for: .touchUpInside)
-        let barButtonItem = UIBarButtonItem(customView: editButton)
-        self.navigationItem.rightBarButtonItem = barButtonItem
+        navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(edit)), animated: true)
         
-        profile.image = UIImage(named: "profileImage")
+        profile.backgroundColor = .black
         profile.layer.cornerRadius = 53
         profile.clipsToBounds = true
         profile.contentMode = .scaleAspectFill
@@ -254,7 +250,8 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 myID.text = "이메일 비공개"
             } else {
                 myID.text = userData.email
-                profile.image = UIImage(named: "profileImage")
+                //profile.image = UIImage(named: "profileImg")
+                profile.backgroundColor = .white
             }
         }
     }
@@ -294,7 +291,8 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 }
             }
         } else {
-            profile.image = UIImage(named: "profileImage")
+            //profile.image = UIImage(named: "profileImg")
+            profile.backgroundColor = .white
         }
     }
     
@@ -335,7 +333,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     //에딧창에서 추가해준 이름과 사진 불러오기
     func updateUserData(name: String, image: UIImage?) {
         myName.text = name
-        profile.image = image ?? UIImage(named: "profileImage")
+        profile.image = image ?? UIImage(named: "profileImg")
     }
 }
 
@@ -395,9 +393,9 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                          self.navigationController?.pushViewController(blockVC, animated: true)
                          blockVC.navigationItem.title = "차단관리"
                     case 4:
-                        NotificationHelper.changePage(hidden: true, isEnabled: false)
                         let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
                         let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                            NotificationHelper.changePage(hidden: true, isEnabled: false)
                             self.handleLogout() // 로그아웃 처리
                         }
                         let close = UIAlertAction(title: "취소", style: .destructive, handler: nil)

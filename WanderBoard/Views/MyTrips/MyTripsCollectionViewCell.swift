@@ -139,9 +139,10 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
         
         // 프로필 사진
         if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: tripLog.authorId), let url = URL(string: photoURL) {
-            profileImg.kf.setImage(with: url, placeholder: UIImage(systemName: "person.circle"))
+            profileImg.kf.setImage(with: url)
         } else {
-            profileImg.image = UIImage(systemName: "person.circle") // 기본 프로필 이미지
+            //profileImg.image = UIImage(named: "profileImg") // 기본 프로필 이미지
+            profileImg.backgroundColor = .black
         }
     }
     

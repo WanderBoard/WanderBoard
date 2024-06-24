@@ -12,33 +12,18 @@ import FirebaseAuth
 
 class SpendingListViewController: UIViewController {
     var pinLog: PinLog?
-//    var shouldShowEditButton: Bool = true
-//세미: 펜버튼 자체가 테이블뷰가 있을 때만 나와서 불필요한 코드로 보여 주석처리함
-    
-    // MARK: Components
     var dailyExpenses: [DailyExpenses] = []
-    
-    lazy var backButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .plain, target: self, action: #selector(handleBackButtonTapped))
-        return button
-    }()
-    
-    lazy var penButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "pencil"), style: .plain, target: self, action: #selector(handlePenButtonTapped))
-        return button
-    }()
+    var hideEditButton: Bool = false
     
     lazy var spendingCardbutton: UIButton = {
         let spendingCardbutton = UIButton()
         spendingCardbutton.backgroundColor = .font
         spendingCardbutton.layer.cornerRadius = 25
-        
         spendingCardbutton.layer.shadowOffset = CGSize(width: 3, height: 6)
         spendingCardbutton.layer.shadowOpacity = 0.3
         spendingCardbutton.layer.shadowRadius = 5
         spendingCardbutton.layer.shadowColor = UIColor.black.cgColor
         spendingCardbutton.layer.masksToBounds = false
-        
         return spendingCardbutton
     }()
     
@@ -47,7 +32,6 @@ class SpendingListViewController: UIViewController {
         totalSpendingText.text = "총 지출 금액"
         totalSpendingText.font = UIFont.systemFont(ofSize: 15)
         totalSpendingText.textColor = .darkgray
-        
         return totalSpendingText
     }()
     
@@ -59,7 +43,6 @@ class SpendingListViewController: UIViewController {
         totalSpendingAmount.text = ""
         totalSpendingAmount.font = UIFont.systemFont(ofSize: 28)
         totalSpendingAmount.textColor = UIColor(named: "textColor")
-        
         return totalSpendingAmount
     }()
     
@@ -83,7 +66,6 @@ class SpendingListViewController: UIViewController {
         let spendingEmptyView = SpendingEmptyView()
         spendingEmptyView.delegate = self
         spendingEmptyView.isHidden = true
-        
         return spendingEmptyView
     }()
     
@@ -108,26 +90,31 @@ class SpendingListViewController: UIViewController {
         
         updateView()
         tableView.reloadData()
-        
+
         // 네비게이션 바 아이템 설정
-        navigationItem.leftBarButtonItem = backButton
-        navigationItem.rightBarButtonItem = penButton
-        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(handlePenButtonTapped))
+    }
+    
+    func isCurrentUser() -> Bool {
+        guard let pinLog = pinLog, let currentUserID = Auth.auth().currentUser?.uid else {
+            return false
+        }
+        return pinLog.authorId == currentUserID
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateView()
-        
         navigationController?.navigationBar.tintColor = .font
+        
+        if hideEditButton {
+            navigationItem.rightBarButtonItem = nil
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let navigationController = navigationController,
-           navigationController.viewControllers.contains(where: { $0 is DetailViewController }) {
-            navigationItem.rightBarButtonItem = penButton
-        }
+        handleBackButtonTapped()
     }
     
     func loadExpensesFromFirestore() {
@@ -185,11 +172,11 @@ class SpendingListViewController: UIViewController {
         if dailyExpenses.isEmpty {
             tableView.isHidden = true
             spendingEmptyView.isHidden = false
-            penButton.isHidden = true
+            navigationItem.rightBarButtonItem?.isHidden = true
         } else {
             tableView.isHidden = false
             spendingEmptyView.isHidden = true
-            penButton.isHidden = false
+            navigationItem.rightBarButtonItem?.isHidden = false
         }
         tableView.reloadData()
     }
@@ -253,7 +240,7 @@ class SpendingListViewController: UIViewController {
     func makeConstraints() {
         spendingCardbutton.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(30)
-            $0.height.equalTo(203)
+            $0.height.equalTo(200)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
         }
         
@@ -261,7 +248,7 @@ class SpendingListViewController: UIViewController {
             $0.top.equalToSuperview().inset(110)
             $0.leading.equalToSuperview().inset(32)
             $0.width.equalTo(74)
-            $0.height.equalTo(22.11)
+            $0.height.equalTo(22)
         }
         
         totalSpendingAmount.snp.makeConstraints {
@@ -271,7 +258,8 @@ class SpendingListViewController: UIViewController {
         
         tableView.snp.makeConstraints {
             $0.top.equalTo(spendingCardbutton.snp.bottom).offset(44)
-            $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            $0.bottom.equalToSuperview()
         }
         
         spendingEmptyView.snp.makeConstraints {
@@ -335,11 +323,7 @@ extension SpendingListViewController: UITableViewDataSource {
         
         let expense = dailyExpenses[indexPath.section].expenses[indexPath.row]
         
-        cell.expenseContent.text = expense.expenseContent
-        cell.memo.text = expense.memo
-        cell.memo.numberOfLines = 2
-        cell.expenseAmount.text = "\(formatCurrency(expense.expenseAmount))원"
-        cell.categoryImageView.image = UIImage(systemName: expense.imageName)
+        cell.configure(with: expense)
         cell.selectionStyle = .none
         
         return cell
@@ -369,11 +353,12 @@ extension SpendingListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-
+        return 70
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard isCurrentUser() else { return nil }
+
         let edit = UIContextualAction(style: .normal, title: "수정") { (UIContextualAction, UIView, success: @escaping (Bool) -> Void) in
             let insertVC = InsertSpendingViewController()
             insertVC.modalPresentationStyle = .automatic
@@ -381,15 +366,15 @@ extension SpendingListViewController: UITableViewDelegate {
             insertVC.editingIndexPath = indexPath
             insertVC.delegate = self
             self.present(insertVC, animated: true, completion: nil)
-            
+
             success(true)
         }
-        
+
         edit.backgroundColor = .systemBlue
-        
+
         let delete = UIContextualAction(style: .normal, title: "삭제") { (UIContextualAction, UIView, success: @escaping (Bool) -> Void) in
             let deletedExpense = self.dailyExpenses[indexPath.section].expenses.remove(at: indexPath.row)
-            
+
             if self.dailyExpenses[indexPath.section].expenses.isEmpty {
                 self.dailyExpenses.remove(at: indexPath.section)
                 tableView.deleteSections(IndexSet(integer: indexPath.section), with: .fade)
@@ -398,19 +383,18 @@ extension SpendingListViewController: UITableViewDelegate {
                 tableView.deleteRows(at: [indexPath], with: .fade)
             }
             self.updateHeaderView(forSection: indexPath.section, withDeletedExpense: deletedExpense)
-            
+
             success(true)
         }
-        
+
         delete.backgroundColor = .systemRed
-        
+
         return UISwipeActionsConfiguration(actions: [delete, edit])
     }
 }
 
 extension SpendingListViewController: SpendingEmptyViewDelegate {
     func didTapAddButton() {
-        penButton.isEnabled = true
         let inputVC = InsertSpendingViewController()
         inputVC.delegate = self
         inputVC.modalPresentationStyle = .automatic
@@ -423,38 +407,37 @@ extension SpendingListViewController: InsertSpendingViewControllerDelegate {
     func didUpdateExpense(_ expense: Expense, at indexPath: IndexPath?) {
         if let indexPath = indexPath {
             let originalDate = dailyExpenses[indexPath.section].date
-                        let newDate = expense.date
-                        
-                        if Calendar.current.isDate(originalDate, inSameDayAs: newDate) {
-                            // 날짜가 동일한 경우
-                            dailyExpenses[indexPath.section].expenses[indexPath.row] = expense
-                            tableView.reloadRows(at: [indexPath], with: .automatic)
-                        } else {
-                            // 날짜가 다른 경우
-                            dailyExpenses[indexPath.section].expenses.remove(at: indexPath.row)
-                            if dailyExpenses[indexPath.section].expenses.isEmpty {
-                                dailyExpenses.remove(at: indexPath.section)
-                                tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
-                            } else {
-                                tableView.deleteRows(at: [indexPath], with: .automatic)
-                            }
-                            
-                            if let newIndex = dailyExpenses.firstIndex(where: { Calendar.current.isDate($0.date, inSameDayAs: newDate) }) {
-                                dailyExpenses[newIndex].expenses.append(expense)
-                                tableView.insertRows(at: [IndexPath(row: dailyExpenses[newIndex].expenses.count - 1, section: newIndex)], with: .automatic)
-                            } else {
-                                let newDailyExpense = DailyExpenses(date: newDate, expenses: [expense])
-                                dailyExpenses.append(newDailyExpense)
-                                dailyExpenses.sort { $0.date > $1.date }
-                                tableView.reloadData()
-                            }
-                        }
-                        updateHeaderView(forSection: indexPath.section, withDeletedExpense: expense)
-                    } else {
-                        NotificationCenter.default.post(name: .newExpenseData, object: nil, userInfo: ["expense": expense])
-                    }
+            let newDate = expense.date
+            
+            if Calendar.current.isDate(originalDate, inSameDayAs: newDate) {
+                dailyExpenses[indexPath.section].expenses[indexPath.row] = expense
+                tableView.reloadRows(at: [indexPath], with: .automatic)
+            } else {
+                dailyExpenses[indexPath.section].expenses.remove(at: indexPath.row)
+                if dailyExpenses[indexPath.section].expenses.isEmpty {
+                    dailyExpenses.remove(at: indexPath.section)
+                    tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
+                } else {
+                    tableView.deleteRows(at: [indexPath], with: .automatic)
+                }
+                
+                if let newIndex = dailyExpenses.firstIndex(where: { Calendar.current.isDate($0.date, inSameDayAs: newDate) }) {
+                    dailyExpenses[newIndex].expenses.append(expense)
+                    tableView.insertRows(at: [IndexPath(row: dailyExpenses[newIndex].expenses.count - 1, section: newIndex)], with: .automatic)
+                } else {
+                    let newDailyExpense = DailyExpenses(date: newDate, expenses: [expense])
+                    dailyExpenses.append(newDailyExpense)
+                    dailyExpenses.sort { $0.date > $1.date }
+                    tableView.reloadData()
+                }
+            }
+            updateHeaderView(forSection: indexPath.section, withDeletedExpense: expense)
+        } else {
+            NotificationCenter.default.post(name: .newExpenseData, object: nil, userInfo: ["expense": expense])
+        }
         updateTotalSpendingAmount()
         tableView.reloadData()
         updateView()
     }
 }
+

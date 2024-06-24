@@ -24,17 +24,18 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     static var pinnedTripLogs: [PinLog] = [] // 핀 찍은 로그를 저장할 새로운 배열 추가
     static var taggedTripLogs: [PinLog] = [] // 태그 된 아이디들 불러오는
     
-    lazy var plusButton: UIButton = {
-        let button = UIButton(type: .system)
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
+    var blockedAuthors: [String] = [] //차단친구 관리
+    var hiddenPinLogs: [String] = []  //숨긴 글 관리
+    
+    lazy var plusButton = UIButton(type: .system).then {
+        let imageConfig = UIImage.SymbolConfiguration(weight: .regular)
         let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
-        button.setImage(image, for: .normal)
-        button.tintColor = UIColor(named: "textColor")
-        button.backgroundColor = .font
-        button.layer.cornerRadius = 15
-        button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
-        return button
-    }()
+        $0.setImage(image, for: .normal)
+        $0.tintColor = UIColor(named: "textColor")
+        $0.backgroundColor = .font
+        $0.layer.cornerRadius = 18
+        $0.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
+    }
     
     lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.dataSource = self
@@ -55,13 +56,13 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         
     private let mainLabel = UILabel().then {
         $0.text = ""
-        $0.font = .boldSystemFont(ofSize: 20)
+        $0.font = .boldSystemFont(ofSize: 17)
         $0.textAlignment = .center
     }
         
     private let subLabel = UILabel().then {
         $0.text = ""
-        $0.font = .systemFont(ofSize: 16)
+        $0.font = .systemFont(ofSize: 15)
         $0.textColor = .darkgray
         $0.textAlignment = .center
         $0.numberOfLines = 2
@@ -75,7 +76,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         
     lazy var addButton = UIButton().then {
         $0.setTitle("여행 추가하기", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
+        $0.titleLabel?.font = .systemFont(ofSize: 14, weight: .bold)
         $0.setTitleColor(.black, for: .normal)
         $0.backgroundColor = .babygray
         $0.layer.cornerRadius = 26
@@ -106,10 +107,30 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         plusButton.isHidden = false
 
         Task {
+            self.blockedAuthors = try await AuthenticationManager.shared.getBlockedAuthors()
+            self.hiddenPinLogs = try await AuthenticationManager.shared.getHiddenPinLogs()
+            
             await loadData()
             await loadPinnedData() // 핀 찍은 데이터 로드
             updateView()
         }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        // 플러스 버튼의 터치 영역을 확장
+        let hitAreaSize = CGSize(width: 44, height: 44)
+        let buttonSize = plusButton.bounds.size
+        let hitAreaInsets = UIEdgeInsets(
+            top: -(hitAreaSize.height - buttonSize.height) / 2,
+            left: -(hitAreaSize.width - buttonSize.width) / 2,
+            bottom: -(hitAreaSize.height - buttonSize.height) / 2,
+            right: -(hitAreaSize.width - buttonSize.width) / 2
+        )
+        plusButton.frame = plusButton.frame.inset(by: hitAreaInsets)
+        
+        print(plusButton.frame.size)
     }
     
     private func setupNV() {
@@ -121,7 +142,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             plusButton.snp.makeConstraints {
                 $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-16)
                 $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
-                $0.size.equalTo(CGSize(width: 30, height: 30))
+                $0.size.equalTo(CGSize(width: 36, height: 36))
             }
         }
     }
@@ -189,11 +210,11 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
     func filterTripLogs() -> [PinLog] {
         switch currentFilterIndex {
         case 0:
-            return MyTripsViewController.tripLogs
+            return filterBlockedAndHiddenLogs(from: MyTripsViewController.tripLogs)
         case 1:
-            return MyTripsViewController.taggedTripLogs
+            return filterBlockedAndHiddenLogs(from: MyTripsViewController.taggedTripLogs)
         case 2:
-            return MyTripsViewController.pinnedTripLogs
+            return filterBlockedAndHiddenLogs(from: MyTripsViewController.pinnedTripLogs)
         default:
             return []
         }
@@ -213,6 +234,10 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         updateView()
     }
     
+    private func filterBlockedAndHiddenLogs(from logs: [PinLog]) -> [PinLog] {
+        return logs.filter { !blockedAuthors.contains($0.authorId) && !hiddenPinLogs.contains($0.id ?? "") }
+    }
+    
     func loadData() async {
         do {
             guard let userId = Auth.auth().currentUser?.uid else {
@@ -221,20 +246,18 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             }
             // 사용자가 작성한 핀로그 가져오기
             let userPinLogs = try await pinLogManager.fetchPinLogs(forUserId: userId)
-            MyTripsViewController.tripLogs = userPinLogs.sorted { $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast }
+            MyTripsViewController.tripLogs = filterBlockedAndHiddenLogs(from: userPinLogs).sorted { $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast }
             
             // 태그된 핀로그 가져오기
             let taggedPinLogs = try await pinLogManager.fetchTaggedPinLogs(forUserId: userId)
-            MyTripsViewController.taggedTripLogs = taggedPinLogs.sorted { $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast }
+            MyTripsViewController.taggedTripLogs = filterBlockedAndHiddenLogs(from: taggedPinLogs).sorted { $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast }
             
-            //print("Fetched userPinLogs: \(userPinLogs)")
-            //print("Fetched taggedPinLogs: \(taggedPinLogs)")
             updateView()
         } catch {
             print("Failed to fetch pin logs: \(error.localizedDescription)")
         }
     }
-    
+
     func loadPinnedData() async {
         do {
             guard let userId = Auth.auth().currentUser?.uid else {
@@ -242,8 +265,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
                 return
             }
             let pinnedLogs = try await pinLogManager.fetchPinnedPinLogs(forUserId: userId)
-            MyTripsViewController.pinnedTripLogs = pinnedLogs
-            //print("Fetched pinned pinLogs: \(pinnedLogs)")
+            MyTripsViewController.pinnedTripLogs = filterBlockedAndHiddenLogs(from: pinnedLogs)
         } catch {
             print("Failed to fetch pinned pin logs: \(error.localizedDescription)")
         }

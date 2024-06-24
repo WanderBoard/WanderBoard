@@ -185,7 +185,7 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
     var toolbar: UIToolbar?
     var categoryPicker: UIPickerView = {
         let categoryPicker = UIPickerView()
-        categoryPicker.backgroundColor = .white
+        categoryPicker.backgroundColor = UIColor(named: "textColor")
         
         return categoryPicker
     }()
@@ -412,7 +412,7 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
         
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(donePickingCategory))
-        doneButton.tintColor = .black
+        doneButton.tintColor = .font
         toolbar?.setItems([flexibleSpace, doneButton], animated: true)
         
         categoryPicker.delegate = self

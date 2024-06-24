@@ -24,20 +24,17 @@ class GalleryDetailViewController: UIViewController {
         $0.pageIndicatorTintColor = .lightGray
     }
     
-    let closeButton = UIButton().then {
-        $0.setImage(UIImage(systemName: "xmark"), for: .normal)
-        $0.tintColor = .font
-        $0.setTitleColor(.black, for: .normal)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
         setupScrollView()
         updateColor()
-        
-        closeButton.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
+        setupNavigationBar()
+    }
+    
+    private func setupNavigationBar() {
+        navigationController?.navigationBar.tintColor = .black
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -55,30 +52,26 @@ class GalleryDetailViewController: UIViewController {
     }
     
     @objc func closeButtonTapped() {
-        dismiss(animated: true, completion: nil)
+        navigationController?.popViewController(animated: true)
     }
     
     func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         view.addSubview(scrollView)
         view.addSubview(pageControl)
-        view.addSubview(closeButton)
     }
     
     func setupConstraints() {
         scrollView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            $0.leading.equalToSuperview()
+            $0.trailing.equalToSuperview()
         }
         
         pageControl.snp.makeConstraints {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
             $0.centerX.equalToSuperview()
-        }
-        
-        closeButton.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).inset(20)
-            $0.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
-            $0.width.height.equalTo(30)
         }
     }
     
@@ -88,7 +81,6 @@ class GalleryDetailViewController: UIViewController {
         
         let imageHeightRatio: CGFloat = 0.7
         let imageHeight = view.frame.height * imageHeightRatio
-        let topOffset = (view.frame.height - imageHeight) / 2
         
         for (index, image) in selectedImages.enumerated() {
             let imageView = UIImageView(image: image)
@@ -98,14 +90,14 @@ class GalleryDetailViewController: UIViewController {
             scrollView.addSubview(imageView)
             
             imageView.snp.makeConstraints {
-                $0.width.equalToSuperview()
+                $0.width.equalTo(view.frame.width)
                 $0.height.equalTo(imageHeight)
-                $0.top.equalToSuperview().offset(topOffset)
+                $0.top.equalTo(scrollView).offset(30)
                 $0.leading.equalToSuperview().offset(CGFloat(index) * view.frame.width)
             }
         }
         
-        scrollView.contentSize = CGSize(width: view.frame.width * CGFloat(selectedImages.count), height: view.frame.height)
+        scrollView.contentSize = CGSize(width: view.frame.width * CGFloat(selectedImages.count), height: scrollView.frame.height)
     }
 }
 

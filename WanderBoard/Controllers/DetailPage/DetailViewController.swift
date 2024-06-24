@@ -436,7 +436,10 @@ class DetailViewController: UIViewController {
     }
     
     @objc func pinButtonTapped() {
-        guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else { return }
+        guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else {
+            showLoginAlert()
+            return
+        }
         
         var updatedPinnedBy = pinLog.pinnedBy ?? []
         var updatedPinCount = pinLog.pinCount ?? 0
@@ -468,6 +471,29 @@ class DetailViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    func showLoginAlert() {
+        let alert = UIAlertController(title: "로그인", message: "로그인 시 이용 가능한 기능입니다.\n로그인 하시겠습니까?", preferredStyle: .alert)
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        cancelAction.setValue(UIColor.black, forKey: "titleTextColor")
+        
+        let confirmAction = UIAlertAction(title: "확인", style: .default, handler: { [weak self] _ in
+            self?.navigateToLogin()
+        })
+        confirmAction.setValue(UIColor.black, forKey: "titleTextColor")
+        
+        alert.addAction(cancelAction)
+        alert.addAction(confirmAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func navigateToLogin() {
+        let loginVC = AuthenticationVC()
+        loginVC.modalPresentationStyle = .fullScreen
+        present(loginVC, animated: true, completion: nil)
     }
     
     func updatePinButtonState() {
@@ -826,7 +852,7 @@ class DetailViewController: UIViewController {
             print("No location data available.")
             return
         }
-
+        
         let region = MKCoordinateRegion(center: firstLocation, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
         let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
         }
@@ -839,7 +865,7 @@ class DetailViewController: UIViewController {
             present(mapVC, animated: true, completion: nil)
         }
     }
-
+    
     
     func setupActionButton() {
         albumAllButton.addTarget(self, action: #selector(showGalleryDetail), for: .touchUpInside)
@@ -888,9 +914,9 @@ class DetailViewController: UIViewController {
         if isCurrentUser(pinLog: pinLog) {
             // 현재 사용자가 작성자인 경우
             //게시물 공유 기능은 나중에
-//            let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-//                self.sharePinLog()
-//            }
+            //        let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+            //            self.sharePinLog()
+            //        }
             
             let instaAction = UIAction(title: "이미지 공유하기", image: UIImage(systemName: "photo.on.rectangle.angled")) { _ in
                 self.instaConnect()
@@ -907,12 +933,12 @@ class DetailViewController: UIViewController {
                     self.deletePinLog()
                 }
             optionsButton.menu = UIMenu(title: "", children: [instaAction, editAction, deleteAction])
-        } else {
+        } else if Auth.auth().currentUser != nil {
             // 다른 사람의 글인 경우
             //게시물 공유 기능은 나중에
-//          let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-//                self.sharePinLog()
-//          }
+            //      let shareAction = UIAction(title: "공유하기", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+            //            self.sharePinLog()
+            //      }
             let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "person.slash.fill")) { _ in
                 let reportAlert = UIAlertController(title: "", message: "작성자를 차단하시겠습니까? \n 차단한 작성자의 글이 보이지 않게됩니다.", preferredStyle: .alert)
                 reportAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
@@ -941,6 +967,9 @@ class DetailViewController: UIViewController {
             }
             
             optionsButton.menu = UIMenu(title: "", children: [blockAction, hideAction, reportAction])
+        } else {
+            optionsButton.menu = nil
+            optionsButton.isHidden = true
         }
     }
     
@@ -963,9 +992,9 @@ class DetailViewController: UIViewController {
     }
     
     //나중 구현
-//    func sharePinLog() {
-//
-//    }
+    //    func sharePinLog() {
+    //
+    //    }
     
     func instaConnect() {
         guard !selectedImages.isEmpty else {
@@ -1109,7 +1138,7 @@ class DetailViewController: UIViewController {
     private func setupMapViewController() {
         let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001))
         mapViewController = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
-
+            
         }
         guard let mapVC = mapViewController else { return }
         addChild(mapVC)

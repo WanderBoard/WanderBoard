@@ -76,6 +76,12 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         profile.addGestureRecognizer(tapGestureRecognizer)
         
         doneButton.isEnabled = false
+        
+        // 기본 네비게이션 뒤로가기 버튼 숨기기
+        self.navigationItem.hidesBackButton = true
+        // 커스텀 뒤로가기 버튼 추가
+        let backButton = createCustomBackButton()
+        self.navigationItem.leftBarButtonItem = backButton
     }
     
     override func configureUI(){
@@ -233,6 +239,43 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             $0.top.equalTo(subLine.snp.bottom).offset(15)
             $0.right.equalTo(subLine.snp.right).inset(16)
         }
+    }
+    
+    func createCustomBackButton() -> UIBarButtonItem {
+        // 커스텀 UIButton 생성
+        let backButton = UIButton(type: .system)
+        backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        backButton.setTitle("Back", for: .normal)
+        backButton.sizeToFit()
+        backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        // 이미지와 텍스트 색상 설정
+        backButton.setTitleColor(.font, for: .normal)
+        backButton.tintColor = .font
+
+        // 커스텀 버튼을 UIBarButtonItem으로 설정
+        let barButtonItem = UIBarButtonItem(customView: backButton)
+        return barButtonItem
+    }
+                                         
+    @objc func backButtonPressed() {
+        if unsavedChanges() {
+            let alertController = UIAlertController(title: "수정 중 뒤로가기", message: "변경사항이 저장되지 않았습니다. 수정을 취소하고 돌아가시겠습니까?", preferredStyle: .alert)
+            let leaveAction = UIAlertAction(title: "떠나기", style: .default) { _ in
+                self.navigationController?.popViewController(animated: true)
+            }
+            let stayAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+            alertController.addAction(stayAction)
+            alertController.addAction(leaveAction)
+            present(alertController, animated: true, completion: nil)
+        } else {
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
+    func unsavedChanges() -> Bool {
+        let currentImage = profile.image
+        let currentName = nicknameTextField.text ?? ""
+        return currentImage != previousImage || currentName != previousName
     }
     
     @objc func moveToMyPage() {

@@ -43,9 +43,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         label.font = UIFont.systemFont(ofSize: 42, weight: .semibold)
         label.textColor = .white
         label.textAlignment = .center
-//        label.textCase(.uppercase)
-//        label.translatesAutoresizingMaskIntoConstraints = false
-//        
+    
         return label
     }()
 

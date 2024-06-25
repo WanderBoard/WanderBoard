@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Image.png",
+      "filename" : "card black.pdf",
       "idiom" : "universal"
     },
     {
@@ -11,7 +11,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Image 1.png",
+      "filename" : "card white.pdf",
       "idiom" : "universal"
     }
   ],

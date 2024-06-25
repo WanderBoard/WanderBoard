@@ -26,7 +26,43 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     private var savedPinLogId: String?
     var pinLocations: [CLLocationCoordinate2D] = []
     var shouldHideSearch: Bool = false
-
+    
+    let locationButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "location.circle.fill"), for: .normal)
+        button.tintColor = .black
+        return button
+    }()
+    
+    let lookAroundButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "eye.slash.circle"), for: .normal)
+        button.tintColor = .black
+        button.isHidden = true
+        return button
+    }()
+    
+    let satelliteButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "airplane.circle"), for: .normal)
+        button.tintColor = .black
+        button.isHidden = false
+        return button
+    }()
+    
+    let buttonStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 24
+        stackView.backgroundColor = UIColor(white: 1.0, alpha: 0.7)
+        stackView.layer.cornerRadius = 20
+        stackView.clipsToBounds = true
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 10, left: 8, bottom: 10, right: 8)
+        return stackView
+    }()
 
     init(region: MKCoordinateRegion, startDate: Date, endDate: Date, onLocationSelected: @escaping (CLLocationCoordinate2D, String) -> Void) {
         self.viewModel = MapViewModel(region: region)
@@ -44,11 +80,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         super.viewDidLoad()
         setupMapView()
         setupNavigationBar()
-        setupLocationButton()
+//        setupLocationButton()
         centerMapOnUserLocation()
         setupTableView()
         setupPlaceInfoView()
         addPinsToMap()
+        mapView.mapType = .standard
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.navigationItem.rightBarButtonItem?.isEnabled = true
@@ -90,14 +127,84 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         mapView.delegate = self
         mapView.showsUserLocation = true
         view.addSubview(mapView)
+
         mapView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMapTap(_:)))
         mapView.addGestureRecognizer(tapGesture)
+        
+        
+        view.addSubview(buttonStackView)
+        buttonStackView.addArrangedSubview(satelliteButton)
+        buttonStackView.addArrangedSubview(lookAroundButton)
+        buttonStackView.addArrangedSubview(locationButton)
+
+        locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
+        lookAroundButton.addTarget(self, action: #selector(lookAroundButtonTapped), for: .touchUpInside)
+        satelliteButton.addTarget(self, action: #selector(satelliteButtonTapped), for: .touchUpInside)
+        
+        buttonStackView.snp.makeConstraints { make in
+            make.trailing.equalTo(view.safeAreaLayoutGuide).inset(8)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(70)
+        }
     }
     
+    @objc private func satelliteButtonTapped() {
+        if mapView.mapType == .standard {
+            mapView.mapType = .satellite
+        } else {
+            mapView.mapType = .standard
+        }
+        updateSatelliteButtonIcon()
+    }
+
+    private func updateSatelliteButtonIcon() {
+        if mapView.mapType == .standard {
+            satelliteButton.setImage(UIImage(systemName: "airplane.circle"), for: .normal)
+        } else {
+            satelliteButton.setImage(UIImage(systemName: "map.circle"), for: .normal)
+        }
+    }
+
+    @objc private func lookAroundButtonTapped() {
+        guard let coordinate = mapView.centerCoordinate as CLLocationCoordinate2D? else { return }
+        let lookAroundSceneRequest = MKLookAroundSceneRequest(coordinate: coordinate)
+        
+        lookAroundSceneRequest.getSceneWithCompletionHandler { [weak self] (scene, error) in
+            guard let self = self else { return }
+            if let scene = scene {
+                let lookAroundViewController = MKLookAroundViewController(scene: scene)
+                self.present(lookAroundViewController, animated: true, completion: nil)
+            } else {
+                print("위치에 Look Around 정보 없음")
+            }
+        }
+    }
+    
+    private func checkLookAroundAvailability(for coordinate: CLLocationCoordinate2D) {
+        let lookAroundSceneRequest = MKLookAroundSceneRequest(coordinate: coordinate)
+        
+        lookAroundSceneRequest.getSceneWithCompletionHandler { [weak self] (scene, error) in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                if scene != nil {
+                    self.lookAroundButton.setImage(UIImage(systemName: "eye.circle.fill"), for: .normal)
+                    self.lookAroundButton.isHidden = false
+                } else {
+                    self.lookAroundButton.setImage(UIImage(systemName: "eye.slash.circle"), for: .normal)
+                    self.lookAroundButton.isHidden = false
+                }
+            }
+        }
+    }
+    
+    private func centerMap(on coordinate: CLLocationCoordinate2D) {
+        let region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+        mapView.setRegion(region, animated: true)
+    }
+   
     func addPinsToMap() {
         for location in pinLocations {
             addPinToMap(location: location, address: "")
@@ -193,18 +300,18 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         tableView.isHidden = true
     }
 
-    private func setupLocationButton() {
-        let locationButton = UIButton(type: .system)
-        locationButton.setImage(UIImage(systemName: "location.circle.fill"), for: .normal)
-        locationButton.tintColor = .black
-        locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
-        view.addSubview(locationButton)
-        locationButton.snp.makeConstraints { make in
-            make.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
-            make.width.height.equalTo(50)
-        }
-    }
+//    private func setupLocationButton() {
+//        let locationButton = UIButton(type: .system)
+//        locationButton.setImage(UIImage(systemName: "location.circle.fill"), for: .normal)
+//        locationButton.tintColor = .black
+//        locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
+//        view.addSubview(locationButton)
+//        locationButton.snp.makeConstraints { make in
+//            make.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
+//            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
+//            make.width.height.equalTo(50)
+//        }
+//    }
     
     @objc private func locationButtonTapped() {
         let status = locationManager.authorizationStatus
@@ -280,8 +387,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         return nil
     }
-    
-    
     
     func updateAddressLabel(with address: String) {
         // 주소 레이블을 업데이트
@@ -380,6 +485,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
                 self.mapView.addAnnotation(annotation)
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.checkLookAroundAvailability(for: mapItem.placemark.coordinate)
                 }
 
                 self.tableView.isHidden = true

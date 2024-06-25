@@ -18,6 +18,7 @@ import FirebaseAuth
 import Contacts
 import CoreLocation
 import ImageIO
+import SwiftUI
 
 
 class DetailViewController: UIViewController {
@@ -32,22 +33,59 @@ class DetailViewController: UIViewController {
     var pinLog: PinLog?
     let pinLogManager = PinLogManager()
     
+    var isExpanded = false
+    
     var mapViewController: MapViewController?
     
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
     
-    let backgroundImageView = UIImageView().then {
+    lazy var pinButton = UIButton(type: .system).then {
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 22, weight: .regular)
+        let symbolImage = UIImage(systemName: "pin.circle", withConfiguration: symbolConfiguration)
+        $0.setImage(symbolImage, for: .normal)
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
-        $0.backgroundColor = .font
-        $0.isUserInteractionEnabled = true
+        $0.tintColor = .black
+        $0.isHidden = true
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.addTarget(self, action: #selector(pinButtonTapped), for: .touchUpInside)
     }
     
-    let topContentView = UIView().then {
-        $0.backgroundColor = .clear
-        $0.isUserInteractionEnabled = false
+    lazy var mapAllButton = UIButton().then {
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 25, weight: .regular)
+        let symbolImage = UIImage(systemName: "map.circle.fill", withConfiguration: symbolConfiguration)
+        $0.setImage(symbolImage, for: .normal)
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+        $0.tintColor = .black
+        $0.isHidden = false
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.addTarget(self, action: #selector(showMapViewController), for: .touchUpInside)
     }
+    
+    lazy var detailViewCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout).then {
+        $0.isPagingEnabled = true
+        $0.isScrollEnabled = false
+        $0.delegate = self
+        $0.dataSource = self
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.register(GalleryCollectionViewCell.self, forCellWithReuseIdentifier: GalleryCollectionViewCell.identifier)
+        $0.register(TextCollectionViewCell.self, forCellWithReuseIdentifier: TextCollectionViewCell.identifier)
+        $0.register(CardCollectionViewCell.self, forCellWithReuseIdentifier: CardCollectionViewCell.identifier)
+    }
+    
+    let layout = UICollectionViewFlowLayout().then {
+        $0.scrollDirection = .horizontal
+        $0.minimumLineSpacing = 0
+        $0.minimumInteritemSpacing = 0
+    }
+    
+    
+    
+    lazy var detailViewButton = UIHostingController(rootView: DetailPageControlButton(onIndexChanged: { [weak self] index in
+        self?.switchToPage(index)
+    }))
     
     // 추가
     var profileImageView = UIImageView().then {
@@ -67,7 +105,7 @@ class DetailViewController: UIViewController {
     var nicknameLabel = UILabel().then {
         $0.text = "닉네임"
         $0.font = UIFont.systemFont(ofSize: 12)
-        $0.textColor = .white
+        $0.textColor = .font
     }
     
     // 추가
@@ -75,61 +113,7 @@ class DetailViewController: UIViewController {
         $0.axis = .horizontal
         $0.alignment = .center
         $0.spacing = 10
-    }
-    
-    var locationLabel = UILabel().then {
-        $0.text = "---"
-        $0.font = UIFont.systemFont(ofSize: 40)
-        $0.textColor = .white
-        $0.numberOfLines = 2
-        $0.adjustsFontSizeToFitWidth = true
-        $0.minimumScaleFactor = 0.5
-    }
-    
-    var dateDaysLabel = UILabel().then {
-        $0.text = "0 Days"
-        $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = .white
-    }
-    
-    let locationStackView = UIStackView().then {
-        $0.axis = .vertical
-        $0.alignment = .leading
-        $0.spacing = 10
-    }
-    
-    var dateStartLabel = UILabel().then {
-        $0.text = "2024.08.13"
-        $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = .white
-    }
-    
-    let dateLineLabel = UILabel().then {
-        $0.text = "-"
-        $0.textColor = .white
-    }
-    
-    var dateEndLabel = UILabel().then {
-        $0.text = "2024.08.15"
-        $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = .white
-    }
-    
-    let dateStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.alignment = .leading
-        $0.spacing = 5
-    }
-    
-    let scrollView = UIScrollView().then {
-        $0.showsVerticalScrollIndicator = false
-        $0.bounces = false
-        $0.clipsToBounds = true
-        $0.layer.cornerRadius = 16
-    }
-    
-    let contentView = UIView().then {
-        $0.backgroundColor = UIColor(named: "textColor")
+        $0.isUserInteractionEnabled = false
     }
     
     let optionsButton = UIButton().then {
@@ -138,14 +122,78 @@ class DetailViewController: UIViewController {
         $0.showsMenuAsPrimaryAction = true
     }
     
+    let profileOptionStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.spacing = 10
+        $0.distribution = .equalSpacing
+    }
+    
+    var locationLabel = UILabel().then {
+        $0.text = "---"
+        $0.font = UIFont.systemFont(ofSize: 28, weight: .bold)
+        $0.textColor = .font
+        $0.numberOfLines = 2
+        $0.adjustsFontSizeToFitWidth = true
+        $0.minimumScaleFactor = 0.5
+    }
+    
+    var dateDaysLabel = UILabel().then {
+        $0.text = "0 Days"
+        $0.font = UIFont.systemFont(ofSize: 16)
+        $0.textColor = .font
+        $0.setContentHuggingPriority(.required, for: .horizontal)
+        $0.setContentCompressionResistancePriority(.required, for: .horizontal)
+    }
+    
+    var dateStartLabel = UILabel().then {
+        $0.text = "2024.08.13"
+        $0.font = UIFont.systemFont(ofSize: 16)
+        $0.textColor = .font
+        $0.setContentHuggingPriority(.required, for: .horizontal)
+        $0.setContentCompressionResistancePriority(.required, for: .horizontal)
+    }
+    
+    let dateLineLabel = UILabel().then {
+        $0.text = "-"
+        $0.textColor = .font
+        $0.setContentHuggingPriority(.required, for: .horizontal)
+        $0.setContentCompressionResistancePriority(.required, for: .horizontal)
+    }
+    
+    var dateEndLabel = UILabel().then {
+        $0.text = "2024.08.15"
+        $0.font = UIFont.systemFont(ofSize: 16)
+        $0.textColor = .font
+        $0.setContentHuggingPriority(.required, for: .horizontal)
+        $0.setContentCompressionResistancePriority(.required, for: .horizontal)
+    }
+    
+    let dateStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .leading
+        $0.spacing = 5
+        $0.distribution = .fillProportionally
+    }
+    
+    let expandableView = UIView().then {
+        $0.backgroundColor = .babygray
+        $0.isHidden = false
+        $0.layer.cornerRadius = 10
+        $0.layer.masksToBounds = true
+    }
+    
+    lazy var expandableButton = UIButton().then {
+        $0.setImage(UIImage(systemName: "person.fill"), for: .normal)
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+        $0.tintColor = .darkgray
+        $0.addTarget(self, action: #selector(expandableButtonTapped), for: .touchUpInside)
+    }
+    
     var mainTitleLabel = UILabel().then {
         $0.text = "부산에 다녀왔다"
         $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-    }
-    
-    // 추가
-    let subTextContainer = UIView().then {
-        $0.backgroundColor = .clear
     }
     
     var subTextLabel = UILabel().then {
@@ -154,33 +202,6 @@ class DetailViewController: UIViewController {
         $0.numberOfLines = 0
         $0.textAlignment = .left
         $0.setContentCompressionResistancePriority(.required, for: .vertical)
-    }
-    
-    let textLabelLine = UILabel().then {
-        $0.backgroundColor = .lightgray
-    }
-    
-    let segmentControl: UISegmentedControl = {
-        let items = ["Map", "Album"]
-        let segment = UISegmentedControl(items: items)
-        segment.selectedSegmentIndex = 0
-        segment.backgroundColor = UIColor(white: 1, alpha: 0.6)
-        segment.layer.cornerRadius = 16
-        segment.layer.masksToBounds = true
-        segment.setTitleTextAttributes([.foregroundColor: UIColor.white, .backgroundColor: UIColor.black], for: .selected)
-        segment.setTitleTextAttributes([.foregroundColor: UIColor.black], for: .normal)
-        segment.selectedSegmentTintColor = .black
-        segment.layer.borderWidth = 0
-        segment.isUserInteractionEnabled = true
-        
-        return segment
-    }()
-    
-    let albumImageView = UIImageView().then {
-        $0.contentMode = .scaleAspectFill
-        $0.clipsToBounds = true
-        $0.isHidden = true
-        $0.isUserInteractionEnabled = false
     }
     
     lazy var galleryCollectionView: UICollectionView = {
@@ -195,40 +216,6 @@ class DetailViewController: UIViewController {
         collectionView.isScrollEnabled = true
         return collectionView
     }()
-    
-    let mapAllButton = UIButton().then {
-        var config = UIButton.Configuration.plain()
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
-        let symbolImage = UIImage(systemName: "arrow.down.left.and.arrow.up.right", withConfiguration: symbolConfiguration)
-        config.image = symbolImage
-        config.background.backgroundColor = UIColor(white: 1, alpha: 0.5)
-        config.imagePadding = 2
-        config.cornerStyle = .medium
-        $0.configuration = config
-        $0.tintColor = .font
-        $0.isHidden = false
-    }
-    
-    let albumAllButton = UIButton().then {
-        var config = UIButton.Configuration.plain()
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)
-        let symbolImage = UIImage(systemName: "arrow.down.left.and.arrow.up.right", withConfiguration: symbolConfiguration)
-        config.image = symbolImage
-        config.background.backgroundColor = UIColor(white: 1, alpha: 0.5)
-        config.imagePadding = 2
-        config.cornerStyle = .medium
-        config.background.strokeColor = .clear
-        config.background.strokeWidth = 0
-        $0.configuration = config
-        $0.tintColor = .font
-        $0.isHidden = true
-    }
-    
-    let moneyCountainer = UIView().then {
-        $0.backgroundColor = .babygray
-        $0.layer.cornerRadius = 16
-        $0.clipsToBounds = true
-    }
     
     let noDataLabel = UILabel().then {
         $0.text = "지출 내역이 없습니다."
@@ -248,11 +235,6 @@ class DetailViewController: UIViewController {
         $0.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
         $0.textColor = .font
         $0.isHidden = false
-    }
-    
-    let moneyMoveButton = UIButton().then {
-        $0.setImage(UIImage(systemName: "chevron.right"), for: .normal)
-        $0.tintColor = .darkgray
     }
     
     let maxConsumView = UIView().then {
@@ -276,15 +258,21 @@ class DetailViewController: UIViewController {
     
     let consumMainStackView = UIStackView().then {
         $0.axis = .vertical
-        $0.spacing = 10
+        $0.spacing = 16
         $0.distribution = .equalSpacing
         $0.alignment = .center
     }
     
-    let friendTitle = UILabel().then {
-        $0.text = "메이트"
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        $0.textColor = .font
+    let bottomContentStackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.alignment = .fill
+        $0.spacing = 20
+        $0.isUserInteractionEnabled = false
+    }
+    
+    let bottomContentView = UIView().then {
+        $0.backgroundColor = .clear
+        $0.isUserInteractionEnabled = false
     }
     
     lazy var friendCollectionView: UICollectionView = {
@@ -300,10 +288,6 @@ class DetailViewController: UIViewController {
         return collectionView
     }()
     
-    let bottomLogo = UIImageView().then {
-        $0.image = UIImage(named: "logo")?.withTintColor(.lightgray)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -312,8 +296,6 @@ class DetailViewController: UIViewController {
         setupMapViewController()
         setupConstraints()
         setupCollectionView()
-        setupSegmentControl()
-        applyDarkOverlayToBackgroundImage()
         setupActionButton()
         updateColor()
         
@@ -331,6 +313,108 @@ class DetailViewController: UIViewController {
         galleryCollectionView.reloadData()
     }
     
+    
+    func setupUI() {
+        view.addSubview(detailViewCollectionView)
+        view.addSubview(detailViewButton.view)
+        addChild(detailViewButton)
+        detailViewButton.didMove(toParent: self)
+        
+        view.addSubview(bottomContentView)
+        bottomContentView.addSubview(bottomContentStackView)
+        bottomContentView.addSubview(dateDaysLabel)
+        bottomContentView.addSubview(dateStackView)
+        
+        view.addSubview(expandableView)
+        expandableView.addSubview(expandableButton)
+        expandableView.addSubview(friendCollectionView)
+        
+        profileStackView.addArrangedSubview(profileImageView)
+        profileStackView.addArrangedSubview(nicknameLabel)
+        
+        profileOptionStackView.addArrangedSubview(profileStackView)
+        profileOptionStackView.addArrangedSubview(optionsButton)
+        
+        bottomContentStackView.addArrangedSubview(profileOptionStackView)
+        bottomContentStackView.addArrangedSubview(locationLabel)
+        
+        dateStackView.addArrangedSubview(dateStartLabel)
+        dateStackView.addArrangedSubview(dateLineLabel)
+        dateStackView.addArrangedSubview(dateEndLabel)
+        
+    }
+    
+    func setupConstraints() {
+        detailViewCollectionView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(view.snp.height).multipliedBy(0.5)
+        }
+        
+        detailViewButton.view.snp.makeConstraints {
+            $0.top.equalTo(detailViewCollectionView.snp.bottom).offset(30)
+            $0.centerX.equalToSuperview()
+            $0.height.equalTo(52)
+            
+        }
+        
+        bottomContentView.snp.makeConstraints {
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-20)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(16)
+            $0.height.equalTo(150)
+        }
+        
+        bottomContentStackView.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview()
+        }
+        
+        dateDaysLabel.snp.makeConstraints {
+            $0.leading.equalToSuperview()
+            $0.top.equalTo(bottomContentStackView.snp.bottom).offset(10)
+            $0.width.equalTo(55)
+        }
+        
+        dateStackView.snp.makeConstraints {
+            $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(10)
+            $0.top.equalTo(bottomContentStackView.snp.bottom).offset(10)
+        }
+        
+        profileOptionStackView.snp.makeConstraints {
+            $0.top.equalTo(bottomContentView)
+            $0.leading.trailing.equalTo(bottomContentView)
+        }
+        
+        optionsButton.snp.makeConstraints {
+            $0.width.height.equalTo(24)
+        }
+        
+        expandableView.snp.makeConstraints {
+            $0.centerY.equalTo(dateStackView.snp.centerY).offset(-20)
+            $0.trailing.equalToSuperview().offset(15)
+            $0.width.equalTo(50)
+            $0.height.equalTo(100)
+        }
+        
+        expandableButton.snp.makeConstraints {
+            $0.leading.equalToSuperview()
+            $0.width.equalTo(50)
+            $0.height.equalToSuperview()
+        }
+        
+        friendCollectionView.snp.makeConstraints {
+            $0.leading.equalTo(expandableButton.snp.trailing).offset(10)
+            $0.trailing.equalToSuperview().inset(10)
+            $0.top.bottom.equalToSuperview()
+        }
+        
+        
+        
+    }
+    
+    func switchToPage(_ index: Int) {
+        detailViewCollectionView.scrollToItem(at: IndexPath(item: index, section: 0), at: .centeredHorizontally, animated: true)
+    }
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
@@ -341,7 +425,7 @@ class DetailViewController: UIViewController {
     func updateColor(){
         //베이비그레이-커스텀블랙
         let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
-        moneyCountainer.backgroundColor = babyGTocustomB
+        
         
         //라이트그레이-다크그레이
         let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
@@ -349,16 +433,12 @@ class DetailViewController: UIViewController {
         
         //라이트그레이-라이트블랙
         let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
-        textLabelLine.backgroundColor = lightGTolightB
-        bottomLogo.image = UIImage(named: "logo")?.withTintColor(lightGTolightB!)
         
         //다크그레이-라이트그레이
         let darkBTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
         profileImageView.backgroundColor = darkBTolightG
         mapAllButton.setTitleColor(darkBTolightG, for: .normal)
-        albumAllButton.setTitleColor(darkBTolightG, for: .normal)
         maxConsumptionLabel.textColor = darkBTolightG
-        moneyMoveButton.tintColor = darkBTolightG
         maxConsumptionLabel.textColor = darkBTolightG
     }
     
@@ -379,23 +459,21 @@ class DetailViewController: UIViewController {
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
     
     // 핀 버튼
-    lazy var pinButton = UIButton(type: .system).then {
-        $0.setImage(UIImage(systemName: "pin.circle"), for: .normal)
-        $0.contentMode = .scaleAspectFill
-        $0.clipsToBounds = true
-        $0.tintColor = .white
-        $0.isHidden = true
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.addTarget(self, action: #selector(pinButtonTapped), for: .touchUpInside)
-    }
+    
     
     private func newSetupConstraints() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pinButton)
+        
+        let pinButtonItem = UIBarButtonItem(customView: pinButton)
+        let mapAllButtonItem = UIBarButtonItem(customView: mapAllButton)
+        
+        navigationItem.rightBarButtonItems = [mapAllButtonItem, pinButtonItem]
         
         NSLayoutConstraint.activate([
             pinButton.widthAnchor.constraint(equalToConstant: 44),
-            pinButton.heightAnchor.constraint(equalToConstant: 44)
+            pinButton.heightAnchor.constraint(equalToConstant: 44),
+            mapAllButton.widthAnchor.constraint(equalToConstant: 44),
+            mapAllButton.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
     
@@ -508,206 +586,6 @@ class DetailViewController: UIViewController {
         }
     }
     
-    func setupUI() {
-        view.addSubview(backgroundImageView)
-        backgroundImageView.addSubview(topContentView)
-        topContentView.addSubview(profileStackView)
-        topContentView.addSubview(locationStackView)
-        topContentView.addSubview(dateStackView)
-        
-        profileStackView.addArrangedSubview(profileImageView)
-        profileStackView.addArrangedSubview(nicknameLabel)
-        
-        view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        contentView.addSubview(optionsButton)
-        contentView.addSubview(mainTitleLabel)
-        contentView.addSubview(subTextContainer)
-        subTextContainer.addSubview(subTextLabel)
-        contentView.addSubview(textLabelLine)
-        contentView.addSubview(segmentControl)
-        contentView.addSubview(albumImageView)
-        contentView.addSubview(galleryCollectionView)
-        contentView.addSubview(mapAllButton)
-        contentView.addSubview(albumAllButton)
-        contentView.addSubview(moneyCountainer)
-        moneyCountainer.addSubview(consumStackView)
-        moneyCountainer.addSubview(consumMainStackView)
-        moneyCountainer.addSubview(noDataLabel)
-        moneyCountainer.addSubview(moneyCountSubTitle)
-        maxConsumView.addSubview(maxConsumptionLabel)
-        contentView.addSubview(friendTitle)
-        contentView.addSubview(friendCollectionView)
-        contentView.addSubview(bottomLogo)
-        
-        locationStackView.addArrangedSubview(locationLabel)
-        locationStackView.addArrangedSubview(dateDaysLabel)
-        
-        dateStackView.addArrangedSubview(dateStartLabel)
-        dateStackView.addArrangedSubview(dateLineLabel)
-        dateStackView.addArrangedSubview(dateEndLabel)
-        
-        consumStackView.addArrangedSubview(moneyCountTitle)
-        consumStackView.addArrangedSubview(moneyMoveButton)
-        
-        consumMainStackView.addArrangedSubview(consumStackView)
-        consumMainStackView.addArrangedSubview(maxConsumView)
-        
-        scrollView.delegate = self
-    }
-    
-    func setupConstraints() {
-        backgroundImageView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.height.equalTo(view.safeAreaLayoutGuide.snp.height).multipliedBy(6.5 / 9.0)
-        }
-        
-        topContentView.snp.makeConstraints {
-            $0.top.leading.trailing.bottom.equalToSuperview()
-        }
-        
-        profileStackView.snp.makeConstraints {
-            $0.bottom.equalTo(locationStackView.snp.top).offset(-16)
-            $0.leading.trailing.equalTo(topContentView).inset(32)
-        }
-        
-        locationStackView.snp.makeConstraints {
-            $0.bottom.equalTo(scrollView.snp.top).offset(-32)
-            $0.leading.trailing.equalTo(topContentView).inset(32)
-        }
-        
-        dateStackView.snp.makeConstraints {
-            $0.bottom.equalTo(locationStackView).inset(-1)
-            $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(10)
-        }
-        
-        
-        scrollView.snp.makeConstraints {
-            $0.top.equalTo(backgroundImageView.snp.bottom).offset(-16)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(30)
-        }
-        
-        contentView.snp.makeConstraints {
-            $0.edges.equalTo(scrollView.contentLayoutGuide)
-            $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.bottom.equalToSuperview()
-        }
-        
-        optionsButton.snp.makeConstraints {
-            $0.top.equalTo(contentView).inset(28)
-            $0.trailing.equalTo(contentView).inset(32)
-            $0.width.height.equalTo(24)
-        }
-        
-        mainTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(contentView).offset(46)
-            $0.leading.trailing.equalTo(contentView).inset(32)
-        }
-        
-        subTextContainer.snp.makeConstraints {
-            $0.top.equalTo(mainTitleLabel.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.greaterThanOrEqualTo(130).priority(.low)
-        }
-        
-        subTextLabel.snp.makeConstraints {
-            $0.edges.equalTo(subTextContainer)
-        }
-        
-        textLabelLine.snp.makeConstraints {
-            $0.top.equalTo(subTextContainer.snp.bottom).offset(30)
-            $0.height.equalTo(1)
-            $0.leading.trailing.equalTo(contentView).inset(32)
-        }
-        
-        segmentControl.snp.makeConstraints {
-            $0.top.equalTo(textLabelLine.snp.bottom).offset(50)
-            $0.leading.equalTo(contentView).inset(16)
-            $0.height.equalTo(30)
-            $0.width.equalTo(121)
-        }
-        
-        albumImageView.snp.makeConstraints {
-            $0.top.equalTo(segmentControl).offset(-20)
-            $0.leading.trailing.equalTo(contentView)
-            $0.height.equalTo(300)
-        }
-        
-        galleryCollectionView.snp.makeConstraints {
-            $0.top.equalTo(mapViewController!.view.snp.bottom).offset(10)
-            $0.leading.equalTo(contentView)
-            $0.trailing.equalTo(contentView)
-            $0.height.equalTo(90)
-        }
-        
-        mapAllButton.snp.makeConstraints {
-            $0.centerY.equalTo(segmentControl)
-            $0.trailing.equalTo(contentView).inset(16)
-            $0.width.equalTo(44)
-        }
-        
-        albumAllButton.snp.makeConstraints {
-            $0.centerY.equalTo(segmentControl)
-            $0.trailing.equalTo(contentView).inset(16)
-            $0.width.equalTo(44)
-        }
-        
-        moneyCountainer.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(16)
-            $0.leading.trailing.equalTo(contentView).inset(16)
-            $0.height.equalTo(90)
-        }
-        
-        noDataLabel.snp.makeConstraints {
-            $0.center.equalToSuperview()
-        }
-        
-        moneyCountSubTitle.snp.makeConstraints {
-            $0.bottom.equalTo(moneyCountTitle)
-            $0.leading.equalTo(moneyCountTitle.snp.trailing).offset(5)
-        }
-        
-        consumStackView.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(16)
-        }
-        
-        maxConsumView.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(16)
-            $0.height.equalTo(33)
-        }
-        
-        maxConsumptionLabel.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(16)
-            $0.centerY.equalToSuperview()
-        }
-        
-        consumMainStackView.snp.makeConstraints {
-            $0.centerY.equalToSuperview()
-            $0.leading.trailing.equalToSuperview()
-        }
-        
-        friendTitle.snp.makeConstraints {
-            $0.top.equalTo(moneyCountainer.snp.bottom).offset(16)
-            $0.leading.equalTo(contentView).offset(16)
-        }
-        
-        friendCollectionView.snp.makeConstraints {
-            $0.top.equalTo(friendTitle.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(contentView)
-            $0.height.equalTo(65)
-        }
-        
-        bottomLogo.snp.makeConstraints {
-            $0.top.equalTo(friendCollectionView.snp.bottom).offset(24)
-            $0.width.equalTo(135)
-            $0.height.equalTo(18)
-            $0.centerX.equalToSuperview()
-            $0.bottom.equalToSuperview().inset(20)
-        }
-    }
-    
     func configureView(with pinLog: PinLog) async {
         locationLabel.text = pinLog.location
         
@@ -728,28 +606,6 @@ class DetailViewController: UIViewController {
         mainTitleLabel.text = pinLog.title
         subTextLabel.text = pinLog.content
         
-        if pinLog.isSpendingPublic || isCurrentUser(pinLog: pinLog) {
-            if let totalSpendingAmount = pinLog.totalSpendingAmount, totalSpendingAmount > 0 {
-                moneyCountTitle.text = "\(formatCurrency(totalSpendingAmount))원"
-                maxConsumptionLabel.text = "최고금액 지출 : \(formatCurrency(pinLog.maxSpendingAmount ?? 0))원"
-                moneyCountainer.isHidden = false
-                moneyCountSubTitle.isHidden = false
-                consumMainStackView.isHidden = false
-                noDataLabel.isHidden = true
-            } else {
-                noDataLabel.isHidden = false
-                moneyCountainer.isHidden = false
-                moneyCountSubTitle.isHidden = true
-                consumMainStackView.isHidden = true
-            }
-        } else {
-            noDataLabel.text = "지출 내역이 비공개입니다."
-            noDataLabel.isHidden = false
-            moneyCountainer.isHidden = false
-            moneyCountSubTitle.isHidden = true
-            consumMainStackView.isHidden = true
-        }
-        
         selectedImages.removeAll()
         updateSelectedImages(with: pinLog.media)
         
@@ -764,7 +620,12 @@ class DetailViewController: UIViewController {
                 mapViewController?.addPinToMap(location: coordinate, address: "")
             }
         }
-        galleryCollectionView.reloadData()
+        
+        // GalleryCollectionViewCell에 selectedImages를 전달
+        if let galleryCell = detailViewCollectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? GalleryCollectionViewCell {
+            galleryCell.selectedImages = selectedImages
+        }
+
         updateSelectedFriends(with: pinLog.attendeeIds)
         
         // 닉네임 설정
@@ -778,21 +639,11 @@ class DetailViewController: UIViewController {
         if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId), let url = URL(string: photoURL) {
             profileImageView.kf.setImage(with: url)
         } else {
-            profileImageView.image = UIImage(named: "profileImg") // 기본 프로필 이미지
+            profileImageView.image = UIImage(named: "profileImg")
         }
         
-        // 백그라운드 이미지
-        if let representativeImageURL = pinLog.media.first(where: { $0.isRepresentative })?.url ?? pinLog.media.first?.url, let url = URL(string: representativeImageURL) {
-            backgroundImageView.kf.setImage(with: url, placeholder: UIImage(systemName: "photo"))
-        } else {
-            backgroundImageView.image = UIImage(systemName: "photo")
-        }
-        
-        friendTitle.isHidden = pinLog.attendeeIds.isEmpty
         friendCollectionView.isHidden = pinLog.attendeeIds.isEmpty
     }
-    
-    
     
     //프로필 이미지
     func loadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
@@ -847,10 +698,33 @@ class DetailViewController: UIViewController {
         }
     }
     
+    @objc func expandableButtonTapped() {
+        isExpanded.toggle()
+        
+        UIView.animate(withDuration: 0.6) {
+            if self.isExpanded {
+                self.expandableView.snp.updateConstraints {
+                    $0.width.equalTo(self.view.frame.width * 1.0)
+                    $0.trailing.equalToSuperview().offset(15)
+                }
+                self.expandableButton.snp.updateConstraints {
+                    $0.width.equalTo(30)
+                }
+            } else {
+                self.expandableView.snp.updateConstraints {
+                    $0.width.equalTo(50)
+                    $0.trailing.equalToSuperview().offset(15)
+                }
+                self.expandableButton.snp.updateConstraints {
+                    $0.width.equalTo(50)
+                }
+            }
+            self.view.layoutIfNeeded()
+        }
+    }
+    
     @objc func showGalleryDetail() {
-        let galleryDetailVC = GalleryDetailViewController()
-        galleryDetailVC.selectedImages = selectedImages.map { $0.0 }
-        navigationController?.pushViewController(galleryDetailVC, animated: true)
+        
     }
     
     @objc func showMapViewController() {
@@ -874,9 +748,7 @@ class DetailViewController: UIViewController {
     
     
     func setupActionButton() {
-        albumAllButton.addTarget(self, action: #selector(showGalleryDetail), for: .touchUpInside)
-        moneyMoveButton.addTarget(self, action: #selector(moneyMoveButtonTapped), for: .touchUpInside)
-        mapAllButton.addTarget(self, action: #selector(showMapViewController), for: .touchUpInside)
+        
     }
     
     func fetchImagesFromFirestore(completion: @escaping ([Media]) -> Void) {
@@ -915,12 +787,13 @@ class DetailViewController: UIViewController {
         navigationController?.pushViewController(spendVC, animated: true)
     }
     
-    @objc func setupMenu() {
+    func setupMenu() {
         guard let pinLog = pinLog else { return }
         if Auth.auth().currentUser == nil {
             optionsButton.menu = nil
             optionsButton.isHidden = true
         }
+        
         if isCurrentUser(pinLog: pinLog) {
             let instaAction = UIAction(title: "이미지 공유하기", image: UIImage(systemName: "photo.on.rectangle.angled")) { [weak self] _ in
                 self?.instaConnect()
@@ -1057,7 +930,7 @@ class DetailViewController: UIViewController {
     }
     
     func updateSelectedImages(with mediaItems: [Media]) {
-        selectedImages.removeAll() // selectedImages 배열 초기화
+        selectedImages.removeAll()
         
         let group = DispatchGroup()
         
@@ -1071,7 +944,6 @@ class DetailViewController: UIViewController {
                 }
                 if let image = image {
                     let location: CLLocationCoordinate2D? = (media.latitude != nil && media.longitude != nil) ? CLLocationCoordinate2D(latitude: media.latitude!, longitude: media.longitude!) : nil
-                    // 중복 추가 방지
                     if !self.selectedImages.contains(where: { $0.0 == image && $0.1 == media.isRepresentative && $0.2?.latitude == location?.latitude && $0.2?.longitude == location?.longitude }) {
                         self.selectedImages.append((image, media.isRepresentative, location))
                     }
@@ -1081,13 +953,8 @@ class DetailViewController: UIViewController {
         }
         
         group.notify(queue: .main) {
-            self.galleryCollectionView.reloadData()
-            if let representativeImage = self.selectedImages.first(where: { $0.1 })?.0 {
-                self.backgroundImageView.image = representativeImage
-            } else if let firstImage = self.selectedImages.first?.0 {
-                self.backgroundImageView.image = firstImage
-            } else {
-                self.backgroundImageView.image = UIImage(systemName: "photo")
+            if let galleryCell = self.detailViewCollectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? GalleryCollectionViewCell {
+                galleryCell.selectedImages = self.selectedImages
             }
         }
     }
@@ -1138,78 +1005,43 @@ class DetailViewController: UIViewController {
         }
         guard let mapVC = mapViewController else { return }
         addChild(mapVC)
-        contentView.addSubview(mapVC.view)
-        contentView.sendSubviewToBack(mapViewController!.view)
-        mapVC.view.snp.makeConstraints {
-            $0.top.equalTo(segmentControl).offset(-20)
-            $0.leading.trailing.equalTo(contentView)
-            $0.height.equalTo(300)
-        }
         mapVC.didMove(toParent: self)
         mapVC.view.isUserInteractionEnabled = false // 터치 불가능하도록 설정
     }
     
     func setupCollectionView() {
-        galleryCollectionView.delegate = self
-        galleryCollectionView.dataSource = self
-        
-        galleryCollectionView.register(GalleryCollectionViewCell.self, forCellWithReuseIdentifier: GalleryCollectionViewCell.identifier)
-        
         friendCollectionView.delegate = self
         friendCollectionView.dataSource = self
         
         friendCollectionView.register(FriendCollectionViewCell.self, forCellWithReuseIdentifier: FriendCollectionViewCell.identifier)
     }
-    
-    func setupSegmentControl() {
-        segmentControl.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
-    }
-    
-    @objc func segmentChanged(_ sender: UISegmentedControl) {
-        if sender.selectedSegmentIndex == 0 {
-            mapViewController?.view.isHidden = false
-            albumImageView.isHidden = true
-            mapAllButton.isHidden = false
-            albumAllButton.isHidden = true
-        } else {
-            mapViewController?.view.isHidden = true
-            albumImageView.isHidden = false
-            mapAllButton.isHidden = true
-            albumAllButton.isHidden = false
-            if let representativeImage = selectedImages.first(where: { $0.1 })?.0 {
-                albumImageView.image = representativeImage
-            } else if let firstImage = selectedImages.first?.0 {
-                albumImageView.image = firstImage
-            } else {
-                albumImageView.image = UIImage(systemName: "photo")
-            }
-            contentView.sendSubviewToBack(albumImageView)
-        }
-        view.bringSubviewToFront(segmentControl)
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
-    }
 }
 
-extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == galleryCollectionView {
-            return selectedImages.count
-        } else if collectionView == friendCollectionView {
+        if collectionView == friendCollectionView {
             return selectedFriends.count
+        } else if collectionView == detailViewCollectionView {
+            return 3
         }
         return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == galleryCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GalleryCollectionViewCell.identifier, for: indexPath) as? GalleryCollectionViewCell else {
-                fatalError("컬렉션 뷰 오류")
+        if collectionView == detailViewCollectionView {
+            switch indexPath.item {
+            case 0:
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GalleryCollectionViewCell.identifier, for: indexPath) as! GalleryCollectionViewCell
+                return cell
+            case 1:
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TextCollectionViewCell.identifier, for: indexPath) as! TextCollectionViewCell
+                return cell
+            case 2:
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CardCollectionViewCell.identifier, for: indexPath) as! CardCollectionViewCell
+                return cell
+            default:
+                fatalError("Unexpected index path")
             }
-            let (image, isRepresentative, _) = selectedImages[indexPath.row]
-            cell.configure(with: image, isRepresentative: isRepresentative)
-            return cell
         } else if collectionView == friendCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as? FriendCollectionViewCell else {
                 fatalError("컬렉션 뷰 오류")
@@ -1218,118 +1050,6 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return cell
         }
         return UICollectionViewCell()
-    }
-    
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView == galleryCollectionView {
-            let (_, _, location) = selectedImages[indexPath.row]
-            
-            if segmentControl.selectedSegmentIndex == 0 {
-                // Map 상태일 때
-                if let coordinate = location {
-                    mapViewController?.animatePin(at: coordinate)
-                    mapViewController?.mapView.setRegion(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)), animated: true)
-                } else {
-                    print("사진 위치정보 없음")
-                }
-            } else if segmentControl.selectedSegmentIndex == 1 {
-                // Album 상태일 때
-                let image = selectedImages[indexPath.row].0
-                albumImageView.image = image
-            }
-        }
-    }
-}
-
-extension DetailViewController: UIScrollViewDelegate {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView == self.scrollView {
-            let offset = scrollView.contentOffset.y
-            
-            if let overlayView = backgroundImageView.viewWithTag(999) {
-                overlayView.frame = backgroundImageView.bounds
-                
-                let maxOffset: CGFloat = 150 // 최대로 어두워지는 오프셋 값
-                let alpha = min(1, 0.3 + (offset / maxOffset) * 0.7) // 알파 값 계산
-                overlayView.backgroundColor = UIColor.black.withAlphaComponent(alpha)
-            }
-            
-            if offset > 0 {
-                UIView.animate(withDuration: 0.3, delay: 0, options: [.beginFromCurrentState, .allowUserInteraction], animations: {
-                    self.locationStackView.isHidden = true
-                    self.dateStackView.isHidden = true
-                    
-                    self.scrollView.snp.remakeConstraints {
-                        $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-16)
-                        $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(30)
-                    }
-                    
-                    self.contentView.snp.remakeConstraints {
-                        $0.edges.equalTo(self.scrollView.contentLayoutGuide)
-                        $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                        //$0.bottom.equalTo(self.bottomLogo.snp.bottom)
-                        $0.bottom.equalToSuperview()
-                    }
-                    
-                    self.backgroundImageView.snp.remakeConstraints {
-                        $0.top.equalToSuperview()
-                        $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                        $0.height.equalTo(self.view.safeAreaLayoutGuide.snp.height).multipliedBy(1.5 / 9.0)
-                    }
-                    
-                    self.view.layoutIfNeeded()
-                }, completion: nil)
-            } else {
-                UIView.animate(withDuration: 0.3, delay: 0, options: [.beginFromCurrentState, .allowUserInteraction], animations: {
-                    self.locationStackView.isHidden = false
-                    self.dateStackView.isHidden = false
-                    
-                    self.scrollView.snp.remakeConstraints {
-                        $0.top.equalTo(self.backgroundImageView.snp.bottom).offset(-16)
-                        $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                        $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(30)
-                    }
-                    
-                    self.contentView.snp.remakeConstraints {
-                        $0.edges.equalTo(self.scrollView.contentLayoutGuide)
-                        $0.width.equalTo(self.scrollView.frameLayoutGuide)
-                        //$0.bottom.equalTo(self.bottomLogo.snp.bottom)
-                        $0.bottom.equalToSuperview()
-                    }
-                    
-                    self.backgroundImageView.snp.remakeConstraints {
-                        $0.top.equalToSuperview()
-                        $0.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
-                        $0.height.equalTo(self.view.safeAreaLayoutGuide.snp.height).multipliedBy(6.5 / 9.0)
-                    }
-                    
-                    self.view.layoutIfNeeded()
-                }, completion: nil)
-            }
-        }
-    }
-    
-    
-    func applyDarkOverlayToBackgroundImage() {
-        backgroundImageView.subviews.forEach { subview in
-            if subview.tag == 999 {
-                subview.removeFromSuperview()
-            }
-        }
-        
-        let overlayView = UIView()
-        overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
-        overlayView.tag = 999
-        
-        backgroundImageView.insertSubview(overlayView, belowSubview: topContentView)
-        
-        overlayView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
-        
-        self.view.layoutIfNeeded()
     }
 }
 

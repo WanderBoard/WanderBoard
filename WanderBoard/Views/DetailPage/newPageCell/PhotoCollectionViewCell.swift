@@ -52,7 +52,7 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     
     @objc private func handlePinchGesture(_ gesture: UIPinchGestureRecognizer) {
         if gesture.state == .changed {
-            let scale = gesture.scale
+            let scale = max(gesture.scale, 1)
             photoImage.transform = CGAffineTransform(scaleX: 1 + currentAmount + (scale - 1), y: 1 + currentAmount + (scale - 1))
         } else if gesture.state == .ended {
             UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 1, options: [], animations: {

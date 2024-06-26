@@ -27,13 +27,12 @@ class TextCollectionViewCell: UICollectionViewCell {
         $0.textColor = .font
         $0.font = UIFont.boldSystemFont(ofSize: 20)
         $0.textAlignment = .center
-        $0.text = "테스트 문구"
     }
     let textLabel = UILabel().then(){
         $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 15)
         $0.textAlignment = .center
-        $0.text = "테스트 문구"
+        $0.numberOfLines = 0
     }
     let stackView = UIStackView().then(){
         $0.axis = .vertical
@@ -89,4 +88,9 @@ class TextCollectionViewCell: UICollectionViewCell {
         backView.backgroundColor = backColor
     }
     
+    func configure(with image: UIImage?, title: String, content: String) {
+        imageView.image = image
+        titleLabel.text = title
+        textLabel.text = content
+    }
 }

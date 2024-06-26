@@ -9,19 +9,16 @@ import UIKit
 import SnapKit
 import Then
 
-class PhotoCollectionViewCell: UICollectionViewCell {
+class PhotoCollectionViewCell: UICollectionViewCell, UIScrollViewDelegate {
     static let identifier = String(describing: PhotoCollectionViewCell.self)
     
     private let scrollView = UIScrollView()
     private let photoImage = UIImageView()
     
-    private var currentAmount: CGFloat = 0.0
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
         setupConstraints()
-        addPinchGesture()
     }
 
     required init?(coder: NSCoder) {
@@ -29,36 +26,48 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     }
     
     private func setupView() {
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 3.0
+        scrollView.clipsToBounds = true
+        scrollView.layer.cornerRadius = 30
+        scrollView.delegate = self
+        contentView.addSubview(scrollView)
+        
         photoImage.contentMode = .scaleAspectFill
         photoImage.clipsToBounds = true
         photoImage.layer.cornerRadius = 30
         photoImage.backgroundColor = .black
         photoImage.tintColor = .black
-        
-        contentView.addSubview(photoImage)
+        scrollView.addSubview(photoImage)
     }
     
     private func setupConstraints() {
+        scrollView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
         photoImage.snp.makeConstraints {
             $0.edges.equalToSuperview()
+            $0.width.equalTo(scrollView.snp.width)
+            $0.height.equalTo(scrollView.snp.height)
         }
     }
     
-    private func addPinchGesture() {
-        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
-        photoImage.isUserInteractionEnabled = true
-        photoImage.addGestureRecognizer(pinchGesture)
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return photoImage
     }
     
-    @objc private func handlePinchGesture(_ gesture: UIPinchGestureRecognizer) {
-        if gesture.state == .changed {
-            let scale = max(gesture.scale, 1)
-            photoImage.transform = CGAffineTransform(scaleX: 1 + currentAmount + (scale - 1), y: 1 + currentAmount + (scale - 1))
-        } else if gesture.state == .ended {
-            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 1, options: [], animations: {
-                self.photoImage.transform = .identity
-            }, completion: nil)
-            currentAmount = 0
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        if scrollView.zoomScale < scrollView.minimumZoomScale {
+            scrollView.setZoomScale(scrollView.minimumZoomScale, animated: false)
+        }
+    }
+
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        if scrollView.zoomScale != scrollView.minimumZoomScale {
+            UIView.animate(withDuration: 0.3, animations: {
+                scrollView.setZoomScale(scrollView.minimumZoomScale, animated: false)
+            })
         }
     }
     

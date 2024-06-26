@@ -70,6 +70,9 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         super.viewDidLoad()
         setIcon()
         view.backgroundColor = .systemBackground
+        //뒤로가기 버튼을 눌렀을때 기존의 프로필에서 수정사항이 있는지 체크하기 위해 현재 남아있는 정보값은 이전의 값이라고 정의
+        previousImage = profile.image
+        previousName = nicknameTextField.text ?? ""
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageViewTapped(tapGestureRecognizer:)))
         profile.isUserInteractionEnabled = true
@@ -259,8 +262,8 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                                          
     @objc func backButtonPressed() {
         if unsavedChanges() {
-            let alertController = UIAlertController(title: "수정 중 뒤로가기", message: "변경사항이 저장되지 않았습니다. 수정을 취소하고 돌아가시겠습니까?", preferredStyle: .alert)
-            let leaveAction = UIAlertAction(title: "떠나기", style: .default) { _ in
+            let alertController = UIAlertController(title: "저장 미완료", message: "변경사항이 저장되지 않았습니다. 수정을 종료하고 돌아가시겠습니까?", preferredStyle: .alert)
+            let leaveAction = UIAlertAction(title: "확인", style: .default) { _ in
                 self.navigationController?.popViewController(animated: true)
             }
             let stayAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
@@ -271,7 +274,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             self.navigationController?.popViewController(animated: true)
         }
     }
-    
+
     func unsavedChanges() -> Bool {
         let currentImage = profile.image
         let currentName = nicknameTextField.text ?? ""

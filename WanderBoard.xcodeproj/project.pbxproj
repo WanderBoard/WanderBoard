@@ -112,6 +112,7 @@
 		9592A3D52C1F3CBD00CF6FD6 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9592A3D42C1F3CBD00CF6FD6 /* FilterCollectionViewCell.swift */; };
 		9592A3D72C1F41B400CF6FD6 /* BlockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9592A3D62C1F41B400CF6FD6 /* BlockViewController.swift */; };
 		9592A3D92C1F436500CF6FD6 /* BlockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9592A3D82C1F436500CF6FD6 /* BlockTableViewCell.swift */; };
+		95B495F52C2BC25D005755D9 /* CardTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95B495F42C2BC25D005755D9 /* CardTableViewCell.swift */; };
 		FB0C32442C14C2D000DD2F00 /* WanderBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FB0C32422C14C2D000DD2F00 /* WanderBoard.xcdatamodeld */; };
 		FB3793AD2C1D6854009C1268 /* AccountDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */; };
 		FB4D9A532C285D8B00A31424 /* MyTripPinLogSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB4D9A522C285D8B00A31424 /* MyTripPinLogSummary.swift */; };
@@ -221,6 +222,7 @@
 		9592A3D42C1F3CBD00CF6FD6 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterCollectionViewCell.swift; sourceTree = "<group>"; };
 		9592A3D62C1F41B400CF6FD6 /* BlockViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockViewController.swift; sourceTree = "<group>"; };
 		9592A3D82C1F436500CF6FD6 /* BlockTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockTableViewCell.swift; sourceTree = "<group>"; };
+		95B495F42C2BC25D005755D9 /* CardTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTableViewCell.swift; sourceTree = "<group>"; };
 		FB0C32432C14C2D000DD2F00 /* WanderBoard.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WanderBoard.xcdatamodel; sourceTree = "<group>"; };
 		FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionManager.swift; sourceTree = "<group>"; };
 		FB4D9A522C285D8B00A31424 /* MyTripPinLogSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTripPinLogSummary.swift; sourceTree = "<group>"; };
@@ -586,6 +588,7 @@
 				9573ADC42C2B15280040D494 /* CardCollectionViewCell.swift */,
 				9573ADC32C2B15280040D494 /* PhotoCollectionViewCell.swift */,
 				9573ADC22C2B15280040D494 /* TextCollectionViewCell.swift */,
+				95B495F42C2BC25D005755D9 /* CardTableViewCell.swift */,
 			);
 			path = newPageCell;
 			sourceTree = "<group>";
@@ -805,6 +808,7 @@
 				2A7623D92C1E21130044CF05 /* WavesView.swift in Sources */,
 				4D9D8B522C05B1BD0043E7DF /* SceneDelegate.swift in Sources */,
 				9573ADC52C2B15280040D494 /* TextCollectionViewCell.swift in Sources */,
+				95B495F52C2BC25D005755D9 /* CardTableViewCell.swift in Sources */,
 				4D21E85F2C1B4C8A002FDBC9 /* AddedMateCell.swift in Sources */,
 				2A7655192C063A0100D8A098 /* AuthenticationVC.swift in Sources */,
 				2A8AB17A2C1240E500C5244F /* User.swift in Sources */,

@@ -128,9 +128,8 @@ class DetailViewController: UIViewController {
     
     let profileOptionStackView = UIStackView().then {
         $0.axis = .horizontal
-        $0.alignment = .center
         $0.spacing = 10
-        $0.distribution = .equalSpacing
+        $0.distribution = .fill
     }
     
     var locationLabel = UILabel().then {
@@ -271,12 +270,12 @@ class DetailViewController: UIViewController {
         $0.axis = .vertical
         $0.alignment = .fill
         $0.spacing = 20
-        $0.isUserInteractionEnabled = false
+        //$0.isUserInteractionEnabled = false
     }
     
     let bottomContentView = UIView().then {
         $0.backgroundColor = .clear
-        $0.isUserInteractionEnabled = false
+        //$0.isUserInteractionEnabled = false
     }
     
     lazy var friendCollectionView: UICollectionView = {
@@ -317,7 +316,6 @@ class DetailViewController: UIViewController {
         galleryCollectionView.reloadData()
     }
     
-    
     func setupUI() {
         view.addSubview(detailViewCollectionView)
         view.addSubview(detailViewButton.view)
@@ -326,6 +324,7 @@ class DetailViewController: UIViewController {
         
         view.addSubview(bottomContentView)
         bottomContentView.addSubview(bottomContentStackView)
+        bottomContentView.addSubview(optionsButton)
         bottomContentView.addSubview(dateDaysLabel)
         bottomContentView.addSubview(dateStackView)
         
@@ -335,11 +334,8 @@ class DetailViewController: UIViewController {
         
         profileStackView.addArrangedSubview(profileImageView)
         profileStackView.addArrangedSubview(nicknameLabel)
-        
-        profileOptionStackView.addArrangedSubview(profileStackView)
-        profileOptionStackView.addArrangedSubview(optionsButton)
-        
-        bottomContentStackView.addArrangedSubview(profileOptionStackView)
+    
+        bottomContentStackView.addArrangedSubview(profileStackView)
         bottomContentStackView.addArrangedSubview(locationLabel)
         
         dateStackView.addArrangedSubview(dateStartLabel)
@@ -356,24 +352,25 @@ class DetailViewController: UIViewController {
         detailViewCollectionView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(detailViewButton.view.snp.top)
             $0.height.equalToSuperview().multipliedBy(collectionViewHeightMultiplier)
         }
         
         detailViewButton.view.snp.makeConstraints {
             $0.top.equalTo(detailViewCollectionView.snp.bottom)
-            $0.centerX.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
             $0.height.equalToSuperview().multipliedBy(0.1)
         }
         
         bottomContentView.snp.makeConstraints {
-            $0.top.equalTo(detailViewButton.view.snp.bottom)
-            $0.trailing.bottom.equalToSuperview()
-            $0.leading.equalToSuperview().offset(26)
+            //$0.top.equalTo(detailViewButton.view.snp.bottom)
+            $0.leading.trailing.equalToSuperview().inset(26)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
+            $0.height.equalTo(100)
         }
         
         bottomContentStackView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
+           // $0.top.equalTo(optionsButton.snp.bottom).offset(10)
+            $0.leading.trailing.equalToSuperview()
         }
         
         dateDaysLabel.snp.makeConstraints {
@@ -387,16 +384,14 @@ class DetailViewController: UIViewController {
             $0.top.equalTo(bottomContentStackView.snp.bottom).offset(10)
         }
         
-        profileOptionStackView.snp.makeConstraints {
-            $0.top.equalTo(bottomContentView)
-            $0.leading.trailing.equalTo(bottomContentView)
-        }
-        
         optionsButton.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.trailing.equalToSuperview()
             $0.width.height.equalTo(24)
         }
         
         expandableView.snp.makeConstraints {
+            $0.top.equalTo(optionsButton.snp.bottom).offset(10)
             $0.centerY.equalTo(dateStackView.snp.centerY).offset(-20)
             $0.trailing.equalToSuperview().offset(15)
             $0.width.equalTo(50)
@@ -414,9 +409,6 @@ class DetailViewController: UIViewController {
             $0.trailing.equalToSuperview().inset(10)
             $0.top.bottom.equalToSuperview()
         }
-        
-        
-        
     }
     
     func switchToPage(_ index: Int) {
@@ -1076,7 +1068,11 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+        if collectionView == friendCollectionView {
+            return CGSize(width: 60, height: 60)
+        } else {
+            return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+        }
     }
 }
 

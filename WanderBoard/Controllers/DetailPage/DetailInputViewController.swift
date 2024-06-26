@@ -53,47 +53,26 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     var subTextFieldHeightConstraint: Constraint?
     var publicViewHeightConstraint: Constraint?
     
-    let topContainarView = UIView().then {
-        $0.backgroundColor = .font
+    lazy var detailInputViewCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout).then {
+        $0.isPagingEnabled = true
+        $0.isScrollEnabled = false
+        $0.delegate = self
+        $0.dataSource = self
+        $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    let scrollView = UIScrollView().then {
-        $0.showsVerticalScrollIndicator = false
-        $0.bounces = false
-        $0.backgroundColor = UIColor(named: "textColor")
-        $0.clipsToBounds = true
-        $0.layer.cornerRadius = 20
+    let layout = UICollectionViewFlowLayout().then {
+        $0.scrollDirection = .horizontal
+        $0.minimumLineSpacing = 0
+        $0.minimumInteritemSpacing = 0
     }
     
-    let contentView = UIView().then {
-        $0.backgroundColor = UIColor(named: "textColor")
-    }
-    
-    let publicView = UIView().then {
-        $0.backgroundColor = .clear
-        $0.isHidden = true
-    }
-    
-    let publicMainLabel = UILabel().then {
-        $0.text = "공개 여부"
-        $0.textColor = .font
-        $0.font = UIFont.systemFont(ofSize: 17, weight: .bold)
-    }
-    
-    let publicOpenButton = UIButton().then {
-        $0.setImage(UIImage(systemName: "chevron.down"), for: .normal)
-        $0.tintColor = .font
-    }
-    
-    let publicOpenStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.alignment = .center
-        $0.distribution = .equalSpacing
-        $0.spacing = 10
-    }
+    lazy var detailInputViewButton = UIHostingController(rootView: DetailInputPageControlButton(onIndexChanged: { [weak self] index in
+        self?.switchToPage(index)
+    }))
     
     let publicLabel = UILabel().then {
-        $0.text = "게시물 공개 여부"
+        $0.text = "게시물 공개"
         $0.font = UIFont.systemFont(ofSize: 15)
         $0.textColor = .font
     }
@@ -108,7 +87,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.axis = .horizontal
         $0.alignment = .center
         $0.distribution = .equalSpacing
-        $0.spacing = 10
+        $0.spacing = 20
     }
     
     let spendingPublicSwitch = UISwitch().then {
@@ -118,7 +97,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     let spendingPublicLabel = UILabel().then {
-        $0.text = "지출 공개 여부"
+        $0.text = "지출 공개"
         $0.font = UIFont.systemFont(ofSize: 15)
         $0.textColor = .font
     }
@@ -127,19 +106,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.axis = .horizontal
         $0.alignment = .center
         $0.distribution = .equalSpacing
-        $0.spacing = 10
-        
-    }
-    
-    let toggleSwitchStackView = UIStackView().then {
-        $0.axis = .vertical
-        $0.alignment = .center
-        $0.distribution = .equalSpacing
         $0.spacing = 20
-    }
-    
-    let topLine = UIView().then {
-        $0.backgroundColor = .lightgray
+        
     }
     
     let locationLeftLabel = UILabel().then {
@@ -245,65 +213,19 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.isUserInteractionEnabled = false
     }
     
-    let bodyLine = UIView().then {
-        $0.backgroundColor = .lightblack
-    }
     
-    let galleryLabel = UILabel().then {
-        $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
-        $0.textColor = .font
-        
-        let imageAttachment = NSTextAttachment()
-        let systemImage = UIImage(systemName: "photo")?.withTintColor(.font, renderingMode: .alwaysOriginal)
-        imageAttachment.image = systemImage
-        imageAttachment.bounds = CGRect(x: 0, y: -5, width: 24, height: 18.4)
-        
-        let fullString = NSMutableAttributedString(string: "")
-        fullString.append(NSAttributedString(attachment: imageAttachment))
-        fullString.append(NSAttributedString(string: " 앨범 추가", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12, weight: .bold)]))
-        
-        $0.attributedText = fullString
-    }
-    
-    lazy var galleryCollectionView: UICollectionView = {
+    lazy var galleryInputCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 10
-        layout.sectionInset = UIEdgeInsets(top: 10, left: 32, bottom: 0, right: 0)
-        layout.itemSize = CGSize(width: 85, height: 85)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.isScrollEnabled = true
         return collectionView
     }()
     
-    let galleryCountButton = UIButton(type: .system).then {
-        var configuration = UIButton.Configuration.filled()
-        configuration.baseBackgroundColor = .babygray
-        configuration.cornerStyle = .medium
-        configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 32, bottom: 8, trailing: 40)
-        $0.configuration = configuration
-        $0.layer.cornerRadius = 10
-        $0.isHidden = true
-    }
-    
-    let galleryCountLabel = UILabel().then {
-        $0.text = "0/10"
-        $0.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        $0.textColor = .darkgray
-    }
-    
-    let galleryArrowImageView = UIImageView().then {
-        $0.image = UIImage(systemName: "chevron.right")
-        $0.tintColor = .darkgray
-    }
-    
-    let galleryCountStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.alignment = .center
-        $0.spacing = 8
-        $0.isUserInteractionEnabled = false
-    }
     
     let mateLabel = UILabel().then {
         $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
@@ -333,38 +255,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         return collectionView
     }()
     
-    
-    
     // MARK: 토글토글
-    
-    
-    let mateCountButton = UIButton(type: .system).then {
-        var configuration = UIButton.Configuration.filled()
-        configuration.baseBackgroundColor = .babygray
-        configuration.cornerStyle = .medium
-        configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 32, bottom: 8, trailing: 40)
-        $0.configuration = configuration
-        $0.layer.cornerRadius = 10
-        $0.isHidden = true
-    }
-    
-    let mateCountLabel = UILabel().then {
-        $0.text = "0"
-        $0.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        $0.textColor = .darkgray
-    }
-    
-    let mateIconImageView = UIImageView().then {
-        $0.image = UIImage(systemName: "person")
-        $0.tintColor = .darkgray
-    }
-    
-    let mateCountStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.alignment = .center
-        $0.spacing = 8
-        $0.isUserInteractionEnabled = false
-    }
     
     private var selectedStartDate: Date?
     private var selectedEndDate: Date?
@@ -392,6 +283,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .white
+        
         setupUI()
         setupConstraints()
         actionButton()
@@ -422,110 +316,62 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     func setupUI() {
-        view.addSubview(topContainarView)
-        view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        contentView.addSubview(publicOpenStackView)
-        contentView.addSubview(publicView)
-        publicView.addSubview(toggleSwitchStackView)
-        contentView.addSubview(topLine)
+        view.addSubview(detailInputViewCollectionView)
+        view.addSubview(detailInputViewButton.view)
+        addChild(detailInputViewButton)
+        detailInputViewButton.didMove(toParent: self)
         
-        publicOpenStackView.addArrangedSubview(publicMainLabel)
-        publicOpenStackView.addArrangedSubview(publicOpenButton)
+        view.addSubview(publicStackView)
+        view.addSubview(spendingPublicStackView)
+        view.addSubview(locationButton)
+        locationButton.addSubview(locationStackView)
+        view.addSubview(dateButton)
+        dateButton.addSubview(dateStackView)
+        
         publicStackView.addArrangedSubview(publicLabel)
         publicStackView.addArrangedSubview(publicSwitch)
         spendingPublicStackView.addArrangedSubview(spendingPublicLabel)
         spendingPublicStackView.addArrangedSubview(spendingPublicSwitch)
-        toggleSwitchStackView.addArrangedSubview(publicStackView)
-        toggleSwitchStackView.addArrangedSubview(spendingPublicStackView)
         
         dateStackView.addArrangedSubview(dateLabel)
         dateStackView.addArrangedSubview(dateRightLabel)
-        contentView.addSubview(dateButton)
-        dateButton.addSubview(dateStackView)
-        
-        contentView.addSubview(mainTextField)
-        contentView.addSubview(subTextField)
-        contentView.addSubview(locationButton)
-        locationButton.addSubview(locationStackView)
-        contentView.addSubview(consumButton)
-        consumButton.addSubview(consumStackView)
         
         locationStackView.addArrangedSubview(locationLeftLabel)
         locationStackView.addArrangedSubview(locationRightLabel)
-        consumStackView.addArrangedSubview(consumLeftLabel)
-        consumStackView.addArrangedSubview(consumRightLabel)
         
-        contentView.addSubview(bodyLine)
-        contentView.addSubview(galleryLabel)
-        contentView.addSubview(galleryCollectionView)
-        contentView.addSubview(galleryCountButton)
-        galleryCountButton.addSubview(galleryCountStackView)
-        
-        galleryCountStackView.addArrangedSubview(galleryCountLabel)
-        galleryCountStackView.addArrangedSubview(galleryArrowImageView)
-        
-        contentView.addSubview(mateLabel)
-        contentView.addSubview(mateCollectionView)
-        contentView.addSubview(mateCountButton)
-        mateCountButton.addSubview(mateCountStackView)
-        mateCountStackView.addArrangedSubview(mateIconImageView)
-        mateCountStackView.addArrangedSubview(mateCountLabel)
-        
+        view.addSubview(mateLabel)
+        view.addSubview(mateCollectionView)
     }
     
     func setupConstraints() {
-        topContainarView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.height.equalTo(150)
-        }
+        let screenHeight = UIScreen.main.bounds.height
+        let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.65 : 0.35
         
-        scrollView.snp.makeConstraints {
-            $0.top.equalTo(topContainarView.snp.bottom).offset(-40)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(40)
-        }
-        
-        contentView.snp.makeConstraints {
-            $0.edges.equalTo(scrollView.contentLayoutGuide)
-            $0.width.equalTo(scrollView.frameLayoutGuide)
-            $0.bottom.equalTo(mateCountButton.snp.bottom).offset(30)
-        }
-        
-        publicOpenStackView.snp.makeConstraints {
-            $0.top.equalTo(contentView).offset(40)
-            $0.leading.trailing.equalTo(contentView).inset(32)
-        }
-        
-        publicView.snp.makeConstraints {
-            $0.top.equalTo(publicOpenStackView.snp.bottom).offset(30)
-            $0.leading.trailing.equalTo(contentView).inset(32)
-            self.publicViewHeightConstraint = $0.height.equalTo(0).constraint
-        }
-        
-        toggleSwitchStackView.snp.makeConstraints {
-            $0.centerY.equalToSuperview()
+        detailInputViewCollectionView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             $0.leading.trailing.equalToSuperview()
+            $0.height.equalToSuperview().multipliedBy(collectionViewHeightMultiplier)
+        }
+        
+        detailInputViewButton.view.snp.makeConstraints {
+            $0.top.equalTo(detailInputViewCollectionView.snp.bottom)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalToSuperview().multipliedBy(0.1)
         }
         
         publicStackView.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview()
+            $0.top.equalTo(detailInputViewButton.view.snp.bottom)
+            $0.leading.equalToSuperview().inset(32)
         }
         
         spendingPublicStackView.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview()
-        }
-        
-        topLine.snp.makeConstraints {
-            $0.top.equalTo(publicView.snp.bottom).offset(5)
-            $0.leading.trailing.equalTo(contentView).inset(16)
-            $0.height.equalTo(1)
+            $0.top.equalTo(detailInputViewButton.view.snp.bottom)
+            $0.trailing.equalToSuperview().inset(32)
         }
         
         locationButton.snp.makeConstraints {
-            $0.top.equalTo(topLine.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(contentView).inset(32)
+            $0.top.equalTo(publicStackView.snp.bottom).offset(24)
+            $0.leading.trailing.equalToSuperview().inset(32)
             $0.height.equalTo(44)
         }
         
@@ -535,8 +381,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         dateButton.snp.makeConstraints {
-            $0.top.equalTo(locationButton.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(contentView).inset(32)
+            $0.top.equalTo(locationButton.snp.bottom).offset(12)
+            $0.leading.trailing.equalToSuperview().inset(32)
             $0.height.equalTo(44)
         }
         
@@ -545,81 +391,25 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             $0.leading.trailing.equalToSuperview().inset(16)
         }
         
-        mainTextField.snp.makeConstraints {
-            $0.top.equalTo(dateButton.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(44)
-        }
-        
-        subTextField.snp.makeConstraints {
-            $0.top.equalTo(mainTextField.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(contentView).inset(32)
-            self.subTextFieldHeightConstraint = $0.height.greaterThanOrEqualTo(subTextFieldMinHeight).constraint
-        }
-        
-        consumButton.snp.makeConstraints {
-            $0.top.equalTo(subTextField.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(44)
-        }
-        
-        consumStackView.snp.makeConstraints {
-            $0.centerY.equalToSuperview()
-            $0.leading.trailing.equalToSuperview().inset(16)
-        }
-        
-        bodyLine.snp.makeConstraints {
-            $0.top.equalTo(consumButton.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(contentView).inset(16)
-            $0.height.equalTo(1)
-        }
-        
-        galleryLabel.snp.makeConstraints {
-            $0.top.equalTo(bodyLine.snp.bottom).offset(20)
-            $0.leading.equalTo(contentView).inset(32)
-        }
-        
-        galleryCollectionView.snp.makeConstraints {
-            $0.top.equalTo(galleryLabel.snp.bottom)
-            $0.leading.trailing.equalTo(contentView)
-            $0.height.equalTo(100)
-        }
-        
-        galleryCountButton.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(10)
-            $0.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(44)
-        }
-        
-        galleryCountStackView.snp.makeConstraints {
-            $0.center.equalToSuperview()
-        }
-        
         mateLabel.snp.makeConstraints {
-            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(63)
-            $0.leading.equalTo(contentView).inset(32)
+            $0.top.equalTo(dateButton.snp.bottom).offset(24)
+            $0.leading.equalToSuperview().inset(32)
         }
         
         mateCollectionView.snp.makeConstraints {
-            $0.top.equalTo(mateLabel.snp.bottom)
-            $0.leading.trailing.equalTo(contentView)
-            $0.height.equalTo(100)
+            $0.top.equalTo(mateLabel.snp.bottom).offset(12)
+            $0.leading.equalToSuperview().inset(32)
+            $0.height.equalTo(80)
         }
-        
-        mateCountButton.snp.makeConstraints {
-            $0.top.equalTo(mateCollectionView.snp.bottom).offset(10)
-            $0.trailing.equalTo(contentView).inset(32)
-            $0.height.equalTo(44)
-        }
-        
-        mateCountStackView.snp.makeConstraints {
-            $0.center.equalToSuperview()
-        }
+    }
+    
+    func switchToPage(_ index: Int) {
+        detailInputViewCollectionView.scrollToItem(at: IndexPath(item: index, section: 0), at: .centeredHorizontally, animated: true)
     }
     
     @objc func dismissKeyboard(_ sender: UITapGestureRecognizer) {
         let location = sender.location(in: self.view)
-        if !self.galleryCollectionView.frame.contains(location) && !self.mateCollectionView.frame.contains(location) {
+        if !self.galleryInputCollectionView.frame.contains(location) && !self.mateCollectionView.frame.contains(location) {
             view.endEditing(true)
         }
     }
@@ -632,14 +422,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     func updateColor(){
-        
         //베이비그레이-커스텀블랙
         let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
         dateButton.configuration?.baseBackgroundColor = babyGTocustomB
         locationButton.backgroundColor = babyGTocustomB
         consumButton.backgroundColor = babyGTocustomB
-        galleryCountButton.configuration?.baseBackgroundColor = babyGTocustomB
-        mateCountButton.configuration?.baseBackgroundColor = babyGTocustomB
         
         //라이트그레이-다크그레이
         let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
@@ -650,18 +437,20 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         
         //라이트그레이-라이트블랙
         let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
-        topLine.backgroundColor = lightGTolightB
-        bodyLine.backgroundColor = lightGTolightB
     }
     
     func setupCollectionView() {
-        galleryCollectionView.delegate = self
-        galleryCollectionView.dataSource = self
+        galleryInputCollectionView.delegate = self
+        galleryInputCollectionView.dataSource = self
+        
         
         mateCollectionView.delegate = self
         mateCollectionView.dataSource = self
         
-        galleryCollectionView.register(GallaryInPutCollectionViewCell.self, forCellWithReuseIdentifier: GallaryInPutCollectionViewCell.identifier)
+        detailInputViewCollectionView.register(GallaryInputCollectionViewCell.self, forCellWithReuseIdentifier: GallaryInputCollectionViewCell.identifier)
+        detailInputViewCollectionView.register(TextInputCollectionViewCell.self, forCellWithReuseIdentifier: TextInputCollectionViewCell.identifier)
+        detailInputViewCollectionView.register(CardInputCollectionViewCell.self, forCellWithReuseIdentifier: CardInputCollectionViewCell.identifier)
+        
         mateCollectionView.register(FriendInputCollectionViewCell.self, forCellWithReuseIdentifier: FriendInputCollectionViewCell.identifier)
     }
     
@@ -671,27 +460,13 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     func actionButton() {
-        publicOpenButton.addTarget(self, action: #selector(publicOpenButtonTapped), for: .touchUpInside)
         
         dateButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
         
-        galleryCountButton.addTarget(self, action: #selector(showPHPicker), for: .touchUpInside)
         
         locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
         
-        mateCountButton.addTarget(self, action: #selector(showMatePicker), for: .touchUpInside)
-    }
-    
-    @objc func publicOpenButtonTapped() {
-        let isHidden = publicView.isHidden
-        let newHeight: CGFloat = isHidden ? 90 : 0
-        
-        self.publicView.isHidden = !isHidden
-        self.publicViewHeightConstraint?.update(offset: newHeight)
-        let imageName = newHeight == 0 ? "chevron.down" : "chevron.up"
-        self.publicOpenButton.setImage(UIImage(systemName: imageName), for: .normal)
-        self.view.layoutIfNeeded()
     }
     
     @objc func showMatePicker() {
@@ -738,7 +513,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
 
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = doneButton
-        navigationController?.navigationBar.tintColor = UIColor(named: "textColor")
+        navigationController?.navigationBar.tintColor = .black
     
     }
     
@@ -788,13 +563,15 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         dispatchGroup.notify(queue: .main) {
             self.representativeImageIndex = self.selectedImages.firstIndex { $0.1 }
             self.updateRepresentativeImage()
-            self.galleryCollectionView.reloadData()
-            self.updateGalleryCountButton()
+            self.galleryInputCollectionView.reloadData()
+            
+            if let galleryCell = self.detailInputViewCollectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? GallaryInputCollectionViewCell {
+                galleryCell.selectedImages = self.selectedImages
+            }
         }
         
         loadSelectedFriends(pinLog: pinLog)
         
-        // totalSpendingAmount 값을 consumLeftLabel에 설정
         if let totalSpendingAmount = pinLog.totalSpendingAmount, totalSpendingAmount > 0 {
             consumLeftLabel.text = "\(formatCurrency(Int(totalSpendingAmount)))원"
         } else {
@@ -802,6 +579,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         updateTotalSpendingAmount(with: expenses)
     }
+
     
     
     func loadSavedLocation() {
@@ -1056,7 +834,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         
         group.notify(queue: .main) {
             self.mateCollectionView.reloadData()
-            self.updateMateCountButton()
         }
     }
     
@@ -1076,18 +853,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                 completion(nil)
             }
         }
-    }
-    
-    func updateGalleryCountButton() {
-        let count = selectedImages.count
-        galleryCountLabel.text = "\(count)/10"
-        galleryCountButton.isHidden = count == 0
-    }
-    
-    func updateMateCountButton() {
-        let count = selectedFriends.count
-        mateCountLabel.text = "\(count)"
-        mateCountButton.isHidden = count == 0
     }
     
     func createCollectionViewFlowLayout(for collectionView: UICollectionView) -> UICollectionViewFlowLayout {
@@ -1127,7 +892,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                 case .denied, .restricted:
                     self.showPhotoAccessDeniedAlert()
                 case .notDetermined:
-                    // 권한 요청 후 결과를 기다리므로 추가 처리 불필요
                     break
                 @unknown default:
                     fatalError("새로운 권한 상태")
@@ -1179,23 +943,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
     }
     
-    @objc func deletePhoto(_ sender: UIButton) {
-        guard let cell = sender.superview?.superview as? GallaryInPutCollectionViewCell,
-              let indexPath = galleryCollectionView.indexPath(for: cell) else { return }
-        
-        selectedImages.remove(at: indexPath.row)
-        if selectedImages.isEmpty {
-            galleryCollectionView.reloadData()
-            updateGalleryCountButton()
-        } else {
-            galleryCollectionView.performBatchUpdates({
-                galleryCollectionView.deleteItems(at: [indexPath])
-            }) { _ in
-                self.updateGalleryCountButton()
-            }
-        }
-    }
-    
     func updateRepresentativeImage() {
         if let index = representativeImageIndex, index < selectedImages.count {
             for i in 0..<selectedImages.count {
@@ -1204,7 +951,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         } else {
             representativeImageIndex = selectedImages.isEmpty ? nil : 0
         }
-        galleryCollectionView.reloadData()
+        galleryInputCollectionView.reloadData()
     }
     
     func updateTotalSpendingAmount(with dailyExpenses: [DailyExpenses]) {
@@ -1220,31 +967,38 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
 }
 
 
-extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == galleryCollectionView {
-            return selectedImages.isEmpty ? 1 : selectedImages.count
-        } else if collectionView == mateCollectionView {
+        if collectionView == mateCollectionView {
             return selectedFriends.isEmpty ? 1 : selectedFriends.count
+        } else if collectionView == detailInputViewCollectionView {
+            return 3
+        } else if collectionView == galleryInputCollectionView {
+            return selectedImages.isEmpty ? 1 : selectedImages.count
         }
         return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == galleryCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GallaryInPutCollectionViewCell.identifier, for: indexPath) as? GallaryInPutCollectionViewCell else {
-                fatalError("컬렉션 뷰 오류")
+        if collectionView == detailInputViewCollectionView {
+            switch indexPath.item {
+            case 0:
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GallaryInputCollectionViewCell.identifier, for: indexPath) as! GallaryInputCollectionViewCell
+                cell.delegate = self
+                cell.selectedImages = selectedImages
+                return cell
+            case 1:
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TextInputCollectionViewCell.identifier, for: indexPath) as! TextInputCollectionViewCell
+                return cell
+            case 2:
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CardInputCollectionViewCell.identifier, for: indexPath) as! CardInputCollectionViewCell
+                return cell
+            default:
+                fatalError("Unexpected index path")
             }
-            if selectedImages.isEmpty {
-                cell.configure(with: nil, isRepresentative: false)
-            } else {
-                let (image, isRepresentative, _) = selectedImages[indexPath.row]
-                cell.configure(with: image, isRepresentative: isRepresentative)
-            }
-            return cell
-        } else {
+        } else if collectionView == mateCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendInputCollectionViewCell.identifier, for: indexPath) as? FriendInputCollectionViewCell else {
-                fatalError("컬렉션 뷰 오류")
+                fatalError("FriendInputCollectionViewCell 오류")
             }
             if selectedFriends.isEmpty {
                 cell.configure(with: nil)
@@ -1258,23 +1012,28 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
             }
             return cell
         }
+        return UICollectionViewCell()
     }
     
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView == galleryCollectionView {
-            if selectedImages.isEmpty || indexPath.row == selectedImages.count {
-                showPHPicker()
-            } else {
-                representativeImageIndex = indexPath.row
-                updateRepresentativeImage()
-            }
-        } else if collectionView == mateCollectionView {
+        if collectionView == mateCollectionView {
             if selectedFriends.isEmpty {
                 let mateVC = MateViewController()
                 mateVC.delegate = self
                 navigationController?.pushViewController(mateVC, animated: true)
             }
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if collectionView == mateCollectionView {
+            return CGSize(width: 60, height: 60)
+        } else if collectionView == galleryInputCollectionView {
+            let width = collectionView.bounds.width * 0.8
+            let height = collectionView.bounds.height
+            return CGSize(width: width, height: height)
+        } else {
+            return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
         }
     }
 }
@@ -1283,7 +1042,6 @@ extension DetailInputViewController: MateViewControllerDelegate {
     func didSelectMates(_ mates: [UserSummary]) {
         selectedFriends = mates
         mateCollectionView.reloadData()
-        updateMateCountButton()
     }
 }
 
@@ -1344,9 +1102,23 @@ extension DetailInputViewController: PHPickerViewControllerDelegate {
         }
         
         dispatchGroup.notify(queue: .main) {
-            self.galleryCollectionView.reloadData()
-            self.updateGalleryCountButton()
+            if let indexPath = self.detailInputViewCollectionView.indexPathsForVisibleItems.first(where: { $0.item == 0 }) {
+                if let cell = self.detailInputViewCollectionView.cellForItem(at: indexPath) as? GallaryInputCollectionViewCell {
+                    cell.selectedImages = self.selectedImages
+                }
+            }
         }
+    }
+}
+
+extension DetailInputViewController: GallaryInputCollectionViewCellDelegate {
+    func didSelectAddPhoto() {
+        showPHPicker()
+    }
+    
+    func didSelectRepresentativeImage(at index: Int) {
+        representativeImageIndex = index
+        updateRepresentativeImage()
     }
 }
 
@@ -1417,4 +1189,5 @@ extension DetailInputViewController: UITextViewDelegate {
         return true
     }
 }
+
 

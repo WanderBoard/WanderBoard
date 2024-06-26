@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import SnapKit
+import Kingfisher
 
 class FriendInputCollectionViewCell: UICollectionViewCell {
     static let identifier = "FriendInputCollectionViewCell"
@@ -22,7 +24,7 @@ class FriendInputCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupUI() {
+    private func setupUI() {
         contentView.addSubview(imageView)
         contentView.addSubview(addButton)
         

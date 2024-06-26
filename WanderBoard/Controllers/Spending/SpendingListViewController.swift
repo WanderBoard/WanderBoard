@@ -441,3 +441,6 @@ extension SpendingListViewController: InsertSpendingViewControllerDelegate {
     }
 }
 
+// MARK: - 카테고리별로 지출 금액 계산
+
+

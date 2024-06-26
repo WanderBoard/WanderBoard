@@ -105,8 +105,7 @@ class StorageManager {
         let lon = longitudeRef == "W" ? -longitude : longitude
         
         // GPS 정밀도 확인
-        if let hPositioningError = gpsData[kCGImagePropertyGPSHPositioningError] as? Double {
-            print("Horizontal positioning error: \(hPositioningError) meters")
+        if gpsData[kCGImagePropertyGPSHPositioningError] is Double {
         }
 
         return CLLocationCoordinate2D(latitude: lat, longitude: lon)

@@ -41,7 +41,7 @@ class DetailViewController: UIViewController {
     var subTextFieldHeightConstraint: Constraint?
     
     lazy var pinButton = UIButton(type: .system).then {
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 22, weight: .regular)
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 28, weight: .regular)
         let symbolImage = UIImage(systemName: "pin.circle", withConfiguration: symbolConfiguration)
         $0.setImage(symbolImage, for: .normal)
         $0.contentMode = .scaleAspectFill
@@ -53,7 +53,7 @@ class DetailViewController: UIViewController {
     }
     
     lazy var mapAllButton = UIButton().then {
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 25, weight: .regular)
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 28, weight: .regular)
         let symbolImage = UIImage(systemName: "map.circle.fill", withConfiguration: symbolConfiguration)
         $0.setImage(symbolImage, for: .normal)
         $0.contentMode = .scaleAspectFill
@@ -80,7 +80,6 @@ class DetailViewController: UIViewController {
         $0.minimumLineSpacing = 0
         $0.minimumInteritemSpacing = 0
     }
-    
     
     
     lazy var detailViewButton = UIHostingController(rootView: DetailPageControlButton(onIndexChanged: { [weak self] index in
@@ -267,12 +266,10 @@ class DetailViewController: UIViewController {
         $0.axis = .vertical
         $0.alignment = .fill
         $0.spacing = 20
-        $0.isUserInteractionEnabled = false
     }
     
     let bottomContentView = UIView().then {
         $0.backgroundColor = .clear
-        $0.isUserInteractionEnabled = false
     }
     
     lazy var friendCollectionView: UICollectionView = {
@@ -352,20 +349,20 @@ class DetailViewController: UIViewController {
         detailViewCollectionView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(detailViewButton.view.snp.top)
             $0.height.equalToSuperview().multipliedBy(collectionViewHeightMultiplier)
         }
         
         detailViewButton.view.snp.makeConstraints {
             $0.top.equalTo(detailViewCollectionView.snp.bottom)
-            $0.centerX.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
             $0.height.equalToSuperview().multipliedBy(0.1)
         }
         
         bottomContentView.snp.makeConstraints {
-            $0.top.equalTo(detailViewButton.view.snp.bottom)
-            $0.trailing.bottom.equalToSuperview()
-            $0.leading.equalToSuperview().offset(26)
+            //$0.top.equalTo(detailViewButton.view.snp.bottom)
+            $0.leading.trailing.equalToSuperview().inset(26)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
+            $0.height.equalTo(100)
         }
         
         bottomContentStackView.snp.makeConstraints {
@@ -1010,7 +1007,7 @@ class DetailViewController: UIViewController {
         guard let mapVC = mapViewController else { return }
         addChild(mapVC)
         mapVC.didMove(toParent: self)
-        mapVC.view.isUserInteractionEnabled = false // 터치 불가능하도록 설정
+        mapVC.view.isUserInteractionEnabled = false
     }
     
     func setupCollectionView() {
@@ -1057,7 +1054,11 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+        if collectionView == friendCollectionView {
+            return CGSize(width: 60, height: 60)
+        } else {
+            return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+        }
     }
 }
 

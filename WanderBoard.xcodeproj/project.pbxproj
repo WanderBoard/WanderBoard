@@ -344,15 +344,17 @@
 			path = MateInput;
 			sourceTree = "<group>";
 		};
-		4D51662A2C2C0E1E00D73969 /* DetailViewCell */ = {
+		4D51662D2C2C5BAC00D73969 /* newPageCell */ = {
 			isa = PBXGroup;
 			children = (
-				4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */,
 				9573ADC22C2B15280040D494 /* TextCollectionViewCell.swift */,
 				9573ADC42C2B15280040D494 /* CardCollectionViewCell.swift */,
+				4D51662B2C2C20A300D73969 /* PhotoInputCollectionViewCell.swift */,
 				9573ADC32C2B15280040D494 /* PhotoCollectionViewCell.swift */,
+				4D5166282C2BFD8000D73969 /* CardInputCollectionViewCell.swift */,
+				4D5166262C2BE02000D73969 /* TextInputCollectionViewCell.swift */,
 			);
-			path = DetailViewCell;
+			path = newPageCell;
 			sourceTree = "<group>";
 		};
 		4D9D8B432C05B1BD0043E7DF = {
@@ -559,8 +561,8 @@
 		4DC759922C2064AD00976FAA /* DetailPage */ = {
 			isa = PBXGroup;
 			children = (
-				4D51662A2C2C0E1E00D73969 /* DetailViewCell */,
-				95E350842C2A8C3F0083A85C /* DetailInputViewCell */,
+				4D51662D2C2C5BAC00D73969 /* newPageCell */,
+				95E350842C2A8C3F0083A85C /* Gallery */,
 				4D13BB9D2C292638004AE016 /* MateDetail */,
 				4D13BB9E2C29269D004AE016 /* MateInput */,
 			);
@@ -576,15 +578,13 @@
 			path = SignUp;
 			sourceTree = "<group>";
 		};
-		95E350842C2A8C3F0083A85C /* DetailInputViewCell */ = {
+		95E350842C2A8C3F0083A85C /* Gallery */ = {
 			isa = PBXGroup;
 			children = (
-				4D5166262C2BE02000D73969 /* TextInputCollectionViewCell.swift */,
-				4D51662B2C2C20A300D73969 /* PhotoInputCollectionViewCell.swift */,
-				4D5166282C2BFD8000D73969 /* CardInputCollectionViewCell.swift */,
+				4DFA37642C077128001B03F8 /* GalleryCollectionViewCell.swift */,
 				4D8947322C0F346A0057F083 /* GallaryInPutCollectionViewCell.swift */,
 			);
-			path = DetailInputViewCell;
+			path = Gallery;
 			sourceTree = "<group>";
 		};
 		FB72E7412C0F3EC5002AADBD /* Explore */ = {

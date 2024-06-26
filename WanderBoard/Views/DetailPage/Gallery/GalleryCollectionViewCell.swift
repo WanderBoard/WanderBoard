@@ -12,6 +12,9 @@ import CoreLocation
 class GalleryCollectionViewCell: UICollectionViewCell {
     static let identifier = String(describing: GalleryCollectionViewCell.self)
     
+    let minimumLineSpacing: CGFloat = 16
+    let aspectRatio: CGFloat = 330 / 440
+    
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = [] {
         didSet {
             photoCollectionView.reloadData()
@@ -26,13 +29,13 @@ class GalleryCollectionViewCell: UICollectionViewCell {
         $0.showsHorizontalScrollIndicator = false
         $0.showsVerticalScrollIndicator = true
         $0.alwaysBounceVertical = false
+        $0.decelerationRate = .fast
     }
     
     let photoCollectionViewLayout = UICollectionViewFlowLayout().then {
         $0.scrollDirection = .horizontal
         $0.minimumLineSpacing = 16
         $0.sectionInset = .init(top: 0, left: 32, bottom: 0, right: 32)
-        $0.itemSize = .init(width: 330, height: 440)
     }
     
     override init(frame: CGRect) {
@@ -51,9 +54,14 @@ class GalleryCollectionViewCell: UICollectionViewCell {
             $0.edges.equalToSuperview()
         }
     }
+    
+    func calculateItemWidth() -> CGFloat {
+        let height = photoCollectionView.frame.height
+        return height * aspectRatio
+    }
 }
 
-extension GalleryCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate {
+extension GalleryCollectionViewCell: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return selectedImages.count
     }
@@ -66,8 +74,21 @@ extension GalleryCollectionViewCell: UICollectionViewDataSource, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let height = contentView.frame.height
-        let itemWidth = height * 330 / 440
+        let itemWidth = calculateItemWidth()
+        let height = collectionView.frame.height
         return CGSize(width: itemWidth, height: height)
+    }
+    
+    // 페이징 기능 추가
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        let itemWidth = calculateItemWidth()
+        let cellWidthIncludeSpacing = itemWidth + minimumLineSpacing
+        
+        var offset = targetContentOffset.pointee
+        let index = (offset.x + scrollView.contentInset.left) / cellWidthIncludeSpacing
+        let roundedIndex: CGFloat = round(index)
+        
+        offset = CGPoint(x: roundedIndex * cellWidthIncludeSpacing - scrollView.contentInset.left, y: scrollView.contentInset.top)
+        targetContentOffset.pointee = offset
     }
 }

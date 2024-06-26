@@ -345,23 +345,27 @@ class DetailViewController: UIViewController {
     }
     
     func setupConstraints() {
+        // 화면 크기에 따라 비율 설정
+        let screenHeight = UIScreen.main.bounds.height
+        let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.58 : 0.52
+        
         detailViewCollectionView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(view.snp.height).multipliedBy(0.5)
+            $0.bottom.equalTo(detailViewButton.view.snp.top)
+            $0.height.equalToSuperview().multipliedBy(collectionViewHeightMultiplier)
         }
         
         detailViewButton.view.snp.makeConstraints {
-            $0.top.equalTo(detailViewCollectionView.snp.bottom).offset(30)
+            $0.top.equalTo(detailViewCollectionView.snp.bottom)
             $0.centerX.equalToSuperview()
-            $0.height.equalTo(52)
-            
+            $0.height.equalToSuperview().multipliedBy(0.1)
         }
         
         bottomContentView.snp.makeConstraints {
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-20)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(16)
-            $0.height.equalTo(150)
+            $0.top.equalTo(detailViewButton.view.snp.bottom)
+            $0.trailing.bottom.equalToSuperview()
+            $0.leading.equalToSuperview().offset(26)
         }
         
         bottomContentStackView.snp.makeConstraints {
@@ -1050,6 +1054,10 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return cell
         }
         return UICollectionViewCell()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
     }
 }
 

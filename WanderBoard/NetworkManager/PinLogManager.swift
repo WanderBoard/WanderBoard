@@ -125,10 +125,15 @@ class PinLogManager {
     func fetchHotPinLogs() async throws -> [PinLogSummary] {
         let snapshot = try await db.collection("pinLogs")
             .whereField("pinCount", isGreaterThan: 0)
-            .limit(to: 10)
             .getDocuments()
         
-        return snapshot.documents.compactMap { document in
+        let allDocuments = snapshot.documents
+        guard !allDocuments.isEmpty else {
+            return []
+        }
+        let randomDocuments = allDocuments.shuffled().prefix(10)
+        
+        return randomDocuments.compactMap { document in
             let data = document.data()
             let location = data["location"] as? String ?? ""
             let startDate = (data["startDate"] as? Timestamp)?.dateValue() ?? Date()

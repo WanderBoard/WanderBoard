@@ -88,7 +88,7 @@ struct SingleDayCalendarView: View {
                     presentationMode.wrappedValue.dismiss()
                 }
             }) {
-                Text("선택")
+                Text("Next")
                     .frame(maxWidth: .infinity, maxHeight: 50)
                     .background(selectedDate != nil ? Color.black : Color("babygray"))
                     .foregroundColor(.white)

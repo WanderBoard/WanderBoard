@@ -33,6 +33,10 @@ class DetailViewController: UIViewController {
     var pinLog: PinLog?
     let pinLogManager = PinLogManager()
     
+    var representativeImage: UIImage?
+    var pinLogTitle: String?
+    var pinLogContent: String?
+    
     var isExpanded = false
     
     var mapViewController: MapViewController?
@@ -123,9 +127,8 @@ class DetailViewController: UIViewController {
     
     let profileOptionStackView = UIStackView().then {
         $0.axis = .horizontal
-        $0.alignment = .center
         $0.spacing = 10
-        $0.distribution = .equalSpacing
+        $0.distribution = .fill
     }
     
     var locationLabel = UILabel().then {
@@ -310,7 +313,6 @@ class DetailViewController: UIViewController {
         galleryCollectionView.reloadData()
     }
     
-    
     func setupUI() {
         view.addSubview(detailViewCollectionView)
         view.addSubview(detailViewButton.view)
@@ -319,6 +321,7 @@ class DetailViewController: UIViewController {
         
         view.addSubview(bottomContentView)
         bottomContentView.addSubview(bottomContentStackView)
+        bottomContentView.addSubview(optionsButton)
         bottomContentView.addSubview(dateDaysLabel)
         bottomContentView.addSubview(dateStackView)
         
@@ -328,11 +331,8 @@ class DetailViewController: UIViewController {
         
         profileStackView.addArrangedSubview(profileImageView)
         profileStackView.addArrangedSubview(nicknameLabel)
-        
-        profileOptionStackView.addArrangedSubview(profileStackView)
-        profileOptionStackView.addArrangedSubview(optionsButton)
-        
-        bottomContentStackView.addArrangedSubview(profileOptionStackView)
+    
+        bottomContentStackView.addArrangedSubview(profileStackView)
         bottomContentStackView.addArrangedSubview(locationLabel)
         
         dateStackView.addArrangedSubview(dateStartLabel)
@@ -355,18 +355,20 @@ class DetailViewController: UIViewController {
         detailViewButton.view.snp.makeConstraints {
             $0.top.equalTo(detailViewCollectionView.snp.bottom)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalToSuperview().multipliedBy(0.1)
+            $0.bottom.equalTo(bottomContentView.snp.top)
         }
         
         bottomContentView.snp.makeConstraints {
-            //$0.top.equalTo(detailViewButton.view.snp.bottom)
+            $0.top.equalTo(detailViewButton.view.snp.bottom)
             $0.leading.trailing.equalToSuperview().inset(26)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
             $0.height.equalTo(100)
         }
+       
         
         bottomContentStackView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
+           // $0.top.equalTo(optionsButton.snp.bottom).offset(10)
+            $0.leading.trailing.equalToSuperview()
         }
         
         dateDaysLabel.snp.makeConstraints {
@@ -380,16 +382,14 @@ class DetailViewController: UIViewController {
             $0.top.equalTo(bottomContentStackView.snp.bottom).offset(10)
         }
         
-        profileOptionStackView.snp.makeConstraints {
-            $0.top.equalTo(bottomContentView)
-            $0.leading.trailing.equalTo(bottomContentView)
-        }
-        
         optionsButton.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.trailing.equalToSuperview()
             $0.width.height.equalTo(24)
         }
         
         expandableView.snp.makeConstraints {
+            $0.top.equalTo(optionsButton.snp.bottom).offset(10)
             $0.centerY.equalTo(dateStackView.snp.centerY).offset(-20)
             $0.trailing.equalToSuperview().offset(15)
             $0.width.equalTo(50)
@@ -407,9 +407,6 @@ class DetailViewController: UIViewController {
             $0.trailing.equalToSuperview().inset(10)
             $0.top.bottom.equalToSuperview()
         }
-        
-        
-        
     }
     
     func switchToPage(_ index: Int) {
@@ -604,8 +601,6 @@ class DetailViewController: UIViewController {
         
         let duration = Calendar.current.dateComponents([.day], from: pinLog.startDate, to: pinLog.endDate).day ?? 0
         dateDaysLabel.text = "\(duration + 1) Days"
-        mainTitleLabel.text = pinLog.title
-        subTextLabel.text = pinLog.content
         
         selectedImages.removeAll()
         updateSelectedImages(with: pinLog.media)
@@ -626,7 +621,7 @@ class DetailViewController: UIViewController {
         if let galleryCell = detailViewCollectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? GalleryCollectionViewCell {
             galleryCell.selectedImages = selectedImages
         }
-
+        
         updateSelectedFriends(with: pinLog.attendeeIds)
         
         // 닉네임 설정
@@ -644,6 +639,22 @@ class DetailViewController: UIViewController {
         }
         
         friendCollectionView.isHidden = pinLog.attendeeIds.isEmpty
+        
+        // 대표 이미지와 텍스트 추출
+        pinLogTitle = pinLog.title
+        pinLogContent = pinLog.content
+        
+        if let representativeMedia = pinLog.media.first(where: { $0.isRepresentative }) {
+            loadImage(from: representativeMedia.url) { [weak self] image in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    self.representativeImage = image
+                    self.detailViewCollectionView.reloadItems(at: [IndexPath(item: 1, section: 0)])
+                }
+            }
+        } else {
+            self.detailViewCollectionView.reloadItems(at: [IndexPath(item: 1, section: 0)])
+        }
     }
     
     //프로필 이미지
@@ -1036,6 +1047,7 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
                 return cell
             case 1:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TextCollectionViewCell.identifier, for: indexPath) as! TextCollectionViewCell
+                cell.configure(with: representativeImage, title: pinLogTitle ?? "", content: pinLogContent ?? "")
                 return cell
             case 2:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CardCollectionViewCell.identifier, for: indexPath) as! CardCollectionViewCell

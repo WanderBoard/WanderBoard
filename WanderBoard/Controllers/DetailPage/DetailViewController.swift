@@ -33,6 +33,10 @@ class DetailViewController: UIViewController {
     var pinLog: PinLog?
     let pinLogManager = PinLogManager()
     
+    var representativeImage: UIImage?
+    var pinLogTitle: String?
+    var pinLogContent: String?
+    
     var isExpanded = false
     
     var mapViewController: MapViewController?
@@ -607,8 +611,6 @@ class DetailViewController: UIViewController {
         
         let duration = Calendar.current.dateComponents([.day], from: pinLog.startDate, to: pinLog.endDate).day ?? 0
         dateDaysLabel.text = "\(duration + 1) Days"
-        mainTitleLabel.text = pinLog.title
-        subTextLabel.text = pinLog.content
         
         selectedImages.removeAll()
         updateSelectedImages(with: pinLog.media)
@@ -629,7 +631,7 @@ class DetailViewController: UIViewController {
         if let galleryCell = detailViewCollectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? GalleryCollectionViewCell {
             galleryCell.selectedImages = selectedImages
         }
-
+        
         updateSelectedFriends(with: pinLog.attendeeIds)
         
         // 닉네임 설정
@@ -647,6 +649,22 @@ class DetailViewController: UIViewController {
         }
         
         friendCollectionView.isHidden = pinLog.attendeeIds.isEmpty
+        
+        // 대표 이미지와 텍스트 추출
+        pinLogTitle = pinLog.title
+        pinLogContent = pinLog.content
+        
+        if let representativeMedia = pinLog.media.first(where: { $0.isRepresentative }) {
+            loadImage(from: representativeMedia.url) { [weak self] image in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    self.representativeImage = image
+                    self.detailViewCollectionView.reloadItems(at: [IndexPath(item: 1, section: 0)])
+                }
+            }
+        } else {
+            self.detailViewCollectionView.reloadItems(at: [IndexPath(item: 1, section: 0)])
+        }
     }
     
     //프로필 이미지
@@ -1039,6 +1057,7 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
                 return cell
             case 1:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TextCollectionViewCell.identifier, for: indexPath) as! TextCollectionViewCell
+                cell.configure(with: representativeImage, title: pinLogTitle ?? "", content: pinLogContent ?? "")
                 return cell
             case 2:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CardCollectionViewCell.identifier, for: indexPath) as! CardCollectionViewCell

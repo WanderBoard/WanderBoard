@@ -358,11 +358,11 @@ class DetailViewController: UIViewController {
         detailViewButton.view.snp.makeConstraints {
             $0.top.equalTo(detailViewCollectionView.snp.bottom)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalToSuperview().multipliedBy(0.1)
+            $0.bottom.equalTo(bottomContentView.snp.top)
         }
         
         bottomContentView.snp.makeConstraints {
-            //$0.top.equalTo(detailViewButton.view.snp.bottom)
+            $0.top.equalTo(detailViewButton.view.snp.bottom)
             $0.leading.trailing.equalToSuperview().inset(26)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
             $0.height.equalTo(100)

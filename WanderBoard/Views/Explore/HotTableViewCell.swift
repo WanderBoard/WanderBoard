@@ -43,6 +43,7 @@ class HotTableViewCell: UITableViewCell {
         $0.showsHorizontalScrollIndicator = false
         $0.showsVerticalScrollIndicator = true
         $0.alwaysBounceVertical = false
+        $0.decelerationRate = .fast
     }
     
     lazy var refreshControl = UIRefreshControl().then {

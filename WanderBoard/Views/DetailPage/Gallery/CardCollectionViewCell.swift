@@ -16,6 +16,12 @@ class CardCollectionViewCell: UICollectionViewCell {
         $0.contentMode = .scaleAspectFit
         $0.clipsToBounds = true
     }
+    let titleLabel = UILabel().then(){
+        $0.text = "상세 지출 리스트"
+        $0.textColor = UIColor(named: "PageCtrlUnselectedText2")
+        $0.font = UIFont.boldSystemFont(ofSize: 14)
+        $0.textAlignment = .right
+    }
     
     let subTitleLabel = UILabel().then {
         $0.text = "총 지출 금액"
@@ -64,6 +70,7 @@ class CardCollectionViewCell: UICollectionViewCell {
         [cardImage, tableView].forEach(){
             contentView.addSubview($0)
         }
+        cardImage.addSubview(titleLabel)
         cardImage.addSubview(stackView)
         
         [subTitleLabel, expendLabel].forEach {
@@ -74,6 +81,10 @@ class CardCollectionViewCell: UICollectionViewCell {
             $0.top.equalToSuperview()
             $0.centerX.equalToSuperview()
             $0.width.equalToSuperview().multipliedBy(0.75)
+        }
+        titleLabel.snp.makeConstraints(){
+            $0.top.equalTo(cardImage.snp.top).offset(47)
+            $0.right.equalTo(cardImage).inset(50)
         }
         
         stackView.snp.makeConstraints {

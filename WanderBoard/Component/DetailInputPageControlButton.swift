@@ -49,10 +49,14 @@ struct DetailInputPageControlButton: View {
                 }
             }
         }
-        .frame(width: 200, height: 52) // HStack의 크기를 고정
+        .frame(width: 130, height: 20) // HStack의 크기를 고정
         .clipShape(Capsule())
-        .shadow(color: .pageCtrlShadow, radius: 8, x: 0, y: 4)
         .padding()
+        .background(ZStack {
+            RoundedRectangle(cornerRadius: 30)
+                .fill(Color("textColor"))
+                .shadow(color: .font.opacity(0.4), radius: 1.5, x: 0, y: 4)
+        })
     }
     
     private func widthForIndex(_ index: Int) -> CGFloat {

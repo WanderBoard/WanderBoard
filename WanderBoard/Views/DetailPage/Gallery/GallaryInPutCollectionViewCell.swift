@@ -22,14 +22,15 @@ class GallaryInputCollectionViewCell: UICollectionViewCell {
     
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = [] {
         didSet {
+            if !selectedImages.contains(where: { $0.1 }) && !selectedImages.isEmpty {
+                selectedImages[0].1 = true
+            }
             DispatchQueue.main.async {
-                if self.selectedImages.isEmpty {
-                    if let layout = self.photoInputCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                if let layout = self.photoInputCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                    if self.selectedImages.isEmpty {
                         layout.sectionInset = UIEdgeInsets(top: 0, left: 64, bottom: 0, right: 64)
-                    }
-                } else {
-                    if let layout = self.photoInputCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                        layout.sectionInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32)
+                    } else {
+                        layout.sectionInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 64)
                     }
                 }
                 self.photoInputCollectionView.reloadData()
@@ -90,27 +91,39 @@ extension GallaryInputCollectionViewCell: UICollectionViewDelegate, UICollection
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.frame.width - (selectedImages.isEmpty ? 128 : 64)
+        let width = collectionView.frame.width - (selectedImages.isEmpty ? 128 : 96)
         let height = collectionView.frame.height
         
         if indexPath.item == 0 && !selectedImages.isEmpty {
-            return CGSize(width: width / 3, height: height)
+            return CGSize(width: width / 2, height: height)
         } else {
             return CGSize(width: width, height: height)
         }
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.item == 0 {
             delegate?.didSelectAddPhoto()
         } else {
+            if let previousRepresentativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
+                selectedImages[previousRepresentativeIndex].1 = false
+            }
+            selectedImages[indexPath.item - 1].1 = true
+            collectionView.reloadData()
             delegate?.didSelectRepresentativeImage(at: indexPath.item - 1)
         }
     }
     
     func didTapDeleteButton(at indexPath: IndexPath) {
+        selectedImages.remove(at: indexPath.item - 1)
+        if selectedImages.isEmpty {
+            photoInputCollectionView.reloadData()
+        } else {
+            if !selectedImages.contains(where: { $0.1 }) {
+                selectedImages[0].1 = true
+            }
+            photoInputCollectionView.reloadData()
+        }
         delegate?.didDeleteImage(at: indexPath.item - 1)
     }
 }
-
-

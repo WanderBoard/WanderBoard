@@ -978,8 +978,7 @@ class DetailViewController: UIViewController {
         
         galleryMapVC.pinLocations = pinLog.media
         
-        let backButton = UIBarButtonItem()
-        backButton.title = "Back"
+        let backButton = ButtonFactory.createBackButton()
         navigationItem.backBarButtonItem = backButton
         
         navigationController?.pushViewController(galleryMapVC, animated: true)
@@ -1055,6 +1054,8 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
                     
                     
                     let spendingListVC = SpendingListViewController()
+                    let backButton = ButtonFactory.createBackButton()
+                    self.navigationItem.backBarButtonItem = backButton
                     self.navigationController?.pushViewController(spendingListVC, animated: true)
                 })
             })

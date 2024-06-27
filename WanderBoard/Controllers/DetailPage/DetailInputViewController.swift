@@ -576,6 +576,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             self.savedLocation = selectedLocation
             self.savedAddress = address
         })
+        let backButton = ButtonFactory.createBackButton()
+        self.navigationItem.backBarButtonItem = backButton
         navigationController?.pushViewController(mapVC, animated: true)
     }
     
@@ -1127,6 +1129,8 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
             if selectedFriends.isEmpty {
                 let mateVC = MateViewController()
                 mateVC.delegate = self
+                let backButton = ButtonFactory.createBackButton()
+                self.navigationItem.backBarButtonItem = backButton
                 navigationController?.pushViewController(mateVC, animated: true)
             }
         }

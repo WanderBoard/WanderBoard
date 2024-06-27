@@ -48,6 +48,8 @@ class MyPageViewController: BaseViewController, PageIndexed {
         fetchTagData()
         
         navigationItem.largeTitleDisplayMode = .never
+        let backButton = ButtonFactory.createBackButton()
+        navigationItem.backBarButtonItem = backButton
         
         //로그인 하지 않을 경우의 액션을 정의 -> 로그인디렉터뷰 보여주기
         if Auth.auth().currentUser == nil {

@@ -14,6 +14,23 @@ enum Category: String, CaseIterable {
     case gift = "기념품비"
     case accommodation = "숙박비"
     case other = "기타"
+    
+    var price: Int {
+        switch self {
+        case .food:
+            return 10000
+        case .transportation:
+            return 8000
+        case .entertainment:
+            return 15000
+        case .gift:
+            return 12000
+        case .accommodation:
+            return 50000
+        case .other:
+            return 7000
+        }
+    }
 }
 
 class CardTableViewCell: UITableViewCell {

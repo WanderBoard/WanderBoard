@@ -65,7 +65,6 @@ class DetailViewController: UIViewController {
         $0.tintColor = .black
         $0.isHidden = false
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.addTarget(self, action: #selector(showMapViewController), for: .touchUpInside)
     }
     
     lazy var detailViewCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout).then {
@@ -84,7 +83,6 @@ class DetailViewController: UIViewController {
         $0.minimumLineSpacing = 0
         $0.minimumInteritemSpacing = 0
     }
-    
     
     lazy var detailViewButton = UIHostingController(rootView: DetailPageControlButton(onIndexChanged: { [weak self] index in
         self?.switchToPage(index)
@@ -293,7 +291,6 @@ class DetailViewController: UIViewController {
         
         setupUI()
         newSetupConstraints()
-        setupMapViewController()
         setupConstraints()
         setupCollectionView()
         setupActionButton()
@@ -648,6 +645,7 @@ class DetailViewController: UIViewController {
         } else {
             self.detailViewCollectionView.reloadItems(at: [IndexPath(item: 1, section: 0)])
         }
+        self.expandableButtonAction()
     }
     
     //프로필 이미지
@@ -682,6 +680,7 @@ class DetailViewController: UIViewController {
         
         group.notify(queue: .main) {
             self.friendCollectionView.reloadData()
+            self.expandableButtonAction()
         }
     }
     
@@ -704,10 +703,13 @@ class DetailViewController: UIViewController {
     }
     
     @objc func expandableButtonTapped() {
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        
         isExpanded.toggle()
         
-        UIView.animate(withDuration: 0.6) {
-            if self.isExpanded {
+        if isExpanded {
+            UIView.animate(withDuration: 0.6) {
                 self.expandableView.snp.updateConstraints {
                     $0.width.equalTo(self.view.frame.width * 1.0)
                     $0.trailing.equalToSuperview().offset(15)
@@ -715,7 +717,10 @@ class DetailViewController: UIViewController {
                 self.expandableButton.snp.updateConstraints {
                     $0.width.equalTo(30)
                 }
-            } else {
+                self.view.layoutIfNeeded()
+            }
+        } else {
+            UIView.animate(withDuration: 0.2) {
                 self.expandableView.snp.updateConstraints {
                     $0.width.equalTo(50)
                     $0.trailing.equalToSuperview().offset(15)
@@ -723,37 +728,13 @@ class DetailViewController: UIViewController {
                 self.expandableButton.snp.updateConstraints {
                     $0.width.equalTo(50)
                 }
+                self.view.layoutIfNeeded()
             }
-            self.view.layoutIfNeeded()
         }
     }
-    
-    @objc func showGalleryDetail() {
-        
-    }
-    
-    @objc func showMapViewController() {
-        guard let firstLocation = selectedImages.compactMap({ $0.2 }).first else {
-            print("No location data available.")
-            return
-        }
-        
-        let region = MKCoordinateRegion(center: firstLocation, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
-        let mapVC = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
-        }
-        mapVC.pinLocations = selectedImages.compactMap { $0.2 }
-        mapVC.shouldHideSearch = true
-        
-        if let navigationController = self.navigationController {
-            navigationController.pushViewController(mapVC, animated: true)
-        } else {
-            present(mapVC, animated: true, completion: nil)
-        }
-    }
-    
     
     func setupActionButton() {
-        
+        mapAllButton.addTarget(self, action: #selector(showToMapButtonTapped), for: .touchUpInside)
     }
     
     func fetchImagesFromFirestore(completion: @escaping ([Media]) -> Void) {
@@ -779,18 +760,7 @@ class DetailViewController: UIViewController {
         }
     }
     
-    @objc func moneyMoveButtonTapped() {
-        guard let pinLog = self.pinLog else {
-            print("PinLog is nil")
-            return
-        }
-        
-        let spendVC = SpendingListViewController()
-        spendVC.pinLog = pinLog
-        spendVC.hideEditButton = !isCurrentUser(pinLog: pinLog)
-        spendVC.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(spendVC, animated: true)
-    }
+    
     
     func setupMenu() {
         guard let pinLog = pinLog else { return }
@@ -864,11 +834,6 @@ class DetailViewController: UIViewController {
         }))
         present(alert, animated: true, completion: nil)
     }
-    
-    //나중 구현
-    //    func sharePinLog() {
-    //
-    //    }
     
     func instaConnect() {
         guard !selectedImages.isEmpty else {
@@ -1003,15 +968,21 @@ class DetailViewController: UIViewController {
         }
     }
     
-    private func setupMapViewController() {
-        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001))
-        mapViewController = MapViewController(region: region, startDate: Date(), endDate: Date()) { coordinate, address in
-            
-        }
-        guard let mapVC = mapViewController else { return }
-        addChild(mapVC)
-        mapVC.didMove(toParent: self)
-        mapVC.view.isUserInteractionEnabled = false
+    @objc private func showToMapButtonTapped() {
+        guard let pinLog = pinLog else { return }
+        
+        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+        
+        let galleryMapVC = GalleryMapViewController(region: region, onLocationSelected: { coordinate, address in
+        }, pinLog: pinLog)
+        
+        galleryMapVC.pinLocations = pinLog.media
+        
+        let backButton = UIBarButtonItem()
+        backButton.title = "Back"
+        navigationItem.backBarButtonItem = backButton
+        
+        navigationController?.pushViewController(galleryMapVC, animated: true)
     }
     
     func setupCollectionView() {
@@ -1019,6 +990,16 @@ class DetailViewController: UIViewController {
         friendCollectionView.dataSource = self
         
         friendCollectionView.register(FriendCollectionViewCell.self, forCellWithReuseIdentifier: FriendCollectionViewCell.identifier)
+    }
+    
+    func expandableButtonAction() {
+        if selectedFriends.isEmpty {
+            expandableButton.setImage(UIImage(systemName: "person.slash.fill"), for: .normal)
+            expandableButton.isUserInteractionEnabled = false
+        } else {
+            expandableButton.setImage(UIImage(systemName: "person.fill"), for: .normal)
+            expandableButton.isUserInteractionEnabled = true
+        }
     }
 }
 

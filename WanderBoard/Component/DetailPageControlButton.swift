@@ -78,7 +78,7 @@ struct DetailPageControlButton: View {
     }
 }
 
-#Preview {
-    DetailPageControlButton()
-}
+//#Preview {
+//    DetailPageControlButton()
+//}
 

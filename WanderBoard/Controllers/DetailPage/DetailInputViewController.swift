@@ -30,7 +30,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     func didSelectCategory(category: String) {
         selectedCategory = category
-        showCalendar()
+        showSingleDayCalendar()
     }
 
     var progressViewController: ProgressViewController?
@@ -299,6 +299,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     private var selectedStartDate: Date?
     private var selectedEndDate: Date?
     
+    let expenseButton = UIButton(type: .system)
+    
     func didSelectDates(startDate: Date, endDate: Date) {
         print("didSelectDates 호출됨")
         updateDateLabel(with: startDate, endDate: endDate)
@@ -340,26 +342,29 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         if let pinLog = pinLog {
             configureView(with: pinLog)
         }
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tapGesture.cancelsTouchesInView = false
-        view.addGestureRecognizer(tapGesture)
     }
+    
+    @objc func expenseButtonTapped() {
+        let spendingListVC = SpendingListViewController()
+        spendingListVC.pinLog = self.pinLog
+        self.navigationController?.pushViewController(spendingListVC, animated: true)
+    }
+
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationItem.largeTitleDisplayMode = .never
         
         setupNavigationBar()
-        
+        updateExpenseButtonState()
     }
     
     @objc private func categoryTapped(_ sender: UIButton) {
         selectedCategory = categories[sender.tag].1
-        showCalendar()
+        showSingleDayCalendar()
     }
     
-    @objc private func showCalendar() {
+    @objc private func showSingleDayCalendar() {
         let calendarVC = SingleDayCalendarHostingController()
         calendarVC.delegate = self
         calendarVC.modalPresentationStyle = .pageSheet
@@ -587,25 +592,47 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         navigationController?.pushViewController(spendVC, animated: true)
     }
     
-//    @objc func showCalendar() {
-//        let calendarVC = CalendarHostingController()
-//        calendarVC.delegate = self
-//        calendarVC.modalPresentationStyle = .pageSheet
-//        if let sheet = calendarVC.sheetPresentationController {
-//            sheet.detents = [.custom(resolver: { _ in 460 })]
-//            sheet.prefersGrabberVisible = true
-//        }
-//        present(calendarVC, animated: true, completion: nil)
-//    }
+    @objc func showCalendar() {
+        let calendarVC = CalendarHostingController()
+        calendarVC.delegate = self
+        calendarVC.modalPresentationStyle = .pageSheet
+        if let sheet = calendarVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { _ in 460 })]
+            sheet.prefersGrabberVisible = true
+        }
+        present(calendarVC, animated: true, completion: nil)
+    }
     
     func setupNavigationBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
 
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
-        navigationItem.rightBarButtonItem = doneButton
+        
+        expenseButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
+        expenseButton.addTarget(self, action: #selector(expenseButtonTapped), for: .touchUpInside)
+        
+        let barButtonItem = UIBarButtonItem(customView: expenseButton)
+        navigationItem.rightBarButtonItems = [doneButton, barButtonItem]
+
         navigationController?.navigationBar.tintColor = .black
-    
+        
+        updateExpenseButtonState()
     }
+
+    func updateExpenseButtonState() {
+        if let pinLog = pinLog, let expenses = pinLog.expenses, !expenses.isEmpty {
+            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+            expenseButton.setImage(image, for: .normal)
+            expenseButton.isEnabled = true
+            expenseButton.tintColor = .black
+        } else {
+            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+            expenseButton.setImage(image, for: .normal)
+            expenseButton.isEnabled = false
+            expenseButton.tintColor = .gray
+        }
+    }
+
     
     @objc func dismissDetailView(_ sender:UIButton) {
         dismiss(animated: true)

@@ -65,7 +65,6 @@ class CategoryInputCollectionViewCell: UICollectionViewCell, UICollectionViewDel
 
     override func layoutSubviews() {
         super.layoutSubviews()
-
         let cellWidth = collectionView.bounds.width / 1
         let sideInset = (collectionView.bounds.width - cellWidth) / 2
         collectionView.contentInset = UIEdgeInsets(top: 0, left: sideInset, bottom: 0, right: sideInset)

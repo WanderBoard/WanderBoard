@@ -55,7 +55,6 @@ class GallaryInputCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
-        //self.isUserInteractionEnabled = false
     }
 
     required init?(coder: NSCoder) {
@@ -64,7 +63,6 @@ class GallaryInputCollectionViewCell: UICollectionViewCell {
 
     func setupUI() {
         contentView.addSubview(photoInputCollectionView)
-
         photoInputCollectionView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }

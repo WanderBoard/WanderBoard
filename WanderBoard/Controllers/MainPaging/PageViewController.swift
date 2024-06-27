@@ -120,7 +120,7 @@ class PageViewController: UIViewController, CLLocationManagerDelegate {
         
         pageControlButton.view.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(90)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(15)
             $0.height.equalTo(70)
         }
     }

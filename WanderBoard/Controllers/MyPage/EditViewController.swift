@@ -237,14 +237,35 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             $0.right.equalTo(subLine.snp.right).inset(16)
         }
     }
-    
+    //MARK: - 백버튼 커스텀
     func createCustomBackButton() -> UIBarButtonItem {
         // 커스텀 UIButton 생성
+        //이미지 두껍게 설정
         let backButton = UIButton(type: .system)
-        backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        let largeConfig = UIImage.SymbolConfiguration(weight: .semibold)
+        let backImage = UIImage(systemName: "chevron.left", withConfiguration: largeConfig)
+        backButton.setImage(backImage, for: .normal)
+        
         backButton.setTitle("Back", for: .normal)
+        backButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
         backButton.sizeToFit()
+        
+        //글자와 이미지 사이 3만큼
+        // 이미지와 텍스트 사이의 간격 설정
+        let spacing: CGFloat = 3.0
+        
+        // iOS 버전에 따라 설정을 다르게 함
+        //ios15에선 타이틀과 이미지인셋 직접 설정하는 방식 x
+        if #available(iOS 15.0, *) {
+            backButton.configuration?.imagePadding = spacing
+        } else {
+            //ios15 아래 버전은 이 방식을 참고
+            backButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -spacing, bottom: 0, right: spacing)
+            backButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: spacing, bottom: 0, right: -spacing)
+        }
+        
         backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        
         // 이미지와 텍스트 색상 설정
         backButton.setTitleColor(.font, for: .normal)
         backButton.tintColor = .font
@@ -256,7 +277,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                                          
     @objc func backButtonPressed() {
         if unsavedChanges() {
-            let alertController = UIAlertController(title: "저장 미완료", message: "변경사항이 저장되지 않았습니다. 수정을 종료하고 돌아가시겠습니까?", preferredStyle: .alert)
+            let alertController = UIAlertController(title: "저장 미완료", message: "변경사항이 저장되지 않았습니다.\n수정을 종료하고 돌아가시겠습니까?", preferredStyle: .alert)
             let leaveAction = UIAlertAction(title: "확인", style: .default) { _ in
                 self.navigationController?.popViewController(animated: true)
             }
@@ -274,6 +295,8 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let currentName = nicknameTextField.text ?? ""
         return currentImage != previousImage || currentName != previousName
     }
+    
+    //MARK: - 마이페이지로 돌아갈 때 해 줄 작업들
     
     @objc func moveToMyPage() {
         // 이미지와 이름 저장

@@ -6,8 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
-
 
 struct PageControlButton: View {
     @State private var selectedIndex = 0
@@ -24,29 +22,29 @@ struct PageControlButton: View {
                         RoundedRectangle(cornerRadius: 30)
                             .fill(Color("PageCtrlSelectedBG"))
                             .opacity(1)
-                            .frame(width: widthForIndex(index), height: 44)
-                            .padding(EdgeInsets(top: 3, leading: 4, bottom: 3, trailing: 4)) // 상하 3, 좌우 4의 패딩
+                            .frame(width: widthForIndex(index), height: 35)
+                            .padding(EdgeInsets(top: 4, leading: 10, bottom: 4, trailing: 10)) // 상하 3, 좌우 4의 패딩
                         
                         HStack {
                             Image(systemName: iconName(for: index))
-                                .foregroundColor(Color("PageCtrlSelectedText"))
-                                .font(.system(size: 16)) // 아이콘 크기 설정
-                                .frame(width: 16, height: 16) // 아이콘 크기 설정
-                            Spacer().frame(width: 8) // 아이콘과 텍스트 간격
-                            Text(title(for: index))
-                                .foregroundColor(Color("PageCtrlSelectedText"))
-                                .font(.system(size: 12)) // 텍스트 크기 설정
+                                .foregroundColor(Color("textColor"))
+                                .font(.system(size: 17)) // 아이콘 크기 설정
+                                .frame(width: 17, height: 17) // 아이콘 크기 설정
+//                            Spacer().frame(width: 5) // 아이콘과 텍스트 간격
+//                            Text(title(for: index))
+//                                .foregroundColor(Color("textColor"))
+//                                .font(.system(size: 11)) // 텍스트 크기 설정
                         }
-                        .padding(EdgeInsets(top: 9, leading: 8, bottom: 9, trailing: 8)) // 상하 9, 좌우 8의 패딩
+                        .padding(EdgeInsets(top: 5, leading: 5, bottom: 5, trailing: 5)) // 상하좌우 5의 패딩
                     } else {
                         Image(systemName: iconName(for: index))
                             .foregroundColor(Color("PageCtrlUnselectedText"))
-                            .font(.system(size: 16)) // 아이콘 크기 설정
-                            .frame(width: 16, height: 16) // 아이콘 크기 설정
+                            .font(.system(size: 17)) // 아이콘 크기 설정
+                            .frame(width: 17, height: 17) // 아이콘 크기 설정
                     }
                 }
                 .frame(width: selectedIndex == index ? widthForIndex(index) : 50, height: 50) // 선택되지 않은 버튼의 크기 고정
-                .background(Color("PageCtrlUnselectedBG"))
+                .background(Color.clear)
                 .clipShape(Capsule())
                 .disabled(selectedIndex == index)
                 .onTapGesture {
@@ -59,10 +57,10 @@ struct PageControlButton: View {
                 }
             }
         }
-        .frame(width: 200, height: 52) // HStack의 크기를 고정
+        .frame(width: 160, height: 44) // HStack의 크기를 고정
         .background(Color("BackgroundColor"))
         .clipShape(Capsule())
-        .shadow(color: .pageCtrlShadow, radius: 8, x: 0, y: 4)
+        .shadow(color: .pageCtrlShadow, radius: 4, x: 0, y: 4)
         .padding()
         .gesture(
             DragGesture().updating($dragOffset, body: { value, state, _ in
@@ -90,10 +88,10 @@ struct PageControlButton: View {
     
     private func widthForIndex(_ index: Int) -> CGFloat {
         switch index {
-            case 0: return 88
-            case 1: return 84
-            case 2: return 88
-            default: return 88
+            case 0: return 50
+            case 1: return 50
+            case 2: return 50
+            default: return 50
         }
     }
     
@@ -106,14 +104,14 @@ struct PageControlButton: View {
         }
     }
     
-    private func title(for index: Int) -> String {
-        switch index {
-            case 0: return "Wander Board"
-            case 1: return "My Board"
-            case 2: return "Settings"
-            default: return ""
-        }
-    }
+//    private func title(for index: Int) -> String {
+//        switch index {
+//            case 0: return "Wander Board"
+//            case 1: return "My Board"
+//            case 2: return "Settings"
+//            default: return ""
+//        }
+//    }
 }
 
 //#Preview {

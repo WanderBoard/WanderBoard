@@ -44,7 +44,7 @@ class CategoryCollectionViewCell: UICollectionViewCell {
         }
 
         imageView.snp.makeConstraints { make in
-            make.width.height.equalTo(200)
+            make.width.height.equalTo(195)
             make.centerY.equalTo(contentView.snp.centerY).offset(-24)
         }
         

@@ -342,7 +342,6 @@ class DetailViewController: UIViewController {
         dateStackView.addArrangedSubview(dateStartLabel)
         dateStackView.addArrangedSubview(dateLineLabel)
         dateStackView.addArrangedSubview(dateEndLabel)
-        
     }
     
     func setupConstraints() {
@@ -452,10 +451,7 @@ class DetailViewController: UIViewController {
     }
     
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
-    
     // 핀 버튼
-    
-    
     private func newSetupConstraints() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
         
@@ -634,7 +630,6 @@ class DetailViewController: UIViewController {
         } else {
             profileImageView.image = UIImage(named: "profileImg")
         }
-        
         friendCollectionView.isHidden = pinLog.attendeeIds.isEmpty
         
         // 대표 이미지와 텍스트 추출

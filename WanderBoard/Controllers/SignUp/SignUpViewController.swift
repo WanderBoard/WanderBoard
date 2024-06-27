@@ -519,6 +519,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             case "apple.com":
                 emailIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
             case "kakao.com":
+            emailIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
             emailIcon.tintColor = UIColor(named: "kakaoYellow")
             default:
             emailIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)

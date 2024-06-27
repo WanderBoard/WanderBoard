@@ -541,6 +541,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         selectedImages.removeAll()
         imageLocations.removeAll()
         
+        var representativeImage: (UIImage, Bool, CLLocationCoordinate2D?)? = nil
+        var otherImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
+        
         let dispatchGroup = DispatchGroup()
         
         for media in pinLog.media {
@@ -549,7 +552,13 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                 URLSession.shared.dataTask(with: url) { data, response, error in
                     if let data = data, let image = UIImage(data: data) {
                         let location = media.latitude != nil && media.longitude != nil ? CLLocationCoordinate2D(latitude: media.latitude!, longitude: media.longitude!) : nil
-                        self.selectedImages.append((image, media.isRepresentative, location))
+                        let imageData = (image, media.isRepresentative, location)
+                        
+                        if media.isRepresentative {
+                            representativeImage = imageData
+                        } else {
+                            otherImages.append(imageData)
+                        }
                     } else {
                         print("Error loading image: \(String(describing: error))")
                     }
@@ -561,12 +570,17 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         dispatchGroup.notify(queue: .main) {
+            if let repImage = representativeImage {
+                self.selectedImages.append(repImage)
+            }
+            self.selectedImages.append(contentsOf: otherImages)
+            
             self.representativeImageIndex = self.selectedImages.firstIndex { $0.1 }
             self.updateRepresentativeImage()
-            self.galleryInputCollectionView.reloadData()
             
             if let galleryCell = self.detailInputViewCollectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? GallaryInputCollectionViewCell {
                 galleryCell.selectedImages = self.selectedImages
+                galleryCell.photoInputCollectionView.reloadData()
             }
         }
         
@@ -579,7 +593,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         updateTotalSpendingAmount(with: expenses)
     }
-
+    
     
     
     func loadSavedLocation() {
@@ -951,7 +965,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         } else {
             representativeImageIndex = selectedImages.isEmpty ? nil : 0
         }
-        galleryInputCollectionView.reloadData()
+        
+        if let galleryCell = detailInputViewCollectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? GallaryInputCollectionViewCell {
+            galleryCell.selectedImages = selectedImages
+            galleryCell.photoInputCollectionView.reloadData()
+        }
     }
     
     func updateTotalSpendingAmount(with dailyExpenses: [DailyExpenses]) {

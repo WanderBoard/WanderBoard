@@ -31,7 +31,7 @@ class GallaryInputCollectionViewCell: UICollectionViewCell {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 10
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
@@ -78,17 +78,23 @@ extension GallaryInputCollectionViewCell: UICollectionViewDelegate, UICollection
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.frame.width - 32
+        let width = collectionView.frame.width - 64
         let height = collectionView.frame.height
-        return CGSize(width: width, height: height)
+        
+        if indexPath.item == 0 && !selectedImages.isEmpty {
+            return CGSize(width: width / 2, height: height)
+        } else {
+            return CGSize(width: width, height: height)
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.item == 0 {
             delegate?.didSelectAddPhoto()
         } else {
-            delegate?.didSelectRepresentativeImage(at: indexPath.row)
+            delegate?.didSelectRepresentativeImage(at: indexPath.item - 1)
         }
     }
 }
+
 

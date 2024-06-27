@@ -21,7 +21,7 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
     
     let representativeLabel = UILabel().then {
         $0.text = "대표"
-        $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+        $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         $0.textColor = .white
         $0.backgroundColor = .black
         $0.layer.cornerRadius = 8
@@ -36,6 +36,11 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
         self.isUserInteractionEnabled = true
         self.contentView.backgroundColor = .darkgray
         self.contentView.layer.cornerRadius = 16
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleImageTap))
+        tapGesture.cancelsTouchesInView = false
+        imageView.addGestureRecognizer(tapGesture)
+        imageView.isUserInteractionEnabled = true
     }
     
     required init?(coder: NSCoder) {
@@ -68,10 +73,10 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
         
         representativeLabel.snp.makeConstraints {
             $0.top.leading.equalToSuperview().inset(6)
-            $0.size.equalTo(CGSize(width: 40, height: 24))
+            $0.size.equalTo(CGSize(width: 60, height: 35))
         }
     }
-
+    
     func configure(with image: UIImage?, isRepresentative: Bool) {
         if let image = image {
             imageView.image = image
@@ -84,4 +89,13 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
             representativeLabel.isHidden = true
         }
     }
+    
+    @objc func handleImageTap() {
+        guard let superview = self.superview as? UICollectionView else { return }
+        guard let indexPath = superview.indexPath(for: self) else { return }
+        if let galleryCellDelegate = superview.delegate as? GallaryInputCollectionViewCellDelegate {
+            galleryCellDelegate.didSelectRepresentativeImage(at: indexPath.item - 1)
+        }
+    }
 }
+

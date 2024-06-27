@@ -390,7 +390,8 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                         settingVC.navigationItem.title = "환경설정"
                     case 1:
                     NotificationHelper.changePage(hidden: true, isEnabled: false)
-                        let policyVC = CategorySelectionViewController()
+                        let policyVC = TermsOfServiceViewController()
+                        policyVC.isModal = false
                         self.navigationController?.pushViewController(policyVC, animated: true)
                         policyVC.navigationItem.title = "이용약관 및 개인정보처리방침"
                     case 2:

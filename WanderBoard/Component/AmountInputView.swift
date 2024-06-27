@@ -13,9 +13,6 @@ struct AmountInputView: View {
     @Environment(\.presentationMode) var presentationMode
     
     private let buttons: [[String]] = [
-        //        ["1", "2", "3", "back"],
-        //        ["4", "5", "6", "0"],
-        //        ["7", "8", "9", "00"]
         
         ["1", "2", "3"],
         ["4", "5", "6"],
@@ -31,9 +28,9 @@ struct AmountInputView: View {
                     .font(.system(size: 24, weight: .bold))
                     .padding(.horizontal, 16)
                     .frame(maxWidth: .infinity, maxHeight: 50, alignment: .trailing)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(50)
+                    .background(Color("font"))
+                    .foregroundColor(Color("textColor"))
+                    .cornerRadius(10)
             }
             .padding(.horizontal, 10)
             .padding(.bottom, 10)
@@ -47,23 +44,23 @@ struct AmountInputView: View {
                             if button == "back" {
                                 Image(systemName: "arrow.backward")
                                     .frame(width: 100, height: 60)
-                                    .background(Color.pink)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(50)
+                                    .background(Color("PageCtrlUnselectedText"))
+                                    .foregroundColor(Color("font"))
+                                    .cornerRadius(20)
                                     .font(.system(size: 20, weight: .semibold))
                             } else if button == "00" {
                                 Text(button)
                                     .frame(width: 100, height: 60)
-                                    .background(Color.mint)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(50)
+                                    .background(Color.babyGTocustomB)
+                                    .foregroundColor(Color(("PageCtrlUnselectedText2")))
+                                    .cornerRadius(20)
                                     .font(.system(size: 20, weight: .semibold))
                             } else {
                                 Text(button)
                                     .frame(width: 100, height: 60)
-                                    .background(Color.babygray)
-                                    .foregroundColor(.black)
-                                    .cornerRadius(50)
+                                    .background(Color.babyGTocustomB)
+                                    .foregroundColor(Color("font"))
+                                    .cornerRadius(20)
                                     .font(.system(size: 20, weight: .semibold))
                             }
                         }
@@ -81,12 +78,13 @@ struct AmountInputView: View {
             }) {
                 Text("Next")
                     .frame(maxWidth: .infinity, maxHeight: 50)
-                    .background(!amount.isEmpty ? Color.black : Color("babygray"))
-                    .foregroundColor(.white)
+                    .background(!amount.isEmpty ? Color("font") : Color.babyGTocustomB)
+                    .foregroundColor(Color("textColor"))
                     .cornerRadius(10)
             }
             .disabled(amount.isEmpty)
             .padding(.horizontal)
+            .padding(.vertical, 5)
         }
         .padding()
     }

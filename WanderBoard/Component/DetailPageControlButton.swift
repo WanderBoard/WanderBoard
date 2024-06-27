@@ -22,7 +22,7 @@ struct DetailPageControlButton: View {
                             .fill(Color.clear)
                             .opacity(1)
                             .frame(width: widthForIndex(index), height: 44)
-                            .padding(EdgeInsets(top: 3, leading: 4, bottom: 3, trailing: 4)) // 상하 3, 좌우 4의 패딩
+                            .padding(EdgeInsets(top: 4, leading: 4, bottom: 2, trailing: 4)) // 상4, 하2, 좌우 4의 패딩
                         
                         Image(systemName: iconName(for: index))
                             .foregroundColor(Color("font")) // 선택된 아이콘의 색상을 블랙으로 설정
@@ -55,7 +55,7 @@ struct DetailPageControlButton: View {
         .background(ZStack {
             RoundedRectangle(cornerRadius: 30)
                 .fill(Color("textColor"))
-                .shadow(color: .black.opacity(0.4), radius: 1.5, x: 0, y: 4)
+                .shadow(color: .font.opacity(0.4), radius: 1.5, x: 0, y: 4)
         })
     }
     

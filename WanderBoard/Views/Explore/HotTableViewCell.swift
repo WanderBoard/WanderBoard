@@ -44,10 +44,7 @@ class HotTableViewCell: UITableViewCell {
         $0.showsVerticalScrollIndicator = true
         $0.alwaysBounceVertical = false
         $0.decelerationRate = .fast
-    }
-    
-    lazy var refreshControl = UIRefreshControl().then {
-        $0.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        $0.addSubview(horizontalRefreshControl)
     }
     
     let hotCollectionViewLayout = UICollectionViewFlowLayout().then {
@@ -55,6 +52,10 @@ class HotTableViewCell: UITableViewCell {
         $0.minimumLineSpacing = 20
         $0.itemSize = .init(width: 240, height: 320)
         $0.sectionInset = .init(top: 10, left: 30, bottom: 5, right: 10)
+    }
+    
+    lazy var horizontalRefreshControl = UIActivityIndicatorView(style: .medium).then {
+        $0.hidesWhenStopped = true
     }
     
     var hotPinLogs: [PinLogSummary] = [] {
@@ -100,6 +101,11 @@ class HotTableViewCell: UITableViewCell {
             $0.trailing.equalToSuperview()
             $0.height.equalTo(325)
         }
+        
+        horizontalRefreshControl.snp.makeConstraints {
+            $0.centerY.equalTo(hotCollectionView.snp.centerY)
+            $0.leading.equalTo(hotCollectionView.snp.leading).offset(-50)
+        }
     }
     
     func configure(with pinLogs: [PinLogSummary]) {
@@ -123,11 +129,27 @@ class HotTableViewCell: UITableViewCell {
     @objc func refreshData() {
         guard !isRefreshing else { return }
         isRefreshing = true
+        horizontalRefreshControl.startAnimating()
+        UIView.animate(withDuration: 10) {
+            self.horizontalRefreshControl.alpha = 1.0
+        }
         delegate?.refreshHotData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
+            self?.endRefreshing()
+        }
     }
-    
+
     func endRefreshing() {
-        isRefreshing = false
+        UIView.animate(withDuration: 10) {
+            self.horizontalRefreshControl.alpha = 0.0
+        } completion: { [weak self] _ in
+            self?.isRefreshing = false
+            self?.horizontalRefreshControl.stopAnimating()
+            self?.hotCollectionView.isScrollEnabled = true
+            UIView.animate(withDuration: 10) { 
+                self?.hotCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
+            }
+        }
     }
 }
 
@@ -161,18 +183,26 @@ extension HotTableViewCell: UICollectionViewDataSource, UICollectionViewDelegate
         targetContentOffset.pointee = offset
     }
     
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if isRefreshing {
+            scrollView.isScrollEnabled = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                self.endRefreshing()
+            }
+        }
+    }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetX = scrollView.contentOffset.x
         let contentWidth = scrollView.contentSize.width
         let width = scrollView.frame.size.width
         
-        if offsetX + width >= contentWidth + 100 {
-            scrollView.setContentOffset(.zero, animated: true)
+        // 맨 앞으로 당겼을 때 새로고침
+        if offsetX <= -100 && !isRefreshing {
             refreshData()
         }
         
-        // 맨 앞으로 당겼을 때 새로고침
-        if offsetX <= -100 {
+        if offsetX + width >= contentWidth + 100 && !isRefreshing {
             scrollView.setContentOffset(.zero, animated: true)
             refreshData()
         }

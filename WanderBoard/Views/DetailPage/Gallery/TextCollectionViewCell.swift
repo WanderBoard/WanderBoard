@@ -60,13 +60,13 @@ class TextCollectionViewCell: UICollectionViewCell {
         
         imageView.snp.makeConstraints {
             $0.verticalEdges.equalToSuperview()
-            $0.width.equalTo(imageView.snp.height).multipliedBy(330.0 / 440.0)
+            $0.width.equalTo(imageView.snp.height).multipliedBy(330.0 / 445.0)
             $0.centerX.equalToSuperview()
         }
         
         backView.snp.makeConstraints(){
             $0.verticalEdges.equalToSuperview()
-            $0.width.equalTo(backView.snp.height).multipliedBy(330.0 / 440.0)
+            $0.width.equalTo(backView.snp.height).multipliedBy(330.0 / 445.0)
             $0.centerX.equalToSuperview()
         }
         

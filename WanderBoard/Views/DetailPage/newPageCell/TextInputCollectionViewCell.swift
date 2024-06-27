@@ -90,6 +90,10 @@ class TextInputCollectionViewCell: UICollectionViewCell {
             $0.height.equalTo(40)
         }
         
+        contentTextView.snp.makeConstraints {
+            $0.height.equalTo(200)
+        }
+        
         placeholderLabel.snp.makeConstraints {
             $0.top.equalTo(contentTextView.snp.top).offset(contentTextView.textContainerInset.top)
             $0.leading.equalTo(contentTextView.snp.leading).offset(contentTextView.textContainerInset.left)
@@ -99,24 +103,37 @@ class TextInputCollectionViewCell: UICollectionViewCell {
     }
     
     private func provideHapticFeedback() {
-        print("Haptic feedback triggered")
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.error)
+    }
+    
+    private func setTextViewBorderColor(_ color: UIColor, alpha: CGFloat = 1.0) {
+        contentTextView.layer.borderColor = color.withAlphaComponent(alpha).cgColor
+    }
+    
+    private func setTitleTextFieldBorderColor(_ color: UIColor, alpha: CGFloat = 1.0) {
+        titleTextField.layer.borderColor = color.withAlphaComponent(alpha).cgColor
     }
 }
 
 extension TextInputCollectionViewCell: UITextViewDelegate, UITextFieldDelegate {
-    func textViewDidChange(_ textView: UITextView) {
-        placeholderLabel.isHidden = !textView.text.isEmpty
-    }
-    
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text.isEmpty {
+            return true
+        }
+
         let currentText = textView.text as NSString
         let newText = currentText.replacingCharacters(in: range, with: text)
-        if newText.count <= 220 {
+        
+        let fittingSize = CGSize(width: textView.frame.width, height: CGFloat.greatestFiniteMagnitude)
+        let size = textView.sizeThatFits(fittingSize)
+        
+        if newText.count <= 220 && size.height <= textView.frame.height {
+            setTextViewBorderColor(UIColor.darkgray)
             return true
         } else {
             provideHapticFeedback()
+            setTextViewBorderColor(UIColor.red, alpha: 0.1) 
             return false
         }
     }
@@ -136,10 +153,12 @@ extension TextInputCollectionViewCell: UITextViewDelegate, UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let currentText = textField.text as NSString? else { return true }
         let newText = currentText.replacingCharacters(in: range, with: string)
-        if newText.count <= 26 { //공백 포함 26자
+        if newText.count <= 26 {
+            setTitleTextFieldBorderColor(UIColor.darkgray)
             return true
         } else {
             provideHapticFeedback()
+            setTitleTextFieldBorderColor(UIColor.red, alpha: 0.1)
             return false
         }
     }

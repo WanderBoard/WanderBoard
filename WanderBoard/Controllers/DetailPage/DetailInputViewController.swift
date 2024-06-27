@@ -436,7 +436,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     func setupConstraints() {
         let screenHeight = UIScreen.main.bounds.height
-        let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.65 : 0.35
+        let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.35 : 0.4
         
         detailInputViewCollectionView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
@@ -489,8 +489,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         
         mateCollectionView.snp.makeConstraints {
             $0.top.equalTo(mateLabel.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().inset(32)
-            $0.height.equalTo(80)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(70)
         }
     }
     
@@ -533,7 +533,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     func setupCollectionView() {
         galleryInputCollectionView.delegate = self
         galleryInputCollectionView.dataSource = self
-        
         
         mateCollectionView.delegate = self
         mateCollectionView.dataSource = self
@@ -616,7 +615,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     func configureView(with pinLog: PinLog) {
-        expenses = pinLog.expenses ?? [] // 저장된 지출 내역 로드
+        expenses = pinLog.expenses ?? []
         spendingPublicSwitch.isOn = pinLog.isSpendingPublic
         locationLeftLabel.text = pinLog.location
         mainTextField.text = pinLog.title
@@ -631,6 +630,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         selectedImages.removeAll()
         imageLocations.removeAll()
         
+        var representativeImage: (UIImage, Bool, CLLocationCoordinate2D?)? = nil
+        var otherImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
+        
         let dispatchGroup = DispatchGroup()
         
         for media in pinLog.media {
@@ -639,7 +641,13 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                 URLSession.shared.dataTask(with: url) { data, response, error in
                     if let data = data, let image = UIImage(data: data) {
                         let location = media.latitude != nil && media.longitude != nil ? CLLocationCoordinate2D(latitude: media.latitude!, longitude: media.longitude!) : nil
-                        self.selectedImages.append((image, media.isRepresentative, location))
+                        let imageData = (image, media.isRepresentative, location)
+                        
+                        if media.isRepresentative {
+                            representativeImage = imageData
+                        } else {
+                            otherImages.append(imageData)
+                        }
                     } else {
                         print("Error loading image: \(String(describing: error))")
                     }
@@ -651,12 +659,17 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         dispatchGroup.notify(queue: .main) {
+            if let repImage = representativeImage {
+                self.selectedImages.append(repImage)
+            }
+            self.selectedImages.append(contentsOf: otherImages)
+            
             self.representativeImageIndex = self.selectedImages.firstIndex { $0.1 }
             self.updateRepresentativeImage()
-            self.galleryInputCollectionView.reloadData()
             
             if let galleryCell = self.detailInputViewCollectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? GallaryInputCollectionViewCell {
                 galleryCell.selectedImages = self.selectedImages
+                galleryCell.photoInputCollectionView.reloadData()
             }
         }
         
@@ -669,8 +682,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         updateTotalSpendingAmount(with: expenses)
     }
-
-    
     
     func loadSavedLocation() {
         let userId = Auth.auth().currentUser?.uid ?? ""
@@ -1041,7 +1052,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         } else {
             representativeImageIndex = selectedImages.isEmpty ? nil : 0
         }
-        galleryInputCollectionView.reloadData()
+        
+        if let galleryCell = detailInputViewCollectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? GallaryInputCollectionViewCell {
+            galleryCell.selectedImages = selectedImages
+            galleryCell.photoInputCollectionView.reloadData()
+        }
     }
     
     func updateTotalSpendingAmount(with dailyExpenses: [DailyExpenses]) {
@@ -1219,6 +1234,17 @@ extension DetailInputViewController: GallaryInputCollectionViewCellDelegate {
         representativeImageIndex = index
         updateRepresentativeImage()
     }
+    
+    func didDeleteImage(at index: Int) {
+        selectedImages.remove(at: index)
+        updateRepresentativeImage()
+        
+        if let indexPath = detailInputViewCollectionView.indexPathsForVisibleItems.first(where: { $0.item == 0 }) {
+            if let cell = detailInputViewCollectionView.cellForItem(at: indexPath) as? GallaryInputCollectionViewCell {
+                cell.selectedImages = self.selectedImages
+            }
+        }
+    }
 }
 
 extension DetailInputViewController: UITextViewDelegate {
@@ -1280,11 +1306,9 @@ extension DetailInputViewController: UITextViewDelegate {
             subTextField.becomeFirstResponder()
             return false
         }
-        
         if textView == subTextField && text == "\n" {
             return true
         }
-        
         return true
     }
 }

@@ -23,17 +23,20 @@ class TextCollectionViewCell: UICollectionViewCell {
         $0.backgroundColor = UIColor(white: 1, alpha: 0.9)
         $0.layer.cornerRadius = 30
     }
+    
     let titleLabel = UILabel().then(){
         $0.textColor = .font
         $0.font = UIFont.boldSystemFont(ofSize: 20)
         $0.textAlignment = .center
     }
+    
     let textLabel = UILabel().then(){
         $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 15)
         $0.textAlignment = .center
         $0.numberOfLines = 0
     }
+    
     let stackView = UIStackView().then(){
         $0.axis = .vertical
         $0.spacing = 16
@@ -92,6 +95,15 @@ class TextCollectionViewCell: UICollectionViewCell {
     func configure(with image: UIImage?, title: String, content: String) {
         imageView.image = image
         titleLabel.text = title
-        textLabel.text = content
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 8
+
+        let attributedString = NSAttributedString(string: content, attributes: [
+            .font: textLabel.font ?? UIFont.systemFont(ofSize: 15),
+            .paragraphStyle: paragraphStyle
+        ])
+
+        textLabel.attributedText = attributedString
     }
 }

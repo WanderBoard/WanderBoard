@@ -57,7 +57,7 @@ class DetailViewController: UIViewController {
     }
     
     lazy var mapAllButton = UIButton().then {
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 28, weight: .regular)
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 24, weight: .regular)
         let symbolImage = UIImage(systemName: "map.circle.fill", withConfiguration: symbolConfiguration)
         $0.setImage(symbolImage, for: .normal)
         $0.contentMode = .scaleAspectFill
@@ -311,6 +311,13 @@ class DetailViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
         
         galleryCollectionView.reloadData()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        print(pinButton.frame.size)
+        print(mapAllButton.frame.size)
     }
     
     func setupUI() {

@@ -11,9 +11,11 @@ import CoreLocation
 protocol GallaryInputCollectionViewCellDelegate: AnyObject {
     func didSelectAddPhoto()
     func didSelectRepresentativeImage(at index: Int)
+    func didDeleteImage(at index: Int)
 }
 
 class GallaryInputCollectionViewCell: UICollectionViewCell {
+    
     static let identifier = "GallaryInputCollectionViewCell"
     
     weak var delegate: GallaryInputCollectionViewCellDelegate?
@@ -21,6 +23,15 @@ class GallaryInputCollectionViewCell: UICollectionViewCell {
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = [] {
         didSet {
             DispatchQueue.main.async {
+                if self.selectedImages.isEmpty {
+                    if let layout = self.photoInputCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                        layout.sectionInset = UIEdgeInsets(top: 0, left: 64, bottom: 0, right: 64)
+                    }
+                } else {
+                    if let layout = self.photoInputCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                        layout.sectionInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32)
+                    }
+                }
                 self.photoInputCollectionView.reloadData()
                 self.photoInputCollectionView.collectionViewLayout.invalidateLayout()
             }
@@ -31,7 +42,7 @@ class GallaryInputCollectionViewCell: UICollectionViewCell {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 10
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 64, bottom: 0, right: 64)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
@@ -60,7 +71,7 @@ class GallaryInputCollectionViewCell: UICollectionViewCell {
     }
 }
 
-extension GallaryInputCollectionViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension GallaryInputCollectionViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, PhotoInputCollectionViewCellDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return selectedImages.count + 1
     }
@@ -69,20 +80,21 @@ extension GallaryInputCollectionViewCell: UICollectionViewDelegate, UICollection
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoInputCollectionViewCell.identifier, for: indexPath) as! PhotoInputCollectionViewCell
         
         if indexPath.item == 0 {
-            cell.configure(with: nil, isRepresentative: false)
+            cell.configure(with: nil, isRepresentative: false, indexPath: indexPath)
         } else {
             let (image, isRepresentative, _) = selectedImages[indexPath.item - 1]
-            cell.configure(with: image, isRepresentative: isRepresentative)
+            cell.configure(with: image, isRepresentative: isRepresentative, indexPath: indexPath)
+            cell.delegate = self
         }
         return cell
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.frame.width - 64
+        let width = collectionView.frame.width - (selectedImages.isEmpty ? 128 : 64)
         let height = collectionView.frame.height
         
         if indexPath.item == 0 && !selectedImages.isEmpty {
-            return CGSize(width: width / 2, height: height)
+            return CGSize(width: width / 3, height: height)
         } else {
             return CGSize(width: width, height: height)
         }
@@ -94,6 +106,10 @@ extension GallaryInputCollectionViewCell: UICollectionViewDelegate, UICollection
         } else {
             delegate?.didSelectRepresentativeImage(at: indexPath.item - 1)
         }
+    }
+    
+    func didTapDeleteButton(at indexPath: IndexPath) {
+        delegate?.didDeleteImage(at: indexPath.item - 1)
     }
 }
 

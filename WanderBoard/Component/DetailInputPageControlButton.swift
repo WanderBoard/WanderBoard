@@ -68,7 +68,7 @@ struct DetailInputPageControlButton: View {
         switch index {
             case 0: return "photo"
             case 1: return "text.quote"
-            case 2: return "creditcard"
+            case 2: return "dollarsign"
             default: return ""
         }
     }

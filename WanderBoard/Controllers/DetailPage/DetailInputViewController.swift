@@ -345,7 +345,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     func setupConstraints() {
         let screenHeight = UIScreen.main.bounds.height
-        let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.65 : 0.35
+        let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.35 : 0.4
         
         detailInputViewCollectionView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
@@ -398,8 +398,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         
         mateCollectionView.snp.makeConstraints {
             $0.top.equalTo(mateLabel.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().inset(32)
-            $0.height.equalTo(80)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(70)
         }
     }
     
@@ -442,7 +442,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     func setupCollectionView() {
         galleryInputCollectionView.delegate = self
         galleryInputCollectionView.dataSource = self
-        
         
         mateCollectionView.delegate = self
         mateCollectionView.dataSource = self
@@ -526,7 +525,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     func configureView(with pinLog: PinLog) {
-        expenses = pinLog.expenses ?? [] // 저장된 지출 내역 로드
+        expenses = pinLog.expenses ?? []
         spendingPublicSwitch.isOn = pinLog.isSpendingPublic
         locationLeftLabel.text = pinLog.location
         mainTextField.text = pinLog.title
@@ -593,8 +592,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         updateTotalSpendingAmount(with: expenses)
     }
-    
-    
     
     func loadSavedLocation() {
         let userId = Auth.auth().currentUser?.uid ?? ""
@@ -1138,6 +1135,17 @@ extension DetailInputViewController: GallaryInputCollectionViewCellDelegate {
         representativeImageIndex = index
         updateRepresentativeImage()
     }
+    
+    func didDeleteImage(at index: Int) {
+        selectedImages.remove(at: index)
+        updateRepresentativeImage()
+        
+        if let indexPath = detailInputViewCollectionView.indexPathsForVisibleItems.first(where: { $0.item == 0 }) {
+            if let cell = detailInputViewCollectionView.cellForItem(at: indexPath) as? GallaryInputCollectionViewCell {
+                cell.selectedImages = self.selectedImages
+            }
+        }
+    }
 }
 
 extension DetailInputViewController: UITextViewDelegate {
@@ -1199,11 +1207,9 @@ extension DetailInputViewController: UITextViewDelegate {
             subTextField.becomeFirstResponder()
             return false
         }
-        
         if textView == subTextField && text == "\n" {
             return true
         }
-        
         return true
     }
 }

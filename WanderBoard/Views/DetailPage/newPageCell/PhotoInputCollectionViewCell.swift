@@ -7,8 +7,16 @@
 
 import UIKit
 
+protocol PhotoInputCollectionViewCellDelegate: AnyObject {
+    func didTapDeleteButton(at indexPath: IndexPath)
+}
+
 class PhotoInputCollectionViewCell: UICollectionViewCell {
     static let identifier = "PhotoInputCollectionViewCell"
+    
+    weak var delegate: PhotoInputCollectionViewCellDelegate?
+    
+    var indexPath: IndexPath?
     
     var isRepresentative: Bool = false {
         didSet {
@@ -18,6 +26,7 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
     
     let imageView = UIImageView()
     let addButton = UIButton(type: .system)
+    let deleteButton = UIButton(type: .system)
     
     let representativeLabel = UILabel().then {
         $0.text = "대표"
@@ -34,9 +43,12 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         setupUI()
         self.isUserInteractionEnabled = true
-        self.contentView.backgroundColor = .darkgray
+        self.contentView.backgroundColor = .white
         self.contentView.layer.cornerRadius = 16
-        
+        self.contentView.layer.borderWidth = 1
+        if let lightGrayColor = UIColor(named: "lightgray") {
+            self.contentView.layer.borderColor = lightGrayColor.cgColor
+        }
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleImageTap))
         tapGesture.cancelsTouchesInView = false
         imageView.addGestureRecognizer(tapGesture)
@@ -51,6 +63,7 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(imageView)
         contentView.addSubview(addButton)
         contentView.addSubview(representativeLabel)
+        contentView.addSubview(deleteButton)
         
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 16
@@ -61,7 +74,7 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
         }
         
         addButton.setTitle("+", for: .normal)
-        addButton.setTitleColor(.black, for: .normal)
+        addButton.setTitleColor(.lightgray, for: .normal)
         addButton.titleLabel?.font = UIFont.systemFont(ofSize: 80)
         addButton.backgroundColor = .clear
         addButton.layer.cornerRadius = 16
@@ -75,27 +88,53 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
             $0.top.leading.equalToSuperview().inset(6)
             $0.size.equalTo(CGSize(width: 60, height: 35))
         }
+        
+        deleteButton.setImage(UIImage(systemName: "minus"), for: .normal)
+        deleteButton.tintColor = .white
+        deleteButton.backgroundColor = .lightGray
+        deleteButton.layer.cornerRadius = 15
+        deleteButton.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
+        deleteButton.snp.makeConstraints {
+            $0.top.trailing.equalToSuperview().inset(6)
+            $0.size.equalTo(CGSize(width: 30, height: 30))
+        }
     }
     
-    func configure(with image: UIImage?, isRepresentative: Bool) {
+    func configure(with image: UIImage?, isRepresentative: Bool, indexPath: IndexPath) {
+        self.indexPath = indexPath
         if let image = image {
             imageView.image = image
             imageView.isHidden = false
             addButton.isHidden = true
-            self.isRepresentative = isRepresentative
+            deleteButton.isHidden = false
+
+            if indexPath.item == 1 && !isRepresentative {
+                self.isRepresentative = true
+                representativeLabel.isHidden = false
+            } else {
+                self.isRepresentative = isRepresentative
+                representativeLabel.isHidden = !isRepresentative
+            }
+            
         } else {
             imageView.isHidden = true
             addButton.isHidden = false
+            deleteButton.isHidden = true
             representativeLabel.isHidden = true
         }
     }
-    
+
     @objc func handleImageTap() {
         guard let superview = self.superview as? UICollectionView else { return }
         guard let indexPath = superview.indexPath(for: self) else { return }
         if let galleryCellDelegate = superview.delegate as? GallaryInputCollectionViewCellDelegate {
             galleryCellDelegate.didSelectRepresentativeImage(at: indexPath.item - 1)
         }
+    }
+    
+    @objc func deleteButtonTapped() {
+        guard let indexPath = indexPath else { return }
+        delegate?.didTapDeleteButton(at: indexPath)
     }
 }
 

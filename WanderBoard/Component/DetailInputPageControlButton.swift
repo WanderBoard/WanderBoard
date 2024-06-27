@@ -8,7 +8,7 @@
 import SwiftUI
 import UIKit
 
-struct DetailPageControlButton: View {
+struct DetailInputPageControlButton: View {
     @State private var selectedIndex = 0
     let hapticFeedback = UIImpactFeedbackGenerator(style: .medium)
     var onIndexChanged: ((Int) -> Void)?
@@ -49,14 +49,10 @@ struct DetailPageControlButton: View {
                 }
             }
         }
-        .frame(width: 130, height: 20) // HStack의 크기를 고정
+        .frame(width: 200, height: 52) // HStack의 크기를 고정
         .clipShape(Capsule())
+        .shadow(color: .pageCtrlShadow, radius: 8, x: 0, y: 4)
         .padding()
-        .background(ZStack {
-            RoundedRectangle(cornerRadius: 30)
-                .fill(Color.white)
-                .shadow(color: .black.opacity(0.4), radius: 1.5, x: 0, y: 4)
-        })
     }
     
     private func widthForIndex(_ index: Int) -> CGFloat {
@@ -78,7 +74,6 @@ struct DetailPageControlButton: View {
     }
 }
 
-#Preview {
-    DetailPageControlButton()
-}
-
+//#Preview {
+//    PageControlButton()
+//}

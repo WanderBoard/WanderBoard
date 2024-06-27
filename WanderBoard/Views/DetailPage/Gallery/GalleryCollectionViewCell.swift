@@ -13,7 +13,7 @@ class GalleryCollectionViewCell: UICollectionViewCell {
     static let identifier = String(describing: GalleryCollectionViewCell.self)
     
     let minimumLineSpacing: CGFloat = 16
-    let aspectRatio: CGFloat = 330 / 440
+    let aspectRatio: CGFloat = 330 / 475
     
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = [] {
         didSet {

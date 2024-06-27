@@ -345,7 +345,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     func setupConstraints() {
         let screenHeight = UIScreen.main.bounds.height
-        let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.65 : 0.35
+        let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.35 : 0.4
         
         detailInputViewCollectionView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)

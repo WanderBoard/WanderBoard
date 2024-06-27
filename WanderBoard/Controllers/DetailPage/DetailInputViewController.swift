@@ -360,7 +360,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     @objc private func showCalendar() {
-        let calendarVC = SingleDayCalendarHostingController()
+        let calendarVC = CalendarHostingController()
         calendarVC.delegate = self
         calendarVC.modalPresentationStyle = .pageSheet
         if let sheet = calendarVC.sheetPresentationController {
@@ -682,6 +682,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         updateTotalSpendingAmount(with: expenses)
     }
+
     
     func loadSavedLocation() {
         let userId = Auth.auth().currentUser?.uid ?? ""
@@ -1051,6 +1052,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             }
         } else {
             representativeImageIndex = selectedImages.isEmpty ? nil : 0
+            if let index = representativeImageIndex {
+                selectedImages[index].1 = true
+            }
         }
         
         if let galleryCell = detailInputViewCollectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? GallaryInputCollectionViewCell {
@@ -1237,12 +1241,14 @@ extension DetailInputViewController: GallaryInputCollectionViewCellDelegate {
     
     func didDeleteImage(at index: Int) {
         selectedImages.remove(at: index)
-        updateRepresentativeImage()
-        
-        if let indexPath = detailInputViewCollectionView.indexPathsForVisibleItems.first(where: { $0.item == 0 }) {
-            if let cell = detailInputViewCollectionView.cellForItem(at: indexPath) as? GallaryInputCollectionViewCell {
-                cell.selectedImages = self.selectedImages
+        if selectedImages.isEmpty {
+            representativeImageIndex = nil
+        } else {
+            representativeImageIndex = selectedImages.firstIndex { $0.1 } ?? 0
+            if !selectedImages.contains(where: { $0.1 }) {
+                selectedImages[0].1 = true
             }
+            updateRepresentativeImage()
         }
     }
 }

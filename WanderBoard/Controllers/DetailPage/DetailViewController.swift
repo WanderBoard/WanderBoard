@@ -88,7 +88,6 @@ class DetailViewController: UIViewController {
         self?.switchToPage(index)
     }))
     
-    // 추가
     var profileImageView = UIImageView().then {
         $0.backgroundColor = .white
         $0.tintColor = .white
@@ -102,14 +101,12 @@ class DetailViewController: UIViewController {
         }
     }
     
-    // 추가
     var nicknameLabel = UILabel().then {
         $0.text = "닉네임"
         $0.font = UIFont.systemFont(ofSize: 12)
         $0.textColor = .font
     }
     
-    // 추가
     let profileStackView = UIStackView().then {
         $0.axis = .horizontal
         $0.alignment = .center
@@ -191,78 +188,6 @@ class DetailViewController: UIViewController {
         $0.addTarget(self, action: #selector(expandableButtonTapped), for: .touchUpInside)
     }
     
-    var mainTitleLabel = UILabel().then {
-        $0.text = "부산에 다녀왔다"
-        $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-    }
-    
-    var subTextLabel = UILabel().then {
-        $0.text = "여기에는 이전 인풋VC 텍스트필드에서 작성된 내용이 들어옵니다. 이 텍스트는 더미 텍스트입니다."
-        $0.font = UIFont.systemFont(ofSize: 15)
-        $0.numberOfLines = 0
-        $0.textAlignment = .left
-        $0.setContentCompressionResistancePriority(.required, for: .vertical)
-    }
-    
-    lazy var galleryCollectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 5
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
-        layout.itemSize = CGSize(width: 85, height: 85)
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .clear
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.isScrollEnabled = true
-        return collectionView
-    }()
-    
-    let noDataLabel = UILabel().then {
-        $0.text = "지출 내역이 없습니다."
-        $0.font = UIFont.systemFont(ofSize: 15)
-        $0.textColor = .darkgray
-        $0.isHidden = true
-    }
-    
-    var moneyCountTitle = UILabel().then {
-        $0.text = "0000000"
-        $0.font = UIFont.systemFont(ofSize: 20)
-        $0.textColor = .font
-    }
-    
-    let moneyCountSubTitle = UILabel().then {
-        $0.text = "₩"
-        $0.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
-        $0.textColor = .font
-        $0.isHidden = false
-    }
-    
-    let maxConsumView = UIView().then {
-        $0.backgroundColor = UIColor(named: "textColor")
-        $0.layer.cornerRadius = 8
-        $0.clipsToBounds = true
-    }
-    
-    var maxConsumptionLabel = UILabel().then {
-        $0.text = "최고금액 지출 : "
-        $0.font = UIFont.systemFont(ofSize: 13)
-        $0.textColor = .darkgray
-    }
-    
-    let consumStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.spacing = 0
-        $0.alignment = .center
-        $0.distribution = .equalSpacing
-    }
-    
-    let consumMainStackView = UIStackView().then {
-        $0.axis = .vertical
-        $0.spacing = 16
-        $0.distribution = .equalSpacing
-        $0.alignment = .center
-    }
-    
     let bottomContentStackView = UIStackView().then {
         $0.axis = .vertical
         $0.alignment = .fill
@@ -288,7 +213,6 @@ class DetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
         newSetupConstraints()
         setupConstraints()
@@ -296,9 +220,8 @@ class DetailViewController: UIViewController {
         setupActionButton()
         updateColor()
         
-        //한빛
         checkId()
-        loadData() //id로 데이터 불러오기
+        loadData()
         
         view.backgroundColor = .systemBackground
     }
@@ -307,7 +230,6 @@ class DetailViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.tintColor = .white
         
-        galleryCollectionView.reloadData()
     }
     
     func setupUI() {
@@ -335,11 +257,9 @@ class DetailViewController: UIViewController {
         dateStackView.addArrangedSubview(dateStartLabel)
         dateStackView.addArrangedSubview(dateLineLabel)
         dateStackView.addArrangedSubview(dateEndLabel)
-        
     }
     
     func setupConstraints() {
-        // 화면 크기에 따라 비율 설정
         let screenHeight = UIScreen.main.bounds.height
         let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.58 : 0.52
         
@@ -420,14 +340,11 @@ class DetailViewController: UIViewController {
     func updateColor(){
         //라이트그레이-다크그레이
         let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
-        maxConsumptionLabel.textColor = lightGTodarkG
         
         //다크그레이-라이트그레이
         let darkBTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
         profileImageView.backgroundColor = darkBTolightG
         mapAllButton.setTitleColor(darkBTolightG, for: .normal)
-        maxConsumptionLabel.textColor = darkBTolightG
-        maxConsumptionLabel.textColor = darkBTolightG
     }
     
     //id로 데이터 불러오기 - 한빛
@@ -447,8 +364,6 @@ class DetailViewController: UIViewController {
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
     
     // 핀 버튼
-    
-    
     private func newSetupConstraints() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
         
@@ -760,8 +675,6 @@ class DetailViewController: UIViewController {
         }
     }
     
-    
-    
     func setupMenu() {
         guard let pinLog = pinLog else { return }
         if Auth.auth().currentUser == nil {
@@ -814,7 +727,6 @@ class DetailViewController: UIViewController {
             }
             optionsButton.menu = UIMenu(title: "", children: [blockAction, hideAction, reportAction])
         }
-        
     }
     
     func deletePinLog() {
@@ -858,7 +770,6 @@ class DetailViewController: UIViewController {
             .saveToCameraRoll,
             .print
         ]
-        
         self.present(activityViewController, animated: true, completion: nil)
     }
     
@@ -981,14 +892,13 @@ class DetailViewController: UIViewController {
         let backButton = UIBarButtonItem()
         backButton.title = "Back"
         navigationItem.backBarButtonItem = backButton
-        
         navigationController?.pushViewController(galleryMapVC, animated: true)
     }
     
     func setupCollectionView() {
         friendCollectionView.delegate = self
         friendCollectionView.dataSource = self
-        
+    
         friendCollectionView.register(FriendCollectionViewCell.self, forCellWithReuseIdentifier: FriendCollectionViewCell.identifier)
     }
     
@@ -1044,7 +954,6 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
         
         guard let cell = collectionView.cellForItem(at: indexPath) else { return }
         
-        //지춢페이지에서만 클릭이 되며 클릭시 애니메이션 나타남
         if indexPath.item == 2 {
             UIView.animate(withDuration: 0.05, animations: {
                 cell.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)

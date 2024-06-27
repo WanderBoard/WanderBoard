@@ -53,13 +53,13 @@ class TextInputCollectionViewCell: UICollectionViewCell {
         ]
     }
     
-    private let placeholderLabel = UILabel().then {
+    let placeholderLabel = UILabel().then {
         $0.text = "내용을 입력하세요"
         $0.textColor = .lightgray
         $0.font = UIFont.systemFont(ofSize: 14)
     }
     
-    private let stackView = UIStackView().then {
+    let stackView = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 10
     }

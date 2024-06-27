@@ -32,7 +32,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         selectedCategory = category
         showCalendar()
     }
-
+    
     var progressViewController: ProgressViewController?
     var savedLocation: CLLocationCoordinate2D?
     var savedPinLogId: String?
@@ -185,30 +185,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     
-    let mainTextField = UITextView().then {
-        $0.text = "여행 제목을 입력해주세요."
-        $0.textColor = .lightgray
-        $0.backgroundColor = .clear
-        $0.layer.cornerRadius = 8
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = UIColor.lightgray.cgColor
-        $0.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        $0.font = UIFont.systemFont(ofSize: 16)
-        $0.isScrollEnabled = false
-    }
-    
-    let subTextField = UITextView().then {
-        $0.text = "기록을 담아 주세요."
-        $0.textColor = .lightgray
-        $0.backgroundColor = .clear
-        $0.layer.cornerRadius = 8
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = UIColor.lightgray.cgColor
-        $0.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        $0.font = UIFont.systemFont(ofSize: 16)
-        $0.isScrollEnabled = false
-    }
-    
     let locationButton = UIButton().then {
         $0.backgroundColor = .babygray
         $0.layer.cornerRadius = 8
@@ -280,19 +256,19 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         return collectionView
     }()
     
-//    lazy var categoryCollectionView: UICollectionView = {
-//        let layout = UICollectionViewFlowLayout()
-//        layout.scrollDirection = .horizontal
-//        layout.minimumLineSpacing = 16
-//        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-//        collectionView.register(CategoryCollectionViewCell.self, forCellWithReuseIdentifier: CategoryCollectionViewCell.identifier)
-//        collectionView.dataSource = self
-//        collectionView.delegate = self
-//        collectionView.showsHorizontalScrollIndicator = false
-//        collectionView.decelerationRate = .fast
-//        return collectionView
-//    }()
-
+    //    lazy var categoryCollectionView: UICollectionView = {
+    //        let layout = UICollectionViewFlowLayout()
+    //        layout.scrollDirection = .horizontal
+    //        layout.minimumLineSpacing = 16
+    //        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+    //        collectionView.register(CategoryCollectionViewCell.self, forCellWithReuseIdentifier: CategoryCollectionViewCell.identifier)
+    //        collectionView.dataSource = self
+    //        collectionView.delegate = self
+    //        collectionView.showsHorizontalScrollIndicator = false
+    //        collectionView.decelerationRate = .fast
+    //        return collectionView
+    //    }()
+    
     
     // MARK: 토글토글
     
@@ -328,14 +304,10 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         setupUI()
         setupConstraints()
         actionButton()
-        setupTextView()
         setupNavigationBar()
         setupCollectionView()
         requestPhotoLibraryAccess()
         updateColor()
-        
-        mainTextField.delegate = self
-        subTextField.delegate = self
         
         if let pinLog = pinLog {
             configureView(with: pinLog)
@@ -369,8 +341,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         present(calendarVC, animated: true, completion: nil)
     }
-
-
+    
+    
     func didSelectDate(_ date: Date) {
         self.selectedDate = date
         dismiss(animated: true) { [weak self] in
@@ -385,14 +357,14 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             self.present(amountVC, animated: true, completion: nil)
         }
     }
-
+    
     func didEnterAmount(_ amount: Double) {
         self.dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
             self.showSummaryViewController(withAmount: amount)
         }
     }
-
+    
     private func showSummaryViewController(withAmount amount: Double) {
         let summaryVC = SummaryViewController()
         summaryVC.selectedCategory = selectedCategory
@@ -521,10 +493,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         
         //라이트그레이-다크그레이
         let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
-        mainTextField.textColor = lightGTodarkG
-        mainTextField.layer.borderColor = lightGTodarkG?.cgColor
-        subTextField.textColor = lightGTodarkG
-        subTextField.layer.borderColor = lightGTodarkG?.cgColor
+        
         
         //라이트그레이-라이트블랙
         let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
@@ -541,11 +510,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         detailInputViewCollectionView.register(TextInputCollectionViewCell.self, forCellWithReuseIdentifier: TextInputCollectionViewCell.identifier)
         
         mateCollectionView.register(FriendInputCollectionViewCell.self, forCellWithReuseIdentifier: FriendInputCollectionViewCell.identifier)
-    }
-    
-    func setupTextView() {
-        mainTextField.delegate = self
-        subTextField.delegate = self
     }
     
     func actionButton() {
@@ -586,24 +550,24 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         navigationController?.pushViewController(spendVC, animated: true)
     }
     
-//    @objc func showCalendar() {
-//        let calendarVC = CalendarHostingController()
-//        calendarVC.delegate = self
-//        calendarVC.modalPresentationStyle = .pageSheet
-//        if let sheet = calendarVC.sheetPresentationController {
-//            sheet.detents = [.custom(resolver: { _ in 460 })]
-//            sheet.prefersGrabberVisible = true
-//        }
-//        present(calendarVC, animated: true, completion: nil)
-//    }
+    //    @objc func showCalendar() {
+    //        let calendarVC = CalendarHostingController()
+    //        calendarVC.delegate = self
+    //        calendarVC.modalPresentationStyle = .pageSheet
+    //        if let sheet = calendarVC.sheetPresentationController {
+    //            sheet.detents = [.custom(resolver: { _ in 460 })]
+    //            sheet.prefersGrabberVisible = true
+    //        }
+    //        present(calendarVC, animated: true, completion: nil)
+    //    }
     
     func setupNavigationBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
-
+        
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
         navigationItem.rightBarButtonItem = doneButton
         navigationController?.navigationBar.tintColor = .black
-    
+        
     }
     
     @objc func dismissDetailView(_ sender:UIButton) {
@@ -618,10 +582,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         expenses = pinLog.expenses ?? []
         spendingPublicSwitch.isOn = pinLog.isSpendingPublic
         locationLeftLabel.text = pinLog.location
-        mainTextField.text = pinLog.title
-        mainTextField.textColor = .font
-        subTextField.text = pinLog.content
-        subTextField.textColor = .font
         publicSwitch.isOn = pinLog.isPublic
         spendingPublicSwitch.isOn = pinLog.isSpendingPublic
         
@@ -681,8 +641,15 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             consumLeftLabel.text = "지출 내역을 입력해주세요"
         }
         updateTotalSpendingAmount(with: expenses)
+        
+        // TextInputCollectionViewCell의 titleTextField와 contentTextView 값을 설정
+        if let textInputCell = detailInputViewCollectionView.cellForItem(at: IndexPath(item: 1, section: 0)) as? TextInputCollectionViewCell {
+            textInputCell.titleTextField.text = pinLog.title
+            textInputCell.contentTextView.text = pinLog.content
+            textInputCell.placeholderLabel.isHidden = !textInputCell.contentTextView.text.isEmpty
+        }
     }
-
+    
     
     func loadSavedLocation() {
         let userId = Auth.auth().currentUser?.uid ?? ""
@@ -768,7 +735,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         progressVC.didMove(toParent: self)
         progressViewController = progressVC
     }
-
+    
     private func hideProgressView() {
         if let progressVC = progressViewController {
             progressVC.willMove(toParent: nil)
@@ -786,11 +753,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
 
         guard let dateRange = dateLabel.text, dateRange != "날짜를 선택하세요" else {
             showAlert(title: "날짜 선택", message: "유효한 날짜를 선택해주세요.")
-            return
-        }
-
-        guard let mainTitle = mainTextField.text, !mainTitle.isEmpty, mainTextField.textColor != .lightgray else {
-            showAlert(title: "제목 입력", message: "여행 제목을 입력해주세요.")
             return
         }
 
@@ -812,8 +774,20 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             return
         }
 
-        let title = mainTextField.text ?? ""
-        let content = subTextField.text ?? ""
+        var title: String?
+        var content: String?
+        if let textInputCell = detailInputViewCollectionView.cellForItem(at: IndexPath(item: 1, section: 0)) as? TextInputCollectionViewCell {
+            title = textInputCell.titleTextField.text
+            content = textInputCell.contentTextView.text
+        }
+
+        guard let mainTitle = title, !mainTitle.isEmpty else {
+            showAlert(title: "제목 입력", message: "여행 제목을 입력해주세요.")
+            navigationItem.rightBarButtonItem?.isEnabled = true
+            return
+        }
+
+        let contentText = content ?? ""
         let isPublic = publicSwitch.isOn
         let isSpendingPublic = spendingPublicSwitch.isOn
         let address = savedAddress ?? "Unknown Address"
@@ -838,8 +812,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                     pinLog.longitude = longitude
                     pinLog.startDate = startDate
                     pinLog.endDate = endDate
-                    pinLog.title = title
-                    pinLog.content = content
+                    pinLog.title = mainTitle
+                    pinLog.content = contentText
                     pinLog.isPublic = isPublic
                     pinLog.isSpendingPublic = isSpendingPublic
                     pinLog.attendeeIds = selectedFriends.map { $0.uid }
@@ -853,8 +827,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                                     longitude: longitude,
                                     startDate: startDate,
                                     endDate: endDate,
-                                    title: title,
-                                    content: content,
+                                    title: mainTitle,
+                                    content: contentText,
                                     media: [],
                                     authorId: Auth.auth().currentUser?.uid ?? "",
                                     attendeeIds: selectedFriends.map { $0.uid },
@@ -869,7 +843,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
 
                 }
 
-                // 선택된 대표 이미지가 있으면 설정
                 if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
                     for i in 0..<selectedImages.count {
                         selectedImages[i].1 = (i == representativeIndex)
@@ -1001,7 +974,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             }
         }
     }
-
+    
     private func showPhotoAccessDeniedAlert() {
         let alertController = UIAlertController(
             title: "사진 접근 권한 필요",
@@ -1087,7 +1060,7 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
         }
         return 0
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == detailInputViewCollectionView {
             switch indexPath.item {
@@ -1125,7 +1098,7 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
         }
         return UICollectionViewCell()
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == mateCollectionView {
             if selectedFriends.isEmpty {
@@ -1135,7 +1108,7 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
             }
         }
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == mateCollectionView {
             return CGSize(width: 60, height: 60)
@@ -1256,41 +1229,15 @@ extension DetailInputViewController: GallaryInputCollectionViewCellDelegate {
 extension DetailInputViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         let placeholderColor: UIColor = {
-                   if traitCollection.userInterfaceStyle == .dark {
-                       return UIColor.darkgray
-                   } else {
-                       return UIColor.lightgray
-                   }
-               }()
-
-               if textView.textColor == placeholderColor {
-                   textView.text = nil
-                   textView.textColor = .font
-               }
-           }
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        let placeholderColor: UIColor = {
-                   if traitCollection.userInterfaceStyle == .dark {
-                       return UIColor.darkgray
-                   } else {
-                       return UIColor.lightgray
-                   }
-               }()
+            if traitCollection.userInterfaceStyle == .dark {
+                return UIColor.darkgray
+            } else {
+                return UIColor.lightgray
+            }
+        }()
         
-        if textView.text.isEmpty {
-                    let placeholderText: String = {
-                        if textView == mainTextField {
-                            return "여행 제목을 입력해주세요."
-                        } else if textView == subTextField {
-                            return "기록을 담아 주세요."
-                        } else {
-                            return ""
-                        }
-                    }()
-            textView.text = placeholderText
-            textView.textColor = placeholderColor
-        } else {
+        if textView.textColor == placeholderColor {
+            textView.text = nil
             textView.textColor = .font
         }
     }
@@ -1305,16 +1252,5 @@ extension DetailInputViewController: UITextViewDelegate {
             UIView.setAnimationsEnabled(true)
             textView.layoutIfNeeded()
         }
-    }
-    
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if textView == mainTextField && text == "\n" {
-            subTextField.becomeFirstResponder()
-            return false
-        }
-        if textView == subTextField && text == "\n" {
-            return true
-        }
-        return true
     }
 }

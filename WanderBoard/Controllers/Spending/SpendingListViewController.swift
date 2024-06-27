@@ -251,6 +251,7 @@ class SpendingListViewController: UIViewController {
     func totalExpensesAmount() -> Int {
         return dailyExpenses.flatMap { $0.expenses }.reduce(0) { $0 + $1.expenseAmount }
     }
+    
 }
 
 // MARK: TableViewDataSource
@@ -428,7 +429,4 @@ extension SpendingListViewController: InsertSpendingViewControllerDelegate {
         updateView()
     }
 }
-
-// MARK: - 카테고리별로 지출 금액 계산
-
 

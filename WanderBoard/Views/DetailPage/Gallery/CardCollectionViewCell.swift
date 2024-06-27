@@ -110,7 +110,7 @@ extension CardCollectionViewCell: UITableViewDelegate, UITableViewDataSource {
                 cell.selectionStyle = .none
                 return cell
     }
-    
+    //테이블뷰 높이와 들어갈 셀 수를 계산하여 셀의 높이를 설정
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let numberOfRows = CGFloat(Category.allCases.count)
         let tableViewHieght = tableView.bounds.height

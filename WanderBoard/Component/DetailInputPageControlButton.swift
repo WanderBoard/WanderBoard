@@ -70,9 +70,9 @@ struct DetailInputPageControlButton: View {
     
     private func iconName(for index: Int) -> String {
         switch index {
-            case 0: return "photo"
+            case 0: return "photo.on.rectangle.angled"
             case 1: return "text.quote"
-            case 2: return "dollarsign"
+            case 2: return "creditcard.fill"
             default: return ""
         }
     }

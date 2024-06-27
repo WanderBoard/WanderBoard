@@ -44,8 +44,8 @@ class DetailViewController: UIViewController {
     let subTextFieldMinHeight: CGFloat = 90
     var subTextFieldHeightConstraint: Constraint?
     
-    lazy var pinButton = UIButton(type: .system).then {
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 28, weight: .regular)
+    lazy var pinButton = UIButton().then {
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 26, weight: .regular)
         let symbolImage = UIImage(systemName: "pin.circle", withConfiguration: symbolConfiguration)
         $0.setImage(symbolImage, for: .normal)
         $0.contentMode = .scaleAspectFill
@@ -57,7 +57,7 @@ class DetailViewController: UIViewController {
     }
     
     lazy var mapAllButton = UIButton().then {
-        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 24, weight: .regular)
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 26, weight: .regular)
         let symbolImage = UIImage(systemName: "map.circle.fill", withConfiguration: symbolConfiguration)
         $0.setImage(symbolImage, for: .normal)
         $0.contentMode = .scaleAspectFill
@@ -231,14 +231,7 @@ class DetailViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
         
     }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        print(pinButton.frame.size)
-        print(mapAllButton.frame.size)
-    }
-    
+
     func setupUI() {
         view.addSubview(detailViewCollectionView)
         view.addSubview(detailViewButton.view)
@@ -484,16 +477,16 @@ class DetailViewController: UIViewController {
         present(loginVC, animated: true, completion: nil)
     }
     
+    //여기에서 업데이트 해줄 때 기본 설정을 못 가져와서 생겼던 문제였던 거 같습니다 ~~
     func updatePinButtonState() {
         guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else { return }
-        
+
         let pinnedBy = pinLog.pinnedBy ?? []
+
+        let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 26, weight: .regular)
+        let symbolImage = pinnedBy.contains(currentUserId) ? UIImage(systemName: "pin.circle.fill", withConfiguration: symbolConfiguration) : UIImage(systemName: "pin.circle", withConfiguration: symbolConfiguration)
         
-        if pinnedBy.contains(currentUserId) {
-            pinButton.setImage(UIImage(systemName: "pin.circle.fill"), for: .normal)
-        } else {
-            pinButton.setImage(UIImage(systemName: "pin.circle"), for: .normal)
-        }
+        pinButton.setImage(symbolImage, for: .normal)
     }
     
     func configureView(with pinLog: PinLog) async {
@@ -896,8 +889,7 @@ class DetailViewController: UIViewController {
         
         galleryMapVC.pinLocations = pinLog.media
         
-        let backButton = UIBarButtonItem()
-        backButton.title = "Back"
+        let backButton = ButtonFactory.createBackButton()
         navigationItem.backBarButtonItem = backButton
         navigationController?.pushViewController(galleryMapVC, animated: true)
     }
@@ -971,6 +963,8 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
                     
                     
                     let spendingListVC = SpendingListViewController()
+                    let backButton = ButtonFactory.createBackButton()
+                    self.navigationItem.backBarButtonItem = backButton
                     self.navigationController?.pushViewController(spendingListVC, animated: true)
                 })
             })

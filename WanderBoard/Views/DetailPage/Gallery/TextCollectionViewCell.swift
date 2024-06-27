@@ -33,15 +33,12 @@ class TextCollectionViewCell: UICollectionViewCell {
     let textLabel = UILabel().then(){
         $0.textColor = .font
         $0.font = UIFont.systemFont(ofSize: 15)
-        $0.textAlignment = .center
         $0.numberOfLines = 0
     }
     
     let stackView = UIStackView().then(){
         $0.axis = .vertical
         $0.spacing = 16
-        $0.alignment = .fill
-        $0.distribution = .equalSpacing
     }
     
     override init(frame: CGRect) {
@@ -74,7 +71,7 @@ class TextCollectionViewCell: UICollectionViewCell {
         }
         
         stackView.snp.makeConstraints(){
-            $0.center.equalTo(backView)
+            $0.centerY.equalTo(backView)
             $0.horizontalEdges.equalTo(backView).inset(16)
         }
     }
@@ -97,6 +94,7 @@ class TextCollectionViewCell: UICollectionViewCell {
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 8
+        paragraphStyle.alignment = .center
 
         let attributedString = NSAttributedString(string: content, attributes: [
             .font: textLabel.font ?? UIFont.systemFont(ofSize: 15),

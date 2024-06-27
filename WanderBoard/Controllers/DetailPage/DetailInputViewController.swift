@@ -323,7 +323,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
         setupUI()
         setupConstraints()
@@ -527,7 +527,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         subTextField.layer.borderColor = lightGTodarkG?.cgColor
         
         //라이트그레이-라이트블랙
-        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
+//        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
     }
     
     func setupCollectionView() {

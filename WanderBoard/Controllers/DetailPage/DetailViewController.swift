@@ -50,7 +50,7 @@ class DetailViewController: UIViewController {
         $0.setImage(symbolImage, for: .normal)
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
-        $0.tintColor = .black
+        $0.tintColor = .font
         $0.isHidden = true
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.addTarget(self, action: #selector(pinButtonTapped), for: .touchUpInside)
@@ -62,7 +62,7 @@ class DetailViewController: UIViewController {
         $0.setImage(symbolImage, for: .normal)
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
-        $0.tintColor = .black
+        $0.tintColor = .font
         $0.isHidden = false
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.addTarget(self, action: #selector(showMapViewController), for: .touchUpInside)

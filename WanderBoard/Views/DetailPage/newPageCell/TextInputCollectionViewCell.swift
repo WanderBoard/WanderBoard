@@ -6,41 +6,64 @@
 //
 
 import UIKit
+import SnapKit
+import Then
 
 class TextInputCollectionViewCell: UICollectionViewCell {
     static let identifier = String(describing: TextInputCollectionViewCell.self)
     
-    let imageView = UIImageView().then() {
-        $0.image = UIImage(systemName: "photo")
-        $0.backgroundColor = .blue
-        $0.layer.cornerRadius = 30
-        $0.contentMode = .scaleAspectFill
-        $0.clipsToBounds = true
+    lazy var titleTextField = UITextField().then {
+        $0.delegate = self
+        $0.font = UIFont.systemFont(ofSize: 14)
+        $0.borderStyle = .none
+        $0.layer.borderWidth = 1
+        $0.layer.cornerRadius = 10
+        $0.layer.borderColor = UIColor.darkgray.cgColor
+        $0.autocapitalizationType = .none
+        $0.returnKeyType = .next
+        
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
+        $0.leftView = paddingView
+        $0.rightView = paddingView
+        $0.leftViewMode = .always
+        $0.rightViewMode = .always
+        
+        // 플레이스홀더 텍스트 색상 설정
+        $0.attributedPlaceholder = NSAttributedString(
+            string: "제목을 입력하세요",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightgray]
+        )
     }
     
-    let backView = UIView().then(){
-        $0.backgroundColor = UIColor(white: 1, alpha: 0.9)
-        $0.layer.cornerRadius = 30
+    lazy var contentTextView = UITextView().then {
+        $0.delegate = self
+        $0.layer.borderWidth = 1
+        $0.layer.cornerRadius = 10
+        $0.layer.borderColor = UIColor.darkgray.cgColor
+        $0.font = UIFont.systemFont(ofSize: 14)
+        $0.textContainerInset = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
+        $0.textContainer.lineFragmentPadding = 0
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 8
+        
+        $0.typingAttributes = [
+            .font: UIFont.systemFont(ofSize: 14),
+            .paragraphStyle: paragraphStyle
+        ]
     }
-    let titleLabel = UILabel().then(){
-        $0.textColor = .font
-        $0.font = UIFont.boldSystemFont(ofSize: 20)
-        $0.textAlignment = .center
-        $0.text = "테스트 문구"
+    
+    private let placeholderLabel = UILabel().then {
+        $0.text = "내용을 입력하세요"
+        $0.textColor = .lightgray
+        $0.font = UIFont.systemFont(ofSize: 14)
     }
-    let textLabel = UILabel().then(){
-        $0.textColor = .font
-        $0.font = UIFont.systemFont(ofSize: 15)
-        $0.textAlignment = .center
-        $0.text = "테스트 문구"
-    }
-    let stackView = UIStackView().then(){
+    
+    private let stackView = UIStackView().then {
         $0.axis = .vertical
-        $0.spacing = 16
-        $0.alignment = .fill
-        $0.distribution = .equalSpacing
+        $0.spacing = 10
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupConstraint()
@@ -50,41 +73,74 @@ class TextInputCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupConstraint(){
-        self.contentView.addSubview(imageView)
-        self.contentView.addSubview(backView)
-        backView.addSubview(stackView)
-        [titleLabel, textLabel].forEach(){
-            stackView.addArrangedSubview($0)
+    func setupConstraint() {
+        contentView.addSubview(stackView)
+        stackView.addArrangedSubview(titleTextField)
+        stackView.addArrangedSubview(contentTextView)
+        
+        contentView.addSubview(placeholderLabel)
+        
+        stackView.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(14)
+            $0.horizontalEdges.equalToSuperview().inset(32)
+            $0.bottom.equalToSuperview().inset(5)
         }
         
-        imageView.snp.makeConstraints {
-            $0.verticalEdges.equalToSuperview()
-            $0.width.equalTo(imageView.snp.height).multipliedBy(330.0 / 440.0)
-            $0.centerX.equalToSuperview()
+        titleTextField.snp.makeConstraints {
+            $0.height.equalTo(40)
         }
         
-        backView.snp.makeConstraints(){
-            $0.verticalEdges.equalToSuperview()
-            $0.width.equalTo(backView.snp.height).multipliedBy(330.0 / 440.0)
-            $0.centerX.equalToSuperview()
+        placeholderLabel.snp.makeConstraints {
+            $0.top.equalTo(contentTextView.snp.top).offset(contentTextView.textContainerInset.top)
+            $0.leading.equalTo(contentTextView.snp.leading).offset(contentTextView.textContainerInset.left)
+            $0.height.equalTo(14)
         }
-        
-        stackView.snp.makeConstraints(){
-            $0.center.equalTo(backView)
-            $0.horizontalEdges.equalTo(backView).inset(16)
+        placeholderLabel.isHidden = !contentTextView.text.isEmpty
+    }
+    
+    private func provideHapticFeedback() {
+        print("Haptic feedback triggered")
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.error)
+    }
+}
+
+extension TextInputCollectionViewCell: UITextViewDelegate, UITextFieldDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        placeholderLabel.isHidden = !textView.text.isEmpty
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let currentText = textView.text as NSString
+        let newText = currentText.replacingCharacters(in: range, with: text)
+        if newText.count <= 220 {
+            return true
+        } else {
+            provideHapticFeedback()
+            return false
         }
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            updateColor()
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            placeholderLabel.isHidden = true
         }
     }
     
-    func updateColor(){
-        let backColor = traitCollection.userInterfaceStyle == .dark ? UIColor(white: 0, alpha: 0.9) : UIColor(white: 1, alpha: 0.9)
-        backView.backgroundColor = backColor
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            placeholderLabel.isHidden = false
+        }
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let currentText = textField.text as NSString? else { return true }
+        let newText = currentText.replacingCharacters(in: range, with: string)
+        if newText.count <= 26 { //공백 포함 26자
+            return true
+        } else {
+            provideHapticFeedback()
+            return false
+        }
     }
 }

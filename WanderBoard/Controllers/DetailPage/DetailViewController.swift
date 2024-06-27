@@ -418,16 +418,9 @@ class DetailViewController: UIViewController {
     }
     
     func updateColor(){
-        //베이비그레이-커스텀블랙
-        let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
-        
-        
         //라이트그레이-다크그레이
         let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
         maxConsumptionLabel.textColor = lightGTodarkG
-        
-        //라이트그레이-라이트블랙
-        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
         
         //다크그레이-라이트그레이
         let darkBTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
@@ -1044,6 +1037,28 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return cell
         }
         return UICollectionViewCell()
+    }
+    
+    //카드컬렉션뷰 누르면 지출상세뷰로 넘어가도록
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        guard let cell = collectionView.cellForItem(at: indexPath) else { return }
+        
+        //지춢페이지에서만 클릭이 되며 클릭시 애니메이션 나타남
+        if indexPath.item == 2 {
+            UIView.animate(withDuration: 0.05, animations: {
+                cell.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
+            }, completion: { _ in
+                UIView.animate(withDuration: 0.05, animations: {
+                    cell.transform = CGAffineTransform.identity
+                }, completion: { _ in
+                    
+                    
+                    let spendingListVC = SpendingListViewController()
+                    self.navigationController?.pushViewController(spendingListVC, animated: true)
+                })
+            })
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

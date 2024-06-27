@@ -22,16 +22,16 @@ struct DetailInputPageControlButton: View {
                             .fill(Color.clear)
                             .opacity(1)
                             .frame(width: widthForIndex(index), height: 44)
-                            .padding(EdgeInsets(top: 3, leading: 4, bottom: 3, trailing: 4)) // 상하 3, 좌우 4의 패딩
+                            .padding(EdgeInsets(top: 4, leading: 4, bottom: 2, trailing: 4)) // 상4, 하2, 좌우 4의 패딩
                         
                         Image(systemName: iconName(for: index))
-                            .foregroundColor(.black) // 선택된 아이콘의 색상을 블랙으로 설정
+                            .foregroundColor(Color("font")) // 선택된 아이콘의 색상을 블랙으로 설정
                             .font(.system(size: 16)) // 아이콘 크기 설정
                             .frame(width: 16, height: 16) // 아이콘 크기 설정
                     } else {
                         Image(systemName: iconName(for: index))
                             .foregroundColor(Color("PageCtrlUnselectedText"))
-                            .font(.system(size: 16)) // 아이콘 크기 설정
+                            .font(.system(size: 16, weight: .bold)) // 아이콘 크기 설정
                             .frame(width: 16, height: 16) // 아이콘 크기 설정
                     }
                 }

@@ -135,12 +135,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     }
     
     func setIcon() {
-        let iconColor: UIColor
-        if traitCollection.userInterfaceStyle == .dark {
-            iconColor = UIColor(red: 254/255, green: 229/255, blue: 0, alpha: 1)
-        } else {
-            iconColor = UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
-        }
         
         guard let userData = self.userData else {
             print("등록된 로그인 정보가 없습니다")
@@ -154,10 +148,10 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                 self.IDIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
             case AuthProviderOption.kakao.rawValue:
                 self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-                self.IDIcon.tintColor = iconColor
+                self.IDIcon.tintColor = UIColor(named: "kakaoYellow")
             case AuthProviderOption.email.rawValue:
                 self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-                self.IDIcon.tintColor = iconColor // 이메일 로그인은 추가 안함, 카카오랑 같은 아이콘 뜨도록 설정
+                self.IDIcon.tintColor = UIColor(named: "kakaoYellow") // 이메일 로그인은 추가 안함, 카카오랑 같은 아이콘 뜨도록 설정
             default:
                 print("등록된 로그인 정보가 없습니다")
         }

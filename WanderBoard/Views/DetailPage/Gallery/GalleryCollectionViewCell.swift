@@ -12,8 +12,8 @@ import CoreLocation
 class GalleryCollectionViewCell: UICollectionViewCell {
     static let identifier = String(describing: GalleryCollectionViewCell.self)
     
-    let minimumLineSpacing: CGFloat = 16
-    let aspectRatio: CGFloat = 330 / 475
+    let minimumLineSpacing: CGFloat = 24
+    let aspectRatio: CGFloat = 330 / 465
     
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = [] {
         didSet {
@@ -34,8 +34,8 @@ class GalleryCollectionViewCell: UICollectionViewCell {
     
     let photoCollectionViewLayout = UICollectionViewFlowLayout().then {
         $0.scrollDirection = .horizontal
-        $0.minimumLineSpacing = 16
-        $0.sectionInset = .init(top: 0, left: 32, bottom: 0, right: 32)
+        $0.minimumLineSpacing = 24
+        $0.sectionInset = .init(top: 0, left: 40, bottom: 0, right: 35)
     }
     
     override init(frame: CGRect) {

@@ -146,7 +146,7 @@ class HotTableViewCell: UITableViewCell {
             self?.isRefreshing = false
             self?.horizontalRefreshControl.stopAnimating()
             self?.hotCollectionView.isScrollEnabled = true
-            UIView.animate(withDuration: 10) { 
+            UIView.animate(withDuration: 10) {
                 self?.hotCollectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
             }
         }

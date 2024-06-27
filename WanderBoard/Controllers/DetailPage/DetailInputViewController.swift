@@ -26,8 +26,13 @@ protocol DetailInputViewControllerDelegate: AnyObject {
     func didSavePinLog(_ pinLog: PinLog)
 }
 
-class DetailInputViewController: UIViewController, CalendarHostingControllerDelegate {
+class DetailInputViewController: UIViewController, CalendarHostingControllerDelegate, SingleDayCalendarHostingControllerDelegate, AmountInputHostingControllerDelegate, CategoryInputCollectionViewCellDelegate {
     
+    func didSelectCategory(category: String) {
+        selectedCategory = category
+        showCalendar()
+    }
+
     var progressViewController: ProgressViewController?
     var savedLocation: CLLocationCoordinate2D?
     var savedPinLogId: String?
@@ -45,6 +50,18 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
     }
     
+    let categories = [
+        ("food", "식사"),
+        ("car", "교통"),
+        ("hotel", "숙박"),
+        ("gift", "선물"),
+        ("entertain", "문화생활"),
+        ("etc", "기타")
+    ]
+    
+    var selectedCategory: String?
+    var selectedDate: Date?
+    
     var imageLocations: [CLLocationCoordinate2D] = []
     let pinLogManager = PinLogManager()
     var pinLog: PinLog?
@@ -53,13 +70,21 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     var subTextFieldHeightConstraint: Constraint?
     var publicViewHeightConstraint: Constraint?
     
-    lazy var detailInputViewCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout).then {
-        $0.isPagingEnabled = true
-        $0.isScrollEnabled = false
-        $0.delegate = self
-        $0.dataSource = self
-        $0.translatesAutoresizingMaskIntoConstraints = false
-    }
+    lazy var detailInputViewCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.isPagingEnabled = true
+        collectionView.isScrollEnabled = false
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.register(GallaryInputCollectionViewCell.self, forCellWithReuseIdentifier: "GallaryInputCollectionViewCell")
+        collectionView.register(TextInputCollectionViewCell.self, forCellWithReuseIdentifier: "TextInputCollectionViewCell")
+        collectionView.register(CategoryInputCollectionViewCell.self, forCellWithReuseIdentifier: "CategoryInputCollectionViewCell")
+        return collectionView
+    }()
     
     let layout = UICollectionViewFlowLayout().then {
         $0.scrollDirection = .horizontal
@@ -255,6 +280,20 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         return collectionView
     }()
     
+//    lazy var categoryCollectionView: UICollectionView = {
+//        let layout = UICollectionViewFlowLayout()
+//        layout.scrollDirection = .horizontal
+//        layout.minimumLineSpacing = 16
+//        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+//        collectionView.register(CategoryCollectionViewCell.self, forCellWithReuseIdentifier: CategoryCollectionViewCell.identifier)
+//        collectionView.dataSource = self
+//        collectionView.delegate = self
+//        collectionView.showsHorizontalScrollIndicator = false
+//        collectionView.decelerationRate = .fast
+//        return collectionView
+//    }()
+
+    
     // MARK: 토글토글
     
     private var selectedStartDate: Date?
@@ -315,6 +354,58 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         
     }
     
+    @objc private func categoryTapped(_ sender: UIButton) {
+        selectedCategory = categories[sender.tag].1
+        showCalendar()
+    }
+    
+    @objc private func showCalendar() {
+        let calendarVC = SingleDayCalendarHostingController()
+        calendarVC.delegate = self
+        calendarVC.modalPresentationStyle = .pageSheet
+        if let sheet = calendarVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { _ in 460 })]
+            sheet.prefersGrabberVisible = true
+        }
+        present(calendarVC, animated: true, completion: nil)
+    }
+
+
+    func didSelectDate(_ date: Date) {
+        self.selectedDate = date
+        dismiss(animated: true) { [weak self] in
+            guard let self = self else { return }
+            let amountVC = AmountInputHostingController()
+            amountVC.delegate = self
+            amountVC.modalPresentationStyle = .pageSheet
+            if let sheet = amountVC.sheetPresentationController {
+                sheet.detents = [.custom(resolver: { _ in 460 })]
+                sheet.prefersGrabberVisible = true
+            }
+            self.present(amountVC, animated: true, completion: nil)
+        }
+    }
+
+    func didEnterAmount(_ amount: Double) {
+        self.dismiss(animated: true) { [weak self] in
+            guard let self = self else { return }
+            self.showSummaryViewController(withAmount: amount)
+        }
+    }
+
+    private func showSummaryViewController(withAmount amount: Double) {
+        let summaryVC = SummaryViewController()
+        summaryVC.selectedCategory = selectedCategory
+        summaryVC.selectedDate = selectedDate
+        summaryVC.amount = amount
+        summaryVC.modalPresentationStyle = .formSheet
+        if let sheet = summaryVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { _ in 460 })]
+            sheet.prefersGrabberVisible = true
+        }
+        present(summaryVC, animated: true, completion: nil)
+    }
+    
     func setupUI() {
         view.addSubview(detailInputViewCollectionView)
         view.addSubview(detailInputViewButton.view)
@@ -350,7 +441,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         detailInputViewCollectionView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalToSuperview().multipliedBy(collectionViewHeightMultiplier)
+            $0.height.equalToSuperview().multipliedBy(0.35)
         }
         
         detailInputViewButton.view.snp.makeConstraints {
@@ -448,7 +539,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         
         detailInputViewCollectionView.register(GallaryInputCollectionViewCell.self, forCellWithReuseIdentifier: GallaryInputCollectionViewCell.identifier)
         detailInputViewCollectionView.register(TextInputCollectionViewCell.self, forCellWithReuseIdentifier: TextInputCollectionViewCell.identifier)
-        detailInputViewCollectionView.register(CardInputCollectionViewCell.self, forCellWithReuseIdentifier: CardInputCollectionViewCell.identifier)
         
         mateCollectionView.register(FriendInputCollectionViewCell.self, forCellWithReuseIdentifier: FriendInputCollectionViewCell.identifier)
     }
@@ -496,16 +586,16 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         navigationController?.pushViewController(spendVC, animated: true)
     }
     
-    @objc func showCalendar() {
-        let calendarVC = CalendarHostingController()
-        calendarVC.delegate = self
-        calendarVC.modalPresentationStyle = .pageSheet
-        if let sheet = calendarVC.sheetPresentationController {
-            sheet.detents = [.custom(resolver: { _ in 460 })]
-            sheet.prefersGrabberVisible = true
-        }
-        present(calendarVC, animated: true, completion: nil)
-    }
+//    @objc func showCalendar() {
+//        let calendarVC = CalendarHostingController()
+//        calendarVC.delegate = self
+//        calendarVC.modalPresentationStyle = .pageSheet
+//        if let sheet = calendarVC.sheetPresentationController {
+//            sheet.detents = [.custom(resolver: { _ in 460 })]
+//            sheet.prefersGrabberVisible = true
+//        }
+//        present(calendarVC, animated: true, completion: nil)
+//    }
     
     func setupNavigationBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
@@ -993,7 +1083,7 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
         }
         return 0
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == detailInputViewCollectionView {
             switch indexPath.item {
@@ -1006,7 +1096,9 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TextInputCollectionViewCell.identifier, for: indexPath) as! TextInputCollectionViewCell
                 return cell
             case 2:
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CardInputCollectionViewCell.identifier, for: indexPath) as! CardInputCollectionViewCell
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryInputCollectionViewCell.identifier, for: indexPath) as! CategoryInputCollectionViewCell
+                cell.categories = categories
+                cell.delegate = self
                 return cell
             default:
                 fatalError("Unexpected index path")
@@ -1029,7 +1121,7 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
         }
         return UICollectionViewCell()
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == mateCollectionView {
             if selectedFriends.isEmpty {
@@ -1039,7 +1131,7 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
             }
         }
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == mateCollectionView {
             return CGSize(width: 60, height: 60)
@@ -1047,11 +1139,18 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
             let width = collectionView.bounds.width * 0.8
             let height = collectionView.bounds.height
             return CGSize(width: width, height: height)
+        } else if collectionView == detailInputViewCollectionView {
+            return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
         } else {
             return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
         }
     }
 }
+
+
+
+
+
 
 extension DetailInputViewController: MateViewControllerDelegate {
     func didSelectMates(_ mates: [UserSummary]) {
@@ -1213,5 +1312,3 @@ extension DetailInputViewController: UITextViewDelegate {
         return true
     }
 }
-
-

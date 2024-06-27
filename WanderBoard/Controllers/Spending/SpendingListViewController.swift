@@ -14,6 +14,7 @@ class SpendingListViewController: UIViewController {
     var pinLog: PinLog?
     var dailyExpenses: [DailyExpenses] = []
     var hideEditButton: Bool = false
+    
     lazy var editButton: UIBarButtonItem = {
         return UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editButtonTapped))
         }()
@@ -74,6 +75,8 @@ class SpendingListViewController: UIViewController {
         
         if hideEditButton {
             navigationItem.rightBarButtonItem = nil
+        } else {
+            navigationItem.rightBarButtonItem = editButton
         }
     }
     
@@ -231,11 +234,6 @@ class SpendingListViewController: UIViewController {
             headerView.configure(with: dailyExpenses[section].date, dailyTotalAmount: dailyTotalAmount)
         }
         updateTotalSpendingAmount()
-        
-        if dailyExpenses[section].expenses.isEmpty {
-            tableView.deleteSections(IndexSet(integer: section), with: UITableView.RowAnimation.fade)
-            updateTotalSpendingAmount()
-        }
     }
     
     func updateTotalSpendingAmount() {
@@ -251,6 +249,7 @@ class SpendingListViewController: UIViewController {
     func totalExpensesAmount() -> Int {
         return dailyExpenses.flatMap { $0.expenses }.reduce(0) { $0 + $1.expenseAmount }
     }
+    
 }
 
 // MARK: TableViewDataSource
@@ -320,24 +319,41 @@ extension SpendingListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        var arrs = self.dailyExpenses
-        let arr = arrs[sourceIndexPath.row]
-        arrs.remove(at: sourceIndexPath.row)
-        self.dailyExpenses = arrs
+        
+        let movedExpense = dailyExpenses[sourceIndexPath.section].expenses.remove(at: sourceIndexPath.row)
+        
+        dailyExpenses[destinationIndexPath.section].expenses.insert(movedExpense, at:destinationIndexPath.row)
+        
+        var sectionsToDelete: IndexSet = []
+        
+        if dailyExpenses[sourceIndexPath.section].expenses.isEmpty {
+            sectionsToDelete.insert(sourceIndexPath.section)
+        }
+
+        updateHeaderView(forSection: destinationIndexPath.section, withDeletedExpense: movedExpense)
+        
+        tableView.beginUpdates()
+        
+        if !sectionsToDelete.isEmpty {
+            dailyExpenses.remove(at: sectionsToDelete.first!)
+            tableView.deleteSections(sectionsToDelete, with: .automatic)
+        }
+        tableView.endUpdates()
+        tableView.reloadData()
+        updateTotalSpendingAmount()
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            var expensesInSection = dailyExpenses[indexPath.section].expenses
-            expensesInSection.remove(at: indexPath.row)
+            var deleteExpense = dailyExpenses[indexPath.section].expenses.remove(at: indexPath.row)
             
-            if expensesInSection.isEmpty {
+            if dailyExpenses[indexPath.section].expenses.isEmpty {
                 dailyExpenses.remove(at: indexPath.section)
                 tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
             } else {
-                dailyExpenses[indexPath.section].expenses = expensesInSection
                 tableView.deleteRows(at: [indexPath], with: .automatic)
             }
+            updateHeaderView(forSection: indexPath.section, withDeletedExpense: deleteExpense)
         }
         }
 
@@ -428,7 +444,4 @@ extension SpendingListViewController: InsertSpendingViewControllerDelegate {
         updateView()
     }
 }
-
-// MARK: - 카테고리별로 지출 금액 계산
-
 

@@ -556,18 +556,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         navigationController?.pushViewController(spendVC, animated: true)
     }
     
-    @objc func showCalendar() {
-        let calendarVC = CalendarHostingController()
-        calendarVC.delegate = self
-        calendarVC.modalPresentationStyle = .pageSheet
-        if let sheet = calendarVC.sheetPresentationController {
-            sheet.detents = [.custom(resolver: { _ in 460 })]
-            sheet.prefersGrabberVisible = true
-        }
-        present(calendarVC, animated: true, completion: nil)
-    }
-
-    
     func setupNavigationBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
         
@@ -597,7 +585,18 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             expenseButton.tintColor = .gray
         }
     }
-
+    
+    @objc private func showSingleDayCalendar() {
+        let calendarVC = SingleDayCalendarHostingController()
+        calendarVC.delegate = self
+        calendarVC.modalPresentationStyle = .pageSheet
+        if let sheet = calendarVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { _ in 460 })]
+            sheet.prefersGrabberVisible = true
+        }
+        present(calendarVC, animated: true, completion: nil)
+    }
+    
     
     @objc func dismissDetailView(_ sender:UIButton) {
         dismiss(animated: true)

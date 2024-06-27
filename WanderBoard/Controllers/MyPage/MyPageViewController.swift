@@ -391,7 +391,6 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                     case 1:
                     NotificationHelper.changePage(hidden: true, isEnabled: false)
                         let policyVC = CategorySelectionViewController()
-//                        policyVC.isModal = false
                         self.navigationController?.pushViewController(policyVC, animated: true)
                         policyVC.navigationItem.title = "이용약관 및 개인정보처리방침"
                     case 2:

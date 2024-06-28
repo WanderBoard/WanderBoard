@@ -41,6 +41,24 @@ class TextCollectionViewCell: UICollectionViewCell {
         $0.spacing = 16
     }
     
+    let emptyView = UIView().then() {
+        $0.backgroundColor = UIColor(white: 1, alpha: 0.9)
+        $0.isHidden = true
+    }
+    
+    let emptyImageView = UIImageView().then() {
+        $0.image = UIImage(named: "emptyImg")
+        $0.contentMode = .scaleAspectFit
+        $0.tintColor = .black
+    }
+    
+    let emptyTitleLabel = UILabel().then() {
+        $0.text = "기록 된 여행 일지가 없습니다."
+        $0.textColor = .black
+        $0.font = UIFont.boldSystemFont(ofSize: 20)
+        $0.textAlignment = .center
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupConstraint()
@@ -59,6 +77,10 @@ class TextCollectionViewCell: UICollectionViewCell {
             stackView.addArrangedSubview($0)
         }
         
+        contentView.addSubview(emptyView)
+        emptyView.addSubview(emptyImageView)
+        emptyView.addSubview(emptyTitleLabel)
+        
         imageView.snp.makeConstraints {
             $0.verticalEdges.equalToSuperview()
             $0.width.equalTo(imageView.snp.height).multipliedBy(330.0 / 445.0)
@@ -75,6 +97,21 @@ class TextCollectionViewCell: UICollectionViewCell {
             $0.centerY.equalTo(backView)
             $0.horizontalEdges.equalTo(backView).inset(16)
         }
+        
+        emptyView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+        emptyImageView.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.centerY.equalToSuperview().offset(-20)
+            $0.width.height.equalTo(60)
+        }
+        
+        emptyTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(emptyImageView.snp.bottom).offset(10)
+            $0.centerX.equalToSuperview()
+        }
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -89,19 +126,30 @@ class TextCollectionViewCell: UICollectionViewCell {
         backView.backgroundColor = backColor
     }
     
-    func configure(with image: UIImage?, title: String, content: String) {
+    func configure(with image: UIImage?, title: String?, content: String?) {
         imageView.image = image
         titleLabel.text = title
-
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 8
-        paragraphStyle.alignment = .center
-
-        let attributedString = NSAttributedString(string: content, attributes: [
-            .font: textLabel.font ?? UIFont.systemFont(ofSize: 15),
-            .paragraphStyle: paragraphStyle
-        ])
-
-        textLabel.attributedText = attributedString
+        
+        if let image = image, let title = title, !title.isEmpty, let content = content, !content.isEmpty {
+            emptyView.isHidden = true
+            backView.isHidden = false
+            
+            
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineSpacing = 8
+            paragraphStyle.alignment = .center
+            
+            let attributedString = NSAttributedString(string: content, attributes: [
+                .font: textLabel.font ?? UIFont.systemFont(ofSize: 15),
+                .paragraphStyle: paragraphStyle
+            ])
+            
+            textLabel.attributedText = attributedString
+        } else {
+            emptyView.isHidden = false
+            backView.isHidden = true
+            emptyImageView.isHidden = false
+            emptyTitleLabel.isHidden = false
+        }
     }
 }

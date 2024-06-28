@@ -280,8 +280,7 @@ class DetailViewController: UIViewController {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
             $0.height.equalTo(100)
         }
-        
-        
+
         bottomContentStackView.snp.makeConstraints {
             // $0.top.equalTo(optionsButton.snp.bottom).offset(10)
             $0.leading.trailing.equalToSuperview()
@@ -350,7 +349,7 @@ class DetailViewController: UIViewController {
             switch result {
             case .success(let pinLog):
                 self?.pinLog = pinLog
-                self?.checkId() // 데이터 로드 후 UI 업데이트
+                self?.checkId()
             case .failure(let error):
                 print("Failed to fetch pin log: \(error)")
             }
@@ -381,20 +380,11 @@ class DetailViewController: UIViewController {
     
     func checkId() {
         if let pinLog = pinLog {
-            if isCurrentUser(pinLog: pinLog) {
-                Task {
-                    await configureView(with: pinLog)
-                }
-                updatePinButtonState()
-                profileStackView.isHidden = true
-            } else {
-                hideAppearUIElements()
-                Task {
-                    await configureView(with: pinLog)
-                }
-                updatePinButtonState()
-                profileStackView.isHidden = false
+            Task {
+                await configureView(with: pinLog)
             }
+            updatePinButtonState()
+            profileStackView.isHidden = false
             setupMenu()
         }
     }

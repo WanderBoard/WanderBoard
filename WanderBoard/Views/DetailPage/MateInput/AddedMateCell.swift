@@ -11,7 +11,6 @@ protocol AddedMateCellDelegate: AnyObject {
     func didTapRemoveButton(for user: UserSummary)
 }
 
-
 class AddedMateCell: UICollectionViewCell {
     static let identifier = "AddedMateCell"
     

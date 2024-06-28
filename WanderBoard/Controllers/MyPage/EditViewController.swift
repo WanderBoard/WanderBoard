@@ -27,6 +27,16 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         $0.layer.cornerRadius = 53
     }
     
+    let nameLabel: UILabel = {
+        let label = UILabel()
+        label.contentMode = .scaleAspectFit
+        label.font = UIFont.systemFont(ofSize: 42, weight: .semibold)
+        label.textColor = .white
+        label.textAlignment = .center
+    
+        return label
+    }()
+    
     let profile = UIImageView()
     
     private let nicknameTextField: UITextField = {
@@ -159,7 +169,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     
     override func constraintLayout() {
         super.constraintLayout() //부모뷰의 설정을 가져온다
-        [profile, addImage, nicknameTextField, nameAlert, duplicateCheckButton, IDArea, subLine, withdrawalB].forEach(){
+        [profile, nameLabel, addImage, nicknameTextField, nameAlert, duplicateCheckButton, IDArea, subLine, withdrawalB].forEach(){
             view.addSubview($0)
         }
         logo.snp.makeConstraints(){
@@ -176,6 +186,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         }
         profile.addSubview(addImageLayer)
         profile.addSubview(addImage)
+        profile.addSubview(nameLabel)
         
         addImageLayer.snp.makeConstraints(){
             $0.edges.equalToSuperview()
@@ -184,6 +195,11 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         addImage.snp.makeConstraints(){
             $0.centerX.equalToSuperview()
             $0.width.height.equalTo(25)
+            $0.centerY.equalToSuperview()
+        }
+        
+        nameLabel.snp.makeConstraints(){
+            $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview()
         }
         
@@ -237,14 +253,35 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             $0.right.equalTo(subLine.snp.right).inset(16)
         }
     }
-    
+    //MARK: - 백버튼 커스텀
     func createCustomBackButton() -> UIBarButtonItem {
         // 커스텀 UIButton 생성
+        //이미지 두껍게 설정
         let backButton = UIButton(type: .system)
-        backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        let largeConfig = UIImage.SymbolConfiguration(weight: .semibold)
+        let backImage = UIImage(systemName: "chevron.left", withConfiguration: largeConfig)
+        backButton.setImage(backImage, for: .normal)
+        
         backButton.setTitle("Back", for: .normal)
+        backButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
         backButton.sizeToFit()
+        
+        //글자와 이미지 사이 3만큼
+        // 이미지와 텍스트 사이의 간격 설정
+        let spacing: CGFloat = 3.0
+        
+        // iOS 버전에 따라 설정을 다르게 함
+        //ios15에선 타이틀과 이미지인셋 직접 설정하는 방식 x
+        if #available(iOS 15.0, *) {
+            backButton.configuration?.imagePadding = spacing
+        } else {
+            //ios15 아래 버전은 이 방식을 참고
+            backButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -spacing, bottom: 0, right: spacing)
+            backButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: spacing, bottom: 0, right: -spacing)
+        }
+        
         backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        
         // 이미지와 텍스트 색상 설정
         backButton.setTitleColor(.font, for: .normal)
         backButton.tintColor = .font
@@ -256,7 +293,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                                          
     @objc func backButtonPressed() {
         if unsavedChanges() {
-            let alertController = UIAlertController(title: "저장 미완료", message: "변경사항이 저장되지 않았습니다. 수정을 종료하고 돌아가시겠습니까?", preferredStyle: .alert)
+            let alertController = UIAlertController(title: "저장 미완료", message: "변경사항이 저장되지 않았습니다.\n수정을 종료하고 돌아가시겠습니까?", preferredStyle: .alert)
             let leaveAction = UIAlertAction(title: "확인", style: .default) { _ in
                 self.navigationController?.popViewController(animated: true)
             }
@@ -274,6 +311,8 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let currentName = nicknameTextField.text ?? ""
         return currentImage != previousImage || currentName != previousName
     }
+    
+    //MARK: - 마이페이지로 돌아갈 때 해 줄 작업들
     
     @objc func moveToMyPage() {
         // 이미지와 이름 저장
@@ -384,11 +423,55 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                     showAlert(title: "😱", message: "아쉽네요.. 다른 사용자가 먼저 등록했어요")
                 } else {
                     showConfirmationAlert(title: "😁\n\(nickname)", message: "당신만의 멋진 닉네임이네요! \n이 닉네임을 사용하시겠습니까?", nickname: nickname)
+                    
                 }
             } catch {
                 showAlert(title: "😵‍💫", message: "닉네임 확인 중 오류가 발생했습니다: \(error.localizedDescription)")
             }
         }
+    }
+    
+    private func nickNameEditedProfileImageSetting(with nickname: String) {
+        let nickname = nicknameTextField.text
+        let shortNickname = String(nickname!.prefix(2))
+        
+        nameLabel.text = shortNickname
+
+        let backgroundColors = [
+            UIColor(named: "ProfileBackgroundColor1"),
+            UIColor(named: "ProfileBackgroundColor2"),
+            UIColor(named: "ProfileBackgroundColor3"),
+            UIColor(named: "ProfileBackgroundColor4"),
+            UIColor(named: "ProfileBackgroundColor5"),
+            UIColor(named: "ProfileBackgroundColor6"),
+            UIColor(named: "ProfileBackgroundColor7")
+        ]
+        
+        
+        profile.backgroundColor = backgroundColors.randomElement()!
+        
+        nameLabel.text = shortNickname.uppercased()
+        
+        profile.tag = 1 // 기본 이미지 태그 설정
+        
+        let temporaryView = UIView(frame: self.profile.bounds)
+        temporaryView.backgroundColor = self.profile.backgroundColor
+        let tempImageView = UIImageView(image: self.profile.image)
+        tempImageView.frame = self.profile.bounds
+        tempImageView.layer.cornerRadius = self.profile.layer.cornerRadius
+        tempImageView.clipsToBounds = true
+        temporaryView.addSubview(tempImageView)
+        
+        let tempLabel = UILabel(frame: self.nameLabel.frame)
+        tempLabel.text = self.nameLabel.text
+        tempLabel.font = self.nameLabel.font
+        tempLabel.textColor = self.nameLabel.textColor
+        tempLabel.textAlignment = self.nameLabel.textAlignment
+        tempLabel.center = tempImageView.center
+        temporaryView.addSubview(tempLabel)
+        
+        let profileImageWithLabel = temporaryView.asImage()
+        self.profile.image = profileImageWithLabel
     }
     
     private func updateDuplicateCheckButtonState() {
@@ -405,11 +488,25 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         let useAction = UIAlertAction(title: "사용", style: .default) { [weak self] _ in
             guard let self = self else { return }
+            
             self.nicknameTextField.isEnabled = false
             self.duplicateCheckButton.isEnabled = false
             let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
             self.duplicateCheckButton.backgroundColor = babyGTocustomB
+            
+            // 기본 이미지인지 확인
+            if self.profile.tag == 1 { 
+                self.profile.image = nil
+                self.addImage.isHidden = true
+                self.addImageLayer.isHidden = true
+            
+                let nickname = self.nicknameTextField.text
+                
+                self.nickNameEditedProfileImageSetting(with: nickname ?? "")
+            }
+            
             updateDoneButtonState()
+            
         }
         
         let cancelAction = UIAlertAction(title: "취소", style: .cancel) { [weak self] _ in
@@ -447,12 +544,20 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         //하단에서 이미지선택지 알람 등장(액션시트)
         let alert = UIAlertController(title: "프로필 사진 변경", message: nil, preferredStyle: .actionSheet)
         let changeToDefault = UIAlertAction(title: "기본으로 변경", style: .default) { _ in
-            self.profile.image = UIImage(named: "profileImg")
             self.addImageLayer.backgroundColor = UIColor(white: 1, alpha: 0.7)
             self.addImage.image = UIImage(systemName: "plus")
             self.addImage.tintColor = UIColor.textColorSub
             self.updateDoneButtonState()
+            
+            self.profile.image = nil
+            self.addImage.isHidden = true
+            self.addImageLayer.isHidden = true
+        
+            let nickname = self.nicknameTextField.text
+            
+            self.nickNameEditedProfileImageSetting(with: nickname ?? "")
         }
+        
         let selectImage = UIAlertAction(title: "새로운 사진 등록", style: .default) { _ in
             var configuration = PHPickerConfiguration()
             configuration.filter = .images
@@ -484,6 +589,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                         self?.profile.image = selectedImage
                         self?.addImageLayer.backgroundColor = .clear
                         self?.addImage.tintColor = .clear
+                        self?.profile.tag = 0
                     }
                 }
             }

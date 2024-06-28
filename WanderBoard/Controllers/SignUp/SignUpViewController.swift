@@ -690,7 +690,13 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     private func confirmButtonTapped(with nickname: String) {
         let shortNickname = String(nickname.prefix(2))
         
-        nameLabel.text = shortNickname
+        // Only set the nameLabel if no image is selected
+        if selectedImage == nil {
+            nameLabel.text = shortNickname
+            nameLabel.isHidden = false
+        } else {
+            nameLabel.isHidden = true
+        }
 
         let backgroundColors = [
             UIColor(named: "ProfileBackgroundColor1"),
@@ -704,8 +710,9 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         profileImageView.backgroundColor = backgroundColors.randomElement()!
         
-        nameLabel.text = shortNickname.uppercased()
-        
+        if selectedImage == nil {
+            nameLabel.text = shortNickname.uppercased()
+        }
     }
     
     @objc private func selectGender(_ sender: UIButton) {
@@ -757,33 +764,37 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
-        // selectedImage가 있으면 설정, 없으면 기본 이미지 설정
+        // 이미지를 업로드할 UIImage 결정
+        let imageToUpload: UIImage
+        
         if let selectedImage = selectedImage {
-            profileImageView.image = selectedImage
+            // 이미지가 선택되었으면 해당 이미지 사용
+            imageToUpload = selectedImage
+        } else {
+            // 기본 이미지 사용
+            // 임시 뷰 생성 및 캡쳐
+            let temporaryView = UIView(frame: profileImageView.bounds)
+            temporaryView.backgroundColor = profileImageView.backgroundColor
+            let tempImageView = UIImageView(image: profileImageView.image)
+            tempImageView.frame = profileImageView.bounds
+            tempImageView.layer.cornerRadius = profileImageView.layer.cornerRadius
+            tempImageView.clipsToBounds = true
+            temporaryView.addSubview(tempImageView)
+            
+            let tempLabel = UILabel(frame: nameLabel.frame)
+            tempLabel.text = nameLabel.text
+            tempLabel.font = nameLabel.font
+            tempLabel.textColor = nameLabel.textColor
+            tempLabel.textAlignment = nameLabel.textAlignment
+            tempLabel.center = tempImageView.center
+            temporaryView.addSubview(tempLabel)
+            
+            imageToUpload = temporaryView.asImage()
         }
-        
-        // 임시 뷰 생성 및 캡쳐
-        let temporaryView = UIView(frame: profileImageView.bounds)
-        temporaryView.backgroundColor = profileImageView.backgroundColor
-        let tempImageView = UIImageView(image: profileImageView.image)
-        tempImageView.frame = profileImageView.bounds
-        tempImageView.layer.cornerRadius = profileImageView.layer.cornerRadius
-        tempImageView.clipsToBounds = true
-        temporaryView.addSubview(tempImageView)
-        
-        let tempLabel = UILabel(frame: nameLabel.frame)
-        tempLabel.text = nameLabel.text
-        tempLabel.font = nameLabel.font
-        tempLabel.textColor = nameLabel.textColor
-        tempLabel.textAlignment = nameLabel.textAlignment
-        tempLabel.center = tempImageView.center
-        temporaryView.addSubview(tempLabel)
-        
-        let profileImageWithLabel = temporaryView.asImage()
         
         let storageRef = Storage.storage().reference().child("profileImages/\(uid).jpg")
         
-        if let imageData = profileImageWithLabel.jpegData(compressionQuality: 0.75) {
+        if let imageData = imageToUpload.jpegData(compressionQuality: 0.75) {
             storageRef.putData(imageData, metadata: nil) { metadata, error in
                 if let error = error {
                     print("Error uploading profile image: \(error)")

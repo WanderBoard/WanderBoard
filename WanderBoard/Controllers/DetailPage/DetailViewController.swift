@@ -224,11 +224,16 @@ class DetailViewController: UIViewController {
         loadData()
         
         view.backgroundColor = .systemBackground
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageViewTapped))
+            profileImageView.isUserInteractionEnabled = true
+            profileImageView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.tintColor = .white
+        
         
     }
 
@@ -338,9 +343,6 @@ class DetailViewController: UIViewController {
     }
     
     func updateColor(){
-        //라이트그레이-다크그레이
-        let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
-        
         //다크그레이-라이트그레이
         let darkBTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
         profileImageView.backgroundColor = darkBTolightG
@@ -595,6 +597,13 @@ class DetailViewController: UIViewController {
             self.friendCollectionView.reloadData()
             self.expandableButtonAction()
         }
+    }
+    
+    @objc func imageViewTapped() {
+        let nickname = nicknameLabel.text ?? ""
+        let detailVC = profileDetail()
+        detailVC.configureUI(with: nickname)
+        present(detailVC, animated: true, completion: nil)
     }
     
     func fetchUserImage(userId: String, completion: @escaping (UIImage?) -> Void) {

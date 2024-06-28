@@ -12,6 +12,8 @@ import Then
 class TextInputCollectionViewCell: UICollectionViewCell {
     static let identifier = String(describing: TextInputCollectionViewCell.self)
     
+    var pinLog: PinLog?
+    
     lazy var titleTextField = UITextField().then {
         $0.delegate = self
         $0.font = UIFont.systemFont(ofSize: 14)
@@ -28,7 +30,6 @@ class TextInputCollectionViewCell: UICollectionViewCell {
         $0.leftViewMode = .always
         $0.rightViewMode = .always
         
-        // 플레이스홀더 텍스트 색상 설정
         $0.attributedPlaceholder = NSAttributedString(
             string: "제목을 입력하세요",
             attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightgray]
@@ -67,6 +68,7 @@ class TextInputCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupConstraint()
+        setupTapGesture()
     }
     
     required init?(coder: NSCoder) {
@@ -114,30 +116,25 @@ class TextInputCollectionViewCell: UICollectionViewCell {
     private func setTitleTextFieldBorderColor(_ color: UIColor, alpha: CGFloat = 1.0) {
         titleTextField.layer.borderColor = color.withAlphaComponent(alpha).cgColor
     }
+    
+    func setupTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        contentView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        contentView.endEditing(true)
+    }
+    
+    func configure(with pinLog: PinLog) {
+        self.pinLog = pinLog
+        titleTextField.text = pinLog.title
+        contentTextView.text = pinLog.content
+        placeholderLabel.isHidden = !contentTextView.text.isEmpty
+    }
 }
 
 extension TextInputCollectionViewCell: UITextViewDelegate, UITextFieldDelegate {
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if text.isEmpty {
-            return true
-        }
-
-        let currentText = textView.text as NSString
-        let newText = currentText.replacingCharacters(in: range, with: text)
-        
-        let fittingSize = CGSize(width: textView.frame.width, height: CGFloat.greatestFiniteMagnitude)
-        let size = textView.sizeThatFits(fittingSize)
-        
-        if newText.count <= 220 && size.height <= textView.frame.height {
-            setTextViewBorderColor(UIColor.darkgray)
-            return true
-        } else {
-            provideHapticFeedback()
-            setTextViewBorderColor(UIColor.red, alpha: 0.1) 
-            return false
-        }
-    }
-    
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.text.isEmpty {
             placeholderLabel.isHidden = true
@@ -148,6 +145,21 @@ extension TextInputCollectionViewCell: UITextViewDelegate, UITextFieldDelegate {
         if textView.text.isEmpty {
             placeholderLabel.isHidden = false
         }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField == titleTextField {
+            contentTextView.becomeFirstResponder()
+        }
+        return true
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" {
+            textView.insertText("\n")
+            return false
+        }
+        return true
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {

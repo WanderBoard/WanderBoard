@@ -282,7 +282,6 @@ class DetailViewController: UIViewController {
             $0.height.equalTo(100)
         }
        
-        
         bottomContentStackView.snp.makeConstraints {
            // $0.top.equalTo(optionsButton.snp.bottom).offset(10)
             $0.leading.trailing.equalToSuperview()
@@ -338,9 +337,6 @@ class DetailViewController: UIViewController {
     }
     
     func updateColor(){
-        //라이트그레이-다크그레이
-        let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
-        
         //다크그레이-라이트그레이
         let darkBTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
         profileImageView.backgroundColor = darkBTolightG
@@ -354,7 +350,7 @@ class DetailViewController: UIViewController {
             switch result {
             case .success(let pinLog):
                 self?.pinLog = pinLog
-                self?.checkId() // 데이터 로드 후 UI 업데이트
+                self?.checkId()
             case .failure(let error):
                 print("Failed to fetch pin log: \(error)")
             }
@@ -385,20 +381,11 @@ class DetailViewController: UIViewController {
     
     func checkId() {
         if let pinLog = pinLog {
-            if isCurrentUser(pinLog: pinLog) {
-                Task {
-                    await configureView(with: pinLog)
-                }
-                updatePinButtonState()
-                profileStackView.isHidden = true
-            } else {
-                hideAppearUIElements()
-                Task {
-                    await configureView(with: pinLog)
-                }
-                updatePinButtonState()
-                profileStackView.isHidden = false
+            Task {
+                await configureView(with: pinLog)
             }
+            updatePinButtonState()
+            profileStackView.isHidden = false
             setupMenu()
         }
     }

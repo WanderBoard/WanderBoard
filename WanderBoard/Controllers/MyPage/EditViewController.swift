@@ -147,7 +147,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         
         subLine.backgroundColor = .babygray
         subLine.layer.cornerRadius = 10
-
+        
         withdrawalB.setTitle("회원탈퇴", for: .normal)
         withdrawalB.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         withdrawalB.setTitleColor(UIColor(named: "lightgray"), for: .normal)
@@ -171,18 +171,18 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         }
         
         switch userData.authProvider {
-            case AuthProviderOption.google.rawValue:
-                self.IDIcon.image = UIImage(named: "googleLogo")
-            case AuthProviderOption.apple.rawValue:
-                self.IDIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
-            case AuthProviderOption.kakao.rawValue:
-                self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-                self.IDIcon.tintColor = UIColor(named: "kakaoYellow")
-            case AuthProviderOption.email.rawValue:
-                self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-                self.IDIcon.tintColor = UIColor(named: "kakaoYellow") // 이메일 로그인은 추가 안함, 카카오랑 같은 아이콘 뜨도록 설정
-            default:
-                print("등록된 로그인 정보가 없습니다")
+        case AuthProviderOption.google.rawValue:
+            self.IDIcon.image = UIImage(named: "googleLogo")
+        case AuthProviderOption.apple.rawValue:
+            self.IDIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
+        case AuthProviderOption.kakao.rawValue:
+            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+            self.IDIcon.tintColor = UIColor(named: "kakaoYellow")
+        case AuthProviderOption.email.rawValue:
+            self.IDIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+            self.IDIcon.tintColor = UIColor(named: "kakaoYellow") // 이메일 로그인은 추가 안함, 카카오랑 같은 아이콘 뜨도록 설정
+        default:
+            print("등록된 로그인 정보가 없습니다")
         }
     }
     
@@ -266,7 +266,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             $0.height.equalTo(1)
             $0.top.equalTo(nameAlert.snp.bottom).offset(15)
         }
-       
+        
         withdrawalB.snp.makeConstraints(){
             $0.top.equalTo(subLine.snp.bottom).offset(15)
             $0.right.equalTo(subLine.snp.right).inset(16)
@@ -304,12 +304,12 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         // 이미지와 텍스트 색상 설정
         backButton.setTitleColor(.font, for: .normal)
         backButton.tintColor = .font
-
+        
         // 커스텀 버튼을 UIBarButtonItem으로 설정
         let barButtonItem = UIBarButtonItem(customView: backButton)
         return barButtonItem
     }
-                                         
+    
     @objc func backButtonPressed() {
         if unsavedChanges() {
             let alertController = UIAlertController(title: "저장 미완료", message: "변경사항이 저장되지 않았습니다.\n수정을 종료하고 돌아가시겠습니까?", preferredStyle: .alert)
@@ -324,7 +324,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             self.navigationController?.popViewController(animated: true)
         }
     }
-
+    
     func unsavedChanges() -> Bool {
         let currentImage = profile.image
         let currentName = nicknameTextField.text ?? ""
@@ -559,8 +559,8 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let isValidLength = nicknameLength >= 2 && nicknameLength <= 16
         duplicateCheckButton.isEnabled = isValidLength
         let lightGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "lightgray")
-               duplicateCheckButton.backgroundColor = isValidLength ? .font : lightGTocustomB
-               duplicateCheckButton.setTitleColor(isValidLength ? UIColor(named: "textColor") : .darkgray, for: .normal)
+        duplicateCheckButton.backgroundColor = isValidLength ? .font : lightGTocustomB
+        duplicateCheckButton.setTitleColor(isValidLength ? UIColor(named: "textColor") : .darkgray, for: .normal)
     }
     
     private func showConfirmationAlert(title: String, message: String, nickname: String) {

@@ -219,24 +219,18 @@ class DetailViewController: UIViewController {
         setupCollectionView()
         setupActionButton()
         updateColor()
-        
         checkId()
         loadData()
+        setupTapGesture()
         
         view.backgroundColor = .systemBackground
-        
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageViewTapped))
-            profileImageView.isUserInteractionEnabled = true
-            profileImageView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.tintColor = .white
-        
-        
     }
-
+    
     func setupUI() {
         view.addSubview(detailViewCollectionView)
         view.addSubview(detailViewButton.view)
@@ -255,7 +249,7 @@ class DetailViewController: UIViewController {
         
         profileStackView.addArrangedSubview(profileImageView)
         profileStackView.addArrangedSubview(nicknameLabel)
-    
+        
         bottomContentStackView.addArrangedSubview(profileStackView)
         bottomContentStackView.addArrangedSubview(locationLabel)
         
@@ -286,10 +280,10 @@ class DetailViewController: UIViewController {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
             $0.height.equalTo(100)
         }
-       
+        
         
         bottomContentStackView.snp.makeConstraints {
-           // $0.top.equalTo(optionsButton.snp.bottom).offset(10)
+            // $0.top.equalTo(optionsButton.snp.bottom).offset(10)
             $0.leading.trailing.equalToSuperview()
         }
         
@@ -481,9 +475,9 @@ class DetailViewController: UIViewController {
     //여기에서 업데이트 해줄 때 기본 설정을 못 가져와서 생겼던 문제였던 거 같습니다 ~~
     func updatePinButtonState() {
         guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else { return }
-
+        
         let pinnedBy = pinLog.pinnedBy ?? []
-
+        
         let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 26, weight: .regular)
         let symbolImage = pinnedBy.contains(currentUserId) ? UIImage(systemName: "pin.circle.fill", withConfiguration: symbolConfiguration) : UIImage(systemName: "pin.circle", withConfiguration: symbolConfiguration)
         
@@ -599,13 +593,6 @@ class DetailViewController: UIViewController {
         }
     }
     
-    @objc func imageViewTapped() {
-        let nickname = nicknameLabel.text ?? ""
-        let detailVC = profileDetail()
-        detailVC.configureUI(with: nickname)
-        present(detailVC, animated: true, completion: nil)
-    }
-    
     func fetchUserImage(userId: String, completion: @escaping (UIImage?) -> Void) {
         let db = Firestore.firestore()
         db.collection("users").document(userId).getDocument { document, error in
@@ -622,6 +609,28 @@ class DetailViewController: UIViewController {
                 completion(nil)
             }
         }
+    }
+    
+    //프로필 이미지 눌렀을때 이미지 확대 뷰
+    func setupTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped(tapGestureRecognizer:)))
+        profileImageView.addGestureRecognizer(tapGesture)
+        profileImageView.isUserInteractionEnabled = true
+    }
+    
+    @objc func profileImageTapped(tapGestureRecognizer: UITapGestureRecognizer){
+        let profileDetailVC = profileDetail()
+        addChild(profileDetailVC)
+        view.addSubview(profileDetailVC.view)
+        profileDetailVC.view.frame = view.bounds
+        profileDetailVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        profileDetailVC.view.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        present(profileDetailVC, animated: true, completion: nil)
+//        profileDetailVC.modalPresentationStyle = .fullScreen
+//        profileDetailVC.configureUI(with: nicknameLabel.text ?? "")
+//        present(profileDetailVC, animated: true, completion: nil)
     }
     
     @objc func expandableButtonTapped() {

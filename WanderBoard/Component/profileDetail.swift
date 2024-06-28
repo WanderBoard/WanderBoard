@@ -50,16 +50,14 @@ class profileDetail: UIViewController {
         $0.font = UIFont.boldSystemFont(ofSize: 17)
         $0.textAlignment = .center
     }
-    let xButton = UIButton().then {
-            $0.setImage(UIImage(systemName: "xmark"), for: .normal)
-            $0.tintColor = .black // 원하는 색상으로 변경
-            $0.addTarget(self, action: #selector(dismissModal), for: .touchUpInside)
-        }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
         constraintLayout()
+        updateColor()
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissModal))
     }
     
     func constraintLayout(){

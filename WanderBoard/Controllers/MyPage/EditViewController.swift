@@ -75,6 +75,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     var previousName: String = ""
     var ID: String = ""
     var userData: User?
+    var progressViewController: ProgressViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -335,6 +336,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     @objc func moveToMyPage() {
         // 이미지와 이름 저장
         var nameToSave = nicknameTextField.text?.isEmpty ?? true ? previousName : nicknameTextField.text
+        showProgressView()
         
         Task {
             do {
@@ -384,6 +386,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                 let confirm = UIAlertAction(title: "확인", style: .default) { _ in
                     self.navigationController?.popViewController(animated: true)
                 }
+                hideProgressView()
                 alert.addAction(confirm)
                 present(alert, animated: true, completion: nil)
             } catch {
@@ -395,6 +398,27 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             }
         }
     }
+    
+    //MARK: - 로딩중 똑딱버튼
+        private func showProgressView() {
+            let progressVC = ProgressViewController()
+            addChild(progressVC)
+            view.addSubview(progressVC.view)
+            progressVC.view.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+            progressVC.didMove(toParent: self)
+            progressViewController = progressVC
+        }
+
+        private func hideProgressView() {
+            if let progressVC = progressViewController {
+                progressVC.willMove(toParent: nil)
+                progressVC.view.removeFromSuperview()
+                progressVC.removeFromParent()
+                progressViewController = nil
+            }
+        }
     
     // Firestore에 사용자 프로필 정보 업데이트
     func updateProfile(displayName: String?, photoURL: UIImage?) async throws {

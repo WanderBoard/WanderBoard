@@ -635,6 +635,14 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             self.profile.tag = 1 // 기본 이미지로 변경
             
             self.updateDoneButtonState()
+            
+            self.profile.image = nil
+            self.addImage.isHidden = true
+            self.addImageLayer.isHidden = true
+        
+            let nickname = self.nicknameTextField.text
+            
+            self.nickNameEditedProfileImageSetting(with: nickname ?? "")
         }
         
         let selectImage = UIAlertAction(title: "새로운 사진 등록", style: .default) { _ in

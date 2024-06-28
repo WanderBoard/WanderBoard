@@ -59,8 +59,7 @@ class MyTripsCollectionViewCell: UICollectionViewCell {
     }
     
     let profileImg = UIImageView().then {
-        $0.image = UIImage(systemName: "pesron")
-        $0.backgroundColor = .white
+        $0.backgroundColor = .black
         $0.tintColor = .white
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true

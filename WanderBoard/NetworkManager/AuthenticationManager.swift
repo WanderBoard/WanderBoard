@@ -20,6 +20,7 @@ struct AuthDataResultModel {
     var isProfileComplete: Bool?
     var blockedAuthors: [String] // 추가된 부분
     var hiddenPinLogs: [String] // 추가된 부분
+    var isDefaultProfile: Bool?
 
     init(user: FirebaseAuth.User, authProvider: AuthProviderOption) {
         self.uid = user.uid
@@ -33,6 +34,7 @@ struct AuthDataResultModel {
         self.isProfileComplete = nil
         self.blockedAuthors = [] // 초기값 설정
         self.hiddenPinLogs = [] // 초기값 설정
+        self.isDefaultProfile = nil
     }
     
     init(user: User, authProvider: AuthProviderOption) {

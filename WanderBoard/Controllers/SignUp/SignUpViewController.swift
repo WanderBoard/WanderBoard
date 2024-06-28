@@ -529,6 +529,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true, completion: nil)
+        nameLabel.isHidden = true
         
         guard let provider = results.first?.itemProvider, provider.canLoadObject(ofClass: UIImage.self) else { return }
         

@@ -78,7 +78,9 @@ class CategoryInputCollectionViewCell: UICollectionViewCell, UICollectionViewDel
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+
         return CGSize(width: collectionView.bounds.width, height: collectionView.bounds.height)
+
     }
 
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {

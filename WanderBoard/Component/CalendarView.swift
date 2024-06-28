@@ -96,8 +96,8 @@ struct CalendarView: View {
             }) {
                 Text("선택")
                     .frame(maxWidth: .infinity, maxHeight: 50)
-                    .background(isSelectionComplete() ? Color.black : Color("babygray"))
-                    .foregroundColor(.white)
+                    .background(isSelectionComplete() ? Color.font : Color("PageCtrlUnselectedText"))
+                    .foregroundColor(Color("textColor"))
                     .cornerRadius(10)
             }
             .disabled(!isSelectionComplete())

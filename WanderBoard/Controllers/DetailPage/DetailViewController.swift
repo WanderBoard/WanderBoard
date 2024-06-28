@@ -50,7 +50,7 @@ class DetailViewController: UIViewController {
         $0.setImage(symbolImage, for: .normal)
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
-        $0.tintColor = .black
+        $0.tintColor = .font
         $0.isHidden = true
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.addTarget(self, action: #selector(pinButtonTapped), for: .touchUpInside)
@@ -62,7 +62,7 @@ class DetailViewController: UIViewController {
         $0.setImage(symbolImage, for: .normal)
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
-        $0.tintColor = .black
+        $0.tintColor = .font
         $0.isHidden = false
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -362,7 +362,6 @@ class DetailViewController: UIViewController {
     }
     
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
-    
     // 핀 버튼
     private func newSetupConstraints() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
@@ -542,7 +541,6 @@ class DetailViewController: UIViewController {
         } else {
             profileImageView.image = UIImage(named: "profileImg")
         }
-        
         friendCollectionView.isHidden = pinLog.attendeeIds.isEmpty
         
         // 대표 이미지와 텍스트 추출

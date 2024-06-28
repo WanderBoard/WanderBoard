@@ -301,7 +301,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
         setupUI()
         setupConstraints()
@@ -326,7 +326,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationItem.largeTitleDisplayMode = .never
-        
         setupNavigationBar()
         updateExpenseButtonState()
     }
@@ -501,8 +500,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
         
         
-        //라이트그레이-라이트블랙
-        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
     }
     
     func setupCollectionView() {
@@ -521,8 +518,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     func actionButton() {
         
         dateButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
-        
-        
         locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
         

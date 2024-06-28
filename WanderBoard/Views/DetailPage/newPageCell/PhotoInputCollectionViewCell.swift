@@ -107,15 +107,8 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
             imageView.isHidden = false
             addButton.isHidden = true
             deleteButton.isHidden = false
-
-            if indexPath.item == 1 && !isRepresentative {
-                self.isRepresentative = true
-                representativeLabel.isHidden = false
-            } else {
-                self.isRepresentative = isRepresentative
-                representativeLabel.isHidden = !isRepresentative
-            }
-            
+            self.isRepresentative = isRepresentative
+            representativeLabel.isHidden = !isRepresentative
         } else {
             imageView.isHidden = true
             addButton.isHidden = false

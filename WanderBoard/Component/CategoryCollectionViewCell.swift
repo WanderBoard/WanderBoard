@@ -8,13 +8,18 @@
 import UIKit
 import SnapKit
 
+protocol CategoryCollectionViewCellDelegate: AnyObject {
+    func didTapCategoryButton(_ cell: CategoryCollectionViewCell)
+}
+
 class CategoryCollectionViewCell: UICollectionViewCell {
 
     static let identifier = "CategoryCollectionViewCell"
 
-    private let imageView = UIImageView()
-    private let nameLabel = UILabel()
-    private let stackView = UIStackView()
+    weak var delegate: CategoryCollectionViewCellDelegate?
+
+    let button = UIButton()
+    let nameLabel = UILabel()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -26,36 +31,38 @@ class CategoryCollectionViewCell: UICollectionViewCell {
     }
 
     private func setupUI() {
-        stackView.axis = .vertical
-        stackView.alignment = .center
-//        stackView.spacing = 8
-        
-        stackView.addArrangedSubview(imageView)
-        stackView.addArrangedSubview(nameLabel)
-        
-        contentView.addSubview(stackView)
+        contentView.addSubview(button)
+        contentView.addSubview(nameLabel)
 
-        imageView.contentMode = .scaleAspectFit
+        button.imageView?.contentMode = .scaleAspectFit
         nameLabel.textAlignment = .center
         nameLabel.font = UIFont.systemFont(ofSize: 14)
 
-        stackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        imageView.snp.makeConstraints { make in
+        button.snp.makeConstraints { make in
             make.width.height.equalTo(195)
-            make.centerY.equalTo(contentView.snp.centerY).offset(-24)
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(48)
         }
         
         nameLabel.snp.makeConstraints { make in
-            make.top.equalTo(imageView.snp.bottom).offset(-24)
-            make.centerX.equalTo(imageView.snp.centerX)
+            make.top.equalTo(button.snp.bottom).offset(16)
+            make.centerX.equalTo(button.snp.centerX)
         }
+        
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowOffset = CGSize(width: 4, height: 2)
+        button.layer.shadowRadius = 4
+
+        button.addTarget(self, action: #selector(iconTapped), for: .touchUpInside)
+    }
+
+    @objc private func iconTapped() {
+        delegate?.didTapCategoryButton(self)
     }
 
     func configure(with image: UIImage?, name: String) {
-        imageView.image = image
+        button.setImage(image, for: .normal)
         nameLabel.text = name
     }
 }

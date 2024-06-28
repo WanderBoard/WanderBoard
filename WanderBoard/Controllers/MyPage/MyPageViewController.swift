@@ -264,7 +264,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 myID.text = "이메일 비공개"
             } else {
                 myID.text = userData.email
-                //profile.image = UIImage(named: "profileImg")
                 profile.backgroundColor = .white
             }
         }
@@ -305,7 +304,6 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 }
             }
         } else {
-            //profile.image = UIImage(named: "profileImg")
             profile.backgroundColor = .white
         }
     }

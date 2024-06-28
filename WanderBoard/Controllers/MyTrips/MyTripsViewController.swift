@@ -33,7 +33,7 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
         $0.setImage(image, for: .normal)
         $0.tintColor = UIColor(named: "textColor")
         $0.backgroundColor = .font
-        $0.layer.cornerRadius = 18
+        $0.layer.cornerRadius = 15
         $0.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
     
@@ -158,8 +158,8 @@ class MyTripsViewController: UIViewController, PageIndexed, UICollectionViewDele
             
             plusButton.snp.makeConstraints {
                 $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-16)
-                $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
-                $0.size.equalTo(CGSize(width: 36, height: 36))
+                $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-13)
+                $0.size.equalTo(CGSize(width: 30, height: 30))
             }
         }
     }

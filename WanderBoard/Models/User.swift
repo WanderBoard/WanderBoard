@@ -26,7 +26,6 @@ struct User: Codable {
     var agreedToThirdParty: Bool?
     var joinedDate: Date?
     var hiddenPinLogs: [String]?
-    var isDefaultProfile: Bool?
 
     init(entity: UserEntity) {
         self.uid = entity.uid ?? ""
@@ -47,7 +46,6 @@ struct User: Codable {
         self.agreedToThirdParty = entity.agreedToThirdParty
         self.joinedDate = entity.joinedDate
         self.hiddenPinLogs = (entity.hiddenPinLogs?.jsonArray() as? [String]) ?? []
-        self.isDefaultProfile = entity.isDefaultProfile
     }
 
     func toUserEntity(context: NSManagedObjectContext) -> UserEntity {
@@ -71,9 +69,6 @@ struct User: Codable {
         userEntity.agreedToThirdParty = self.agreedToThirdParty ?? false
         userEntity.joinedDate = self.joinedDate
         userEntity.hiddenPinLogs = self.hiddenPinLogs?.jsonString() ?? "[]"
-        if let isDefaultProfile = self.isDefaultProfile {
-            userEntity.isDefaultProfile = isDefaultProfile
-        }
         return userEntity
     }
 }

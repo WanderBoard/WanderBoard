@@ -14,7 +14,7 @@ class PlaceInfoView: UIView {
     private let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "mappin.circle.fill")
-        imageView.tintColor = .black
+        imageView.tintColor = .font
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()

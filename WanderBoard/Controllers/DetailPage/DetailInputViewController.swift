@@ -301,7 +301,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
         setupUI()
         setupConstraints()
@@ -326,7 +326,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationItem.largeTitleDisplayMode = .never
-        
         setupNavigationBar()
         updateExpenseButtonState()
     }
@@ -501,8 +500,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
         
         
-        //라이트그레이-라이트블랙
-        let lightGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "lightgray")
     }
     
     func setupCollectionView() {
@@ -521,8 +518,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     func actionButton() {
         
         dateButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
-        
-        
         locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
         consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
         
@@ -569,22 +564,22 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let barButtonItem = UIBarButtonItem(customView: expenseButton)
         navigationItem.rightBarButtonItems = [doneButton, barButtonItem]
 
-        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.tintColor = .font
         
         updateExpenseButtonState()
     }
 
     func updateExpenseButtonState() {
         if let pinLog = pinLog, let expenses = pinLog.expenses, !expenses.isEmpty {
-            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .regular))
             expenseButton.setImage(image, for: .normal)
             expenseButton.isEnabled = true
-            expenseButton.tintColor = .black
+            expenseButton.tintColor = .font
         } else {
-            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .regular))
             expenseButton.setImage(image, for: .normal)
             expenseButton.isEnabled = false
-            expenseButton.tintColor = .gray
+            expenseButton.tintColor = .darkgray
         }
     }
     

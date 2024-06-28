@@ -50,7 +50,7 @@ class DetailViewController: UIViewController {
         $0.setImage(symbolImage, for: .normal)
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
-        $0.tintColor = .black
+        $0.tintColor = .font
         $0.isHidden = true
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.addTarget(self, action: #selector(pinButtonTapped), for: .touchUpInside)
@@ -62,7 +62,7 @@ class DetailViewController: UIViewController {
         $0.setImage(symbolImage, for: .normal)
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
-        $0.tintColor = .black
+        $0.tintColor = .font
         $0.isHidden = false
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -174,7 +174,7 @@ class DetailViewController: UIViewController {
     }
     
     let expandableView = UIView().then {
-        $0.backgroundColor = .babygray
+        $0.backgroundColor = .babyGTocustomB
         $0.isHidden = false
         $0.layer.cornerRadius = 10
         $0.layer.masksToBounds = true
@@ -224,11 +224,16 @@ class DetailViewController: UIViewController {
         loadData()
         
         view.backgroundColor = .systemBackground
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageViewTapped))
+            profileImageView.isUserInteractionEnabled = true
+            profileImageView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.tintColor = .white
+        
         
     }
 
@@ -310,7 +315,7 @@ class DetailViewController: UIViewController {
             $0.centerY.equalTo(dateStackView.snp.centerY).offset(-20)
             $0.trailing.equalToSuperview().offset(15)
             $0.width.equalTo(50)
-            $0.height.equalTo(100)
+            $0.height.equalTo(90)
         }
         
         expandableButton.snp.makeConstraints {
@@ -338,9 +343,6 @@ class DetailViewController: UIViewController {
     }
     
     func updateColor(){
-        //라이트그레이-다크그레이
-        let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
-        
         //다크그레이-라이트그레이
         let darkBTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
         profileImageView.backgroundColor = darkBTolightG
@@ -362,7 +364,6 @@ class DetailViewController: UIViewController {
     }
     
     //MARK: - 다른 사람 글 볼 때 구현 추가 - 한빛
-    
     // 핀 버튼
     private func newSetupConstraints() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissDetailView))
@@ -540,9 +541,8 @@ class DetailViewController: UIViewController {
         if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId), let url = URL(string: photoURL) {
             profileImageView.kf.setImage(with: url)
         } else {
-            profileImageView.image = UIImage(named: "profileImg")
+            profileImageView.backgroundColor = .black
         }
-        
         friendCollectionView.isHidden = pinLog.attendeeIds.isEmpty
         
         // 대표 이미지와 텍스트 추출
@@ -597,6 +597,13 @@ class DetailViewController: UIViewController {
             self.friendCollectionView.reloadData()
             self.expandableButtonAction()
         }
+    }
+    
+    @objc func imageViewTapped() {
+        let nickname = nicknameLabel.text ?? ""
+        let detailVC = profileDetail()
+        detailVC.configureUI(with: nickname)
+        present(detailVC, animated: true, completion: nil)
     }
     
     func fetchUserImage(userId: String, completion: @escaping (UIImage?) -> Void) {

@@ -44,6 +44,7 @@ class TextCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupConstraint()
+        updateColor()
     }
     
     required init?(coder: NSCoder) {
@@ -84,7 +85,7 @@ class TextCollectionViewCell: UICollectionViewCell {
     }
     
     func updateColor(){
-        let backColor = traitCollection.userInterfaceStyle == .dark ? UIColor(white: 0, alpha: 0.9) : UIColor(white: 1, alpha: 0.9)
+        let backColor = traitCollection.userInterfaceStyle == .dark ? UIColor(white: 0, alpha: 0.8) : UIColor(white: 1, alpha: 0.9)
         backView.backgroundColor = backColor
     }
     

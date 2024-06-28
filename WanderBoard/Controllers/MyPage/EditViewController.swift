@@ -75,11 +75,15 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     var previousName: String = ""
     var ID: String = ""
     var userData: User?
+    var progressViewController: ProgressViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setIcon()
         view.backgroundColor = .systemBackground
+        // Firestore에서 isDefaultProfile 값
+        fetchUserData()
+        
         //뒤로가기 버튼을 눌렀을때 기존의 프로필에서 수정사항이 있는지 체크하기 위해 현재 남아있는 정보값은 이전의 값이라고 정의
         previousImage = profile.image
         previousName = nicknameTextField.text ?? ""
@@ -95,6 +99,21 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         // 커스텀 뒤로가기 버튼 추가
         let backButton = createCustomBackButton()
         self.navigationItem.leftBarButtonItem = backButton
+    }
+    
+    private func fetchUserData() {
+        guard let currentUser = Auth.auth().currentUser else {
+            return
+        }
+        
+        let userRef = Firestore.firestore().collection("users").document(currentUser.uid)
+        userRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                let data = document.data()
+                let isDefaultProfile = data?["isDefaultProfile"] as? Bool ?? true
+                self.profile.tag = isDefaultProfile ? 1 : 0
+            }
+        }
     }
     
     override func configureUI(){
@@ -316,10 +335,25 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     
     @objc func moveToMyPage() {
         // 이미지와 이름 저장
-        let nameToSave = nicknameTextField.text?.isEmpty ?? true ? previousName : nicknameTextField.text
+        var nameToSave = nicknameTextField.text?.isEmpty ?? true ? previousName : nicknameTextField.text
+        showProgressView()
         
         Task {
             do {
+                // 사용자 정보를 Firestore에서 가져오기
+                if nameToSave?.isEmpty ?? true {
+                    guard let user = Auth.auth().currentUser else {
+                        throw NSError(domain: "UserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인 되어있지 않습니다"])
+                    }
+                    
+                    let userRef = Firestore.firestore().collection("users").document(user.uid)
+                    let document = try await userRef.getDocument()
+                    
+                    if let documentData = document.data() {
+                        nameToSave = documentData["displayName"] as? String ?? previousName
+                    }
+                }
+                
                 // Firebase 사용자 프로필 업데이트
                 try await updateProfile(displayName: nameToSave, photoURL: profile.image)
                 
@@ -332,7 +366,8 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                     "email": user.email ?? "",
                     "displayName": nameToSave ?? "",
                     "authProvider": user.providerData.first?.providerID ?? "",
-                    "isProfileComplete": true
+                    "isProfileComplete": true,
+                    "isDefaultProfile": profile.tag == 1
                 ]
                 
                 if let photoURL = user.photoURL?.absoluteString {
@@ -351,6 +386,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                 let confirm = UIAlertAction(title: "확인", style: .default) { _ in
                     self.navigationController?.popViewController(animated: true)
                 }
+                hideProgressView()
                 alert.addAction(confirm)
                 present(alert, animated: true, completion: nil)
             } catch {
@@ -362,6 +398,27 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             }
         }
     }
+    
+    //MARK: - 로딩중 똑딱버튼
+        private func showProgressView() {
+            let progressVC = ProgressViewController()
+            addChild(progressVC)
+            view.addSubview(progressVC.view)
+            progressVC.view.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+            progressVC.didMove(toParent: self)
+            progressViewController = progressVC
+        }
+
+        private func hideProgressView() {
+            if let progressVC = progressViewController {
+                progressVC.willMove(toParent: nil)
+                progressVC.view.removeFromSuperview()
+                progressVC.removeFromParent()
+                progressViewController = nil
+            }
+        }
     
     // Firestore에 사용자 프로필 정보 업데이트
     func updateProfile(displayName: String?, photoURL: UIImage?) async throws {
@@ -432,46 +489,69 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     }
     
     private func nickNameEditedProfileImageSetting(with nickname: String) {
-        let nickname = nicknameTextField.text
-        let shortNickname = String(nickname!.prefix(2))
+        let fetchNicknameIfEmpty: (@escaping (String?) -> Void) -> Void = { completion in
+            if let text = self.nicknameTextField.text, !text.isEmpty {
+                completion(text)
+            } else {
+                guard let user = Auth.auth().currentUser else {
+                    completion(nil)
+                    return
+                }
+                
+                let userRef = Firestore.firestore().collection("users").document(user.uid)
+                userRef.getDocument { document, error in
+                    if let document = document, document.exists {
+                        let fetchedNickname = document.data()?["displayName"] as? String
+                        completion(fetchedNickname)
+                    } else {
+                        completion(nil)
+                    }
+                }
+            }
+        }
         
-        nameLabel.text = shortNickname
+        fetchNicknameIfEmpty { [weak self] nicknameToUse in
+            guard let self = self, let nicknameToUse = nicknameToUse else {
+                print("Failed to fetch nickname")
+                return
+            }
+            
+            let shortNickname = String(nicknameToUse.prefix(2))
+            self.nameLabel.text = shortNickname
 
-        let backgroundColors = [
-            UIColor(named: "ProfileBackgroundColor1"),
-            UIColor(named: "ProfileBackgroundColor2"),
-            UIColor(named: "ProfileBackgroundColor3"),
-            UIColor(named: "ProfileBackgroundColor4"),
-            UIColor(named: "ProfileBackgroundColor5"),
-            UIColor(named: "ProfileBackgroundColor6"),
-            UIColor(named: "ProfileBackgroundColor7")
-        ]
-        
-        
-        profile.backgroundColor = backgroundColors.randomElement()!
-        
-        nameLabel.text = shortNickname.uppercased()
-        
-        profile.tag = 1 // 기본 이미지 태그 설정
-        
-        let temporaryView = UIView(frame: self.profile.bounds)
-        temporaryView.backgroundColor = self.profile.backgroundColor
-        let tempImageView = UIImageView(image: self.profile.image)
-        tempImageView.frame = self.profile.bounds
-        tempImageView.layer.cornerRadius = self.profile.layer.cornerRadius
-        tempImageView.clipsToBounds = true
-        temporaryView.addSubview(tempImageView)
-        
-        let tempLabel = UILabel(frame: self.nameLabel.frame)
-        tempLabel.text = self.nameLabel.text
-        tempLabel.font = self.nameLabel.font
-        tempLabel.textColor = self.nameLabel.textColor
-        tempLabel.textAlignment = self.nameLabel.textAlignment
-        tempLabel.center = tempImageView.center
-        temporaryView.addSubview(tempLabel)
-        
-        let profileImageWithLabel = temporaryView.asImage()
-        self.profile.image = profileImageWithLabel
+            let backgroundColors = [
+                UIColor(named: "ProfileBackgroundColor1"),
+                UIColor(named: "ProfileBackgroundColor2"),
+                UIColor(named: "ProfileBackgroundColor3"),
+                UIColor(named: "ProfileBackgroundColor4"),
+                UIColor(named: "ProfileBackgroundColor5"),
+                UIColor(named: "ProfileBackgroundColor6"),
+                UIColor(named: "ProfileBackgroundColor7")
+            ]
+            
+            self.profile.backgroundColor = backgroundColors.randomElement()!
+            self.nameLabel.text = shortNickname.uppercased()
+
+            let temporaryView = UIView(frame: self.profile.bounds)
+            temporaryView.backgroundColor = self.profile.backgroundColor
+            let tempImageView = UIImageView(image: self.profile.image)
+            tempImageView.frame = self.profile.bounds
+            tempImageView.layer.cornerRadius = self.profile.layer.cornerRadius
+            tempImageView.clipsToBounds = true
+            temporaryView.addSubview(tempImageView)
+
+            let tempLabel = UILabel()
+            tempLabel.text = self.nameLabel.text
+            tempLabel.font = self.nameLabel.font
+            tempLabel.textColor = self.nameLabel.textColor
+            tempLabel.textAlignment = self.nameLabel.textAlignment
+            tempLabel.sizeToFit()
+            tempLabel.center = tempImageView.center
+            temporaryView.addSubview(tempLabel)
+
+            let profileImageWithLabel = temporaryView.asImage()
+            self.profile.image = profileImageWithLabel
+        }
     }
     
     private func updateDuplicateCheckButtonState() {
@@ -494,19 +574,16 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
             self.duplicateCheckButton.backgroundColor = babyGTocustomB
             
-            // 기본 이미지인지 확인
-            if self.profile.tag == 1 { 
+            if profile.tag == 1 {
                 self.profile.image = nil
                 self.addImage.isHidden = true
                 self.addImageLayer.isHidden = true
-            
-                let nickname = self.nicknameTextField.text
                 
+                let nickname = self.nicknameTextField.text
                 self.nickNameEditedProfileImageSetting(with: nickname ?? "")
             }
             
-            updateDoneButtonState()
-            
+            self.updateDoneButtonState()
         }
         
         let cancelAction = UIAlertAction(title: "취소", style: .cancel) { [weak self] _ in
@@ -547,6 +624,16 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             self.addImageLayer.backgroundColor = UIColor(white: 1, alpha: 0.7)
             self.addImage.image = UIImage(systemName: "plus")
             self.addImage.tintColor = UIColor.textColorSub
+
+            self.profile.image = nil
+            self.addImage.isHidden = true
+            self.addImageLayer.isHidden = true
+        
+            let nickname = self.nicknameTextField.text
+            
+            self.nickNameEditedProfileImageSetting(with: nickname ?? "")
+            self.profile.tag = 1 // 기본 이미지로 변경
+            
             self.updateDoneButtonState()
             
             self.profile.image = nil
@@ -589,12 +676,13 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                         self?.profile.image = selectedImage
                         self?.addImageLayer.backgroundColor = .clear
                         self?.addImage.tintColor = .clear
-                        self?.profile.tag = 0
+                        self?.nameLabel.isHidden = true
+                        self?.profile.tag = 0 // 기본 이미지 x
+                        self?.updateDoneButtonState()
                     }
                 }
             }
         }
-        updateDoneButtonState()
     }
     
     override func updateColor() {

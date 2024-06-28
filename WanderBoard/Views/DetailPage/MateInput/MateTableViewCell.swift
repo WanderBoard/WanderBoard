@@ -42,8 +42,6 @@ class MateTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
-        updateColor()
-        
     }
     
     required init?(coder: NSCoder) {
@@ -75,22 +73,7 @@ class MateTableViewCell: UITableViewCell {
             $0.height.equalTo(44)
         }
     }
-    
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            updateColor()
-            
-        }
-    }
-    
-    func updateColor(){
-        
-        //베이비그레이-라이트블랙
-        let babyGTolightB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightblack") : UIColor(named: "babygray")
-        addButton.backgroundColor = babyGTolightB
-    }
-    
+
     
     func configure(with user: UserSummary) {
         self.user = user
@@ -98,7 +81,7 @@ class MateTableViewCell: UITableViewCell {
         if let photoURL = user.photoURL, let url = URL(string: photoURL) {
             profileImageView.kf.setImage(with: url)
         } else {
-            profileImageView.image = UIImage(named: "profileImg")
+            profileImageView.backgroundColor = .black
         }
         
         updateAddButton()

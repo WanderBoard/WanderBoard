@@ -536,6 +536,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             DispatchQueue.main.async {
                 self.profileImageView.image = image
                 self.selectedImage = image
+                self.nameLabel.isHidden = true
             }
         }
     }
@@ -766,10 +767,12 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         
         // 이미지를 업로드할 UIImage 결정
         let imageToUpload: UIImage
-        
+        let isDefaultProfile: Bool
+
         if let selectedImage = selectedImage {
             // 이미지가 선택되었으면 해당 이미지 사용
             imageToUpload = selectedImage
+            isDefaultProfile = false
         } else {
             // 기본 이미지 사용
             // 임시 뷰 생성 및 캡쳐
@@ -790,6 +793,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             temporaryView.addSubview(tempLabel)
             
             imageToUpload = temporaryView.asImage()
+            isDefaultProfile = true
         }
         
         let storageRef = Storage.storage().reference().child("profileImages/\(uid).jpg")
@@ -818,7 +822,8 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
                         "agreedToPrivacyPolicy": self.agreedToPrivacyPolicy,
                         "agreedToMarketing": self.agreedToMarketing,
                         "agreedToThirdParty": self.agreedToThirdParty,
-                        "joinedDate": FieldValue.serverTimestamp()
+                        "isDefaultProfile": isDefaultProfile, // 프로필 이미지 상태 저장
+                        "joinedDate": FieldValue.serverTimestamp(),
                     ]) { error in
                         if let error = error {
                             print("Error updating user data: \(error)")

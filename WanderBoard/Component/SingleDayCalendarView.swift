@@ -90,8 +90,8 @@ struct SingleDayCalendarView: View {
             }) {
                 Text("Next")
                     .frame(maxWidth: .infinity, maxHeight: 50)
-                    .background(selectedDate != nil ? Color.black : Color("babygray"))
-                    .foregroundColor(.white)
+                    .background(selectedDate != nil ? Color.font : Color("PageCtrlUnselectedText"))
+                    .foregroundColor(Color("textColor"))
                     .cornerRadius(10)
             }
             .disabled(selectedDate == nil)

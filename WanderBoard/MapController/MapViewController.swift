@@ -30,14 +30,14 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     let locationButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "location.circle.fill"), for: .normal)
-        button.tintColor = .black
+        button.tintColor = .font
         return button
     }()
     
     let lookAroundButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "eye.slash.circle"), for: .normal)
-        button.tintColor = .black
+        button.tintColor = .font
         button.isHidden = true
         return button
     }()
@@ -45,7 +45,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     let satelliteButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "airplane.circle"), for: .normal)
-        button.tintColor = .black
+        button.tintColor = .font
         button.isHidden = false
         return button
     }()
@@ -85,6 +85,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         setupTableView()
         setupPlaceInfoView()
         addPinsToMap()
+        updateColor()
         mapView.mapType = .standard
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -149,6 +150,18 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             make.trailing.equalTo(view.safeAreaLayoutGuide).inset(8)
             make.top.equalTo(view.safeAreaLayoutGuide).offset(70)
         }
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateColor()
+        }
+    }
+    
+    func updateColor(){
+        let backColor = traitCollection.userInterfaceStyle == .dark ? UIColor(white: 0, alpha: 0.7) : UIColor(white: 1, alpha: 0.7)
+        buttonStackView.backgroundColor = backColor
     }
     
     @objc private func satelliteButtonTapped() {
@@ -361,7 +374,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
 
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = false
-        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.tintColor = .font
         let searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(showSearchBar))
         searchButton.isEnabled = true
         navigationItem.rightBarButtonItem = searchButton

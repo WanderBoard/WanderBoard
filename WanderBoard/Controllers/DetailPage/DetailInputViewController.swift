@@ -26,7 +26,12 @@ protocol DetailInputViewControllerDelegate: AnyObject {
     func didSavePinLog(_ pinLog: PinLog)
 }
 
-class DetailInputViewController: UIViewController, CalendarHostingControllerDelegate, SingleDayCalendarHostingControllerDelegate, AmountInputHostingControllerDelegate, CategoryInputCollectionViewCellDelegate {
+class DetailInputViewController: UIViewController, CalendarHostingControllerDelegate, SingleDayCalendarHostingControllerDelegate, AmountInputHostingControllerDelegate, CategoryInputCollectionViewCellDelegate, SpendingListViewControllerDelegate, SummaryViewControllerDelegate {
+    func didSelectCategory(category: String, imageName: String) {
+        selectedCategory = category
+        selectedImageName = imageName
+        showSingleDayCalendar()
+    }
     
     func didSelectCategory(category: String) {
         selectedCategory = category
@@ -50,16 +55,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
     }
     
-    let categories = [
-        ("food", "식사"),
-        ("car", "교통"),
-        ("hotel", "숙박"),
-        ("gift", "선물"),
-        ("entertain", "문화생활"),
-        ("etc", "기타")
-    ]
+    let categories = CategoryData.categories
+    let categoryImageMapping = CategoryData.categoryImageMapping
     
     var selectedCategory: String?
+    var selectedImageName: String?
     var selectedDate: Date?
     
     var imageLocations: [CLLocationCoordinate2D] = []
@@ -256,19 +256,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         return collectionView
     }()
     
-    //    lazy var categoryCollectionView: UICollectionView = {
-    //        let layout = UICollectionViewFlowLayout()
-    //        layout.scrollDirection = .horizontal
-    //        layout.minimumLineSpacing = 16
-    //        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-    //        collectionView.register(CategoryCollectionViewCell.self, forCellWithReuseIdentifier: CategoryCollectionViewCell.identifier)
-    //        collectionView.dataSource = self
-    //        collectionView.delegate = self
-    //        collectionView.showsHorizontalScrollIndicator = false
-    //        collectionView.decelerationRate = .fast
-    //        return collectionView
-    //    }()
-    
     
     // MARK: 토글토글
     
@@ -314,10 +301,17 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         if let pinLog = pinLog {
             configureView(with: pinLog)
         }
+        
+        if let spendingListVC = self.presentingViewController as? SpendingListViewController {
+            spendingListVC.delegate = self
+        }
+        
+        updateExpenseButtonState()
     }
     
     @objc func expenseButtonTapped() {
         let spendingListVC = SpendingListViewController()
+        spendingListVC.delegate = self
         spendingListVC.pinLog = self.pinLog
         self.navigationController?.pushViewController(spendingListVC, animated: true)
     }
@@ -331,10 +325,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     @objc private func categoryTapped(_ sender: UIButton) {
-        selectedCategory = categories[sender.tag].1
+        let selectedCategoryTuple = categories[sender.tag]
+        selectedCategory = selectedCategoryTuple.1
+        selectedImageName = selectedCategoryTuple.0
         showSingleDayCalendar()
     }
-    
 
     @objc private func showCalendar() {
         let calendarVC = CalendarHostingController()
@@ -375,6 +370,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         summaryVC.selectedCategory = selectedCategory
         summaryVC.selectedDate = selectedDate
         summaryVC.amount = amount
+        summaryVC.delegate = self
         summaryVC.modalPresentationStyle = .formSheet
         if let sheet = summaryVC.sheetPresentationController {
             sheet.detents = [.custom(resolver: { _ in 460 })]
@@ -382,7 +378,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         present(summaryVC, animated: true, completion: nil)
     }
-    
+
     func setupUI() {
         view.addSubview(detailInputViewCollectionView)
         view.addSubview(detailInputViewButton.view)
@@ -413,7 +409,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     func setupConstraints() {
         let screenHeight = UIScreen.main.bounds.height
-        let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.35 : 0.4
+        let _: CGFloat = screenHeight < 750 ? 0.35 : 0.4
         
         detailInputViewCollectionView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
@@ -497,7 +493,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         consumButton.backgroundColor = babyGTocustomB
         
         //라이트그레이-다크그레이
-        let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
+        _ = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
         
         
     }
@@ -570,17 +566,40 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
 
     func updateExpenseButtonState() {
-        if let pinLog = pinLog, let expenses = pinLog.expenses, !expenses.isEmpty {
-            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
-            expenseButton.setImage(image, for: .normal)
-            expenseButton.isEnabled = true
-            expenseButton.tintColor = .black
+        
+        let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+        expenseButton.setImage(image, for: .normal)
+        expenseButton.isEnabled = true
+        expenseButton.tintColor = .black
+
+//        if let expenses = pinLog?.expenses, !expenses.flatMap({ $0.expenses }).isEmpty {
+//            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+//            expenseButton.setImage(image, for: .normal)
+//            expenseButton.isEnabled = true
+//            expenseButton.tintColor = .black
+//        } else {
+//            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+//            expenseButton.setImage(image, for: .normal)
+//            expenseButton.isEnabled = false
+//            expenseButton.tintColor = .gray
+//        }
+    }
+    
+    func didSaveExpense(_ expense: Expense) {
+        if let index = expenses.firstIndex(where: { Calendar.current.isDate($0.date, inSameDayAs: expense.date) }) {
+            expenses[index].expenses.append(expense)
         } else {
-            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
-            expenseButton.setImage(image, for: .normal)
-            expenseButton.isEnabled = false
-            expenseButton.tintColor = .gray
+            let newDailyExpense = DailyExpenses(date: expense.date, expenses: [expense])
+            expenses.append(newDailyExpense)
         }
+        
+        sortDailyExpensesByDate()
+        updateTotalSpendingAmount(with: expenses)
+        updateExpenseButtonState()
+    }
+    
+    func sortDailyExpensesByDate() {
+        expenses.sort { $0.date > $1.date }
     }
     
     @objc private func showSingleDayCalendar() {
@@ -674,7 +693,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             textInputCell.placeholderLabel.isHidden = !textInputCell.contentTextView.text.isEmpty
         }
     }
-    
     
     func loadSavedLocation() {
         let userId = Auth.auth().currentUser?.uid ?? ""
@@ -1150,11 +1168,6 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
         }
     }
 }
-
-
-
-
-
 
 extension DetailInputViewController: MateViewControllerDelegate {
     func didSelectMates(_ mates: [UserSummary]) {

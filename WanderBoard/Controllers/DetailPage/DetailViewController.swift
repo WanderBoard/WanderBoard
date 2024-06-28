@@ -174,7 +174,7 @@ class DetailViewController: UIViewController {
     }
     
     let expandableView = UIView().then {
-        $0.backgroundColor = .babygray
+        $0.backgroundColor = .babyGTocustomB
         $0.isHidden = false
         $0.layer.cornerRadius = 10
         $0.layer.masksToBounds = true
@@ -310,7 +310,7 @@ class DetailViewController: UIViewController {
             $0.centerY.equalTo(dateStackView.snp.centerY).offset(-20)
             $0.trailing.equalToSuperview().offset(15)
             $0.width.equalTo(50)
-            $0.height.equalTo(100)
+            $0.height.equalTo(90)
         }
         
         expandableButton.snp.makeConstraints {

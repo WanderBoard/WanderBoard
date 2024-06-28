@@ -539,7 +539,7 @@ class DetailViewController: UIViewController {
         if let photoURL = try? await FirestoreManager.shared.fetchUserProfileImageURL(userId: pinLog.authorId), let url = URL(string: photoURL) {
             profileImageView.kf.setImage(with: url)
         } else {
-            profileImageView.image = UIImage(named: "profileImg")
+            profileImageView.backgroundColor = .black
         }
         friendCollectionView.isHidden = pinLog.attendeeIds.isEmpty
         

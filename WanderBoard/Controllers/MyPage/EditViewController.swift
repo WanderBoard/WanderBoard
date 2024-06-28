@@ -65,6 +65,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     var previousName: String = ""
     var ID: String = ""
     var userData: User?
+    var progressViewController: ProgressViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -296,57 +297,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         return currentImage != previousImage || currentName != previousName
     }
     
-    //MARK: - 마이페이지로 돌아갈 때 해 줄 작업들
-    
-    @objc func moveToMyPage() {
-        // 이미지와 이름 저장
-        let nameToSave = nicknameTextField.text?.isEmpty ?? true ? previousName : nicknameTextField.text
-        
-        Task {
-            do {
-                // Firebase 사용자 프로필 업데이트
-                try await updateProfile(displayName: nameToSave, photoURL: profile.image)
-                
-                // 사용자 정보를 Firestore에 저장
-                guard let user = Auth.auth().currentUser else {
-                    throw NSError(domain: "UserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인 되어있지 않습니다"])
-                }
-                
-                var dataToSave: [String: Any] = [
-                    "email": user.email ?? "",
-                    "displayName": nameToSave ?? "",
-                    "authProvider": user.providerData.first?.providerID ?? "",
-                    "isProfileComplete": true
-                ]
-                
-                if let photoURL = user.photoURL?.absoluteString {
-                    dataToSave["photoURL"] = photoURL
-                }
-                
-                let userRef = Firestore.firestore().collection("users").document(user.uid)
-                try await userRef.setData(dataToSave, merge: true)
-                
-                // MyPageViewController에 업데이트된 정보 반영
-                if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
-                    myPageVC.updateUserData(name: nameToSave!, image: profile.image)
-                }
-                
-                let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
-                let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-                    self.navigationController?.popViewController(animated: true)
-                }
-                alert.addAction(confirm)
-                present(alert, animated: true, completion: nil)
-            } catch {
-                print("프로필 업데이트 실패: \(error.localizedDescription)")
-                let alert = UIAlertController(title: "오류", message: "프로필 업데이트 중 오류가 발생했습니다. 다시 시도해주세요.", preferredStyle: .alert)
-                let confirm = UIAlertAction(title: "확인", style: .default)
-                alert.addAction(confirm)
-                present(alert, animated: true, completion: nil)
-            }
-        }
-    }
-    
     // Firestore에 사용자 프로필 정보 업데이트
     func updateProfile(displayName: String?, photoURL: UIImage?) async throws {
         guard let user = Auth.auth().currentUser else {
@@ -445,25 +395,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         alert.addAction(cancelAction)
         
         present(alert, animated: true, completion: nil)
-    }
-    
-    //저장버튼은 이 경우에서만 활성화 되도록
-    private func updateDoneButtonState() {
-        let isImageSelected = profile.image != previousImage
-        let isNicknameVaild = isNicknameValid(nicknameTextField.text)
-        doneButton.isEnabled = isImageSelected || isNicknameVaild
-        doneButton.setTitleColor(.font, for: .normal)
-    }
-    
-    private func isNicknameValid(_ nickname: String?) -> Bool {
-        guard let nickname = nickname, !nickname.isEmpty else { return false }
-        return nickname.count >= 2 && nickname.count <= 16 && nickname.range(of: "^[a-zA-Z0-9가-힣]+$", options: .regularExpression) != nil
-    }
-    
-    //작성완료시 엔터 누르면 키보드 내려가기
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
     }
     
     @objc func imageViewTapped(tapGestureRecognizer: UITapGestureRecognizer){
@@ -581,6 +512,99 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                     self.navigateToLoginScreen()
                 }
             }
+        }
+    }
+    
+    //MARK: - 마이페이지로 돌아갈 때 해 줄 작업들
+    
+    //저장버튼은 이 경우에서만 활성화 되도록
+    private func updateDoneButtonState() {
+        let isImageSelected = profile.image != previousImage
+        let isNicknameVaild = isNicknameValid(nicknameTextField.text)
+        doneButton.isEnabled = isImageSelected || isNicknameVaild
+        doneButton.setTitleColor(.font, for: .normal)
+    }
+    
+    private func isNicknameValid(_ nickname: String?) -> Bool {
+        guard let nickname = nickname, !nickname.isEmpty else { return false }
+        return nickname.count >= 2 && nickname.count <= 16 && nickname.range(of: "^[a-zA-Z0-9가-힣]+$", options: .regularExpression) != nil
+    }
+    
+    //작성완료시 엔터 누르면 키보드 내려가기
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    @objc func moveToMyPage() {
+        // 이미지와 이름 저장
+        let nameToSave = nicknameTextField.text?.isEmpty ?? true ? previousName : nicknameTextField.text
+        showProgressView()
+        
+        Task {
+            do {
+                // Firebase 사용자 프로필 업데이트
+                try await updateProfile(displayName: nameToSave, photoURL: profile.image)
+                
+                // 사용자 정보를 Firestore에 저장
+                guard let user = Auth.auth().currentUser else {
+                    throw NSError(domain: "UserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인 되어있지 않습니다"])
+                }
+                
+                var dataToSave: [String: Any] = [
+                    "email": user.email ?? "",
+                    "displayName": nameToSave ?? "",
+                    "authProvider": user.providerData.first?.providerID ?? "",
+                    "isProfileComplete": true
+                ]
+                
+                if let photoURL = user.photoURL?.absoluteString {
+                    dataToSave["photoURL"] = photoURL
+                }
+                
+                let userRef = Firestore.firestore().collection("users").document(user.uid)
+                try await userRef.setData(dataToSave, merge: true)
+                
+                // MyPageViewController에 업데이트된 정보 반영
+                if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
+                    myPageVC.updateUserData(name: nameToSave!, image: profile.image)
+                }
+                
+                let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
+                let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                    self.navigationController?.popViewController(animated: true)
+                }
+                hideProgressView()
+                alert.addAction(confirm)
+                present(alert, animated: true, completion: nil)
+            } catch {
+                print("프로필 업데이트 실패: \(error.localizedDescription)")
+                let alert = UIAlertController(title: "오류", message: "프로필 업데이트 중 오류가 발생했습니다. 다시 시도해주세요.", preferredStyle: .alert)
+                let confirm = UIAlertAction(title: "확인", style: .default)
+                alert.addAction(confirm)
+                present(alert, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    //MARK: - 로딩중 똑딱버튼
+    private func showProgressView() {
+        let progressVC = ProgressViewController()
+        addChild(progressVC)
+        view.addSubview(progressVC.view)
+        progressVC.view.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        progressVC.didMove(toParent: self)
+        progressViewController = progressVC
+    }
+    
+    private func hideProgressView() {
+        if let progressVC = progressViewController {
+            progressVC.willMove(toParent: nil)
+            progressVC.view.removeFromSuperview()
+            progressVC.removeFromParent()
+            progressViewController = nil
         }
     }
     

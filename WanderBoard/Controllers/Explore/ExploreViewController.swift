@@ -106,7 +106,7 @@ class ExploreViewController: UIViewController, PageIndexed {
             navigationBarSuperview.addSubview(searchButton)
             searchButton.snp.makeConstraints {
                 $0.trailing.equalTo(navigationController!.navigationBar.snp.trailing).offset(-16)
-                $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-10)
+                $0.bottom.equalTo(navigationController!.navigationBar.snp.bottom).offset(-5)
                 $0.size.equalTo(CGSize(width: 44, height: 44))
             }
         }

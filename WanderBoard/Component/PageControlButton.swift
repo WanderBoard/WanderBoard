@@ -38,7 +38,7 @@ struct PageControlButton: View {
                         .padding(EdgeInsets(top: 5, leading: 5, bottom: 5, trailing: 5)) // 상하좌우 5의 패딩
                     } else {
                         Image(systemName: iconName(for: index))
-                            .foregroundColor(Color("PageCtrlUnselectedText"))
+                            .foregroundColor(Color.darkgray)
                             .font(.system(size: 17)) // 아이콘 크기 설정
                             .frame(width: 17, height: 17) // 아이콘 크기 설정
                     }

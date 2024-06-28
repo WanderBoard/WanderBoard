@@ -47,6 +47,7 @@ class LoginDirectorView: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .clear
         constraintLayout()
+        updateColor()
         
         loginButton.addTarget(self, action: #selector(moveToLogin), for: .touchUpInside)
     }

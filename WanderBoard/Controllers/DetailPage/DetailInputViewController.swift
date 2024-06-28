@@ -502,22 +502,22 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let barButtonItem = UIBarButtonItem(customView: expenseButton)
         navigationItem.rightBarButtonItems = [doneButton, barButtonItem]
 
-        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.tintColor = .font
         
         updateExpenseButtonState()
     }
 
     func updateExpenseButtonState() {
         if let pinLog = pinLog, let expenses = pinLog.expenses, !expenses.isEmpty {
-            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .regular))
             expenseButton.setImage(image, for: .normal)
             expenseButton.isEnabled = true
-            expenseButton.tintColor = .black
+            expenseButton.tintColor = .font
         } else {
-            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .regular))
             expenseButton.setImage(image, for: .normal)
             expenseButton.isEnabled = false
-            expenseButton.tintColor = .gray
+            expenseButton.tintColor = .darkgray
         }
     }
     

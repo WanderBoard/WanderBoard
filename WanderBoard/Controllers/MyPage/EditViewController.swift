@@ -75,12 +75,14 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     var previousName: String = ""
     var ID: String = ""
     var userData: User?
-    var progressViewController: ProgressViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setIcon()
         view.backgroundColor = .systemBackground
+        // Firestore에서 isDefaultProfile 값
+        fetchUserData()
+        
         //뒤로가기 버튼을 눌렀을때 기존의 프로필에서 수정사항이 있는지 체크하기 위해 현재 남아있는 정보값은 이전의 값이라고 정의
         previousImage = profile.image
         previousName = nicknameTextField.text ?? ""
@@ -96,6 +98,21 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         // 커스텀 뒤로가기 버튼 추가
         let backButton = createCustomBackButton()
         self.navigationItem.leftBarButtonItem = backButton
+    }
+    
+    private func fetchUserData() {
+        guard let currentUser = Auth.auth().currentUser else {
+            return
+        }
+        
+        let userRef = Firestore.firestore().collection("users").document(currentUser.uid)
+        userRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                let data = document.data()
+                let isDefaultProfile = data?["isDefaultProfile"] as? Bool ?? true
+                self.profile.tag = isDefaultProfile ? 1 : 0
+            }
+        }
     }
     
     override func configureUI(){
@@ -347,7 +364,8 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                     "email": user.email ?? "",
                     "displayName": nameToSave ?? "",
                     "authProvider": user.providerData.first?.providerID ?? "",
-                    "isProfileComplete": true
+                    "isProfileComplete": true,
+                    "isDefaultProfile": profile.tag == 1
                 ]
                 
                 if let photoURL = user.photoURL?.absoluteString {
@@ -489,7 +507,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             
             self.profile.backgroundColor = backgroundColors.randomElement()!
             self.nameLabel.text = shortNickname.uppercased()
-            self.profile.tag = 1 // 기본 이미지 태그 설정
 
             let temporaryView = UIView(frame: self.profile.bounds)
             temporaryView.backgroundColor = self.profile.backgroundColor
@@ -507,10 +524,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             tempLabel.sizeToFit()
             tempLabel.center = tempImageView.center
             temporaryView.addSubview(tempLabel)
-            
-            print("temporaryView frame: \(temporaryView.frame)")
-            print("tempImageView frame: \(tempImageView.frame)")
-            print("tempLabel frame: \(tempLabel.frame)")
 
             let profileImageWithLabel = temporaryView.asImage()
             self.profile.image = profileImageWithLabel
@@ -537,8 +550,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
             self.duplicateCheckButton.backgroundColor = babyGTocustomB
             
-            // 기본 이미지인지 확인
-            if self.userData?.isDefaultProfile == true {
+            if profile.tag == 1 {
                 self.profile.image = nil
                 self.addImage.isHidden = true
                 self.addImageLayer.isHidden = true
@@ -562,6 +574,25 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         present(alert, animated: true, completion: nil)
     }
     
+    //저장버튼은 이 경우에서만 활성화 되도록
+    private func updateDoneButtonState() {
+        let isImageSelected = profile.image != previousImage
+        let isNicknameVaild = isNicknameValid(nicknameTextField.text)
+        doneButton.isEnabled = isImageSelected || isNicknameVaild
+        doneButton.setTitleColor(.font, for: .normal)
+    }
+    
+    private func isNicknameValid(_ nickname: String?) -> Bool {
+        guard let nickname = nickname, !nickname.isEmpty else { return false }
+        return nickname.count >= 2 && nickname.count <= 16 && nickname.range(of: "^[a-zA-Z0-9가-힣]+$", options: .regularExpression) != nil
+    }
+    
+    //작성완료시 엔터 누르면 키보드 내려가기
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
     @objc func imageViewTapped(tapGestureRecognizer: UITapGestureRecognizer){
         //하단에서 이미지선택지 알람 등장(액션시트)
         let alert = UIAlertController(title: "프로필 사진 변경", message: nil, preferredStyle: .actionSheet)
@@ -569,8 +600,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             self.addImageLayer.backgroundColor = UIColor(white: 1, alpha: 0.7)
             self.addImage.image = UIImage(systemName: "plus")
             self.addImage.tintColor = UIColor.textColorSub
-            self.updateDoneButtonState()
-            
+
             self.profile.image = nil
             self.addImage.isHidden = true
             self.addImageLayer.isHidden = true
@@ -578,7 +608,9 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             let nickname = self.nicknameTextField.text
             
             self.nickNameEditedProfileImageSetting(with: nickname ?? "")
-            self.userData?.isDefaultProfile = true
+            self.profile.tag = 1 // 기본 이미지로 변경
+            
+            self.updateDoneButtonState()
         }
         
         let selectImage = UIAlertAction(title: "새로운 사진 등록", style: .default) { _ in
@@ -613,7 +645,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                         self?.addImageLayer.backgroundColor = .clear
                         self?.addImage.tintColor = .clear
                         self?.nameLabel.isHidden = true
-                        self?.userData?.isDefaultProfile = false
+                        self?.profile.tag = 0 // 기본 이미지 x
                         self?.updateDoneButtonState()
                     }
                 }
@@ -688,99 +720,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                     self.navigateToLoginScreen()
                 }
             }
-        }
-    }
-    
-    //MARK: - 마이페이지로 돌아갈 때 해 줄 작업들
-    
-    //저장버튼은 이 경우에서만 활성화 되도록
-    private func updateDoneButtonState() {
-        let isImageSelected = profile.image != previousImage
-        let isNicknameVaild = isNicknameValid(nicknameTextField.text)
-        doneButton.isEnabled = isImageSelected || isNicknameVaild
-        doneButton.setTitleColor(.font, for: .normal)
-    }
-    
-    private func isNicknameValid(_ nickname: String?) -> Bool {
-        guard let nickname = nickname, !nickname.isEmpty else { return false }
-        return nickname.count >= 2 && nickname.count <= 16 && nickname.range(of: "^[a-zA-Z0-9가-힣]+$", options: .regularExpression) != nil
-    }
-    
-    //작성완료시 엔터 누르면 키보드 내려가기
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
-    
-    @objc func moveToMyPage() {
-        // 이미지와 이름 저장
-        let nameToSave = nicknameTextField.text?.isEmpty ?? true ? previousName : nicknameTextField.text
-        showProgressView()
-        
-        Task {
-            do {
-                // Firebase 사용자 프로필 업데이트
-                try await updateProfile(displayName: nameToSave, photoURL: profile.image)
-                
-                // 사용자 정보를 Firestore에 저장
-                guard let user = Auth.auth().currentUser else {
-                    throw NSError(domain: "UserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인 되어있지 않습니다"])
-                }
-                
-                var dataToSave: [String: Any] = [
-                    "email": user.email ?? "",
-                    "displayName": nameToSave ?? "",
-                    "authProvider": user.providerData.first?.providerID ?? "",
-                    "isProfileComplete": true
-                ]
-                
-                if let photoURL = user.photoURL?.absoluteString {
-                    dataToSave["photoURL"] = photoURL
-                }
-                
-                let userRef = Firestore.firestore().collection("users").document(user.uid)
-                try await userRef.setData(dataToSave, merge: true)
-                
-                // MyPageViewController에 업데이트된 정보 반영
-                if let navigationController = navigationController, let myPageVC = navigationController.viewControllers.first(where: { $0 is MyPageViewController }) as? MyPageViewController {
-                    myPageVC.updateUserData(name: nameToSave!, image: profile.image)
-                }
-                
-                let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
-                let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-                    self.navigationController?.popViewController(animated: true)
-                }
-                hideProgressView()
-                alert.addAction(confirm)
-                present(alert, animated: true, completion: nil)
-            } catch {
-                print("프로필 업데이트 실패: \(error.localizedDescription)")
-                let alert = UIAlertController(title: "오류", message: "프로필 업데이트 중 오류가 발생했습니다. 다시 시도해주세요.", preferredStyle: .alert)
-                let confirm = UIAlertAction(title: "확인", style: .default)
-                alert.addAction(confirm)
-                present(alert, animated: true, completion: nil)
-            }
-        }
-    }
-    
-    //MARK: - 로딩중 똑딱버튼
-    private func showProgressView() {
-        let progressVC = ProgressViewController()
-        addChild(progressVC)
-        view.addSubview(progressVC.view)
-        progressVC.view.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        progressVC.didMove(toParent: self)
-        progressViewController = progressVC
-    }
-    
-    private func hideProgressView() {
-        if let progressVC = progressViewController {
-            progressVC.willMove(toParent: nil)
-            progressVC.view.removeFromSuperview()
-            progressVC.removeFromParent()
-            progressViewController = nil
         }
     }
     

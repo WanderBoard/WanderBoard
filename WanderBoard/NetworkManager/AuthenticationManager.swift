@@ -49,7 +49,6 @@ struct AuthDataResultModel {
         self.isProfileComplete = user.isProfileComplete
         self.blockedAuthors = user.blockedAuthors ?? [] // 초기값 설정
         self.hiddenPinLogs = user.hiddenPinLogs ?? [] // 초기값 설정
-        self.isDefaultProfile = user.isDefaultProfile
     }
 }
 
@@ -168,7 +167,7 @@ final class AuthenticationManager {
 
     // 코어 데이터 저장
     @MainActor
-    private func saveUserToCoreData(uid: String, email: String, displayName: String?, photoURL: String?, socialMediaLink: String?, authProvider: AuthProviderOption, gender: String, interests: [String], blockedAuthors: [String], hiddenPinLogs: [String], isDefaultProfile: Bool) throws -> UserEntity {
+    private func saveUserToCoreData(uid: String, email: String, displayName: String?, photoURL: String?, socialMediaLink: String?, authProvider: AuthProviderOption, gender: String, interests: [String], blockedAuthors: [String], hiddenPinLogs: [String]) throws -> UserEntity {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             ErrorUtility.shared.presentErrorAlertAndTerminate(with: "앱 초기화 중 문제가 발생했습니다. 다시 시도해주세요.")
             throw NSError(domain: "AppDelegateError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Could not cast UIApplication delegate to AppDelegate"])
@@ -185,7 +184,6 @@ final class AuthenticationManager {
         userEntity.interests = interests.joined(separator: ",")
         userEntity.blockedAuthors = blockedAuthors.jsonString() ?? "[]"
         userEntity.hiddenPinLogs = hiddenPinLogs.jsonString() ?? "[]"
-        userEntity.isDefaultProfile = isDefaultProfile
         
         try context.save()
         
@@ -212,8 +210,7 @@ final class AuthenticationManager {
                         gender: "선택안함",
                         interests: [],
                         blockedAuthors: authDataResult.blockedAuthors,
-                        hiddenPinLogs: authDataResult.hiddenPinLogs,
-                        isDefaultProfile: tokens.profileImageUrl == nil
+                        hiddenPinLogs: authDataResult.hiddenPinLogs
                     )
                 } catch {
                     ErrorUtility.shared.presentErrorAlertAndTerminate(with: "사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")
@@ -284,8 +281,7 @@ final class AuthenticationManager {
                         gender: "선택안함",
                         interests: [],
                         blockedAuthors: authDataResult.blockedAuthors,
-                        hiddenPinLogs: authDataResult.hiddenPinLogs,
-                        isDefaultProfile: tokens.profileImageUrl == nil
+                        hiddenPinLogs: authDataResult.hiddenPinLogs
                     )
                 } catch {
                     ErrorUtility.shared.presentErrorAlertAndTerminate(with: "사용자 정보를 저장하는 중 문제가 발생했습니다. 다시 시도해주세요.")

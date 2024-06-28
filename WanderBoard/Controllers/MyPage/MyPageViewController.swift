@@ -264,7 +264,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 myID.text = "이메일 비공개"
             } else {
                 myID.text = userData.email
-                profile.backgroundColor = .white
+                profile.backgroundColor = .black
             }
         }
     }
@@ -304,7 +304,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
                 }
             }
         } else {
-            profile.backgroundColor = .white
+            profile.backgroundColor = .black
         }
     }
     
@@ -345,7 +345,7 @@ class MyPageViewController: BaseViewController, PageIndexed {
     //에딧창에서 추가해준 이름과 사진 불러오기
     func updateUserData(name: String, image: UIImage?) {
         myName.text = name
-        profile.image = image ?? UIImage(named: "profileImg")
+        profile.image = image
     }
 }
 

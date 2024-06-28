@@ -8,30 +8,6 @@
 import UIKit
 import SnapKit
 import Then
-import SwiftUI
-
-extension UIViewController {
-    private struct Preview: UIViewControllerRepresentable {
-            let viewController: UIViewController
-
-            func makeUIViewController(context: Context) -> UIViewController {
-                return viewController
-            }
-
-            func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-            }
-        }
-
-        func toPreview() -> some View {
-            Preview(viewController: self)
-        }
-}
- 
-struct MyViewController_PreViews: PreviewProvider {
-    static var previews: some View {
-        profileDetail().toPreview() //원하는 VC를 여기다 입력하면 된다.
-    }
-}
 
 class profileDetail: UIViewController {
     

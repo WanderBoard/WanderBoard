@@ -611,26 +611,18 @@ class DetailViewController: UIViewController {
         }
     }
     
-    //프로필 이미지 눌렀을때 이미지 확대 뷰
-    func setupTapGesture() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped(tapGestureRecognizer:)))
-        profileImageView.addGestureRecognizer(tapGesture)
-        profileImageView.isUserInteractionEnabled = true
-    }
-    
-    @objc func profileImageTapped(tapGestureRecognizer: UITapGestureRecognizer){
-        let profileDetailVC = profileDetail()
-        addChild(profileDetailVC)
-        view.addSubview(profileDetailVC.view)
-        profileDetailVC.view.frame = view.bounds
-        profileDetailVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        profileDetailVC.view.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+    private func setupTapGesture() {
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped(tapGestureRecognizer:)))
+            profileImageView.addGestureRecognizer(tapGesture)
         }
-        present(profileDetailVC, animated: true, completion: nil)
-//        profileDetailVC.modalPresentationStyle = .fullScreen
-//        profileDetailVC.configureUI(with: nicknameLabel.text ?? "")
-//        present(profileDetailVC, animated: true, completion: nil)
+    
+    //프로필 이미지 눌렀을때 이미지 확대 뷰
+    @objc func profileImageTapped(tapGestureRecognizer: UITapGestureRecognizer){
+        print("프로필 이미지 눌림")
+        let profileDetailVC = profileDetail()
+        profileDetailVC.modalPresentationStyle = .fullScreen
+        profileDetailVC.modalTransitionStyle = .coverVertical
+        self.present(profileDetailVC, animated: true, completion: nil)
     }
     
     @objc func expandableButtonTapped() {

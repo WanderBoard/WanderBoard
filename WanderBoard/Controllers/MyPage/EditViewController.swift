@@ -639,8 +639,6 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             self.profile.image = nil
             self.addImage.isHidden = true
             self.addImageLayer.isHidden = true
-        
-            let nickname = self.nicknameTextField.text
             
             self.nickNameEditedProfileImageSetting(with: nickname ?? "")
         }

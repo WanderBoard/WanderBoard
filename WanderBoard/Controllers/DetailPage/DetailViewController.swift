@@ -1029,7 +1029,7 @@ extension DetailViewController: FriendCollectionViewCellDelegate {
         profileDetailVC.modalPresentationStyle = .overFullScreen
         profileDetailVC.modalTransitionStyle = .crossDissolve
         
-        let friend = selectedFriends[indexPath.row]
+        _ = selectedFriends[indexPath.row]
         profileDetailVC.profileImage.image = selectedFriends[indexPath.row]
         profileDetailVC.nameLabel.text = "이름불러오는법 찾는중.."
 

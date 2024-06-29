@@ -4,6 +4,9 @@
 //
 //  Created by 김시종 on 5/28/24.
 //
+
+
+
 import UIKit
 import FirebaseAuth
 import SnapKit
@@ -175,10 +178,36 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.tintColor = .font
     }
     
+    
     let locationButton = UIButton().then {
         $0.backgroundColor = .babygray
         $0.layer.cornerRadius = 8
     }
+    
+    let consumButton = UIButton().then {
+        $0.backgroundColor = .babygray
+        $0.layer.cornerRadius = 8
+    }
+    
+    let consumLeftLabel = UILabel().then {
+        $0.text = "지출 내역을 추가하세요"
+        $0.font = UIFont.systemFont(ofSize: 14)
+        $0.textColor = .darkgray
+    }
+    
+    let consumRightLabel = UIImageView().then {
+        $0.image = UIImage(systemName: "chevron.right")
+        $0.tintColor = .darkgray
+    }
+    
+    let consumStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.distribution = .equalSpacing
+        $0.spacing = 10
+        $0.isUserInteractionEnabled = false
+    }
+    
     
     lazy var galleryInputCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -191,6 +220,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         collectionView.isScrollEnabled = true
         return collectionView
     }()
+    
     
     let mateLabel = UILabel().then {
         $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
@@ -317,8 +347,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     func setupConstraints() {
         let screenHeight = UIScreen.main.bounds.height
-        let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.35 : 0.40
-        
+        let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.35 : 0.4
+
         detailInputViewCollectionView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             $0.leading.trailing.equalToSuperview()
@@ -375,63 +405,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
     }
     
-    @objc func expenseButtonTapped() {
-        let spendingListVC = SpendingListViewController()
-        spendingListVC.pinLog = self.pinLog
-        self.navigationController?.pushViewController(spendingListVC, animated: true)
-    }
-    
-    @objc private func categoryTapped(_ sender: UIButton) {
-        selectedCategory = categories[sender.tag].1
-        showSingleDayCalendar()
-    }
-    
-    @objc private func showCalendar() {
-        let calendarVC = CalendarHostingController()
-        calendarVC.delegate = self
-        calendarVC.modalPresentationStyle = .pageSheet
-        if let sheet = calendarVC.sheetPresentationController {
-            sheet.detents = [.custom(resolver: { _ in 460 })]
-            sheet.prefersGrabberVisible = true
-        }
-        present(calendarVC, animated: true, completion: nil)
-    }
-    
-    func didSelectDate(_ date: Date) {
-        self.selectedDate = date
-        dismiss(animated: true) { [weak self] in
-            guard let self = self else { return }
-            let amountVC = AmountInputHostingController()
-            amountVC.delegate = self
-            amountVC.modalPresentationStyle = .pageSheet
-            if let sheet = amountVC.sheetPresentationController {
-                sheet.detents = [.custom(resolver: { _ in 460 })]
-                sheet.prefersGrabberVisible = true
-            }
-            self.present(amountVC, animated: true, completion: nil)
-        }
-    }
-    
-    func didEnterAmount(_ amount: Double) {
-        self.dismiss(animated: true) { [weak self] in
-            guard let self = self else { return }
-            self.showSummaryViewController(withAmount: amount)
-        }
-    }
-    
-    private func showSummaryViewController(withAmount amount: Double) {
-        let summaryVC = SummaryViewController()
-        summaryVC.selectedCategory = selectedCategory
-        summaryVC.selectedDate = selectedDate
-        summaryVC.amount = amount
-        summaryVC.modalPresentationStyle = .formSheet
-        if let sheet = summaryVC.sheetPresentationController {
-            sheet.detents = [.custom(resolver: { _ in 460 })]
-            sheet.prefersGrabberVisible = true
-        }
-        present(summaryVC, animated: true, completion: nil)
-    }
-    
     func switchToPage(_ index: Int) {
         detailInputViewCollectionView.scrollToItem(at: IndexPath(item: index, section: 0), at: .centeredHorizontally, animated: true)
     }
@@ -455,6 +428,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
         dateButton.configuration?.baseBackgroundColor = babyGTocustomB
         locationButton.backgroundColor = babyGTocustomB
+
+        consumButton.backgroundColor = babyGTocustomB
+        
+        //라이트그레이-다크그레이
+        let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
     }
     
     func setupCollectionView() {
@@ -994,6 +972,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             galleryCell.selectedImages = selectedImages
             galleryCell.photoInputCollectionView.reloadData()
         }
+    }
+    
+    func updateTotalSpendingAmount(with dailyExpenses: [DailyExpenses]) {
+        let totalAmount = dailyExpenses.flatMap { $0.expenses }.reduce(0) { $0 + $1.expenseAmount }
+        consumLeftLabel.text = "\(formatCurrency(totalAmount))원"
     }
     
     func formatCurrency(_ amount: Int) -> String {

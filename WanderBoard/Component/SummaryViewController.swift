@@ -16,6 +16,7 @@ class SummaryViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     var selectedDate: Date?
     var amount: Double?
     var pinLogId: String?
+    var selectedImageName: String?
 
     private let categoryLabel: UILabel = {
         let label = UILabel()

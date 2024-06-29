@@ -104,13 +104,8 @@ class SpendingTableViewCell: UITableViewCell {
         expenseContent.text = expense.expenseContent
         memo.text = expense.memo
         expenseAmount.text = "\(formatCurrency(expense.expenseAmount))원"
+        categoryImageView.image = UIImage(systemName: expense.imageName)
         
-        if !expense.imageName.isEmpty {
-            categoryImageView.image = UIImage(named: expense.imageName)
-        } else {
-            categoryImageView.image = nil
-        }
-
         if expense.memo.isEmpty {
             memo.isHidden = true
             expenseStackView.spacing = 0

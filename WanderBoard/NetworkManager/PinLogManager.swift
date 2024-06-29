@@ -17,19 +17,11 @@ class PinLogManager {
     private let storage = Storage.storage()
     
     private func saveDocument(documentRef: DocumentReference, data: [String: Any]) async throws {
-        do {
-            try await documentRef.setData(data)
-        } catch {
-            throw error
-        }
+        try await documentRef.setData(data)
     }
-
+    
     private func updateDocument(documentRef: DocumentReference, data: [String: Any]) async throws {
-        do {
-            try await documentRef.updateData(data)
-        } catch {
-            throw error
-        }
+        try await documentRef.updateData(data)
     }
     
     func createOrUpdatePinLog(pinLog: inout PinLog, images: [UIImage], imageLocations: [CLLocationCoordinate2D], isRepresentativeFlags: [Bool]) async throws -> PinLog {
@@ -51,22 +43,7 @@ class PinLogManager {
         }
         
         let mediaData = mediaObjects.map { $0.toDictionary() }
-        var expensesData: [[String: Any]] = []
-        if let expenses = pinLog.expenses {
-            for dailyExpense in expenses {
-                var expenseArray: [[String: Any]] = []
-                for var expense in dailyExpense.expenses {
-                    if expense.id == nil || expense.id!.isEmpty {
-                        expense.id = UUID().uuidString
-                    }
-                    expenseArray.append(expense.toDictionary())
-                }
-                expensesData.append([
-                    "date": Timestamp(date: dailyExpense.date),
-                    "expenses": expenseArray
-                ])
-            }
-        }
+        let expensesData = pinLog.expenses?.map { $0.toDictionary() } ?? []
         
         let documentId = pinLog.id ?? UUID().uuidString
         let documentRef = db.collection("pinLogs").document(documentId)
@@ -102,6 +79,14 @@ class PinLogManager {
         }
         
         return pinLog
+    }
+    
+    func addExpenseToPinLog(pinLogId: String, expense: Expense) async throws {
+        let documentRef = db.collection("pinLogs").document(pinLogId)
+        
+        try await documentRef.updateData([
+            "expenses": FieldValue.arrayUnion([expense.toDictionary()])
+        ])
     }
     
     func deletePinLog(pinLogId: String) async throws {

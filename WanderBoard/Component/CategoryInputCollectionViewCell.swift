@@ -8,7 +8,7 @@
 import UIKit
 
 protocol CategoryInputCollectionViewCellDelegate: AnyObject {
-    func didSelectCategory(category: String, imageName: String)
+    func didSelectCategory(category: String)
 }
 
 class CategoryInputCollectionViewCell: UICollectionViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, CategoryCollectionViewCellDelegate {
@@ -83,13 +83,10 @@ class CategoryInputCollectionViewCell: UICollectionViewCell, UICollectionViewDel
     
     func didTapCategoryButton(_ cell: CategoryCollectionViewCell) {
         if let indexPath = collectionView.indexPath(for: cell) {
-            let category = categories[indexPath.item % categories.count]
-            // delegate?.didSelectCategory(category: category.1)
-            delegate?.didSelectCategory(category: category.1, imageName: category.0)
+            let category = categories[indexPath.item].1
+            delegate?.didSelectCategory(category: category)
         }
     }
-
-
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: calculateItemWidth(), height: collectionView.bounds.height)

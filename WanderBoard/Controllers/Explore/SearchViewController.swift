@@ -267,7 +267,8 @@ extension SearchViewController: DetailViewControllerDelegate {
             startDate: updatedPinLog.startDate,
             representativeMediaURL: updatedPinLog.media.first { $0.isRepresentative }?.url,
             authorId: updatedPinLog.authorId,
-            createdAt: updatedPinLog.createdAt ?? Date()
+            createdAt: updatedPinLog.createdAt ?? Date(),
+            isPublic: updatedPinLog.isPublic
         )
         
         if let index = searchedLogs.firstIndex(where: { $0.id == updatedPinLog.id }) {

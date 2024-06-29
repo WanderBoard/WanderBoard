@@ -88,6 +88,12 @@ class DetailViewController: UIViewController {
         self?.switchToPage(index)
     }))
     
+    let profileStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.spacing = 10
+    }
+    
     var profileImageView = UIImageView().then {
         $0.backgroundColor = .white
         $0.tintColor = .white
@@ -96,6 +102,7 @@ class DetailViewController: UIViewController {
         $0.layer.cornerRadius = 16
         $0.backgroundColor = UIColor.darkgray
         $0.image = UIImage(systemName: "person")
+        $0.isUserInteractionEnabled = true
         $0.snp.makeConstraints {
             $0.width.height.equalTo(32)
         }
@@ -107,22 +114,10 @@ class DetailViewController: UIViewController {
         $0.textColor = .font
     }
     
-    let profileStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.alignment = .center
-        $0.spacing = 10
-    }
-    
     let optionsButton = UIButton().then {
         $0.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         $0.tintColor = .font
         $0.showsMenuAsPrimaryAction = true
-    }
-    
-    let profileOptionStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.spacing = 10
-        $0.distribution = .fill
     }
     
     var locationLabel = UILabel().then {
@@ -210,6 +205,10 @@ class DetailViewController: UIViewController {
         return collectionView
     }()
     
+    let profileArea = UIView().then(){
+        $0.backgroundColor = .clear
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -223,8 +222,8 @@ class DetailViewController: UIViewController {
         loadData()
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
-        profileStackView.isUserInteractionEnabled = true
-        profileStackView.addGestureRecognizer(tapGestureRecognizer)
+        profileArea.isUserInteractionEnabled = true
+        profileArea.addGestureRecognizer(tapGestureRecognizer)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -272,6 +271,8 @@ class DetailViewController: UIViewController {
         dateStackView.addArrangedSubview(dateStartLabel)
         dateStackView.addArrangedSubview(dateLineLabel)
         dateStackView.addArrangedSubview(dateEndLabel)
+        
+        view.addSubview(profileArea)
     }
     
     func setupConstraints() {
@@ -298,7 +299,6 @@ class DetailViewController: UIViewController {
         }
 
         bottomContentStackView.snp.makeConstraints {
-            // $0.top.equalTo(optionsButton.snp.bottom).offset(10)
             $0.leading.trailing.equalToSuperview()
         }
         
@@ -313,13 +313,6 @@ class DetailViewController: UIViewController {
             $0.top.equalTo(bottomContentStackView.snp.bottom).offset(10)
         }
         
-        profileStackView.snp.makeConstraints(){
-            $0.top.equalToSuperview()
-            $0.left.equalToSuperview()
-            $0.width.equalTo(150)
-            $0.height.equalTo(32)
-        }
-        
         optionsButton.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.trailing.equalToSuperview()
@@ -328,7 +321,6 @@ class DetailViewController: UIViewController {
         
         expandableView.snp.makeConstraints {
             $0.top.equalTo(optionsButton.snp.bottom).offset(10)
-//            $0.centerY.equalTo(dateStackView.snp.centerY).offset(-20)
             $0.trailing.equalToSuperview().offset(15)
             $0.width.equalTo(50)
             $0.height.equalTo(90)
@@ -344,6 +336,11 @@ class DetailViewController: UIViewController {
             $0.leading.equalTo(expandableButton.snp.trailing).offset(10)
             $0.trailing.equalToSuperview().inset(10)
             $0.top.bottom.equalToSuperview()
+        }
+        
+        profileArea.snp.makeConstraints(){
+            $0.top.left.bottom.equalTo(profileImageView)
+            $0.width.equalTo(140)
         }
     }
     

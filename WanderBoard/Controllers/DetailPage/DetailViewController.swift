@@ -232,6 +232,21 @@ class DetailViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if let navigationController = navigationController, navigationController.viewControllers.contains(where: { $0 is SpendingListViewController }) {
+            if let spendingListVC = navigationController.viewControllers.first(where: { $0 is SpendingListViewController }) as? SpendingListViewController {
+                if let pinLog = spendingListVC.pinLog {
+                    Task {
+                        await spendingListVC.loadExpensesFromFirestore(for: pinLog)
+                    }
+                }
+            }
+        }
+    }
+
+
     func setupUI() {
         view.addSubview(detailViewCollectionView)
         view.addSubview(detailViewButton.view)
@@ -281,8 +296,7 @@ class DetailViewController: UIViewController {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
             $0.height.equalTo(100)
         }
-        
-        
+
         bottomContentStackView.snp.makeConstraints {
             // $0.top.equalTo(optionsButton.snp.bottom).offset(10)
             $0.leading.trailing.equalToSuperview()
@@ -314,7 +328,7 @@ class DetailViewController: UIViewController {
         
         expandableView.snp.makeConstraints {
             $0.top.equalTo(optionsButton.snp.bottom).offset(10)
-            $0.centerY.equalTo(dateStackView.snp.centerY).offset(-20)
+//            $0.centerY.equalTo(dateStackView.snp.centerY).offset(-20)
             $0.trailing.equalToSuperview().offset(15)
             $0.width.equalTo(50)
             $0.height.equalTo(90)
@@ -345,6 +359,9 @@ class DetailViewController: UIViewController {
     }
     
     func updateColor(){
+        //라이트그레이-다크그레이
+        _ = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
+
         //다크그레이-라이트그레이
         let darkBTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
         profileImageView.backgroundColor = darkBTolightG
@@ -358,7 +375,7 @@ class DetailViewController: UIViewController {
             switch result {
             case .success(let pinLog):
                 self?.pinLog = pinLog
-                self?.checkId() // 데이터 로드 후 UI 업데이트
+                self?.checkId()
             case .failure(let error):
                 print("Failed to fetch pin log: \(error)")
             }
@@ -389,20 +406,11 @@ class DetailViewController: UIViewController {
     
     func checkId() {
         if let pinLog = pinLog {
-            if isCurrentUser(pinLog: pinLog) {
-                Task {
-                    await configureView(with: pinLog)
-                }
-                updatePinButtonState()
-                profileStackView.isHidden = true
-            } else {
-                hideAppearUIElements()
-                Task {
-                    await configureView(with: pinLog)
-                }
-                updatePinButtonState()
-                profileStackView.isHidden = false
+            Task {
+                await configureView(with: pinLog)
             }
+            updatePinButtonState()
+            profileStackView.isHidden = false
             setupMenu()
         }
     }
@@ -967,7 +975,6 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     //카드컬렉션뷰 누르면 지출상세뷰로 넘어가도록
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
         guard let cell = collectionView.cellForItem(at: indexPath) else { return }
         
         if indexPath.item == 2 {
@@ -978,8 +985,8 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
                     cell.transform = CGAffineTransform.identity
                 }, completion: { _ in
                     
-                    
                     let spendingListVC = SpendingListViewController()
+                    spendingListVC.pinLog = self.pinLog
                     let backButton = ButtonFactory.createBackButton()
                     self.navigationItem.backBarButtonItem = backButton
                     self.navigationController?.pushViewController(spendingListVC, animated: true)

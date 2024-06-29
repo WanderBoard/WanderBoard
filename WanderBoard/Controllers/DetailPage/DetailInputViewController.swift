@@ -26,7 +26,12 @@ protocol DetailInputViewControllerDelegate: AnyObject {
     func didSavePinLog(_ pinLog: PinLog)
 }
 
-class DetailInputViewController: UIViewController, CalendarHostingControllerDelegate, SingleDayCalendarHostingControllerDelegate, AmountInputHostingControllerDelegate, CategoryInputCollectionViewCellDelegate {
+class DetailInputViewController: UIViewController, CalendarHostingControllerDelegate, SingleDayCalendarHostingControllerDelegate, AmountInputHostingControllerDelegate, CategoryInputCollectionViewCellDelegate, SpendingListViewControllerDelegate, SummaryViewControllerDelegate {
+    func didSelectCategory(category: String, imageName: String) {
+        selectedCategory = category
+        selectedImageName = imageName
+        showSingleDayCalendar()
+    }
     
     func didSelectCategory(category: String) {
         selectedCategory = category
@@ -42,6 +47,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
     var selectedFriends: [UserSummary] = []
+    var isInitialLoad = true // 메이트 값을 딱 한번만 가져오도록 설정하기 위해
     var representativeImageIndex: Int? = 0
     
     var totalSpendingAmountText: String? {
@@ -50,16 +56,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
     }
     
-    let categories = [
-        ("food", "식사"),
-        ("car", "교통"),
-        ("hotel", "숙박"),
-        ("gift", "선물"),
-        ("entertain", "문화생활"),
-        ("etc", "기타")
-    ]
-    
+    let categories = CategoryData.categories
+    let categoryImageMapping = CategoryData.categoryImageMapping
+
     var selectedCategory: String?
+    var selectedImageName: String?
     var selectedDate: Date?
     
     var imageLocations: [CLLocationCoordinate2D] = []
@@ -255,21 +256,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
-    
-    //    lazy var categoryCollectionView: UICollectionView = {
-    //        let layout = UICollectionViewFlowLayout()
-    //        layout.scrollDirection = .horizontal
-    //        layout.minimumLineSpacing = 16
-    //        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-    //        collectionView.register(CategoryCollectionViewCell.self, forCellWithReuseIdentifier: CategoryCollectionViewCell.identifier)
-    //        collectionView.dataSource = self
-    //        collectionView.delegate = self
-    //        collectionView.showsHorizontalScrollIndicator = false
-    //        collectionView.decelerationRate = .fast
-    //        return collectionView
-    //    }()
-    
-    
+
     // MARK: 토글토글
     
     private var selectedStartDate: Date?
@@ -314,14 +301,20 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         if let pinLog = pinLog {
             configureView(with: pinLog)
         }
+        
+        if let spendingListVC = self.presentingViewController as? SpendingListViewController {
+            spendingListVC.delegate = self
+        }
+        
+        updateExpenseButtonState()
     }
-    
-    @objc func expenseButtonTapped() {
+  
+      @objc func expenseButtonTapped() {
         let spendingListVC = SpendingListViewController()
+        spendingListVC.delegate = self
         spendingListVC.pinLog = self.pinLog
         self.navigationController?.pushViewController(spendingListVC, animated: true)
     }
-
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -331,10 +324,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     @objc private func categoryTapped(_ sender: UIButton) {
-        selectedCategory = categories[sender.tag].1
+        let selectedCategoryTuple = categories[sender.tag]
+        selectedCategory = selectedCategoryTuple.1
+        selectedImageName = selectedCategoryTuple.0
         showSingleDayCalendar()
     }
-    
 
     @objc private func showCalendar() {
         let calendarVC = CalendarHostingController()
@@ -375,6 +369,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         summaryVC.selectedCategory = selectedCategory
         summaryVC.selectedDate = selectedDate
         summaryVC.amount = amount
+        summaryVC.delegate = self
         summaryVC.modalPresentationStyle = .formSheet
         if let sheet = summaryVC.sheetPresentationController {
             sheet.detents = [.custom(resolver: { _ in 460 })]
@@ -382,7 +377,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         present(summaryVC, animated: true, completion: nil)
     }
-    
+
     func setupUI() {
         view.addSubview(detailInputViewCollectionView)
         view.addSubview(detailInputViewButton.view)
@@ -414,11 +409,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     func setupConstraints() {
         let screenHeight = UIScreen.main.bounds.height
         let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.35 : 0.4
-        
+      
         detailInputViewCollectionView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalToSuperview().multipliedBy(0.35)
+            $0.height.equalToSuperview().multipliedBy(collectionViewHeightMultiplier)
         }
         
         detailInputViewButton.view.snp.makeConstraints {
@@ -498,8 +493,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         
         //라이트그레이-다크그레이
         let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
-        
-        
     }
     
     func setupCollectionView() {
@@ -516,18 +509,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     func actionButton() {
-        
         dateButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
         locationButton.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
-        consumButton.addTarget(self, action: #selector(consumButtonTapped), for: .touchUpInside)
-        
-    }
-    
-    @objc func showMatePicker() {
-        let mateVC = MateViewController()
-        mateVC.delegate = self
-        navigationController?.pushViewController(mateVC, animated: true)
-        
     }
     
     @objc private func locationButtonTapped() {
@@ -544,13 +527,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         let backButton = ButtonFactory.createBackButton()
         self.navigationItem.backBarButtonItem = backButton
         navigationController?.pushViewController(mapVC, animated: true)
-    }
-    
-    @objc func consumButtonTapped() {
-        let spendVC = SpendingListViewController()
-        
-        spendVC.pinLog = pinLog
-        navigationController?.pushViewController(spendVC, animated: true)
     }
     
     func setupNavigationBar() {
@@ -570,17 +546,40 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
 
     func updateExpenseButtonState() {
-        if let pinLog = pinLog, let expenses = pinLog.expenses, !expenses.isEmpty {
-            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .regular))
-            expenseButton.setImage(image, for: .normal)
-            expenseButton.isEnabled = true
-            expenseButton.tintColor = .font
+        
+        let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+        expenseButton.setImage(image, for: .normal)
+        expenseButton.isEnabled = true
+        expenseButton.tintColor = .black
+
+//        if let expenses = pinLog?.expenses, !expenses.flatMap({ $0.expenses }).isEmpty {
+//            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+//            expenseButton.setImage(image, for: .normal)
+//            expenseButton.isEnabled = true
+//            expenseButton.tintColor = .black
+//        } else {
+//            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+//            expenseButton.setImage(image, for: .normal)
+//            expenseButton.isEnabled = false
+//            expenseButton.tintColor = .gray
+//        }
+    }
+    
+    func didSaveExpense(_ expense: Expense) {
+        if let index = expenses.firstIndex(where: { Calendar.current.isDate($0.date, inSameDayAs: expense.date) }) {
+            expenses[index].expenses.append(expense)
         } else {
-            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .regular))
-            expenseButton.setImage(image, for: .normal)
-            expenseButton.isEnabled = false
-            expenseButton.tintColor = .darkgray
+            let newDailyExpense = DailyExpenses(date: expense.date, expenses: [expense])
+            expenses.append(newDailyExpense)
         }
+        
+        sortDailyExpensesByDate()
+        updateTotalSpendingAmount(with: expenses)
+        updateExpenseButtonState()
+    }
+    
+    func sortDailyExpensesByDate() {
+        expenses.sort { $0.date > $1.date }
     }
     
     @objc private func showSingleDayCalendar() {
@@ -604,78 +603,84 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     func configureView(with pinLog: PinLog) {
-        expenses = pinLog.expenses ?? []
-        spendingPublicSwitch.isOn = pinLog.isSpendingPublic
-        locationLeftLabel.text = pinLog.location
-        publicSwitch.isOn = pinLog.isPublic
-        spendingPublicSwitch.isOn = pinLog.isSpendingPublic
-        
-        updateDateLabel(with: pinLog.startDate, endDate: pinLog.endDate)
-        
-        selectedImages.removeAll()
-        imageLocations.removeAll()
-        
-        var representativeImage: (UIImage, Bool, CLLocationCoordinate2D?)? = nil
-        var otherImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
-        
-        let dispatchGroup = DispatchGroup()
-        
-        for media in pinLog.media {
-            dispatchGroup.enter()
-            if let url = URL(string: media.url) {
-                URLSession.shared.dataTask(with: url) { data, response, error in
-                    if let data = data, let image = UIImage(data: data) {
-                        let location = media.latitude != nil && media.longitude != nil ? CLLocationCoordinate2D(latitude: media.latitude!, longitude: media.longitude!) : nil
-                        let imageData = (image, media.isRepresentative, location)
-                        
-                        if media.isRepresentative {
-                            representativeImage = imageData
+        DispatchQueue.main.async {
+            self.expenses = pinLog.expenses ?? []
+            self.spendingPublicSwitch.isOn = pinLog.isSpendingPublic
+            self.locationLeftLabel.text = pinLog.location
+            self.publicSwitch.isOn = pinLog.isPublic
+            self.spendingPublicSwitch.isOn = pinLog.isSpendingPublic
+
+            self.updateDateLabel(with: pinLog.startDate, endDate: pinLog.endDate)
+
+            self.selectedImages.removeAll()
+            self.imageLocations.removeAll()
+
+            var representativeImage: (UIImage, Bool, CLLocationCoordinate2D?)? = nil
+            var otherImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
+
+            let dispatchGroup = DispatchGroup()
+
+            for media in pinLog.media {
+                dispatchGroup.enter()
+                if let url = URL(string: media.url) {
+                    URLSession.shared.dataTask(with: url) { data, response, error in
+                        if let data = data, let image = UIImage(data: data) {
+                            let location = media.latitude != nil && media.longitude != nil ? CLLocationCoordinate2D(latitude: media.latitude!, longitude: media.longitude!) : nil
+                            let imageData = (image, media.isRepresentative, location)
+
+                            if media.isRepresentative {
+                                representativeImage = imageData
+                            } else {
+                                otherImages.append(imageData)
+                            }
                         } else {
-                            otherImages.append(imageData)
+                            print("Error loading image: \(String(describing: error))")
                         }
-                    } else {
-                        print("Error loading image: \(String(describing: error))")
-                    }
+                        dispatchGroup.leave()
+                    }.resume()
+                } else {
                     dispatchGroup.leave()
-                }.resume()
+                }
+            }
+
+            dispatchGroup.notify(queue: .main) {
+                if let repImage = representativeImage {
+                    self.selectedImages.append(repImage)
+                }
+                self.selectedImages.append(contentsOf: otherImages)
+
+                self.representativeImageIndex = self.selectedImages.firstIndex { $0.1 }
+                self.updateRepresentativeImage()
+
+                if let galleryCell = self.detailInputViewCollectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? GallaryInputCollectionViewCell {
+                    galleryCell.selectedImages = self.selectedImages
+                    galleryCell.photoInputCollectionView.reloadData()
+                }
+            }
+
+            if self.isInitialLoad {
+                self.loadSelectedFriends(pinLog: pinLog) {
+                    self.mateCollectionView.reloadData()
+                    self.isInitialLoad = false
+                }
             } else {
-                dispatchGroup.leave()
+                self.mateCollectionView.reloadData()
             }
-        }
-        
-        dispatchGroup.notify(queue: .main) {
-            if let repImage = representativeImage {
-                self.selectedImages.append(repImage)
+
+            if let textInputCell = self.detailInputViewCollectionView.cellForItem(at: IndexPath(item: 1, section: 0)) as? TextInputCollectionViewCell {
+                textInputCell.configure(with: pinLog)
+            } else {
+                self.detailInputViewCollectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .centeredHorizontally, animated: false)
+                DispatchQueue.main.async {
+                    if let textInputCell = self.detailInputViewCollectionView.cellForItem(at: IndexPath(item: 1, section: 0)) as? TextInputCollectionViewCell {
+                        textInputCell.configure(with: pinLog)
+                    }
+                }
             }
-            self.selectedImages.append(contentsOf: otherImages)
-            
-            self.representativeImageIndex = self.selectedImages.firstIndex { $0.1 }
-            self.updateRepresentativeImage()
-            
-            if let galleryCell = self.detailInputViewCollectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? GallaryInputCollectionViewCell {
-                galleryCell.selectedImages = self.selectedImages
-                galleryCell.photoInputCollectionView.reloadData()
-            }
-        }
-        
-        loadSelectedFriends(pinLog: pinLog)
-        
-        if let totalSpendingAmount = pinLog.totalSpendingAmount, totalSpendingAmount > 0 {
-            consumLeftLabel.text = "\(formatCurrency(Int(totalSpendingAmount)))원"
-        } else {
-            consumLeftLabel.text = "지출 내역을 입력해주세요"
-        }
-        updateTotalSpendingAmount(with: expenses)
-        
-        // TextInputCollectionViewCell의 titleTextField와 contentTextView 값을 설정
-        if let textInputCell = detailInputViewCollectionView.cellForItem(at: IndexPath(item: 1, section: 0)) as? TextInputCollectionViewCell {
-            textInputCell.titleTextField.text = pinLog.title
-            textInputCell.contentTextView.text = pinLog.content
-            textInputCell.placeholderLabel.isHidden = !textInputCell.contentTextView.text.isEmpty
+            self.switchToPage(0)
         }
     }
-    
-    
+
     func loadSavedLocation() {
         let userId = Auth.auth().currentUser?.uid ?? ""
         let documentRef = Firestore.firestore().collection("users").document(userId)
@@ -806,13 +811,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             content = textInputCell.contentTextView.text
         }
 
-        guard let mainTitle = title, !mainTitle.isEmpty else {
-            showAlert(title: "제목 입력", message: "여행 제목을 입력해주세요.")
-            navigationItem.rightBarButtonItem?.isEnabled = true
-            return
-        }
-
-        let contentText = content ?? ""
         let isPublic = publicSwitch.isOn
         let isSpendingPublic = spendingPublicSwitch.isOn
         let address = savedAddress ?? "Unknown Address"
@@ -837,8 +835,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                     pinLog.longitude = longitude
                     pinLog.startDate = startDate
                     pinLog.endDate = endDate
-                    pinLog.title = mainTitle
-                    pinLog.content = contentText
+                    pinLog.title = title ?? ""
+                    pinLog.content = content ?? ""
                     pinLog.isPublic = isPublic
                     pinLog.isSpendingPublic = isSpendingPublic
                     pinLog.attendeeIds = selectedFriends.map { $0.uid }
@@ -852,8 +850,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                                     longitude: longitude,
                                     startDate: startDate,
                                     endDate: endDate,
-                                    title: mainTitle,
-                                    content: contentText,
+                                    title: title ?? "",
+                                    content: content ?? "",
                                     media: [],
                                     authorId: Auth.auth().currentUser?.uid ?? "",
                                     attendeeIds: selectedFriends.map { $0.uid },
@@ -913,10 +911,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         return expenses.flatMap { $0.expenses }.map { $0.expenseAmount }.max() ?? 0
     }
     
-    func loadSelectedFriends(pinLog: PinLog) {
+    func loadSelectedFriends(pinLog: PinLog, completion: @escaping () -> Void) {
         let group = DispatchGroup()
         selectedFriends.removeAll()
-        
+
+        // 기존 핀로그에 저장된 attendeeIds 가져오기
         for userId in pinLog.attendeeIds {
             group.enter()
             fetchUserSummary(userId: userId) { [weak self] userSummary in
@@ -931,12 +930,13 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                 group.leave()
             }
         }
-        
+
         group.notify(queue: .main) {
-            self.mateCollectionView.reloadData()
+            print("로드된 메이트 목록: \(self.selectedFriends)")
+            completion()
         }
     }
-    
+
     func fetchUserSummary(userId: String, completion: @escaping (UserSummary?) -> Void) {
         let db = Firestore.firestore()
         db.collection("users").document(userId).getDocument { document, error in
@@ -1077,7 +1077,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
 extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == mateCollectionView {
-            return selectedFriends.isEmpty ? 1 : selectedFriends.count
+            return selectedFriends.count + 1
         } else if collectionView == detailInputViewCollectionView {
             return 3
         } else if collectionView == galleryInputCollectionView {
@@ -1109,10 +1109,11 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendInputCollectionViewCell.identifier, for: indexPath) as? FriendInputCollectionViewCell else {
                 fatalError("FriendInputCollectionViewCell 오류")
             }
-            if selectedFriends.isEmpty {
+            
+            if indexPath.item == 0 {
                 cell.configure(with: nil)
             } else {
-                let friend = selectedFriends[indexPath.row]
+                let friend = selectedFriends[indexPath.item - 1]
                 if let photoURL = friend.photoURL, let url = URL(string: photoURL) {
                     cell.configure(with: url)
                 } else {
@@ -1126,11 +1127,10 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == mateCollectionView {
-            if selectedFriends.isEmpty {
+            if indexPath.item == 0 {
                 let mateVC = MateViewController()
                 mateVC.delegate = self
-                let backButton = ButtonFactory.createBackButton()
-                self.navigationItem.backBarButtonItem = backButton
+                mateVC.addedMates = selectedFriends
                 navigationController?.pushViewController(mateVC, animated: true)
             }
         }
@@ -1150,11 +1150,6 @@ extension DetailInputViewController: UICollectionViewDelegate, UICollectionViewD
         }
     }
 }
-
-
-
-
-
 
 extension DetailInputViewController: MateViewControllerDelegate {
     func didSelectMates(_ mates: [UserSummary]) {

@@ -130,3 +130,4 @@ extension CardCollectionViewCell: UITableViewDelegate, UITableViewDataSource {
         return cellHieght
     }
 }
+

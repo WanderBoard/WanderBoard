@@ -233,4 +233,145 @@ class FirestoreManager {
             }
         }
     }
+
+    func fetchExpenses(for pinLogId: String) async throws -> [DailyExpenses] {
+        let documentRef = db.collection("pinLogs").document(pinLogId)
+        let documentSnapshot = try await documentRef.getDocument()
+        
+        guard let data = documentSnapshot.data(), let expensesData = data["expenses"] as? [[String: Any]] else {
+            return []
+        }
+
+        return parseExpenses(expensesData)
+    }
+
+    private func parseExpenses(_ expensesData: [[String: Any]]) -> [DailyExpenses] {
+        var dailyExpenses: [DailyExpenses] = []
+
+        for data in expensesData {
+            guard let timestamp = data["date"] as? Timestamp,
+                  let expenseItems = data["expenses"] as? [[String: Any]] else { continue }
+
+            let date = timestamp.dateValue()
+            var expenses: [Expense] = []
+
+            for expenseItem in expenseItems {
+                let expenseContent = expenseItem["expenseContent"] as? String ?? ""
+                let expenseAmount = expenseItem["expenseAmount"] as? Int ?? 0
+                let category = expenseItem["category"] as? String ?? ""
+                let memo = expenseItem["memo"] as? String ?? ""
+                let imageName = expenseItem["imageName"] as? String ?? ""
+                let id = expenseItem["id"] as? String
+
+                let expense = Expense(
+                    id: id,
+                    date: date,
+                    expenseContent: expenseContent,
+                    expenseAmount: expenseAmount,
+                    category: category,
+                    memo: memo,
+                    imageName: imageName
+                )
+                expenses.append(expense)
+            }
+
+            let dailyExpense = DailyExpenses(date: date, expenses: expenses)
+            dailyExpenses.append(dailyExpense)
+        }
+
+        return dailyExpenses
+    }
+    
+    func saveExpense(pinLogId: String, expense: inout Expense) async throws {
+        let pinLogRef = db.collection("pinLogs").document(pinLogId)
+        
+        if expense.id == nil || expense.id!.isEmpty {
+            expense.id = UUID().uuidString
+        }
+
+        let expenseData: [String: Any] = [
+            "id": expense.id ?? "",
+            "date": Timestamp(date: expense.date),
+            "expenseContent": expense.expenseContent,
+            "expenseAmount": expense.expenseAmount,
+            "category": expense.category,
+            "memo": expense.memo,
+            "imageName": expense.imageName
+        ]
+
+        let snapshot = try await pinLogRef.getDocument()
+        guard var pinLogData = snapshot.data() else {
+            throw NSError(domain: "SaveExpenseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Pin log not found."])
+        }
+        
+        var dailyExpenses = pinLogData["expenses"] as? [[String: Any]] ?? []
+        var dateExists = false
+        
+        for i in 0..<dailyExpenses.count {
+            if let date = (dailyExpenses[i]["date"] as? Timestamp)?.dateValue(), Calendar.current.isDate(date, inSameDayAs: expense.date) {
+                var expenses = dailyExpenses[i]["expenses"] as? [[String: Any]] ?? []
+                expenses.append(expenseData)
+                dailyExpenses[i]["expenses"] = expenses
+                dateExists = true
+                break
+            }
+        }
+        
+        if !dateExists {
+            dailyExpenses.append([
+                "date": Timestamp(date: expense.date),
+                "expenses": [expenseData]
+            ])
+        }
+        
+        pinLogData["expenses"] = dailyExpenses
+        
+        try await pinLogRef.setData(pinLogData)
+    }
+
+    func deleteExpense(pinLogId: String, expense: Expense) async throws {
+        let pinLogRef = db.collection("pinLogs").document(pinLogId)
+        
+        guard let expenseId = expense.id else {
+            return
+        }
+
+        let snapshot = try await pinLogRef.getDocument()
+        guard var pinLogData = snapshot.data() else {
+            return
+        }
+                
+        if var dailyExpenses = pinLogData["expenses"] as? [[String: Any]] {
+            var found = false
+
+            for i in 0..<dailyExpenses.count {
+                if let expensesList = dailyExpenses[i]["expenses"] as? [[String: Any]] {
+                    if let expenseIndex = expensesList.firstIndex(where: { $0["id"] as? String == expenseId }) {
+                        var updatedExpenses = expensesList
+                        updatedExpenses.remove(at: expenseIndex)
+                        dailyExpenses[i]["expenses"] = updatedExpenses
+                        if updatedExpenses.isEmpty {
+                            dailyExpenses.remove(at: i)
+                        }
+                        found = true
+                        break
+                    }
+                }
+            }
+
+            if found {
+                pinLogData["expenses"] = dailyExpenses
+                try await pinLogRef.setData(pinLogData)
+                print("Expense deleted from Firestore.")
+            } else {
+                print("No matching expense found in Firestore.")
+            }
+        } else {
+            print("Expenses field not found in Firestore.")
+        }
+    }
+
+    func dictionariesAreEqual(_ lhs: [String: Any], _ rhs: [String: Any]) -> Bool {
+        return NSDictionary(dictionary: lhs).isEqual(to: rhs)
+    }
 }

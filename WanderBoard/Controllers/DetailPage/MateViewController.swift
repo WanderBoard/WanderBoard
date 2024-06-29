@@ -10,17 +10,12 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class MateViewController: UIViewController {
-    
     weak var delegate: MateViewControllerDelegate?
     
     var users: [UserSummary] = []
     var filteredUsers: [UserSummary] = []
     
-    var addedMates: [UserSummary] = [] {
-        didSet {
-            updateAddedMatesCollectionViewVisibility()
-        }
-    }
+    var addedMates: [UserSummary] = []
     
     let searchBar = UISearchBar().then {
         $0.backgroundImage = UIImage()
@@ -74,7 +69,6 @@ class MateViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
         setupConstraints()
         setupTableView()
@@ -85,6 +79,8 @@ class MateViewController: UIViewController {
         
         updateNoDataView(isEmpty: true)
         
+        addedMatesCollectionView.reloadData()
+        updateAddedMatesCollectionViewVisibility()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -92,6 +88,11 @@ class MateViewController: UIViewController {
         
         navigationController?.navigationBar.tintColor = .font
         navigationItem.largeTitleDisplayMode = .never
+        
+        print("Selected Mates: \(addedMates)")
+        
+        addedMatesCollectionView.reloadData()
+        updateAddedMatesCollectionViewVisibility()
     }
     
     func setupUI() {
@@ -117,36 +118,36 @@ class MateViewController: UIViewController {
         addedMatesView.snp.makeConstraints {
             $0.top.equalTo(searchBar.snp.bottom)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(addedMates.isEmpty ? 0 : 40)
         }
         
         addedMatesCollectionView.snp.makeConstraints {
-            $0.edges.equalTo(addedMatesView)
+            $0.edges.equalToSuperview()
         }
         
         tableView.snp.makeConstraints {
             $0.top.equalTo(addedMatesView.snp.bottom)
-            $0.leading.trailing.bottom.equalTo(view)
+            $0.leading.trailing.equalTo(view)
+            $0.bottom.equalTo(view)
         }
         
         noDataView.snp.makeConstraints {
-            $0.edges.equalTo(view)
+            $0.edges.equalToSuperview()
         }
         
         imageView.snp.makeConstraints {
-            $0.centerX.equalTo(noDataView)
-            $0.centerY.equalTo(noDataView).offset(-40)
+            $0.centerX.equalToSuperview()
+            $0.centerY.equalToSuperview().offset(-40)
             $0.width.height.equalTo(45)
         }
         
         noDataMainTitle.snp.makeConstraints {
             $0.top.equalTo(imageView.snp.bottom).offset(20)
-            $0.leading.trailing.equalTo(noDataView).inset(20)
+            $0.leading.trailing.equalToSuperview().inset(20)
         }
         
         noDataSubTitle.snp.makeConstraints {
             $0.top.equalTo(noDataMainTitle.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(noDataView).inset(20)
+            $0.leading.trailing.equalToSuperview().inset(20)
         }
     }
     
@@ -165,7 +166,8 @@ class MateViewController: UIViewController {
     }
     
     @objc func doneButtonTapped() {
-        delegate?.didSelectMates(addedMates)
+        let selectedMates = addedMates.filter { $0.isMate }
+        delegate?.didSelectMates(selectedMates)
         navigationController?.popViewController(animated: true)
     }
     
@@ -176,12 +178,17 @@ class MateViewController: UIViewController {
     
     func updateAddedMatesCollectionViewVisibility() {
         addedMatesView.isHidden = addedMates.isEmpty
-        addedMatesView.snp.updateConstraints {
+        addedMatesView.snp.remakeConstraints {
+            $0.top.equalTo(searchBar.snp.bottom)
+            $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(addedMates.isEmpty ? 0 : 40)
         }
-        tableView.snp.updateConstraints {
+        tableView.snp.remakeConstraints {
             $0.top.equalTo(addedMatesView.snp.bottom)
+            $0.leading.trailing.bottom.equalToSuperview()
         }
+        addedMatesCollectionView.reloadData()
+        view.layoutIfNeeded()
     }
     
     func fetchUsers() {
@@ -192,6 +199,15 @@ class MateViewController: UIViewController {
             case .success(let userSummaries):
                 self?.users = userSummaries.filter { $0.uid != currentUserID }
                 self?.filteredUsers = []
+                
+                // selectedMates를 UI에 반영
+                for user in self?.users ?? [] {
+                    if self?.addedMates.contains(where: { $0.uid == user.uid }) == true {
+                        if let index = self?.users.firstIndex(where: { $0.uid == user.uid }) {
+                            self?.users[index].isMate = true
+                        }
+                    }
+                }
                 self?.updateNoDataView(isEmpty: true)
                 self?.tableView.reloadData()
             case .failure(let error):
@@ -199,7 +215,7 @@ class MateViewController: UIViewController {
             }
         }
     }
-
+    
     func searchFriends(with query: String) {
         guard let currentUserID = Auth.auth().currentUser?.uid else { return }
         let filteredByName = users.filter { $0.displayName.lowercased().contains(query.lowercased()) }
@@ -228,14 +244,11 @@ extension MateViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        100
+        return 100
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: MateTableViewCell.identifier, for: indexPath) as? MateTableViewCell else {
-            return UITableViewCell()
-        }
-        
+        let cell = tableView.dequeueReusableCell(withIdentifier: MateTableViewCell.identifier, for: indexPath) as! MateTableViewCell
         let user = filteredUsers[indexPath.row]
         cell.configure(with: user)
         cell.delegate = self
@@ -247,7 +260,7 @@ extension MateViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension MateViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText.isEmpty {
+        if (searchText.isEmpty) {
             filteredUsers = []
             updateNoDataView(isEmpty: true)
         } else {
@@ -267,6 +280,22 @@ extension MateViewController: MateTableViewCellDelegate {
                 addedMates.append(filteredUsers[index])
             } else {
                 addedMates.removeAll { $0.uid == filteredUsers[index].uid }
+            }
+            addedMatesCollectionView.reloadData()
+            updateAddedMatesCollectionViewVisibility()
+            addedMatesCollectionView.layoutIfNeeded()
+        }
+    }
+}
+
+
+extension MateViewController: AddedMateCellDelegate {
+    func didTapRemoveButton(for user: UserSummary) {
+        if let index = addedMates.firstIndex(where: { $0.uid == user.uid }) {
+            addedMates.remove(at: index)
+            if let filteredIndex = filteredUsers.firstIndex(where: { $0.uid == user.uid }) {
+                filteredUsers[filteredIndex].isMate = false
+                tableView.reloadRows(at: [IndexPath(row: filteredIndex, section: 0)], with: .automatic)
             }
             addedMatesCollectionView.reloadData()
             updateAddedMatesCollectionViewVisibility()
@@ -302,21 +331,6 @@ extension MateViewController: UICollectionViewDelegate, UICollectionViewDataSour
             return CGSize(width: totalWidth, height: 30)
         }
         return CGSize(width: 120, height: 30)
-    }
-}
-
-extension MateViewController: AddedMateCellDelegate {
-    func didTapRemoveButton(for user: UserSummary) {
-        if let index = addedMates.firstIndex(where: { $0.uid == user.uid }) {
-            addedMates.remove(at: index)
-            if let filteredIndex = filteredUsers.firstIndex(where: { $0.uid == user.uid }) {
-                filteredUsers[filteredIndex].isMate = false
-                tableView.reloadRows(at: [IndexPath(row: filteredIndex, section: 0)], with: .automatic)
-            }
-            addedMatesCollectionView.reloadData()
-            updateAddedMatesCollectionViewVisibility()
-            addedMatesCollectionView.layoutIfNeeded()
-        }
     }
 }
 

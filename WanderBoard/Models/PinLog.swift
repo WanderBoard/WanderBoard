@@ -50,6 +50,7 @@ struct Media: Codable {
 }
 
 struct Expense: Codable, Equatable {
+    var id: String?
     var date: Date
     var expenseContent: String
     var expenseAmount: Int
@@ -59,6 +60,7 @@ struct Expense: Codable, Equatable {
     
     func toDictionary() -> [String: Any] {
         return [
+            "id": self.id ?? UUID().uuidString,
             "date": Timestamp(date: self.date),
             "expenseContent": self.expenseContent,
             "expenseAmount": self.expenseAmount,

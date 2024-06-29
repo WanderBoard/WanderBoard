@@ -171,16 +171,9 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
         
         return categoryButton
     }()
-    
-    let categories = ["식비", "교통비", "문화생활비", "기념품비", "숙박비", "기타"]
-    let categoryImageMapping: [String: String] = [
-        "식비": "fork.knife.circle",
-        "교통비": "car.circle",
-        "문화생활비": "theatermasks.circle",
-        "기념품비": "gift.circle",
-        "숙박비": "bed.double.circle",
-        "기타": "ellipsis.circle"
-    ]
+
+    let categories = CategoryData.categories.map { $0.1 }
+    let categoryImageMapping = CategoryData.categoryImageMapping
     
     var toolbar: UIToolbar?
     var categoryPicker: UIPickerView = {
@@ -262,7 +255,6 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         
         view.backgroundColor = .systemBackground
         
@@ -365,7 +357,6 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
             self.scrollView.scrollIndicatorInsets = contentInset
         }
     }
-    
     
     @objc func keyboardWillHide(_ notification: Notification) {
         UIView.animate(withDuration: 0.3) {
@@ -491,7 +482,7 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
         let category = insertedCategoryLabel.text ?? ""
         let imageName = categoryImageMapping[category] ?? ""
         
-        let expense = Expense(
+        var expense = Expense(
             date: datePicker.date,
             expenseContent: content,
             expenseAmount: Int(amount) ?? 0,
@@ -510,8 +501,7 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
         
         Task {
             do {
-                try await PinLogManager.shared.addExpenseToPinLog(pinLogId: pinLogId, expense: expense)
-                print("Expense successfully added to pin log")
+                try await FirestoreManager.shared.saveExpense(pinLogId: pinLogId, expense: &expense)
                 self.dismiss(animated: true)
                 NotificationCenter.default.post(name: .newExpenseData, object: nil, userInfo: ["expense": expense])
             } catch {
@@ -520,7 +510,7 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
             }
         }
     }
-    
+
     func saveExpenseToFirestore(_ expense: Expense) {
         let db = Firestore.firestore()
         guard let userId = Auth.auth().currentUser?.uid else { return }
@@ -547,7 +537,6 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
             }
         }
     }
-    
     
     // MARK: Components Set up
     func configureUI() {

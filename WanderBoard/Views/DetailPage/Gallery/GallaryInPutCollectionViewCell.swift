@@ -28,7 +28,7 @@ class GallaryInputCollectionViewCell: UICollectionViewCell {
             DispatchQueue.main.async {
                 if let layout = self.photoInputCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                     if self.selectedImages.isEmpty {
-                        layout.sectionInset = UIEdgeInsets(top: 0, left: 64, bottom: 0, right: 64)
+                        layout.sectionInset = UIEdgeInsets(top: 0, left: 80, bottom: 0, right: 80)
                     } else {
                         layout.sectionInset = UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 64)
                     }
@@ -43,7 +43,7 @@ class GallaryInputCollectionViewCell: UICollectionViewCell {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 10
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 64, bottom: 0, right: 64)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 80, bottom: 0, right: 80)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
@@ -89,7 +89,7 @@ extension GallaryInputCollectionViewCell: UICollectionViewDelegate, UICollection
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.frame.width - (selectedImages.isEmpty ? 128 : 96)
+        let width = collectionView.frame.width - 160
         let height = collectionView.frame.height
         
         if indexPath.item == 0 && !selectedImages.isEmpty {

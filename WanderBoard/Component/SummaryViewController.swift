@@ -70,7 +70,7 @@ class SummaryViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         textView.layer.cornerRadius = 10
         textView.layer.borderColor = UIColor.darkgray.cgColor
         textView.font = UIFont.systemFont(ofSize: 14)
-        textView.backgroundColor = .white
+        textView.backgroundColor = .systemBackground
         
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 8
@@ -87,14 +87,14 @@ class SummaryViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     private let saveButton: UIButton = {
         let button = UIButton(type: .system)
         button.layer.cornerRadius = 10
-        button.backgroundColor = .black
-        button.tintColor = .white
+        button.backgroundColor = .font
+        button.tintColor = UIColor(named: "textColor")
         return button
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         setupUI()
         populateData()
         
@@ -209,25 +209,25 @@ class SummaryViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     @objc func textViewDidChange(_ textView: UITextView) {
         if textView.text.isEmpty {
             textView.text = "Note.."
-            textView.textColor = UIColor.white
+            textView.textColor = .darkgray
             textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
-        } else if textView.textColor == UIColor.lightGray {
-            textView.textColor = UIColor.black
+        } else if textView.textColor == UIColor.darkgray {
+            textView.textColor = UIColor.font
             textView.text = nil
         }
     }
     
     @objc func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor.lightGray {
+        if textView.textColor == UIColor.darkgray {
             textView.text = nil
-            textView.textColor = UIColor.black
+            textView.textColor = .font
         }
     }
     
     @objc func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {
             textView.text = "Note.."
-            textView.textColor = UIColor.lightGray
+            textView.textColor = UIColor.darkgray
         }
     }
 }

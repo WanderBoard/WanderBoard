@@ -51,14 +51,14 @@ struct AmountInputView: View {
                             } else if button == "00" {
                                 Text(button)
                                     .frame(width: 100, height: 60)
-                                    .background(Color.babyGTocustomB)
+                                    .background(Color.background)
                                     .foregroundColor(Color(("PageCtrlUnselectedText2")))
                                     .cornerRadius(20)
                                     .font(.system(size: 20, weight: .semibold))
                             } else {
                                 Text(button)
                                     .frame(width: 100, height: 60)
-                                    .background(Color.babyGTocustomB)
+                                    .background(Color.background)
                                     .foregroundColor(Color("font"))
                                     .cornerRadius(20)
                                     .font(.system(size: 20, weight: .semibold))
@@ -78,8 +78,8 @@ struct AmountInputView: View {
             }) {
                 Text("Next")
                     .frame(maxWidth: .infinity, maxHeight: 50)
-                    .background(!amount.isEmpty ? Color("font") : Color.babyGTocustomB)
-                    .foregroundColor(Color("textColor"))
+                    .background(!amount.isEmpty ? Color("font") : Color.background)
+                    .foregroundColor(!amount.isEmpty ? Color("textColor") : Color.darkgray)
                     .cornerRadius(10)
             }
             .disabled(amount.isEmpty)

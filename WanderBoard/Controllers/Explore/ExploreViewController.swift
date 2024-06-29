@@ -303,7 +303,8 @@ extension ExploreViewController: DetailViewControllerDelegate {
             startDate: updatedPinLog.startDate,
             representativeMediaURL: updatedPinLog.media.first { $0.isRepresentative }?.url,
             authorId: updatedPinLog.authorId,
-            createdAt: updatedPinLog.createdAt ?? Date()
+            createdAt: updatedPinLog.createdAt ?? Date(),
+            isPublic: updatedPinLog.isPublic
         )
         
         if let index = recentLogs.firstIndex(where: { $0.id == updatedPinLog.id }) {

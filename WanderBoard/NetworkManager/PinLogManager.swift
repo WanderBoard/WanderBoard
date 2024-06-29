@@ -140,6 +140,7 @@ class PinLogManager {
     func fetchHotPinLogs() async throws -> [PinLogSummary] {
         let snapshot = try await db.collection("pinLogs")
             .whereField("pinCount", isGreaterThan: 0)
+            .whereField("isPublic", isEqualTo: true) // 이 줄을 추가하세요.
             .getDocuments()
         
         let allDocuments = snapshot.documents
@@ -155,13 +156,15 @@ class PinLogManager {
             let representativeMediaURL = (data["media"] as? [[String: Any]])?.first { $0["isRepresentative"] as? Bool == true }?["url"] as? String
             let authorId = data["authorId"] as? String ?? ""
             let createdAt = (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+            let isPublic = data["isPublic"] as? Bool ?? false
             
-            return PinLogSummary(id: document.documentID, location: location, startDate: startDate, representativeMediaURL: representativeMediaURL, authorId: authorId, createdAt: createdAt)
+            return PinLogSummary(id: document.documentID, location: location, startDate: startDate, representativeMediaURL: representativeMediaURL, authorId: authorId, createdAt: createdAt, isPublic: isPublic)
         }
     }
     
     func fetchInitialData(pageSize: Int, completion: @escaping (Result<([PinLogSummary], DocumentSnapshot?), Error>) -> Void) {
         db.collection("pinLogs")
+            .whereField("isPublic", isEqualTo: true)
             .order(by: "createdAt", descending: true)
             .limit(to: pageSize)
             .getDocuments { (snapshot, error) in
@@ -170,22 +173,23 @@ class PinLogManager {
                 } else {
                     var pinLogSummaries: [PinLogSummary] = []
                     var lastDocumentSnapshot: DocumentSnapshot? = nil
-                    
+
                     for document in snapshot!.documents {
                         let data = document.data()
                         let representativeMediaURL = (data["media"] as? [[String: Any]])?.first { $0["isRepresentative"] as? Bool == true }?["url"] as? String
-                        
+
                         let pinLogSummary = PinLogSummary(
                             id: document.documentID,
                             location: data["location"] as? String ?? "",
                             startDate: (data["startDate"] as? Timestamp)?.dateValue() ?? Date(),
                             representativeMediaURL: representativeMediaURL,
                             authorId: data["authorId"] as? String ?? "",
-                            createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+                            createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date(),
+                            isPublic: data["isPublic"] as? Bool ?? false
                         )
                         pinLogSummaries.append(pinLogSummary)
                     }
-                    
+
                     lastDocumentSnapshot = snapshot!.documents.last
                     completion(.success((pinLogSummaries, lastDocumentSnapshot)))
                 }
@@ -194,6 +198,7 @@ class PinLogManager {
     
     func fetchMoreData(pageSize: Int, lastSnapshot: DocumentSnapshot, completion: @escaping (Result<([PinLogSummary], DocumentSnapshot?), Error>) -> Void) {
         db.collection("pinLogs")
+            .whereField("isPublic", isEqualTo: true)
             .order(by: "createdAt", descending: true)
             .start(afterDocument: lastSnapshot)
             .limit(to: pageSize)
@@ -203,22 +208,23 @@ class PinLogManager {
                 } else {
                     var pinLogSummaries: [PinLogSummary] = []
                     var lastDocumentSnapshot: DocumentSnapshot? = nil
-                    
+
                     for document in snapshot!.documents {
                         let data = document.data()
                         let representativeMediaURL = (data["media"] as? [[String: Any]])?.first { $0["isRepresentative"] as? Bool == true }?["url"] as? String
-                        
+
                         let pinLogSummary = PinLogSummary(
                             id: document.documentID,
                             location: data["location"] as? String ?? "",
                             startDate: (data["startDate"] as? Timestamp)?.dateValue() ?? Date(),
                             representativeMediaURL: representativeMediaURL,
                             authorId: data["authorId"] as? String ?? "",
-                            createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+                            createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date(),
+                            isPublic: data["isPublic"] as? Bool ?? false
                         )
                         pinLogSummaries.append(pinLogSummary)
                     }
-                    
+
                     lastDocumentSnapshot = snapshot!.documents.last
                     completion(.success((pinLogSummaries, lastDocumentSnapshot)))
                 }

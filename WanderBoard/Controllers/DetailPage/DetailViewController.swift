@@ -111,7 +111,6 @@ class DetailViewController: UIViewController {
         $0.axis = .horizontal
         $0.alignment = .center
         $0.spacing = 10
-        $0.isUserInteractionEnabled = false
     }
     
     let optionsButton = UIButton().then {
@@ -213,6 +212,7 @@ class DetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
         setupUI()
         newSetupConstraints()
         setupConstraints()
@@ -221,9 +221,10 @@ class DetailViewController: UIViewController {
         updateColor()
         checkId()
         loadData()
-        setupTapGesture()
         
-        view.backgroundColor = .systemBackground
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
+        profileStackView.isUserInteractionEnabled = true
+        profileStackView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -296,6 +297,13 @@ class DetailViewController: UIViewController {
         dateStackView.snp.makeConstraints {
             $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(10)
             $0.top.equalTo(bottomContentStackView.snp.bottom).offset(10)
+        }
+        
+        profileStackView.snp.makeConstraints(){
+            $0.top.equalToSuperview()
+            $0.left.equalToSuperview()
+            $0.width.equalTo(150)
+            $0.height.equalTo(32)
         }
         
         optionsButton.snp.makeConstraints {
@@ -611,22 +619,21 @@ class DetailViewController: UIViewController {
         }
     }
     
-    private func setupTapGesture() {
-            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped(tapGestureRecognizer:)))
-            profileImageView.addGestureRecognizer(tapGesture)
-        }
-    
-    //프로필 이미지 눌렀을때 이미지 확대 뷰
-    @objc func profileImageTapped(tapGestureRecognizer: UITapGestureRecognizer){
-        print("프로필 이미지 눌림")
+    //프로필 이미지 눌렀을때 이미지 확대 뷰 나오도록
+    @objc func imageTapped(_ sender: UITapGestureRecognizer) {
         let profileDetailVC = profileDetail()
-        profileDetailVC.modalPresentationStyle = .fullScreen
-        profileDetailVC.modalTransitionStyle = .coverVertical
+        //풀 스크린을 누르면 새로운 뷰가 열리며 풀스크린으로 보여지지만 오버 풀스크린을 하면 기존 뷰에 모달이 입혀지는 구조
+        profileDetailVC.modalPresentationStyle = .overFullScreen
+        profileDetailVC.modalTransitionStyle = .crossDissolve
+        
+        profileDetailVC.profileImage.image = profileImageView.image
+        profileDetailVC.nameLabel.text = nicknameLabel.text ?? "No Name"
+        
         self.present(profileDetailVC, animated: true, completion: nil)
     }
     
     @objc func expandableButtonTapped() {
-        let generator = UIImpactFeedbackGenerator(style: .medium)
+        let generator = UIImpactFeedbackGenerator(style: .medium) 
         generator.impactOccurred()
         
         isExpanded.toggle()
@@ -950,9 +957,11 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as? FriendCollectionViewCell else {
                 fatalError("컬렉션 뷰 오류")
             }
+            //셀을 클릭했을때의 액션이 필요하기 때문
+            cell.delegate = self
             cell.configure(with: selectedFriends[indexPath.row])
             return cell
-        }
+            }
         return UICollectionViewCell()
     }
     
@@ -1001,5 +1010,22 @@ extension DetailViewController: DetailInputViewControllerDelegate {
         Task {
             await configureView(with: pinLog)
         }
+    }
+}
+
+extension DetailViewController: FriendCollectionViewCellDelegate {
+    func didTapImage(in cell: FriendCollectionViewCell) {
+        guard let indexPath = friendCollectionView.indexPath(for: cell) else {
+            return
+        }
+        let profileDetailVC = profileDetail()
+        profileDetailVC.modalPresentationStyle = .overFullScreen
+        profileDetailVC.modalTransitionStyle = .crossDissolve
+        
+        let friend = selectedFriends[indexPath.row]
+        profileDetailVC.profileImage.image = selectedFriends[indexPath.row]
+        profileDetailVC.nameLabel.text = "이름불러오는법 찾는중.."
+
+        present(profileDetailVC, animated: true, completion: nil)
     }
 }

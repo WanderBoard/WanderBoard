@@ -632,16 +632,14 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
             let nickname = self.nicknameTextField.text
             
             self.nickNameEditedProfileImageSetting(with: nickname ?? "")
-            self.profile.tag = 1 // 기본 이미지로 변경
+            self.profile.tag = 1
             
             self.updateDoneButtonState()
             
             self.profile.image = nil
             self.addImage.isHidden = true
             self.addImageLayer.isHidden = true
-        
-//            let nickname = self.nicknameTextField.text
-            
+         
             self.nickNameEditedProfileImageSetting(with: nickname ?? "")
         }
         

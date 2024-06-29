@@ -47,6 +47,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
     var selectedFriends: [UserSummary] = []
+    var isInitialLoad = true // 메이트 값을 딱 한번만 가져오도록 설정하기 위해
     var representativeImageIndex: Int? = 0
     
     var totalSpendingAmountText: String? {
@@ -255,8 +256,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
-    
-    
+
     // MARK: 토글토글
     
     private var selectedStartDate: Date?
@@ -658,15 +658,18 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                 }
             }
 
-            self.loadSelectedFriends(pinLog: pinLog)
-
-            print("PinLog title: \(pinLog.title)")
-            print("PinLog content: \(pinLog.content)")
+            if self.isInitialLoad {
+                self.loadSelectedFriends(pinLog: pinLog) {
+                    self.mateCollectionView.reloadData()
+                    self.isInitialLoad = false
+                }
+            } else {
+                self.mateCollectionView.reloadData()
+            }
 
             if let textInputCell = self.detailInputViewCollectionView.cellForItem(at: IndexPath(item: 1, section: 0)) as? TextInputCollectionViewCell {
                 textInputCell.configure(with: pinLog)
             } else {
-                print("TextInputCollectionViewCell not found")
                 self.detailInputViewCollectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .centeredHorizontally, animated: false)
                 DispatchQueue.main.async {
                     if let textInputCell = self.detailInputViewCollectionView.cellForItem(at: IndexPath(item: 1, section: 0)) as? TextInputCollectionViewCell {
@@ -677,7 +680,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
             self.switchToPage(0)
         }
     }
-    
+
     func loadSavedLocation() {
         let userId = Auth.auth().currentUser?.uid ?? ""
         let documentRef = Firestore.firestore().collection("users").document(userId)
@@ -908,10 +911,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         return expenses.flatMap { $0.expenses }.map { $0.expenseAmount }.max() ?? 0
     }
     
-    func loadSelectedFriends(pinLog: PinLog) {
+    func loadSelectedFriends(pinLog: PinLog, completion: @escaping () -> Void) {
         let group = DispatchGroup()
         selectedFriends.removeAll()
-        
+
+        // 기존 핀로그에 저장된 attendeeIds 가져오기
         for userId in pinLog.attendeeIds {
             group.enter()
             fetchUserSummary(userId: userId) { [weak self] userSummary in
@@ -926,12 +930,13 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                 group.leave()
             }
         }
-        
+
         group.notify(queue: .main) {
-            self.mateCollectionView.reloadData()
+            print("로드된 메이트 목록: \(self.selectedFriends)")
+            completion()
         }
     }
-    
+
     func fetchUserSummary(userId: String, completion: @escaping (UserSummary?) -> Void) {
         let db = Firestore.firestore()
         db.collection("users").document(userId).getDocument { document, error in

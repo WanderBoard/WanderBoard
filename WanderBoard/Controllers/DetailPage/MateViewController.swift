@@ -118,17 +118,16 @@ class MateViewController: UIViewController {
         addedMatesView.snp.makeConstraints {
             $0.top.equalTo(searchBar.snp.bottom)
             $0.leading.trailing.equalToSuperview()
-            //$0.height.equalTo(addedMates.isEmpty ? 0 : 40)
         }
         
         addedMatesCollectionView.snp.makeConstraints {
-            $0.edges.equalToSuperview() // addedMatesView의 전체 영역에 맞춤
+            $0.edges.equalToSuperview()
         }
         
         tableView.snp.makeConstraints {
             $0.top.equalTo(addedMatesView.snp.bottom)
-            $0.leading.trailing.equalTo(view) // view 대신 슈퍼뷰로 설정
-            $0.bottom.equalTo(view) // view 대신 슈퍼뷰로 설정
+            $0.leading.trailing.equalTo(view)
+            $0.bottom.equalTo(view)
         }
         
         noDataView.snp.makeConstraints {
@@ -167,7 +166,8 @@ class MateViewController: UIViewController {
     }
     
     @objc func doneButtonTapped() {
-        delegate?.didSelectMates(addedMates)
+        let selectedMates = addedMates.filter { $0.isMate }
+        delegate?.didSelectMates(selectedMates)
         navigationController?.popViewController(animated: true)
     }
     

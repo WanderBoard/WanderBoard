@@ -345,7 +345,7 @@ extension SpendingListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            var deleteExpense = dailyExpenses[indexPath.section].expenses.remove(at: indexPath.row)
+            let deleteExpense = dailyExpenses[indexPath.section].expenses.remove(at: indexPath.row)
             
             if dailyExpenses[indexPath.section].expenses.isEmpty {
                 dailyExpenses.remove(at: indexPath.section)

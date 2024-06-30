@@ -39,6 +39,15 @@ class CategoryInputCollectionViewCell: UICollectionViewCell, UICollectionViewDel
         return collectionView
     }()
     
+    let explainLabel: UILabel = {
+        let label = UILabel()
+        label.text = "카테고리 버튼 클릭 시 세부적인 내용을 입력할 수 있습니다."
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textColor = .lightgray
+        label.textAlignment = .center
+        return label
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -53,6 +62,7 @@ class CategoryInputCollectionViewCell: UICollectionViewCell, UICollectionViewDel
         let isSmallScreen = screenHeight < 750
         
         contentView.addSubview(collectionView)
+        contentView.addSubview(explainLabel)
         collectionView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             if isSmallScreen {
@@ -62,6 +72,10 @@ class CategoryInputCollectionViewCell: UICollectionViewCell, UICollectionViewDel
                 make.top.equalToSuperview().offset(32)
                 make.bottom.equalToSuperview().offset(-30)
             }
+        }
+        explainLabel.snp.makeConstraints { make in
+            make.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
         }
     }
     

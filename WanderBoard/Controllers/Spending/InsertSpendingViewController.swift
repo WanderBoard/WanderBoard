@@ -244,7 +244,7 @@ class InsertSpendingViewController: UIViewController, SingleDayCalendarHostingCo
         saveDoneButton.backgroundColor = .font
         saveDoneButton.setTitle("저장", for: .normal)
         saveDoneButton.setTitleColor(UIColor(named: "textColor"), for: .normal)
-        saveDoneButton.setTitle("필수 값을 입력해주세요", for: .disabled)
+        saveDoneButton.setTitle("필수 값을 입력해주세요.", for: .disabled)
         saveDoneButton.setTitleColor(.darkgray, for: .disabled)
         saveDoneButton.isEnabled = false
         saveDoneButton.addTarget(self, action: #selector(saveExpenseData), for: .touchUpInside)

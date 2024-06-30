@@ -721,7 +721,7 @@ class DetailViewController: UIViewController {
             optionsButton.menu = UIMenu(title: "", children: [instaAction, editAction, deleteAction])
         } else if Auth.auth().currentUser != nil {
             let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "person.slash.fill")) { [weak self] _ in
-                let reportAlert = UIAlertController(title: "", message: "작성자를 차단하시겠습니까? \n 차단한 작성자의 글이 보이지 않게됩니다.", preferredStyle: .alert)
+                let reportAlert = UIAlertController(title: "", message: "작성자를 차단하시겠습니까? \n 차단한 작성자의 글이 보이지 않게 됩니다.", preferredStyle: .alert)
                 reportAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
                 reportAlert.addAction(UIAlertAction(title: "차단", style: .destructive, handler: { [weak self] _ in
                     self?.reportPinLog()
@@ -751,7 +751,7 @@ class DetailViewController: UIViewController {
     }
     
     func deletePinLog() {
-        let alert = UIAlertController(title: "삭제 확인", message: "핀로그를 삭제하시겠습니까?", preferredStyle: .alert)
+        let alert = UIAlertController(title: "삭제 확인", message: "핀 로그를 삭제하시겠습니까?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "삭제", style: .destructive, handler: { [weak self] _ in
             guard let self = self, let pinLog = self.pinLog else { return }

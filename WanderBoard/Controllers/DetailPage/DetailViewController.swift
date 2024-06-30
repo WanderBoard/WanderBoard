@@ -111,7 +111,6 @@ class DetailViewController: UIViewController {
         $0.axis = .horizontal
         $0.alignment = .center
         $0.spacing = 10
-        $0.isUserInteractionEnabled = false
     }
     
     let optionsButton = UIButton().then {
@@ -213,6 +212,7 @@ class DetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
         setupUI()
         newSetupConstraints()
         setupConstraints()
@@ -221,9 +221,10 @@ class DetailViewController: UIViewController {
         updateColor()
         checkId()
         loadData()
-        setupTapGesture()
         
-        view.backgroundColor = .systemBackground
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
+        profileStackView.isUserInteractionEnabled = true
+        profileStackView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -319,6 +320,13 @@ class DetailViewController: UIViewController {
             $0.top.equalTo(bottomContentStackView.snp.bottom).offset(10)
         }
         
+        profileStackView.snp.makeConstraints(){
+            $0.top.equalToSuperview()
+            $0.left.equalToSuperview()
+            $0.width.equalTo(150)
+            $0.height.equalTo(32)
+        }
+        
         optionsButton.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.trailing.equalToSuperview()
@@ -406,10 +414,15 @@ class DetailViewController: UIViewController {
     
     func checkId() {
         if let pinLog = pinLog {
+            if isCurrentUser(pinLog: pinLog) {
+                pinButton.isHidden = true
+            } else {
+                pinButton.isHidden = false
+                updatePinButtonState()
+            }
             Task {
                 await configureView(with: pinLog)
             }
-            updatePinButtonState()
             profileStackView.isHidden = false
             setupMenu()
         }
@@ -419,12 +432,6 @@ class DetailViewController: UIViewController {
     func isCurrentUser(pinLog: PinLog) -> Bool {
         guard let userId = Auth.auth().currentUser?.uid else { return false }
         return userId == pinLog.authorId
-    }
-    
-    // 사용자가 아닌 경우 숨길 UI 요소를 정의
-    func hideAppearUIElements() {
-        pinButton.isHidden = false
-        updatePinButtonState()
     }
     
     @objc func pinButtonTapped() {
@@ -488,7 +495,6 @@ class DetailViewController: UIViewController {
         present(loginVC, animated: true, completion: nil)
     }
     
-    //여기에서 업데이트 해줄 때 기본 설정을 못 가져와서 생겼던 문제였던 거 같습니다 ~~
     func updatePinButtonState() {
         guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else { return }
         
@@ -627,30 +633,21 @@ class DetailViewController: UIViewController {
         }
     }
     
-    //프로필 이미지 눌렀을때 이미지 확대 뷰
-    func setupTapGesture() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped(tapGestureRecognizer:)))
-        profileImageView.addGestureRecognizer(tapGesture)
-        profileImageView.isUserInteractionEnabled = true
-    }
-    
-    @objc func profileImageTapped(tapGestureRecognizer: UITapGestureRecognizer){
+    //프로필 이미지 눌렀을때 이미지 확대 뷰 나오도록
+    @objc func imageTapped(_ sender: UITapGestureRecognizer) {
         let profileDetailVC = profileDetail()
-        addChild(profileDetailVC)
-        view.addSubview(profileDetailVC.view)
-        profileDetailVC.view.frame = view.bounds
-        profileDetailVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        profileDetailVC.view.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
-        present(profileDetailVC, animated: true, completion: nil)
-//        profileDetailVC.modalPresentationStyle = .fullScreen
-//        profileDetailVC.configureUI(with: nicknameLabel.text ?? "")
-//        present(profileDetailVC, animated: true, completion: nil)
+        //풀 스크린을 누르면 새로운 뷰가 열리며 풀스크린으로 보여지지만 오버 풀스크린을 하면 기존 뷰에 모달이 입혀지는 구조
+        profileDetailVC.modalPresentationStyle = .overFullScreen
+        profileDetailVC.modalTransitionStyle = .crossDissolve
+        
+        profileDetailVC.profileImage.image = profileImageView.image
+        profileDetailVC.nameLabel.text = nicknameLabel.text ?? "No Name"
+        
+        self.present(profileDetailVC, animated: true, completion: nil)
     }
     
     @objc func expandableButtonTapped() {
-        let generator = UIImpactFeedbackGenerator(style: .medium)
+        let generator = UIImpactFeedbackGenerator(style: .medium) 
         generator.impactOccurred()
         
         isExpanded.toggle()
@@ -732,7 +729,7 @@ class DetailViewController: UIViewController {
             optionsButton.menu = UIMenu(title: "", children: [instaAction, editAction, deleteAction])
         } else if Auth.auth().currentUser != nil {
             let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "person.slash.fill")) { [weak self] _ in
-                let reportAlert = UIAlertController(title: "", message: "작성자를 차단하시겠습니까? \n 차단한 작성자의 글이 보이지 않게됩니다.", preferredStyle: .alert)
+                let reportAlert = UIAlertController(title: "", message: "작성자를 차단하시겠습니까? \n 차단한 작성자의 글이 보이지 않게 됩니다.", preferredStyle: .alert)
                 reportAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
                 reportAlert.addAction(UIAlertAction(title: "차단", style: .destructive, handler: { [weak self] _ in
                     self?.reportPinLog()
@@ -762,7 +759,7 @@ class DetailViewController: UIViewController {
     }
     
     func deletePinLog() {
-        let alert = UIAlertController(title: "삭제 확인", message: "핀로그를 삭제하시겠습니까?", preferredStyle: .alert)
+        let alert = UIAlertController(title: "삭제 확인", message: "핀 로그를 삭제하시겠습니까?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "삭제", style: .destructive, handler: { [weak self] _ in
             guard let self = self, let pinLog = self.pinLog else { return }
@@ -975,9 +972,11 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as? FriendCollectionViewCell else {
                 fatalError("컬렉션 뷰 오류")
             }
+            //셀을 클릭했을때의 액션이 필요하기 때문
+            cell.delegate = self
             cell.configure(with: selectedFriends[indexPath.row])
             return cell
-        }
+            }
         return UICollectionViewCell()
     }
     
@@ -1033,5 +1032,20 @@ extension DetailViewController: SpendingListViewControllerDelegate {
         pinLog?.expenses = expenses
         // 데이터 소스를 새로 고침
         detailViewCollectionView.reloadData()
+
+extension DetailViewController: FriendCollectionViewCellDelegate {
+    func didTapImage(in cell: FriendCollectionViewCell) {
+        guard let indexPath = friendCollectionView.indexPath(for: cell) else {
+            return
+        }
+        let profileDetailVC = profileDetail()
+        profileDetailVC.modalPresentationStyle = .overFullScreen
+        profileDetailVC.modalTransitionStyle = .crossDissolve
+        
+        _ = selectedFriends[indexPath.row]
+        profileDetailVC.profileImage.image = selectedFriends[indexPath.row]
+        profileDetailVC.nameLabel.text = "이름불러오는법 찾는중.."
+
+        present(profileDetailVC, animated: true, completion: nil)
     }
 }

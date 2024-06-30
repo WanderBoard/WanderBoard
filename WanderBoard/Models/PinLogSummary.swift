@@ -14,4 +14,5 @@ struct PinLogSummary {
     var representativeMediaURL: String?
     var authorId: String
     var createdAt: Date
+    var isPublic: Bool
 }

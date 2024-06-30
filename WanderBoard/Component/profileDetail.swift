@@ -8,30 +8,6 @@
 import UIKit
 import SnapKit
 import Then
-import SwiftUI
-
-extension UIViewController {
-    private struct Preview: UIViewControllerRepresentable {
-            let viewController: UIViewController
-
-            func makeUIViewController(context: Context) -> UIViewController {
-                return viewController
-            }
-
-            func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-            }
-        }
-
-        func toPreview() -> some View {
-            Preview(viewController: self)
-        }
-}
- 
-struct MyViewController_PreViews: PreviewProvider {
-    static var previews: some View {
-        profileDetail().toPreview() //원하는 VC를 여기다 입력하면 된다.
-    }
-}
 
 class profileDetail: UIViewController {
     
@@ -57,7 +33,9 @@ class profileDetail: UIViewController {
         constraintLayout()
         updateColor()
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(dismissModal))
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissModal(_:)))
+        backGroundView.isUserInteractionEnabled = true
+        backGroundView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     func constraintLayout(){
@@ -92,33 +70,7 @@ class profileDetail: UIViewController {
         backGroundView.backgroundColor = Bcolor
     }
     
-    @objc func dismissModal() {
-            dismiss(animated: true, completion: nil)
-        }
-    
-    func configureUI(with nickname: String) {
-        nameLabel.text = nickname
-        fetchProfileData(for: nickname)
-    }
-    
-    //닉네임을 uid로 사용해 같은 닉네임을 가진 유저가 존재하면 유저의 닉네임과 이미지를 가져오는 메서드
-    private func fetchProfileData(for nickname: String) {
-        Task {
-            do {
-                let user = try await FirestoreManager.shared.checkUserExistsByUID(uid: nickname)
-                if let user = user, let imageUrlString = user.photoURL, let imageUrl = URL(string: imageUrlString) {
-                    DispatchQueue.global().async {
-                        if let imageData = try? Data(contentsOf: imageUrl) {
-                            DispatchQueue.main.async {
-                                self.profileImage.image = UIImage(data: imageData)
-                            }
-                        }
-                    }
-                }
-            } catch {
-                print("Error fetching user data: \(error)")
-            }
-        }
+    @objc func dismissModal(_ sender: UITapGestureRecognizer){
+        dismiss(animated: true, completion: nil)
     }
 }
-

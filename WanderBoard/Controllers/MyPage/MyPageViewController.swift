@@ -398,14 +398,14 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
                     NotificationHelper.changePage(hidden: true, isEnabled: false)
                         let policyVC = ConsentStatusViewController()
                         self.navigationController?.pushViewController(policyVC, animated: true)
-                        policyVC.navigationItem.title = "마케팅활용동의 및 광고수신동의"
+                        policyVC.navigationItem.title = "마케팅활용동의 및 광고 수신동의"
                      case 3:
                     NotificationHelper.changePage(hidden: true, isEnabled: false)
                          let blockVC = BlockViewController()
                          self.navigationController?.pushViewController(blockVC, animated: true)
                          blockVC.navigationItem.title = "차단관리"
                     case 4:
-                        let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다", preferredStyle: .alert)
+                        let alert = UIAlertController(title: "로그아웃 하시겠습니까?", message: "로그인 창으로 이동합니다.", preferredStyle: .alert)
                         let confirm = UIAlertAction(title: "확인", style: .default) { _ in
                             NotificationHelper.changePage(hidden: true, isEnabled: false)
                             self.handleLogout() // 로그아웃 처리

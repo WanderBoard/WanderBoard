@@ -17,7 +17,7 @@ class LoginDirectorView: UIViewController {
         $0.image = UIImage(named: "login")
     }
     let titleLabel = UILabel().then(){
-        $0.text = "로그인이 필요합니다"
+        $0.text = "로그인이 필요합니다."
         $0.textColor = .font
         $0.font = UIFont.boldSystemFont(ofSize: 17)
         $0.textAlignment = .center
@@ -30,7 +30,7 @@ class LoginDirectorView: UIViewController {
         $0.textAlignment = .center
     }
     let loginButton = UIButton().then(){
-        $0.setTitle("로그인 하러가기", for: .normal)
+        $0.setTitle("로그인하러 가기", for: .normal)
         $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
         $0.backgroundColor = .font
         $0.setTitleColor(UIColor(named: "textColor"), for: .normal)

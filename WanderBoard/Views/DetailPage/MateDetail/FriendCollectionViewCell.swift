@@ -12,9 +12,15 @@ class FriendCollectionViewCell: UICollectionViewCell {
     
     let imageView = UIImageView()
     
+    weak var delegate: FriendCollectionViewCellDelegate?
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        
+        let tapImage = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
+        imageView.isUserInteractionEnabled = true
+        imageView.addGestureRecognizer(tapImage)
     }
     
     required init?(coder: NSCoder) {
@@ -23,10 +29,10 @@ class FriendCollectionViewCell: UICollectionViewCell {
     
     func setupUI() {
         contentView.addSubview(imageView)
-    
+        
         imageView.contentMode = .scaleAspectFill
         imageView.layer.masksToBounds = true
-
+        
         imageView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
@@ -43,4 +49,13 @@ class FriendCollectionViewCell: UICollectionViewCell {
     func configure(with image: UIImage?) {
         imageView.image = image
     }
+    
+    @objc func imageTapped(_ sender: UITapGestureRecognizer) {
+        delegate?.didTapImage(in: self)
+    }
 }
+
+protocol FriendCollectionViewCellDelegate: AnyObject {
+    func didTapImage(in cell: FriendCollectionViewCell)
+}
+

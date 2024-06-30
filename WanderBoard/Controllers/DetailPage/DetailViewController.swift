@@ -403,10 +403,15 @@ class DetailViewController: UIViewController {
     
     func checkId() {
         if let pinLog = pinLog {
+            if isCurrentUser(pinLog: pinLog) {
+                pinButton.isHidden = true
+            } else {
+                pinButton.isHidden = false
+                updatePinButtonState()
+            }
             Task {
                 await configureView(with: pinLog)
             }
-            updatePinButtonState()
             profileStackView.isHidden = false
             setupMenu()
         }
@@ -416,12 +421,6 @@ class DetailViewController: UIViewController {
     func isCurrentUser(pinLog: PinLog) -> Bool {
         guard let userId = Auth.auth().currentUser?.uid else { return false }
         return userId == pinLog.authorId
-    }
-    
-    // 사용자가 아닌 경우 숨길 UI 요소를 정의
-    func hideAppearUIElements() {
-        pinButton.isHidden = false
-        updatePinButtonState()
     }
     
     @objc func pinButtonTapped() {
@@ -485,7 +484,6 @@ class DetailViewController: UIViewController {
         present(loginVC, animated: true, completion: nil)
     }
     
-    //여기에서 업데이트 해줄 때 기본 설정을 못 가져와서 생겼던 문제였던 거 같습니다 ~~
     func updatePinButtonState() {
         guard let pinLog = pinLog, let currentUserId = Auth.auth().currentUser?.uid else { return }
         

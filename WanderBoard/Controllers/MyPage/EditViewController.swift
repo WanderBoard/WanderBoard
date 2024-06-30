@@ -343,7 +343,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                 // 사용자 정보를 Firestore에서 가져오기
                 if nameToSave?.isEmpty ?? true {
                     guard let user = Auth.auth().currentUser else {
-                        throw NSError(domain: "UserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인 되어있지 않습니다"])
+                        throw NSError(domain: "UserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인되어있지 않습니다"])
                     }
                     
                     let userRef = Firestore.firestore().collection("users").document(user.uid)
@@ -359,7 +359,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                 
                 // 사용자 정보를 Firestore에 저장
                 guard let user = Auth.auth().currentUser else {
-                    throw NSError(domain: "UserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인 되어있지 않습니다"])
+                    throw NSError(domain: "UserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인되어있지 않습니다"])
                 }
                 
                 var dataToSave: [String: Any] = [
@@ -382,7 +382,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                     myPageVC.updateUserData(name: nameToSave!, image: profile.image)
                 }
                 
-                let alert = UIAlertController(title: "", message: "수정이 완료되었습니다", preferredStyle: .alert)
+                let alert = UIAlertController(title: "", message: "수정이 완료되었습니다.", preferredStyle: .alert)
                 let confirm = UIAlertAction(title: "확인", style: .default) { _ in
                     self.navigationController?.popViewController(animated: true)
                 }
@@ -423,7 +423,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     // Firestore에 사용자 프로필 정보 업데이트
     func updateProfile(displayName: String?, photoURL: UIImage?) async throws {
         guard let user = Auth.auth().currentUser else {
-            throw NSError(domain: "UserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인 되어있지 않습니다"])
+            throw NSError(domain: "UserError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인되어있지 않습니다"])
         }
         
         let changeRequest = user.createProfileChangeRequest()
@@ -456,12 +456,12 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
     
     @objc private func duplicateCheckTapped() {
         guard let nickname = nicknameTextField.text, !nickname.isEmpty else {
-            showAlert(title: "😗", message: "변경할 닉네임을 입력해주세요 \n입력하신 닉네임은 다른 사용자에게 노출됩니다")
+            showAlert(title: "😗", message: "변경할 닉네임을 입력해주세요 \n입력하신 닉네임은 다른 사용자에게 노출됩니다.")
             return
         }
         
         if nickname.count < 2 || nickname.count > 16 {
-            showAlert(title: "😱", message: "글자 수를 맞춰주세요 \n 닉네임은 2자 이상, 16자 이하여야 합니다")
+            showAlert(title: "😱", message: "글자 수를 맞춰주세요 \n 닉네임은 2자 이상, 16자 이하여야 합니다.")
             return
         }
         
@@ -469,7 +469,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
         let nicknamePattern = "^[a-zA-Z0-9가-힣]+$"
         let nicknamePredicate = NSPredicate(format: "SELF MATCHES %@", nicknamePattern)
         if !nicknamePredicate.evaluate(with: nickname) {
-            showAlert(title: "🤬", message: "닉네임에 특수문자를 포함할 수 없습니다")
+            showAlert(title: "🤬", message: "닉네임에 특수문자를 포함할 수 없습니다.")
             return
         }
         
@@ -745,7 +745,7 @@ class EditViewController: BaseViewController, UITextFieldDelegate, PHPickerViewC
                 }
             } catch {
                 print("회원 탈퇴 실패: \(error.localizedDescription)")
-                showAlert(title: "오류", message: "회원 탈퇴 중 오류가 발생했습니다. \n 데이터가 정상적으로 삭제되지 않았을 가능성이 있습니다.") {
+                showAlert(title: "오류", message: "회원 탈퇴 중 오류가 발생했습니다.") {
                     self.navigateToLoginScreen()
                 }
             }

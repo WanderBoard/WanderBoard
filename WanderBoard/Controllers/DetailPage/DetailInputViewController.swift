@@ -491,8 +491,8 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         locationButton.backgroundColor = babyGTocustomB
         consumButton.backgroundColor = babyGTocustomB
         
-        //라이트그레이-다크그레이
-        let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
+//        //라이트그레이-다크그레이
+//        let lightGTodarkG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
     }
     
     func setupCollectionView() {

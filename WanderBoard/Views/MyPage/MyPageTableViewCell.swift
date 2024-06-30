@@ -53,7 +53,7 @@ class MyPageTableViewCell: UITableViewCell {
                 icon.tintColor = .font
                 label.font = UIFont.systemFont(ofSize: 15)
                 label.textColor = .font
-                label.text = "마케팅활용동의 및 광고수신동의"
+                label.text = "마케팅활용동의 및 광고 수신동의"
                 arrow.image = UIImage(systemName: "chevron.right")
                 arrow.tintColor = .font
                 

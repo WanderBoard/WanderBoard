@@ -24,7 +24,7 @@ class CardCollectionViewCell: UICollectionViewCell {
     }
     
     let subTitleLabel = UILabel().then {
-        $0.text = "총 지출 금액"
+        $0.text = "총지출 금액"
         $0.textColor = .darkgray
         $0.font = UIFont.systemFont(ofSize: 13)
         $0.textAlignment = .left

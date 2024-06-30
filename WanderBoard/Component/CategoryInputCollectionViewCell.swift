@@ -28,7 +28,7 @@ class CategoryInputCollectionViewCell: UICollectionViewCell, UICollectionViewDel
         if screenHeight < 750 {
             layout.sectionInset = UIEdgeInsets(top: 0, left: 110, bottom: 0, right: 110)
         } else {
-            layout.sectionInset = UIEdgeInsets(top: 0, left: 105, bottom: 0, right: 105)
+            layout.sectionInset = UIEdgeInsets(top: 0, left: 96, bottom: 0, right: 96)
         }
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.delegate = self
@@ -37,6 +37,15 @@ class CategoryInputCollectionViewCell: UICollectionViewCell, UICollectionViewDel
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.decelerationRate = .fast
         return collectionView
+    }()
+    
+    let explainLabel: UILabel = {
+        let label = UILabel()
+        label.text = "카테고리 버튼 클릭 시 세부적인 내용을 입력할 수 있습니다."
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textColor = .lightgray
+        label.textAlignment = .center
+        return label
     }()
     
     override init(frame: CGRect) {
@@ -53,14 +62,20 @@ class CategoryInputCollectionViewCell: UICollectionViewCell, UICollectionViewDel
         let isSmallScreen = screenHeight < 750
         
         contentView.addSubview(collectionView)
+        contentView.addSubview(explainLabel)
         collectionView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(12)
             make.leading.trailing.equalToSuperview()
             if isSmallScreen {
+                make.top.equalToSuperview().offset(12)
                 make.bottom.equalToSuperview()
             } else {
+                make.top.equalToSuperview().offset(32)
                 make.bottom.equalToSuperview().offset(-30)
             }
+        }
+        explainLabel.snp.makeConstraints { make in
+            make.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
         }
     }
     

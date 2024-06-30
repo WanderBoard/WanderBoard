@@ -63,7 +63,7 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
             $0.bottom.equalToSuperview().inset(16)
         }
         
-        disagreeCheckBox.setTitle(" 동의안함", for: .normal)
+        disagreeCheckBox.setTitle(" 동의 안 함", for: .normal)
         disagreeCheckBox.setTitleColor(.black, for: .normal)
         disagreeCheckBox.setImage(UIImage(systemName: "circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
         disagreeCheckBox.setImage(UIImage(systemName: "checkmark.circle.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
@@ -112,7 +112,7 @@ class PrivacyPolicyTableViewCell: UITableViewCell {
             disagreeCheckBox.isHidden = true
         } else if section == 2 || section == 3 {
             agreeCheckBox.setTitle(" 동의함", for: .normal)
-            disagreeCheckBox.setTitle(" 동의안함", for: .normal)
+            disagreeCheckBox.setTitle(" 동의 안 함", for: .normal)
             disagreeCheckBox.isHidden = false
         }
         

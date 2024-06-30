@@ -249,7 +249,7 @@ extension ConsentStatusViewController: UITableViewDelegate, UITableViewDataSourc
         header.configure(for: section, isCompleted: true, isExpanded: sectionExpandedStatus[section])
         header.delegate = self
         
-        let titles = ["마케팅활용동의 및 광고수신동의", "개인정보 제3자 제공동의"]
+        let titles = ["마케팅활용동의 및 광고 수신동의", "개인정보 제3자 제공동의"]
         header.setTitle(titles[section])
         
         return header

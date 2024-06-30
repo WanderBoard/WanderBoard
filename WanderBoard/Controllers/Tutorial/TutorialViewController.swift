@@ -24,7 +24,7 @@ class TutorialViewController: UIPageViewController {
     }
     
     private func setupPages() {
-        let page1 = ContentsPageViewController(title: "기록하고 싶은 인상깊은 순간이 있나요?", subTitle: "당신의 추억도, 통장도 소중하니깐", detailTitle: "일지, 사진, 경비, 친구 \n 이 모든 것을 한번에 기록하고 공유!", imageName: "tutorial1", showXButton: true)
+        let page1 = ContentsPageViewController(title: "기록하고 싶은 인상 깊은 순간이 있나요?", subTitle: "당신의 추억도, 통장도 소중하니깐", detailTitle: "일지, 사진, 경비, 친구 \n 이 모든 것을 한 번에 기록하고 공유!", imageName: "tutorial1", showXButton: true)
         
         let page2 = ContentsPageViewController(title: "사람들의 공유된 순간을 만나보세요!", subTitle: "멋진 곳, 당신도 갈 수 있어요", detailTitle: "다른 사람의 핀에서 사진 클릭! \n 사진 촬영 장소가 지도에 짠!", imageName: "tutorial2", showXButton: true)
         

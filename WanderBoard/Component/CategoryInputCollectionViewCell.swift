@@ -28,7 +28,7 @@ class CategoryInputCollectionViewCell: UICollectionViewCell, UICollectionViewDel
         if screenHeight < 750 {
             layout.sectionInset = UIEdgeInsets(top: 0, left: 110, bottom: 0, right: 110)
         } else {
-            layout.sectionInset = UIEdgeInsets(top: 0, left: 105, bottom: 0, right: 105)
+            layout.sectionInset = UIEdgeInsets(top: 0, left: 96, bottom: 0, right: 96)
         }
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.delegate = self
@@ -54,11 +54,12 @@ class CategoryInputCollectionViewCell: UICollectionViewCell, UICollectionViewDel
         
         contentView.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(12)
             make.leading.trailing.equalToSuperview()
             if isSmallScreen {
+                make.top.equalToSuperview().offset(12)
                 make.bottom.equalToSuperview()
             } else {
+                make.top.equalToSuperview().offset(32)
                 make.bottom.equalToSuperview().offset(-30)
             }
         }

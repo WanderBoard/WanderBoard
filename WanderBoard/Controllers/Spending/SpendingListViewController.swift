@@ -11,7 +11,16 @@ import FirebaseFirestore
 import FirebaseAuth
 
 protocol SpendingListViewControllerDelegate: AnyObject {
-    func didSaveExpense(_ expense: Expense)
+    func didUpdateExpenses(_ expenses: [DailyExpenses])
+
+}
+
+extension SpendingListViewController: DetailInputViewControllerDelegate {
+    func didSavePinLog(_ pinLog: PinLog) {
+        self.pinLog = pinLog
+        self.dailyExpenses = pinLog.expenses ?? []
+        self.tableView.reloadData()
+    }
 }
 
 class SpendingListViewController: UIViewController {
@@ -51,26 +60,35 @@ class SpendingListViewController: UIViewController {
         } else {
             print("No PinLog found.")
         }
+        
+        tableView.tableFooterView = UIView()
+        
+        if #available(iOS 15.0, *) {
+            self.tableView.sectionHeaderTopPadding = 0.0
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateView()
         navigationController?.navigationBar.tintColor = .font
-
+        
         if let pinLog = pinLog {
-            Task {
-                await loadExpensesFromFirestore(for: pinLog)
-            }
+            self.dailyExpenses = pinLog.expenses ?? []
+            self.tableView.reloadData()
         } else {
             print("No PinLog found.")
         }
     }
 
-    func saveExpense(_ expense: Expense) {
-        delegate?.didSaveExpense(expense)
-    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
 
+        if self.isMovingFromParent {
+            delegate?.didUpdateExpenses(dailyExpenses)
+            tableView.reloadData()
+        }
+    }
     
     func isCurrentUser() -> Bool {
         guard let pinLog = pinLog, let currentUserID = Auth.auth().currentUser?.uid else {
@@ -225,6 +243,7 @@ extension SpendingListViewController: UITableViewDataSource {
                     }
 
                     self.updateHeaderView(forSection: indexPath.section, withDeletedExpense: deletedExpense)
+                    delegate?.didUpdateExpenses(dailyExpenses)
                 } catch {
                     print("Error removing document: \(error)")
                 }
@@ -308,5 +327,6 @@ extension SpendingListViewController: SummaryViewControllerDelegate {
         tableView.reloadData()
         updateTotalSpendingAmount()
         updateView()
+        delegate?.didUpdateExpenses(dailyExpenses)
     }
 }

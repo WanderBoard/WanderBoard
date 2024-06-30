@@ -5,8 +5,6 @@
 //  Created by 김시종 on 5/28/24.
 //
 
-
-
 import UIKit
 import FirebaseAuth
 import SnapKit
@@ -42,14 +40,11 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     var savedLocation: CLLocationCoordinate2D?
     var savedPinLogId: String?
     var savedAddress: String?
-    
     weak var delegate: DetailInputViewControllerDelegate?
-    
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
     var selectedFriends: [UserSummary] = []
     var isInitialLoad = true // 메이트 값을 딱 한번만 가져오도록 설정하기 위해
     var representativeImageIndex: Int? = 0
-    
     var totalSpendingAmountText: String? {
         didSet {
             consumLeftLabel.text = totalSpendingAmountText
@@ -58,11 +53,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     let categories = CategoryData.categories
     let categoryImageMapping = CategoryData.categoryImageMapping
-
     var selectedCategory: String?
     var selectedImageName: String?
     var selectedDate: Date?
-    
     var imageLocations: [CLLocationCoordinate2D] = []
     let pinLogManager = PinLogManager()
     var pinLog: PinLog?
@@ -133,7 +126,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.alignment = .center
         $0.distribution = .equalSpacing
         $0.spacing = 20
-        
     }
     
     let locationLeftLabel = UILabel().then {
@@ -185,7 +177,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.tintColor = .font
     }
     
-    
     let locationButton = UIButton().then {
         $0.backgroundColor = .babygray
         $0.layer.cornerRadius = 8
@@ -215,7 +206,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         $0.isUserInteractionEnabled = false
     }
     
-    
     lazy var galleryInputCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -227,7 +217,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         collectionView.isScrollEnabled = true
         return collectionView
     }()
-    
     
     let mateLabel = UILabel().then {
         $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
@@ -261,9 +250,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     
     private var selectedStartDate: Date?
     private var selectedEndDate: Date?
-    
-    let expenseButton = UIButton(type: .system)
-    
+        
     func didSelectDates(startDate: Date, endDate: Date) {
         print("didSelectDates 호출됨")
         updateDateLabel(with: startDate, endDate: endDate)
@@ -305,22 +292,23 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         if let spendingListVC = self.presentingViewController as? SpendingListViewController {
             spendingListVC.delegate = self
         }
-        
-        updateExpenseButtonState()
     }
   
-      @objc func expenseButtonTapped() {
-        let spendingListVC = SpendingListViewController()
-        spendingListVC.delegate = self
-        spendingListVC.pinLog = self.pinLog
-        self.navigationController?.pushViewController(spendingListVC, animated: true)
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationItem.largeTitleDisplayMode = .never
         setupNavigationBar()
-        updateExpenseButtonState()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let spendingListVC = segue.destination as? SpendingListViewController {
+            spendingListVC.delegate = self
+            spendingListVC.pinLog = pinLog
+        }
+    }
+
+    func didUpdateExpenses(_ expenses: [DailyExpenses]) {
+        pinLog?.expenses = expenses
     }
     
     @objc private func categoryTapped(_ sender: UIButton) {
@@ -534,35 +522,9 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonTapped))
         
-        expenseButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
-        expenseButton.addTarget(self, action: #selector(expenseButtonTapped), for: .touchUpInside)
-        
-        let barButtonItem = UIBarButtonItem(customView: expenseButton)
-        navigationItem.rightBarButtonItems = [doneButton, barButtonItem]
-
+        navigationItem.rightBarButtonItems = [doneButton]
         navigationController?.navigationBar.tintColor = .font
-        
-        updateExpenseButtonState()
-    }
 
-    func updateExpenseButtonState() {
-        
-        let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
-        expenseButton.setImage(image, for: .normal)
-        expenseButton.isEnabled = true
-        expenseButton.tintColor = .black
-
-//        if let expenses = pinLog?.expenses, !expenses.flatMap({ $0.expenses }).isEmpty {
-//            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
-//            expenseButton.setImage(image, for: .normal)
-//            expenseButton.isEnabled = true
-//            expenseButton.tintColor = .black
-//        } else {
-//            let image = UIImage(systemName: "newspaper.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
-//            expenseButton.setImage(image, for: .normal)
-//            expenseButton.isEnabled = false
-//            expenseButton.tintColor = .gray
-//        }
     }
     
     func didSaveExpense(_ expense: Expense) {
@@ -575,7 +537,6 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         
         sortDailyExpensesByDate()
         updateTotalSpendingAmount(with: expenses)
-        updateExpenseButtonState()
     }
     
     func sortDailyExpensesByDate() {
@@ -842,7 +803,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                     pinLog.attendeeIds = selectedFriends.map { $0.uid }
                     pinLog.totalSpendingAmount = totalSpendingAmount
                     pinLog.maxSpendingAmount = maxSpendingAmount
-                    pinLog.expenses = expenses
+                    pinLog.expenses = self.expenses
                 } else {
                     pinLog = PinLog(location: locationTitle,
                                     address: address,
@@ -862,8 +823,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                                     totalSpendingAmount: totalSpendingAmount,
                                     isSpendingPublic: isSpendingPublic,
                                     maxSpendingAmount: maxSpendingAmount,
-                                    expenses: expenses)
-
+                                    expenses: self.expenses)
                 }
 
                 if let representativeIndex = selectedImages.firstIndex(where: { $0.1 }) {
@@ -879,6 +839,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                 let savedPinLog = try await pinLogManager.createOrUpdatePinLog(pinLog: &pinLog, images: selectedImages.map { $0.0 }, imageLocations: imageLocations, isRepresentativeFlags: isRepresentativeFlags)
                 self.savedPinLogId = savedPinLog.id
                 self.pinLog = savedPinLog
+                self.pinLog?.expenses = self.expenses // 추가된 부분
                 delegate?.didSavePinLog(savedPinLog)
 
                 hideProgressView()

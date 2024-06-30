@@ -53,9 +53,9 @@ class TextCollectionViewCell: UICollectionViewCell {
     }
     
     let emptyTitleLabel = UILabel().then() {
-        $0.text = "기록 된 여행 일지가 없습니다."
+        $0.text = "기록된 여행 일지가 없습니다."
         $0.textColor = .black
-        $0.font = UIFont.boldSystemFont(ofSize: 20)
+        $0.font = UIFont.boldSystemFont(ofSize: 17)
         $0.textAlignment = .center
     }
     
@@ -105,7 +105,8 @@ class TextCollectionViewCell: UICollectionViewCell {
         emptyImageView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview().offset(-20)
-            $0.width.height.equalTo(60)
+            $0.height.equalTo(35)
+            $0.width.equalTo(55)
         }
         
         emptyTitleLabel.snp.makeConstraints {
@@ -130,7 +131,7 @@ class TextCollectionViewCell: UICollectionViewCell {
         imageView.image = image
         titleLabel.text = title
         
-        if let image = image, let title = title, !title.isEmpty, let content = content, !content.isEmpty {
+        if let title = title, !title.isEmpty, let content = content, !content.isEmpty {
             emptyView.isHidden = true
             backView.isHidden = false
             

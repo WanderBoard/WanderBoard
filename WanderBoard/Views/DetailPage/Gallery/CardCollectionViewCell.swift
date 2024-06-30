@@ -34,7 +34,7 @@ class CardCollectionViewCell: UICollectionViewCell {
         $0.textColor = UIColor(named: "textColor")
         $0.font = UIFont.systemFont(ofSize: 28)
         $0.textAlignment = .left
-        $0.text = "190,000 원"
+        $0.text = "102,000 원"
         $0.adjustsFontSizeToFitWidth = true
         $0.minimumScaleFactor = 0.5
     }

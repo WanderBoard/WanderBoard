@@ -26,7 +26,7 @@ class DetailViewController: UIViewController {
     weak var delegate: DetailViewControllerDelegate?
     
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
-    var selectedFriends: [UIImage] = []
+    var selectedFriends: [UserSummary] = []
     
     //로직 변경하면서 핀로그 id만 가져오도록
     var pinLogId: String?
@@ -88,6 +88,12 @@ class DetailViewController: UIViewController {
         self?.switchToPage(index)
     }))
     
+    let profileStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.spacing = 10
+    }
+    
     var profileImageView = UIImageView().then {
         $0.backgroundColor = .white
         $0.tintColor = .white
@@ -96,6 +102,7 @@ class DetailViewController: UIViewController {
         $0.layer.cornerRadius = 16
         $0.backgroundColor = UIColor.darkgray
         $0.image = UIImage(systemName: "person")
+        $0.isUserInteractionEnabled = true
         $0.snp.makeConstraints {
             $0.width.height.equalTo(32)
         }
@@ -107,22 +114,10 @@ class DetailViewController: UIViewController {
         $0.textColor = .font
     }
     
-    let profileStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.alignment = .center
-        $0.spacing = 10
-    }
-    
     let optionsButton = UIButton().then {
         $0.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         $0.tintColor = .font
         $0.showsMenuAsPrimaryAction = true
-    }
-    
-    let profileOptionStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.spacing = 10
-        $0.distribution = .fill
     }
     
     var locationLabel = UILabel().then {
@@ -210,6 +205,10 @@ class DetailViewController: UIViewController {
         return collectionView
     }()
     
+    let profileArea = UIView().then(){
+        $0.backgroundColor = .clear
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -223,8 +222,8 @@ class DetailViewController: UIViewController {
         loadData()
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
-        profileStackView.isUserInteractionEnabled = true
-        profileStackView.addGestureRecognizer(tapGestureRecognizer)
+        profileArea.isUserInteractionEnabled = true
+        profileArea.addGestureRecognizer(tapGestureRecognizer)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -241,7 +240,7 @@ class DetailViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
+        
         if let navigationController = navigationController, navigationController.viewControllers.contains(where: { $0 is SpendingListViewController }) {
             if let spendingListVC = navigationController.viewControllers.first(where: { $0 is SpendingListViewController }) as? SpendingListViewController {
                 if let pinLog = spendingListVC.pinLog {
@@ -252,8 +251,8 @@ class DetailViewController: UIViewController {
             }
         }
     }
-
-
+    
+    
     func setupUI() {
         view.addSubview(detailViewCollectionView)
         view.addSubview(detailViewButton.view)
@@ -279,6 +278,8 @@ class DetailViewController: UIViewController {
         dateStackView.addArrangedSubview(dateStartLabel)
         dateStackView.addArrangedSubview(dateLineLabel)
         dateStackView.addArrangedSubview(dateEndLabel)
+        
+        view.addSubview(profileArea)
     }
     
     func setupConstraints() {
@@ -303,9 +304,8 @@ class DetailViewController: UIViewController {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
             $0.height.equalTo(100)
         }
-
+        
         bottomContentStackView.snp.makeConstraints {
-            // $0.top.equalTo(optionsButton.snp.bottom).offset(10)
             $0.leading.trailing.equalToSuperview()
         }
         
@@ -320,13 +320,6 @@ class DetailViewController: UIViewController {
             $0.top.equalTo(bottomContentStackView.snp.bottom).offset(10)
         }
         
-        profileStackView.snp.makeConstraints(){
-            $0.top.equalToSuperview()
-            $0.left.equalToSuperview()
-            $0.width.equalTo(150)
-            $0.height.equalTo(32)
-        }
-        
         optionsButton.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.trailing.equalToSuperview()
@@ -335,7 +328,6 @@ class DetailViewController: UIViewController {
         
         expandableView.snp.makeConstraints {
             $0.top.equalTo(optionsButton.snp.bottom).offset(10)
-//            $0.centerY.equalTo(dateStackView.snp.centerY).offset(-20)
             $0.trailing.equalToSuperview().offset(15)
             $0.width.equalTo(50)
             $0.height.equalTo(90)
@@ -351,6 +343,11 @@ class DetailViewController: UIViewController {
             $0.leading.equalTo(expandableButton.snp.trailing).offset(10)
             $0.trailing.equalToSuperview().inset(10)
             $0.top.bottom.equalToSuperview()
+        }
+        
+        profileArea.snp.makeConstraints(){
+            $0.top.left.bottom.equalTo(profileImageView)
+            $0.width.equalTo(140)
         }
     }
     
@@ -368,7 +365,7 @@ class DetailViewController: UIViewController {
     func updateColor(){
         //라이트그레이-다크그레이
         _ = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
-
+        
         //다크그레이-라이트그레이
         let darkBTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
         profileImageView.backgroundColor = darkBTolightG
@@ -380,12 +377,12 @@ class DetailViewController: UIViewController {
         guard let pinLogId = pinLogId else { return }
         pinLogManager.fetchPinLog(by: pinLogId) { [weak self] result in
             switch result {
-                case .success(let pinLog):
-                    self?.pinLog = pinLog
-                    self?.checkId()
-                    self?.detailViewCollectionView.reloadData()
-                case .failure(let error):
-                    print("Failed to fetch pin log: \(error)")
+            case .success(let pinLog):
+                self?.pinLog = pinLog
+                self?.checkId()
+                self?.detailViewCollectionView.reloadData()
+            case .failure(let error):
+                print("Failed to fetch pin log: \(error)")
             }
         }
     }
@@ -597,13 +594,14 @@ class DetailViewController: UIViewController {
         
         for userId in attendeeIds {
             group.enter()
-            fetchUserImage(userId: userId) { [weak self] image in
+            //유저의 사진을 가져오는 메서드에서 유저의 정보를 가져오기로 변경
+            /*fetchUserImage(userId: userId)*/fetchUserSummary(userId: userId) { [weak self] userSummary in
                 guard let self = self else {
                     group.leave()
                     return
                 }
-                if let image = image {
-                    self.selectedFriends.append(image)
+                if let userSummary = userSummary {
+                    self.selectedFriends.append(userSummary)
                 }
                 group.leave()
             }
@@ -615,18 +613,16 @@ class DetailViewController: UIViewController {
         }
     }
     
-    func fetchUserImage(userId: String, completion: @escaping (UIImage?) -> Void) {
+    
+    func fetchUserSummary(userId: String, completion: @escaping (UserSummary?) -> Void) {
         let db = Firestore.firestore()
         db.collection("users").document(userId).getDocument { document, error in
             if let document = document, document.exists, let data = document.data(),
-               let photoURL = data["photoURL"] as? String, let url = URL(string: photoURL) {
-                AF.request(url).response { response in
-                    if let data = response.data, let image = UIImage(data: data) {
-                        completion(image)
-                    } else {
-                        completion(nil)
-                    }
-                }
+               let displayName = data["displayName"] as? String,
+               let email = data["email"] as? String,
+               let photoURL = data["photoURL"] as? String {
+                let userSummary = UserSummary(uid: userId, email: email, displayName: displayName, photoURL: photoURL, isMate: false)
+                completion(userSummary)
             } else {
                 completion(nil)
             }
@@ -647,7 +643,7 @@ class DetailViewController: UIViewController {
     }
     
     @objc func expandableButtonTapped() {
-        let generator = UIImpactFeedbackGenerator(style: .medium) 
+        let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
         
         isExpanded.toggle()
@@ -927,7 +923,7 @@ class DetailViewController: UIViewController {
     func setupCollectionView() {
         friendCollectionView.delegate = self
         friendCollectionView.dataSource = self
-    
+        
         friendCollectionView.register(FriendCollectionViewCell.self, forCellWithReuseIdentifier: FriendCollectionViewCell.identifier)
     }
     
@@ -972,11 +968,22 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as? FriendCollectionViewCell else {
                 fatalError("컬렉션 뷰 오류")
             }
+            let friend = selectedFriends[indexPath.row]
+            if let photoURL = friend.photoURL, let url = URL(string: photoURL) {
+                AF.request(url).response { response in
+                    if let data = response.data, let image = UIImage(data: data) {
+                        DispatchQueue.main.async {
+                            cell.imageView.image = image
+                        }
+                    }
+                }
+            } else {
+                cell.imageView.image = nil
+            }
             //셀을 클릭했을때의 액션이 필요하기 때문
             cell.delegate = self
-            cell.configure(with: selectedFriends[indexPath.row])
             return cell
-            }
+        }
         return UICollectionViewCell()
     }
     
@@ -1032,6 +1039,8 @@ extension DetailViewController: SpendingListViewControllerDelegate {
         pinLog?.expenses = expenses
         // 데이터 소스를 새로 고침
         detailViewCollectionView.reloadData()
+    }
+}
 
 extension DetailViewController: FriendCollectionViewCellDelegate {
     func didTapImage(in cell: FriendCollectionViewCell) {
@@ -1042,10 +1051,20 @@ extension DetailViewController: FriendCollectionViewCellDelegate {
         profileDetailVC.modalPresentationStyle = .overFullScreen
         profileDetailVC.modalTransitionStyle = .crossDissolve
         
-        _ = selectedFriends[indexPath.row]
-        profileDetailVC.profileImage.image = selectedFriends[indexPath.row]
-        profileDetailVC.nameLabel.text = "이름불러오는법 찾는중.."
-
+        let friend = selectedFriends[indexPath.row]
+        if let photoURL = friend.photoURL, let url = URL(string: photoURL) {
+            AF.request(url).response { response in
+                if let data = response.data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        profileDetailVC.profileImage.image = image
+                    }
+                }
+            }
+        } else {
+            profileDetailVC.profileImage.image = nil
+        }
+        profileDetailVC.nameLabel.text = friend.displayName
+        
         present(profileDetailVC, animated: true, completion: nil)
     }
 }

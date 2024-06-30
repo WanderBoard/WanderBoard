@@ -27,7 +27,6 @@ class DetailViewController: UIViewController {
     
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
     var selectedFriends: [UserSummary] = []
-//    var friendImages: [String: UIImage] = [:]  // 이미지를 저장할 딕셔너리
     
     //로직 변경하면서 핀로그 id만 가져오도록
     var pinLogId: String?
@@ -241,7 +240,7 @@ class DetailViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
+        
         if let navigationController = navigationController, navigationController.viewControllers.contains(where: { $0 is SpendingListViewController }) {
             if let spendingListVC = navigationController.viewControllers.first(where: { $0 is SpendingListViewController }) as? SpendingListViewController {
                 if let pinLog = spendingListVC.pinLog {
@@ -252,8 +251,8 @@ class DetailViewController: UIViewController {
             }
         }
     }
-
-
+    
+    
     func setupUI() {
         view.addSubview(detailViewCollectionView)
         view.addSubview(detailViewButton.view)
@@ -305,7 +304,7 @@ class DetailViewController: UIViewController {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
             $0.height.equalTo(100)
         }
-
+        
         bottomContentStackView.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
         }
@@ -366,7 +365,7 @@ class DetailViewController: UIViewController {
     func updateColor(){
         //라이트그레이-다크그레이
         _ = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "darkgray") : UIColor(named: "lightgray")
-
+        
         //다크그레이-라이트그레이
         let darkBTolightG = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "lightgray") : UIColor(named: "darkgray")
         profileImageView.backgroundColor = darkBTolightG
@@ -378,12 +377,12 @@ class DetailViewController: UIViewController {
         guard let pinLogId = pinLogId else { return }
         pinLogManager.fetchPinLog(by: pinLogId) { [weak self] result in
             switch result {
-                case .success(let pinLog):
-                    self?.pinLog = pinLog
-                    self?.checkId()
-                    self?.detailViewCollectionView.reloadData()
-                case .failure(let error):
-                    print("Failed to fetch pin log: \(error)")
+            case .success(let pinLog):
+                self?.pinLog = pinLog
+                self?.checkId()
+                self?.detailViewCollectionView.reloadData()
+            case .failure(let error):
+                print("Failed to fetch pin log: \(error)")
             }
         }
     }
@@ -613,7 +612,7 @@ class DetailViewController: UIViewController {
             self.expandableButtonAction()
         }
     }
-
+    
     
     func fetchUserSummary(userId: String, completion: @escaping (UserSummary?) -> Void) {
         let db = Firestore.firestore()
@@ -644,7 +643,7 @@ class DetailViewController: UIViewController {
     }
     
     @objc func expandableButtonTapped() {
-        let generator = UIImpactFeedbackGenerator(style: .medium) 
+        let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
         
         isExpanded.toggle()
@@ -924,7 +923,7 @@ class DetailViewController: UIViewController {
     func setupCollectionView() {
         friendCollectionView.delegate = self
         friendCollectionView.dataSource = self
-    
+        
         friendCollectionView.register(FriendCollectionViewCell.self, forCellWithReuseIdentifier: FriendCollectionViewCell.identifier)
     }
     
@@ -971,20 +970,20 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
             }
             let friend = selectedFriends[indexPath.row]
             if let photoURL = friend.photoURL, let url = URL(string: photoURL) {
-                        AF.request(url).response { response in
-                            if let data = response.data, let image = UIImage(data: data) {
-                                DispatchQueue.main.async {
-                                    cell.imageView.image = image
-                                }
-                            }
+                AF.request(url).response { response in
+                    if let data = response.data, let image = UIImage(data: data) {
+                        DispatchQueue.main.async {
+                            cell.imageView.image = image
                         }
-                    } else {
-                        cell.imageView.image = nil
                     }
+                }
+            } else {
+                cell.imageView.image = nil
+            }
             //셀을 클릭했을때의 액션이 필요하기 때문
             cell.delegate = self
             return cell
-            }
+        }
         return UICollectionViewCell()
     }
     
@@ -1040,6 +1039,8 @@ extension DetailViewController: SpendingListViewControllerDelegate {
         pinLog?.expenses = expenses
         // 데이터 소스를 새로 고침
         detailViewCollectionView.reloadData()
+    }
+}
 
 extension DetailViewController: FriendCollectionViewCellDelegate {
     func didTapImage(in cell: FriendCollectionViewCell) {
@@ -1052,18 +1053,18 @@ extension DetailViewController: FriendCollectionViewCellDelegate {
         
         let friend = selectedFriends[indexPath.row]
         if let photoURL = friend.photoURL, let url = URL(string: photoURL) {
-                    AF.request(url).response { response in
-                        if let data = response.data, let image = UIImage(data: data) {
-                            DispatchQueue.main.async {
-                                profileDetailVC.profileImage.image = image
-                            }
-                        }
+            AF.request(url).response { response in
+                if let data = response.data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        profileDetailVC.profileImage.image = image
                     }
-                } else {
-                    profileDetailVC.profileImage.image = nil
                 }
-                profileDetailVC.nameLabel.text = friend.displayName
-                
-                present(profileDetailVC, animated: true, completion: nil)
             }
+        } else {
+            profileDetailVC.profileImage.image = nil
         }
+        profileDetailVC.nameLabel.text = friend.displayName
+        
+        present(profileDetailVC, animated: true, completion: nil)
+    }
+}

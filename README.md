@@ -8,7 +8,7 @@
 🍎 App Store : https://apps.apple.com/kr/app/wanderboard/id6504566967
 ```
 
-<img width="180" src="https://github.com/WanderBoard/WanderBoard/assets/158182449/47ec6dec-2c12-4079-aa00-8fdcf308bf12"/> <img width="180" src="https://github.com/WanderBoard/WanderBoard/assets/158182449/d88df906-d7af-4ca2-a240-61b6997201b0"/> <img width="180" src="https://github.com/WanderBoard/WanderBoard/assets/158182449/3e301e77-12bd-4cf5-ad4c-dc9bcc01ce37"/> <img width="180" src= "https://github.com/WanderBoard/WanderBoard/assets/158182449/68fb801b-bd9a-42b0-9a92-203886125b72"> <img width="180" src="https://github.com/WanderBoard/WanderBoard/assets/158182449/85d2af35-79b8-4649-8f40-62cfd6907ba4">
+<img width="200" src="https://github.com/WanderBoard/WanderBoard/assets/158182449/47ec6dec-2c12-4079-aa00-8fdcf308bf12"/> <img width="200" src="https://github.com/WanderBoard/WanderBoard/assets/158182449/d88df906-d7af-4ca2-a240-61b6997201b0"/> <img width="200" src="https://github.com/WanderBoard/WanderBoard/assets/158182449/3e301e77-12bd-4cf5-ad4c-dc9bcc01ce37"/> <img width="200" src= "https://github.com/WanderBoard/WanderBoard/assets/158182449/68fb801b-bd9a-42b0-9a92-203886125b72"> 
 
 
 ## Table of Contents

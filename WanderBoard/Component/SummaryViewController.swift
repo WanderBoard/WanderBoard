@@ -188,7 +188,6 @@ class SummaryViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         )
 
         delegate?.didSaveExpense(expense)
-        NotificationCenter.default.post(name: .newExpenseData, object: nil, userInfo: ["expense": expense])
         dismiss(animated: true, completion: nil)
         saveButton.isEnabled = true
     }

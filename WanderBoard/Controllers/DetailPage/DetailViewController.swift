@@ -230,6 +230,13 @@ class DetailViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.tintColor = .white
+        loadData()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let detailInputVC = segue.destination as? DetailInputViewController {
+            detailInputVC.pinLog = pinLog
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -371,11 +378,12 @@ class DetailViewController: UIViewController {
         guard let pinLogId = pinLogId else { return }
         pinLogManager.fetchPinLog(by: pinLogId) { [weak self] result in
             switch result {
-            case .success(let pinLog):
-                self?.pinLog = pinLog
-                self?.checkId()
-            case .failure(let error):
-                print("Failed to fetch pin log: \(error)")
+                case .success(let pinLog):
+                    self?.pinLog = pinLog
+                    self?.checkId()
+                    self?.detailViewCollectionView.reloadData()
+                case .failure(let error):
+                    print("Failed to fetch pin log: \(error)")
             }
         }
     }
@@ -756,6 +764,7 @@ class DetailViewController: UIViewController {
                 do {
                     try await self.pinLogManager.deletePinLog(pinLogId: pinLog.id!)
                     self.delegate?.didUpdatePinLog()
+                    self.pinLog = nil
                     self.dismiss(animated: true, completion: nil)
                 } catch {
                     print("Failed to delete pin log: \(error.localizedDescription)")
@@ -1025,6 +1034,12 @@ extension DetailViewController: DetailInputViewControllerDelegate {
         }
     }
 }
+
+extension DetailViewController: SpendingListViewControllerDelegate {
+    func didUpdateExpenses(_ expenses: [DailyExpenses]) {
+        pinLog?.expenses = expenses
+        // 데이터 소스를 새로 고침
+        detailViewCollectionView.reloadData()
 
 extension DetailViewController: FriendCollectionViewCellDelegate {
     func didTapImage(in cell: FriendCollectionViewCell) {

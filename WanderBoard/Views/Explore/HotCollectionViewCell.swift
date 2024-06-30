@@ -25,9 +25,11 @@ class HotCollectionViewCell: UICollectionViewCell {
     }
     
     private let blackView = UIImageView().then {
-        $0.backgroundColor = .black.withAlphaComponent(0.4)
+        $0.backgroundColor = .clear
         $0.layer.cornerRadius = 30
     }
+    
+    private let gradientLayer = CAGradientLayer()
     
     private let dateLabel = UILabel().then {
         $0.textColor = .white
@@ -55,6 +57,7 @@ class HotCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupConstraints()
+        setupGradientLayer()
     }
 
     required init?(coder: NSCoder) {
@@ -95,6 +98,21 @@ class HotCollectionViewCell: UICollectionViewCell {
         }
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        gradientLayer.frame = backImg.bounds
+    }
+    
+       private func setupGradientLayer() {
+           gradientLayer.colors = [UIColor.black.withAlphaComponent(0.65).cgColor, UIColor.clear.cgColor]
+           gradientLayer.locations = [0.0, 1.0]
+           gradientLayer.startPoint = CGPoint(x: 1.0, y: 1.0)
+           gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.3)
+           gradientLayer.cornerRadius = 30
+           backImg.layer.insertSublayer(gradientLayer, at: 0)
+           gradientLayer.frame = backImg.bounds
+       }
+       
     func configure(with hotLog: PinLogSummary) async {
         locationLabel.text = hotLog.location
         dateLabel.text = formatDate(hotLog.startDate)

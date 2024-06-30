@@ -202,10 +202,10 @@ class ContentsPageViewController: UIViewController {
         let maskedView = UIView(frame: CGRect(x: 0, y: ( view.frame.height - 150), width: view.frame.height, height: 150))
         let gradientLayer = CAGradientLayer()
         
-        maskedView.backgroundColor = view.backgroundColor
+        maskedView.backgroundColor = .black
         gradientLayer.frame = maskedView.bounds
-        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.7), UIColor.white.cgColor, UIColor.white.cgColor]
-        gradientLayer.locations = [0, 0.5, 0.9, 1]
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.7), UIColor.white.withAlphaComponent(0.9), UIColor.white.cgColor]
+        gradientLayer.locations = [0, 0.5, 0.7, 1]
         maskedView.layer.mask = gradientLayer
         view.addSubview(maskedView)
         maskedView.isUserInteractionEnabled = false

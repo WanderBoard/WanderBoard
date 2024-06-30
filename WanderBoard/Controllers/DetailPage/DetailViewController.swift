@@ -26,7 +26,8 @@ class DetailViewController: UIViewController {
     weak var delegate: DetailViewControllerDelegate?
     
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
-    var selectedFriends: [UIImage] = []
+    var selectedFriends: [UserSummary] = []
+//    var friendImages: [String: UIImage] = [:]  // 이미지를 저장할 딕셔너리
     
     //로직 변경하면서 핀로그 id만 가져오도록
     var pinLogId: String?
@@ -586,13 +587,14 @@ class DetailViewController: UIViewController {
         
         for userId in attendeeIds {
             group.enter()
-            fetchUserImage(userId: userId) { [weak self] image in
+            //유저의 사진을 가져오는 메서드에서 유저의 정보를 가져오기로 변경
+            /*fetchUserImage(userId: userId)*/fetchUserSummary(userId: userId) { [weak self] userSummary in
                 guard let self = self else {
                     group.leave()
                     return
                 }
-                if let image = image {
-                    self.selectedFriends.append(image)
+                if let userSummary = userSummary {
+                    self.selectedFriends.append(userSummary)
                 }
                 group.leave()
             }
@@ -603,19 +605,17 @@ class DetailViewController: UIViewController {
             self.expandableButtonAction()
         }
     }
+
     
-    func fetchUserImage(userId: String, completion: @escaping (UIImage?) -> Void) {
+    func fetchUserSummary(userId: String, completion: @escaping (UserSummary?) -> Void) {
         let db = Firestore.firestore()
         db.collection("users").document(userId).getDocument { document, error in
             if let document = document, document.exists, let data = document.data(),
-               let photoURL = data["photoURL"] as? String, let url = URL(string: photoURL) {
-                AF.request(url).response { response in
-                    if let data = response.data, let image = UIImage(data: data) {
-                        completion(image)
-                    } else {
-                        completion(nil)
-                    }
-                }
+               let displayName = data["displayName"] as? String,
+               let email = data["email"] as? String,
+               let photoURL = data["photoURL"] as? String {
+                let userSummary = UserSummary(uid: userId, email: email, displayName: displayName, photoURL: photoURL, isMate: false)
+                completion(userSummary)
             } else {
                 completion(nil)
             }
@@ -960,9 +960,20 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FriendCollectionViewCell.identifier, for: indexPath) as? FriendCollectionViewCell else {
                 fatalError("컬렉션 뷰 오류")
             }
+            let friend = selectedFriends[indexPath.row]
+            if let photoURL = friend.photoURL, let url = URL(string: photoURL) {
+                        AF.request(url).response { response in
+                            if let data = response.data, let image = UIImage(data: data) {
+                                DispatchQueue.main.async {
+                                    cell.imageView.image = image
+                                }
+                            }
+                        }
+                    } else {
+                        cell.imageView.image = nil
+                    }
             //셀을 클릭했을때의 액션이 필요하기 때문
             cell.delegate = self
-            cell.configure(with: selectedFriends[indexPath.row])
             return cell
             }
         return UICollectionViewCell()
@@ -1024,10 +1035,20 @@ extension DetailViewController: FriendCollectionViewCellDelegate {
         profileDetailVC.modalPresentationStyle = .overFullScreen
         profileDetailVC.modalTransitionStyle = .crossDissolve
         
-        _ = selectedFriends[indexPath.row]
-        profileDetailVC.profileImage.image = selectedFriends[indexPath.row]
-        profileDetailVC.nameLabel.text = "이름불러오는법 찾는중.."
-
-        present(profileDetailVC, animated: true, completion: nil)
-    }
-}
+        let friend = selectedFriends[indexPath.row]
+        if let photoURL = friend.photoURL, let url = URL(string: photoURL) {
+                    AF.request(url).response { response in
+                        if let data = response.data, let image = UIImage(data: data) {
+                            DispatchQueue.main.async {
+                                profileDetailVC.profileImage.image = image
+                            }
+                        }
+                    }
+                } else {
+                    profileDetailVC.profileImage.image = nil
+                }
+                profileDetailVC.nameLabel.text = friend.displayName
+                
+                present(profileDetailVC, animated: true, completion: nil)
+            }
+        }

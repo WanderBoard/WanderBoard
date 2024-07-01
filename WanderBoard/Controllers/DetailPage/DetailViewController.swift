@@ -1054,6 +1054,9 @@ extension DetailViewController: DetailInputViewControllerDelegate {
         self.pinLog = pinLog
         Task {
             await configureView(with: pinLog)
+            DispatchQueue.main.async {
+                self.detailViewCollectionView.reloadData()
+            }
         }
     }
 }

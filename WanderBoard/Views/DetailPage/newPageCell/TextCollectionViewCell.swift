@@ -131,16 +131,18 @@ class TextCollectionViewCell: UICollectionViewCell {
         imageView.image = image
         titleLabel.text = title
         
-        if let title = title, !title.isEmpty, let content = content, !content.isEmpty {
+        let isTitleEmpty = title?.isEmpty ?? true
+        let isContentEmpty = content?.isEmpty ?? true
+        
+        if !isTitleEmpty || !isContentEmpty {
             emptyView.isHidden = true
             backView.isHidden = false
-            
             
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineSpacing = 8
             paragraphStyle.alignment = .center
             
-            let attributedString = NSAttributedString(string: content, attributes: [
+            let attributedString = NSAttributedString(string: content ?? "", attributes: [
                 .font: textLabel.font ?? UIFont.systemFont(ofSize: 15),
                 .paragraphStyle: paragraphStyle
             ])

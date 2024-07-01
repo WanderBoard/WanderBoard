@@ -51,7 +51,7 @@ class HotTableViewCell: UITableViewCell {
         $0.scrollDirection = .horizontal
         $0.minimumLineSpacing = 20
         $0.itemSize = .init(width: 240, height: 320)
-        $0.sectionInset = .init(top: 10, left: 30, bottom: 5, right: 10)
+        $0.sectionInset = .init(top: 10, left: 30, bottom: 5, right: 30)
     }
     
     lazy var horizontalRefreshControl = UIActivityIndicatorView(style: .medium).then {
@@ -199,11 +199,6 @@ extension HotTableViewCell: UICollectionViewDataSource, UICollectionViewDelegate
         
         // 맨 앞으로 당겼을 때 새로고침
         if offsetX <= -100 && !isRefreshing {
-            refreshData()
-        }
-        
-        if offsetX + width >= contentWidth + 100 && !isRefreshing {
-            scrollView.setContentOffset(.zero, animated: true)
             refreshData()
         }
     }

@@ -1016,20 +1016,22 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
         guard let cell = collectionView.cellForItem(at: indexPath) else { return }
         
         if indexPath.item == 2 {
-            UIView.animate(withDuration: 0.05, animations: {
-                cell.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
-            }, completion: { _ in
+            if let pinLog = self.pinLog, let expenses = pinLog.expenses, !expenses.isEmpty {
                 UIView.animate(withDuration: 0.05, animations: {
-                    cell.transform = CGAffineTransform.identity
+                    cell.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
                 }, completion: { _ in
-                    
-                    let spendingListVC = SpendingListViewController()
-                    spendingListVC.pinLog = self.pinLog
-                    let backButton = ButtonFactory.createBackButton()
-                    self.navigationItem.backBarButtonItem = backButton
-                    self.navigationController?.pushViewController(spendingListVC, animated: true)
+                    UIView.animate(withDuration: 0.05, animations: {
+                        cell.transform = CGAffineTransform.identity
+                    }, completion: { _ in
+                        
+                        let spendingListVC = SpendingListViewController()
+                        spendingListVC.pinLog = self.pinLog
+                        let backButton = ButtonFactory.createBackButton()
+                        self.navigationItem.backBarButtonItem = backButton
+                        self.navigationController?.pushViewController(spendingListVC, animated: true)
+                    })
                 })
-            })
+            }
         }
     }
     

@@ -194,10 +194,7 @@ extension HotTableViewCell: UICollectionViewDataSource, UICollectionViewDelegate
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetX = scrollView.contentOffset.x
-        let contentWidth = scrollView.contentSize.width
-        let width = scrollView.frame.size.width
-        
-        // 맨 앞으로 당겼을 때 새로고침
+
         if offsetX <= -100 && !isRefreshing {
             refreshData()
         }

@@ -227,6 +227,14 @@ class MateViewController: UIViewController {
         }
         let combinedFilteredUsers = Array(Set(filteredByName + filteredByEmail))
         filteredUsers = combinedFilteredUsers.filter { $0.uid != currentUserID && !$0.displayName.isEmpty && !$0.email.isEmpty }
+        
+        // addedMates에 있는 사용자들의 isMate 값을 반영
+        for i in 0..<filteredUsers.count {
+            if addedMates.contains(where: { $0.uid == filteredUsers[i].uid }) {
+                filteredUsers[i].isMate = true
+            }
+        }
+        
         updateNoDataView(isEmpty: filteredUsers.isEmpty)
         tableView.reloadData()
     }
@@ -277,7 +285,9 @@ extension MateViewController: MateTableViewCellDelegate {
             tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
             
             if filteredUsers[index].isMate {
-                addedMates.append(filteredUsers[index])
+                if !addedMates.contains(where: { $0.uid == filteredUsers[index].uid }) {
+                    addedMates.append(filteredUsers[index])
+                }
             } else {
                 addedMates.removeAll { $0.uid == filteredUsers[index].uid }
             }
@@ -296,7 +306,12 @@ extension MateViewController: AddedMateCellDelegate {
             if let filteredIndex = filteredUsers.firstIndex(where: { $0.uid == user.uid }) {
                 filteredUsers[filteredIndex].isMate = false
                 tableView.reloadRows(at: [IndexPath(row: filteredIndex, section: 0)], with: .automatic)
+            } else {
+                if let usersIndex = users.firstIndex(where: { $0.uid == user.uid }) {
+                    users[usersIndex].isMate = false
+                }
             }
+            tableView.reloadData()
             addedMatesCollectionView.reloadData()
             updateAddedMatesCollectionViewVisibility()
             addedMatesCollectionView.layoutIfNeeded()

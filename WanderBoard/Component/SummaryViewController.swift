@@ -182,7 +182,7 @@ class SummaryViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         let imageName = CategoryData.categoryImageMapping[category] ?? ""
         let expense = Expense(
             date: date,
-            expenseContent: title.isEmpty ? "No Title" : title,
+            expenseContent: title.isEmpty ? "" : title,
             expenseAmount: Int(amount),
             category: category,
             memo: memoTextView.text,

@@ -487,6 +487,12 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         privacyCheckBox.addTarget(self, action: #selector(updatePrivacyPolicyButtonState), for: .valueChanged)
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+        }
+    }
+    
     private func checkProfileCompletion() {
         if let uid = Auth.auth().currentUser?.uid {
             Firestore.firestore().collection("users").document(uid).getDocument { (document, error) in
@@ -512,6 +518,7 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
     
     private func setEmailIcon(for providerID: String?) {
         guard let providerID = providerID else { return }
+        let kakaoColor = traitCollection.userInterfaceStyle == .dark ? UIColor.kakaoYellow : UIColor(red: 60/255, green: 29/255, blue: 30/255, alpha: 1)
         
         switch providerID {
             case "google.com":
@@ -519,10 +526,11 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
             case "apple.com":
                 emailIcon.image = UIImage(named: "appleLogo")?.withTintColor(UIColor.font)
             case "kakao.com":
-            emailIcon.tintColor = UIColor(named: "kakaoYellow")
+            emailIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
+            emailIcon.tintColor = kakaoColor
             default:
             emailIcon.image = UIImage(named: "kakaoLogo")?.withRenderingMode(.alwaysTemplate)
-            emailIcon.tintColor = UIColor(named: "kakaoYellow")
+            emailIcon.tintColor = kakaoColor
         }
     }
     
@@ -748,12 +756,6 @@ class SignUpViewController: UIViewController, PHPickerViewControllerDelegate, UI
         let babyGTocustomB = traitCollection.userInterfaceStyle == .dark ? UIColor(named: "customblack") : UIColor(named: "babygray")
         signUpButton.backgroundColor = isFormValid ? .font : babyGTocustomB
         signUpButton.setTitleColor(isFormValid ? UIColor(named: "textColor") : .darkgray, for: .normal )
-    }
-    
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-        }
     }
     
     @objc private func signUpTapped() {

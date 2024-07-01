@@ -68,23 +68,19 @@ class MyPageTableViewCell: UITableViewCell {
                 arrow.tintColor = .font
           
             case 4:
-                icon.image = UIImage(systemName: "door.left.hand.open")
-                icon.snp.remakeConstraints(){ //오토레이아웃 리메이크
-                    $0.centerY.equalToSuperview()
-                    $0.width.equalTo(16)
-                    $0.height.equalTo(22.59)
-                    $0.left.equalToSuperview().offset(19)
-                }
-                icon.tintColor = .font
-                label.font = UIFont.systemFont(ofSize: 15)
-                label.textColor = .font
+            icon.isHidden = true
+            arrow.isHidden = true
+                label.font = UIFont.boldSystemFont(ofSize: 15)
+            label.textAlignment = .right
+                label.textColor = UIColor(named: "PageCtrlUnselectedText")
                 label.text = "로그아웃"
-                arrow.image = UIImage(systemName: "chevron.right")?.withTintColor(UIColor.font)
-                arrow.tintColor = .font
+            label.snp.remakeConstraints(){
+                $0.centerY.equalToSuperview()
+                $0.right.equalToSuperview().offset(-17)
+            }
                 
             default:
                 print("셀의 내용이 없습니다")
-
         }
     }
     

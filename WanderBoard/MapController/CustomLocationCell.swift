@@ -15,7 +15,7 @@ class CustomLocationCell: UITableViewCell {
     let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "mappin.circle.fill")
-        imageView.tintColor = .black
+        imageView.tintColor = .font
         return imageView
     }()
     
@@ -38,7 +38,7 @@ class CustomLocationCell: UITableViewCell {
         contentView.addSubview(iconImageView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(subtitleLabel)
-        backgroundColor = UIColor.white.withAlphaComponent(0.7)
+        backgroundColor = UIColor(named: "textColor")!.withAlphaComponent(0.7)
         
         iconImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(15)

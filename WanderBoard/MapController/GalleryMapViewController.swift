@@ -48,14 +48,14 @@ class GalleryMapViewController: UIViewController, MKMapViewDelegate, CLLocationM
     let locationButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "location.circle.fill"), for: .normal)
-        button.tintColor = .black
+        button.tintColor = .font
         return button
     }()
     
     let lookAroundButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "eye.slash.circle"), for: .normal)
-        button.tintColor = .black
+        button.tintColor = .font
         button.isHidden = true
         return button
     }()
@@ -63,7 +63,7 @@ class GalleryMapViewController: UIViewController, MKMapViewDelegate, CLLocationM
     let satelliteButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "airplane.circle"), for: .normal)
-        button.tintColor = .black
+        button.tintColor = .font
         button.isHidden = false
         return button
     }()
@@ -74,7 +74,7 @@ class GalleryMapViewController: UIViewController, MKMapViewDelegate, CLLocationM
         stackView.alignment = .center
         stackView.distribution = .equalSpacing
         stackView.spacing = 24
-        stackView.backgroundColor = UIColor(white: 1.0, alpha: 0.7)
+        stackView.backgroundColor = UIColor(named: "textColor")!.withAlphaComponent(0.7)
         stackView.layer.cornerRadius = 20
         stackView.clipsToBounds = true
         stackView.isLayoutMarginsRelativeArrangement = true
@@ -124,8 +124,8 @@ class GalleryMapViewController: UIViewController, MKMapViewDelegate, CLLocationM
     }
 
     private func setupNavigationBar() {
-        navigationController?.navigationBar.tintColor = .black
-        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.black]
+        navigationController?.navigationBar.tintColor = .font
+        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.font]
     }
     
     private func centerMap(on coordinate: CLLocationCoordinate2D) {

@@ -84,7 +84,6 @@
 		4D5166272C2BE02000D73969 /* TextInputCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D5166262C2BE02000D73969 /* TextInputCollectionViewCell.swift */; };
 		4D5166292C2BFD8000D73969 /* CardInputCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D5166282C2BFD8000D73969 /* CardInputCollectionViewCell.swift */; };
 		4D51662C2C2C20A300D73969 /* PhotoInputCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D51662B2C2C20A300D73969 /* PhotoInputCollectionViewCell.swift */; };
-		4D51662F2C2D536100D73969 /* TravelIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D51662E2C2D536100D73969 /* TravelIcon.swift */; };
 		4D5166322C2D538100D73969 /* GalleryMapCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D5166302C2D538100D73969 /* GalleryMapCollectionViewCell.swift */; };
 		4D5166332C2D538100D73969 /* GalleryMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D5166312C2D538100D73969 /* GalleryMapViewController.swift */; };
 		4D5166352C2D538A00D73969 /* ImageInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D5166342C2D538A00D73969 /* ImageInfoView.swift */; };
@@ -206,7 +205,6 @@
 		4D5166262C2BE02000D73969 /* TextInputCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputCollectionViewCell.swift; sourceTree = "<group>"; };
 		4D5166282C2BFD8000D73969 /* CardInputCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardInputCollectionViewCell.swift; sourceTree = "<group>"; };
 		4D51662B2C2C20A300D73969 /* PhotoInputCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoInputCollectionViewCell.swift; sourceTree = "<group>"; };
-		4D51662E2C2D536100D73969 /* TravelIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TravelIcon.swift; sourceTree = "<group>"; };
 		4D5166302C2D538100D73969 /* GalleryMapCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryMapCollectionViewCell.swift; sourceTree = "<group>"; };
 		4D5166312C2D538100D73969 /* GalleryMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryMapViewController.swift; sourceTree = "<group>"; };
 		4D5166342C2D538A00D73969 /* ImageInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageInfoView.swift; sourceTree = "<group>"; };
@@ -355,7 +353,6 @@
 				2A1D31EB2C1C108800288C71 /* CalendarView.swift */,
 				2A6B0B752C24047B009B9759 /* SingleDayCalendarView.swift */,
 				2A7623D82C1E21130044CF05 /* WavesView.swift */,
-				4D51662E2C2D536100D73969 /* TravelIcon.swift */,
 				2AA4707D2C2C021700C582F2 /* CategoryCollectionViewCell.swift */,
 				2AFB572B2C2D248F00127D26 /* CategoryInputCollectionViewCell.swift */,
 				2AFD18A72C2EBA9900F3722D /* CategoryData.swift */,
@@ -855,7 +852,6 @@
 				2A5D471D2C0A2742005C0F76 /* MapViewModel.swift in Sources */,
 				956ED7972C0852B90001BAC6 /* SettingViewController.swift in Sources */,
 				2A5F47C82C0E3A0C00D289AA /* StorageManager.swift in Sources */,
-				4D51662F2C2D536100D73969 /* TravelIcon.swift in Sources */,
 				6BBE4BE82C1F06DE00A7A793 /* TutorialViewController.swift in Sources */,
 				2A7655042C0610BA00D8A098 /* SignInWithApple.swift in Sources */,
 				956ED7922C0852B90001BAC6 /* EditViewController.swift in Sources */,

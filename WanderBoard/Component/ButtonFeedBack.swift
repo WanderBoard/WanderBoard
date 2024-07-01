@@ -84,7 +84,7 @@ struct ButtonFeedBack: View {
     }
 
     private func playSound() {
-        if let soundURL = Bundle.main.url(forResource: "success", withExtension: "mp3") {
+        if let soundURL = Bundle.main.url(forResource: "buttonSound", withExtension: "mp3") {
             do {
                 audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
                 audioPlayer?.play()

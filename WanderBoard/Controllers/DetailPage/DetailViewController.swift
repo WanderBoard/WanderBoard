@@ -126,7 +126,7 @@ class DetailViewController: UIViewController {
         $0.textColor = .font
         $0.numberOfLines = 2
         $0.adjustsFontSizeToFitWidth = true
-        $0.minimumScaleFactor = 0.5
+        $0.minimumScaleFactor = 0.8
     }
     
     var dateDaysLabel = UILabel().then {
@@ -285,51 +285,57 @@ class DetailViewController: UIViewController {
         let screenHeight = UIScreen.main.bounds.height
         let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.58 : 0.52
         
+        let detailViewButtonTB: CGFloat = screenHeight < 750 ? 0 : 30
+        let expendableViewH: CGFloat = screenHeight < 750 ? 96 : 110
+        
         detailViewCollectionView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(6)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalToSuperview().multipliedBy(collectionViewHeightMultiplier)
         }
         
         detailViewButton.view.snp.makeConstraints {
-            $0.top.equalTo(detailViewCollectionView.snp.bottom)
+            $0.top.equalTo(detailViewCollectionView.snp.bottom).offset(detailViewButtonTB)
             $0.centerX.equalToSuperview()
-            $0.bottom.equalTo(bottomContentView.snp.top)
+            $0.bottom.equalTo(bottomContentView.snp.top).offset(-detailViewButtonTB)
+            $0.height.equalTo(60)
         }
         
         bottomContentView.snp.makeConstraints {
-            $0.top.equalTo(detailViewButton.view.snp.bottom)
+            $0.top.equalTo(detailViewButton.view.snp.bottom).offset(16)
             $0.leading.trailing.equalToSuperview().inset(26)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
-            $0.height.equalTo(100)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
         }
         
         bottomContentStackView.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview()
+            $0.leading.equalToSuperview()
+            $0.trailing.equalToSuperview().offset(-50)
+            $0.bottom.equalTo(dateDaysLabel.snp.top).offset(-10)
         }
         
         dateDaysLabel.snp.makeConstraints {
             $0.leading.equalToSuperview()
-            $0.top.equalTo(bottomContentStackView.snp.bottom).offset(10)
-            $0.width.equalTo(55)
+            //$0.top.equalTo(bottomContentStackView.snp.bottom).offset(5)
+            $0.bottom.equalToSuperview()
         }
         
         dateStackView.snp.makeConstraints {
             $0.leading.equalTo(dateDaysLabel.snp.trailing).offset(10)
-            $0.top.equalTo(bottomContentStackView.snp.bottom).offset(10)
+            //$0.top.equalTo(bottomContentStackView.snp.bottom).offset(5)
+            $0.bottom.equalToSuperview()
         }
         
         optionsButton.snp.makeConstraints {
-            $0.top.equalToSuperview()
+            $0.top.equalTo(profileStackView.snp.top)
             $0.trailing.equalToSuperview()
             $0.width.height.equalTo(24)
         }
         
         expandableView.snp.makeConstraints {
-            $0.top.equalTo(optionsButton.snp.bottom).offset(10)
+            $0.top.equalTo(optionsButton.snp.bottom).offset(12)
             $0.trailing.equalToSuperview().offset(15)
             $0.width.equalTo(50)
-            $0.height.equalTo(90)
+            $0.height.equalTo(expendableViewH)
         }
         
         expandableButton.snp.makeConstraints {

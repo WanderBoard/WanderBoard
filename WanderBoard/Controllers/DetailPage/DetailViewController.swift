@@ -1033,6 +1033,8 @@ extension DetailViewController: SpendingListViewControllerDelegate {
         pinLog?.expenses = expenses
         // 데이터 소스를 새로 고침
         detailViewCollectionView.reloadData()
+    }
+}
 
 extension DetailViewController: FriendCollectionViewCellDelegate {
     func didTapImage(in cell: FriendCollectionViewCell) {

@@ -1034,6 +1034,7 @@ extension DetailViewController: DetailInputViewControllerDelegate {
 }
 
 extension DetailViewController: SpendingListViewControllerDelegate {
+    func didSaveExpense(_ expense: Expense) {}
     func didUpdateExpenses(_ expenses: [DailyExpenses]) {
         pinLog?.expenses = expenses
         // 데이터 소스를 새로 고침

@@ -53,6 +53,7 @@
 		2A76552E2C07407500D8A098 /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 2A76552D2C07407500D8A098 /* KakaoSDKCommon */; };
 		2A77A4602C3234D50035FD8B /* ButtonFeedBack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A77A45F2C3234D50035FD8B /* ButtonFeedBack.swift */; };
 		2A77A4622C32466B0035FD8B /* ButtonFeedBackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A77A4612C32466B0035FD8B /* ButtonFeedBackViewController.swift */; };
+		2A77A4652C328E4D0035FD8B /* buttonSound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2A77A4642C328E4D0035FD8B /* buttonSound.mp3 */; };
 		2A8AB1782C12407B00C5244F /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB1772C12407B00C5244F /* SignUpViewController.swift */; };
 		2A8AB17A2C1240E500C5244F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB1792C1240E500C5244F /* User.swift */; };
 		2A8AB17C2C1241ED00C5244F /* UserProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB17B2C1241ED00C5244F /* UserProfileManager.swift */; };
@@ -172,6 +173,7 @@
 		2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithKakao.swift; sourceTree = "<group>"; };
 		2A77A45F2C3234D50035FD8B /* ButtonFeedBack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonFeedBack.swift; sourceTree = "<group>"; };
 		2A77A4612C32466B0035FD8B /* ButtonFeedBackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonFeedBackViewController.swift; sourceTree = "<group>"; };
+		2A77A4642C328E4D0035FD8B /* buttonSound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = buttonSound.mp3; sourceTree = "<group>"; };
 		2A8AB1772C12407B00C5244F /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		2A8AB1792C1240E500C5244F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		2A8AB17B2C1241ED00C5244F /* UserProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileManager.swift; sourceTree = "<group>"; };
@@ -338,6 +340,14 @@
 			path = Extension;
 			sourceTree = "<group>";
 		};
+		2A77A4632C328E270035FD8B /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				2A77A4642C328E4D0035FD8B /* buttonSound.mp3 */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
 		2A9BED282C08A4070032C403 /* Component */ = {
 			isa = PBXGroup;
 			children = (
@@ -422,6 +432,7 @@
 				2A5D471B2C0A26D7005C0F76 /* MapController */,
 				2A9BED282C08A4070032C403 /* Component */,
 				2A76551E2C070A7A00D8A098 /* Utility */,
+				2A77A4632C328E270035FD8B /* Sounds */,
 				2A76551F2C070ACC00D8A098 /* Extension */,
 				4D9D8B4F2C05B1BD0043E7DF /* AppDelegate.swift */,
 				4D9D8B512C05B1BD0043E7DF /* SceneDelegate.swift */,
@@ -739,6 +750,7 @@
 				4D13BB8F2C269B5B004AE016 /* InfoPlist.strings in Resources */,
 				955A2B762C1989320008A1CB /* GoogleService-Info.plist in Resources */,
 				4D9D8B5F2C05B1BE0043E7DF /* Base in Resources */,
+				2A77A4652C328E4D0035FD8B /* buttonSound.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

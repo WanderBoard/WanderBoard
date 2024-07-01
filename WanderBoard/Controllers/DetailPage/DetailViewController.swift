@@ -445,6 +445,8 @@ class DetailViewController: UIViewController {
         } else {
             updatedPinnedBy.append(currentUserId)
             updatedPinCount += 1
+            showButtonFeedBackView()
+
         }
         
         // Firestore에 업데이트
@@ -464,6 +466,22 @@ class DetailViewController: UIViewController {
                     print("Delegate called with updated pin log")
                     self.delegate?.didUpdatePinButton(updatedPinLog)
                 }
+            }
+        }
+    }
+    
+    private func showButtonFeedBackView() {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            let buttonFeedBackVC = ButtonFeedBackViewController()
+            let feedbackWindow = UIWindow(windowScene: windowScene)
+            feedbackWindow.rootViewController = buttonFeedBackVC
+            feedbackWindow.backgroundColor = .clear
+            feedbackWindow.windowLevel = .alert + 1
+            feedbackWindow.isHidden = false
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                feedbackWindow.isHidden = true
             }
         }
     }

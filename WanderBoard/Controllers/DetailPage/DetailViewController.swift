@@ -229,7 +229,6 @@ class DetailViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.tintColor = .white
-        loadData()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

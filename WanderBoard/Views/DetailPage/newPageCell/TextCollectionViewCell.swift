@@ -99,19 +99,19 @@ class TextCollectionViewCell: UICollectionViewCell {
         }
         
         emptyView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.edges.equalTo(contentView)
         }
         
         emptyImageView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview().offset(-20)
+            $0.centerX.equalTo(contentView)
+            $0.centerY.equalTo(contentView).offset(-20)
             $0.height.equalTo(35)
             $0.width.equalTo(55)
         }
         
         emptyTitleLabel.snp.makeConstraints {
             $0.top.equalTo(emptyImageView.snp.bottom).offset(10)
-            $0.centerX.equalToSuperview()
+            $0.centerX.equalTo(contentView)
         }
     }
     

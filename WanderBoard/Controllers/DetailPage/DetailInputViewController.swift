@@ -850,7 +850,25 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
                 present(alert, animated: true, completion: nil)
             }
             hideProgressView()
+            showButtonFeedBackView()
+
             navigationItem.rightBarButtonItem?.isEnabled = true
+        }
+    }
+    
+    private func showButtonFeedBackView() {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            let buttonFeedBackVC = ButtonFeedBackViewController()
+            let feedbackWindow = UIWindow(windowScene: windowScene)
+            feedbackWindow.rootViewController = buttonFeedBackVC
+            feedbackWindow.backgroundColor = .clear
+            feedbackWindow.windowLevel = .alert + 1
+            feedbackWindow.isHidden = false
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                feedbackWindow.isHidden = true
+            }
         }
     }
     

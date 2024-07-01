@@ -14,7 +14,6 @@
 		2A5D471F2C0A2771005C0F76 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D471E2C0A2771005C0F76 /* LocationManager.swift */; };
 		2A5D47232C0A27EF005C0F76 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5D47222C0A27EF005C0F76 /* MapViewController.swift */; };
 		2A5F47C42C0E0AFF00D289AA /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F47C32C0E0AFF00D289AA /* MapView.swift */; };
-		2A5F47C62C0E276500D289AA /* ImageUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F47C52C0E276500D289AA /* ImageUploader.swift */; };
 		2A5F47C82C0E3A0C00D289AA /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5F47C72C0E3A0C00D289AA /* StorageManager.swift */; };
 		2A6B0B762C24047B009B9759 /* SingleDayCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6B0B752C24047B009B9759 /* SingleDayCalendarView.swift */; };
 		2A6B0B782C240513009B9759 /* SingleDayCalendarHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6B0B772C240513009B9759 /* SingleDayCalendarHostingController.swift */; };
@@ -52,6 +51,8 @@
 		2A76552A2C073E4900D8A098 /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 2A7655292C073E4900D8A098 /* KakaoSDKUser */; };
 		2A76552C2C073F2F00D8A098 /* SignInWithKakao.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */; };
 		2A76552E2C07407500D8A098 /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 2A76552D2C07407500D8A098 /* KakaoSDKCommon */; };
+		2A77A4602C3234D50035FD8B /* ButtonFeedBack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A77A45F2C3234D50035FD8B /* ButtonFeedBack.swift */; };
+		2A77A4622C32466B0035FD8B /* ButtonFeedBackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A77A4612C32466B0035FD8B /* ButtonFeedBackViewController.swift */; };
 		2A8AB1782C12407B00C5244F /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB1772C12407B00C5244F /* SignUpViewController.swift */; };
 		2A8AB17A2C1240E500C5244F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB1792C1240E500C5244F /* User.swift */; };
 		2A8AB17C2C1241ED00C5244F /* UserProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8AB17B2C1241ED00C5244F /* UserProfileManager.swift */; };
@@ -148,7 +149,6 @@
 		2A5D471E2C0A2771005C0F76 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		2A5D47222C0A27EF005C0F76 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		2A5F47C32C0E0AFF00D289AA /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
-		2A5F47C52C0E276500D289AA /* ImageUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUploader.swift; sourceTree = "<group>"; };
 		2A5F47C72C0E3A0C00D289AA /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		2A6B0B752C24047B009B9759 /* SingleDayCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleDayCalendarView.swift; sourceTree = "<group>"; };
 		2A6B0B772C240513009B9759 /* SingleDayCalendarHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleDayCalendarHostingController.swift; sourceTree = "<group>"; };
@@ -170,6 +170,8 @@
 		2A7655202C070B0400D8A098 /* Formatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatter.swift; sourceTree = "<group>"; };
 		2A7655222C070B1700D8A098 /* Numeric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Numeric.swift; sourceTree = "<group>"; };
 		2A76552B2C073F2F00D8A098 /* SignInWithKakao.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithKakao.swift; sourceTree = "<group>"; };
+		2A77A45F2C3234D50035FD8B /* ButtonFeedBack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonFeedBack.swift; sourceTree = "<group>"; };
+		2A77A4612C32466B0035FD8B /* ButtonFeedBackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonFeedBackViewController.swift; sourceTree = "<group>"; };
 		2A8AB1772C12407B00C5244F /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		2A8AB1792C1240E500C5244F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		2A8AB17B2C1241ED00C5244F /* UserProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileManager.swift; sourceTree = "<group>"; };
@@ -351,7 +353,9 @@
 				2AFD18A72C2EBA9900F3722D /* CategoryData.swift */,
 				2AA470772C2BFB7A00C582F2 /* AmountInputHostingController.swift */,
 				2AA4707B2C2BFC1500C582F2 /* SummaryViewController.swift */,
+				2A77A4612C32466B0035FD8B /* ButtonFeedBackViewController.swift */,
 				2AA470792C2BFB8D00C582F2 /* AmountInputView.swift */,
+				2A77A45F2C3234D50035FD8B /* ButtonFeedBack.swift */,
 				2AF1190D2C2929C2009A96EC /* SignInWaveView.swift */,
 				2A7623DC2C1E2FE20044CF05 /* ProgressView.swift */,
 				2A7623DE2C1E3FBB0044CF05 /* ProgressViewController.swift */,
@@ -468,7 +472,6 @@
 				2A9BED312C08E2A40032C403 /* PinLogManager.swift */,
 				2A5F47C72C0E3A0C00D289AA /* StorageManager.swift */,
 				2A8AB17B2C1241ED00C5244F /* UserProfileManager.swift */,
-				2A5F47C52C0E276500D289AA /* ImageUploader.swift */,
 				2A7655102C0622C000D8A098 /* FirestoreManager.swift */,
 				2A76550A2C06175B00D8A098 /* AuthenticationManager.swift */,
 				FB3793AC2C1D6854009C1268 /* AccountDeletionManager.swift */,
@@ -771,7 +774,6 @@
 				2A5F47C42C0E0AFF00D289AA /* MapView.swift in Sources */,
 				2A9BED322C08E2A40032C403 /* PinLogManager.swift in Sources */,
 				2A9BED2A2C08A4330032C403 /* PageControlButton.swift in Sources */,
-				2A5F47C62C0E276500D289AA /* ImageUploader.swift in Sources */,
 				2A7623DB2C1E21F80044CF05 /* LaunchViewController.swift in Sources */,
 				2A6B0B762C24047B009B9759 /* SingleDayCalendarView.swift in Sources */,
 				9592A3D52C1F3CBD00CF6FD6 /* FilterCollectionViewCell.swift in Sources */,
@@ -796,8 +798,10 @@
 				FBB8AC782C22AB9100B62256 /* PinLogSummary.swift in Sources */,
 				2A5D47232C0A27EF005C0F76 /* MapViewController.swift in Sources */,
 				9573ADC62C2B15280040D494 /* PhotoCollectionViewCell.swift in Sources */,
+				2A77A4622C32466B0035FD8B /* ButtonFeedBackViewController.swift in Sources */,
 				2A8AB17C2C1241ED00C5244F /* UserProfileManager.swift in Sources */,
 				FB9A3AE72C1984C600E1EAA2 /* HotTableViewCell.swift in Sources */,
+				2A77A4602C3234D50035FD8B /* ButtonFeedBack.swift in Sources */,
 				2AA470782C2BFB7A00C582F2 /* AmountInputHostingController.swift in Sources */,
 				2A7623DF2C1E3FBB0044CF05 /* ProgressViewController.swift in Sources */,
 				FB9A3AE82C1984C600E1EAA2 /* HotCollectionViewCell.swift in Sources */,

@@ -44,6 +44,7 @@ class TextCollectionViewCell: UICollectionViewCell {
     let emptyView = UIView().then() {
         $0.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.9)
         $0.isHidden = true
+    
     }
     
     let emptyImageView = UIImageView().then() {

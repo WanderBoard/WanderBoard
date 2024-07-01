@@ -54,6 +54,7 @@ class CardInputCollectionViewCell: UICollectionViewCell {
     let emptyView = UIView().then {
         $0.backgroundColor = .systemBackground.withAlphaComponent(0.9)
         $0.isHidden = true
+        $0.isUserInteractionEnabled = true
     }
     
     let emptyImageView = UIImageView().then {

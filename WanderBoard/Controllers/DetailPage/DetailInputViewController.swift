@@ -857,8 +857,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     }
     
     private func showButtonFeedBackView() {
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             let buttonFeedBackVC = ButtonFeedBackViewController()
             let feedbackWindow = UIWindow(windowScene: windowScene)
             feedbackWindow.rootViewController = buttonFeedBackVC

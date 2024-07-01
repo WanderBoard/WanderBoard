@@ -27,11 +27,11 @@ class MateManager {
                 let email = data["email"] as? String ?? ""
                 let displayName = data["displayName"] as? String
                 let photoURL = data["photoURL"] as? String
-                let isMate = data["isMate"] as? Bool ?? false
+                let isProfileComplete = data["isProfileComplete"] as? Bool ?? false
                 
-                // 아이디와 닉네임이 둘 다 존재할 때만 UserSummary 객체를 생성합니다.
-                if !uid.isEmpty, let displayName = displayName, !displayName.isEmpty {
-                    return UserSummary(uid: uid, email: email, displayName: displayName, photoURL: photoURL, isMate: isMate)
+                // 아이디와 닉네임이 둘 다 존재하고 프로필이 완성된 경우에만 UserSummary 객체를 생성합니다.
+                if !uid.isEmpty, let displayName = displayName, !displayName.isEmpty, isProfileComplete {
+                    return UserSummary(uid: uid, email: email, displayName: displayName, photoURL: photoURL, isMate: false)
                 } else {
                     return nil
                 }

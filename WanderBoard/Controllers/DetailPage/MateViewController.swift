@@ -218,17 +218,25 @@ class MateViewController: UIViewController {
     
     func searchFriends(with query: String) {
         guard let currentUserID = Auth.auth().currentUser?.uid else { return }
+        
         let filteredByName = users.filter { $0.displayName.lowercased().contains(query.lowercased()) }
+        
         let filteredByEmail: [UserSummary]
         if query.contains("@") {
             filteredByEmail = users.filter { $0.email.lowercased().contains(query.lowercased()) }
         } else {
             filteredByEmail = []
         }
-        let combinedFilteredUsers = Array(Set(filteredByName + filteredByEmail))
-        filteredUsers = combinedFilteredUsers.filter { $0.uid != currentUserID && !$0.displayName.isEmpty && !$0.email.isEmpty }
         
-        // addedMates에 있는 사용자들의 isMate 값을 반영
+        let combinedFilteredUsers = Array(Set(filteredByName + filteredByEmail))
+        
+        filteredUsers = combinedFilteredUsers.filter {
+            $0.uid != currentUserID &&
+            !$0.displayName.isEmpty &&
+            !$0.email.isEmpty &&
+            $0.photoURL != nil
+        }
+        
         for i in 0..<filteredUsers.count {
             if addedMates.contains(where: { $0.uid == filteredUsers[i].uid }) {
                 filteredUsers[i].isMate = true

@@ -13,7 +13,6 @@ class TextCollectionViewCell: UICollectionViewCell {
     
     let imageView = UIImageView().then() {
         $0.image = UIImage(systemName: "photo")
-        $0.backgroundColor = .blue
         $0.layer.cornerRadius = 30
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true

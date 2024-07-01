@@ -35,7 +35,12 @@ class GalleryCollectionViewCell: UICollectionViewCell {
     let photoCollectionViewLayout = UICollectionViewFlowLayout().then {
         $0.scrollDirection = .horizontal
         $0.minimumLineSpacing = 24
-        $0.sectionInset = .init(top: 0, left: 40, bottom: 0, right: 35)
+        let screenHeight = UIScreen.main.bounds.height
+        if screenHeight < 750 {
+            $0.sectionInset = .init(top: 0, left: 50, bottom: 0, right: 40)
+        } else {
+            $0.sectionInset = .init(top: 0, left: 40, bottom: 0, right: 35)
+        }
     }
     
     override init(frame: CGRect) {

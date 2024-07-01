@@ -139,8 +139,8 @@ class PinLogManager {
 
     func fetchHotPinLogs() async throws -> [PinLogSummary] {
         let snapshot = try await db.collection("pinLogs")
-            .whereField("pinCount", isGreaterThan: 0)
-            .whereField("isPublic", isEqualTo: true) // 이 줄을 추가하세요.
+            .whereField("pinCount", isGreaterThan: 4)
+            .whereField("isPublic", isEqualTo: true)
             .getDocuments()
         
         let allDocuments = snapshot.documents

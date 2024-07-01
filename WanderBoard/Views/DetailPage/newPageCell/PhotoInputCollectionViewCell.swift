@@ -31,8 +31,8 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
     let representativeLabel = UILabel().then {
         $0.text = "대표"
         $0.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        $0.textColor = .white
-        $0.backgroundColor = .black
+        $0.textColor = UIColor(named: "textColor")
+        $0.backgroundColor = .font
         $0.layer.cornerRadius = 8
         $0.layer.masksToBounds = true
         $0.textAlignment = .center
@@ -43,12 +43,8 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         setupUI()
         self.isUserInteractionEnabled = true
-        self.contentView.backgroundColor = .white
+        self.contentView.backgroundColor = UIColor(named: "babyGTocustomB")
         self.contentView.layer.cornerRadius = 16
-        self.contentView.layer.borderWidth = 1
-        if let lightGrayColor = UIColor(named: "lightgray") {
-            self.contentView.layer.borderColor = lightGrayColor.cgColor
-        }
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleImageTap))
         tapGesture.cancelsTouchesInView = false
         imageView.addGestureRecognizer(tapGesture)
@@ -74,7 +70,7 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
         }
         
         addButton.setTitle("+", for: .normal)
-        addButton.setTitleColor(.lightgray, for: .normal)
+        addButton.setTitleColor(.systemBackground, for: .normal)
         addButton.titleLabel?.font = UIFont.systemFont(ofSize: 80)
         addButton.backgroundColor = .clear
         addButton.layer.cornerRadius = 16
@@ -85,18 +81,18 @@ class PhotoInputCollectionViewCell: UICollectionViewCell {
         }
         
         representativeLabel.snp.makeConstraints {
-            $0.top.leading.equalToSuperview().inset(6)
+            $0.top.leading.equalToSuperview().inset(8)
             $0.size.equalTo(CGSize(width: 60, height: 35))
         }
         
         deleteButton.setImage(UIImage(systemName: "minus"), for: .normal)
-        deleteButton.tintColor = .white
-        deleteButton.backgroundColor = .lightGray
-        deleteButton.layer.cornerRadius = 15
+        deleteButton.tintColor = .lightgray
+        deleteButton.backgroundColor = UIColor(white: 0.7, alpha: 0.8)
+        deleteButton.layer.cornerRadius = 13
         deleteButton.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
         deleteButton.snp.makeConstraints {
-            $0.top.trailing.equalToSuperview().inset(6)
-            $0.size.equalTo(CGSize(width: 30, height: 30))
+            $0.top.trailing.equalToSuperview().inset(8)
+            $0.size.equalTo(CGSize(width: 26, height: 26))
         }
     }
     

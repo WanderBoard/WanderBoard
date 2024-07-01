@@ -35,7 +35,7 @@ class PlaceInfoView: UIView {
     private let websiteButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "globe"), for: .normal)
-        button.tintColor = .black
+        button.tintColor = .darkgray
         button.contentMode = .scaleAspectFit
         button.isEnabled = false
         return button
@@ -44,7 +44,7 @@ class PlaceInfoView: UIView {
     private let callButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "phone.fill"), for: .normal)
-        button.tintColor = .black
+        button.tintColor = .darkgray
         button.contentMode = .scaleAspectFit
         button.isEnabled = false
         return button
@@ -73,7 +73,7 @@ class PlaceInfoView: UIView {
     }
 
     private func setupView() {
-        backgroundColor = UIColor.white.withAlphaComponent(0.7)
+        backgroundColor = UIColor(named: "textColor")!.withAlphaComponent(0.7)
         layer.cornerRadius = 10
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.2

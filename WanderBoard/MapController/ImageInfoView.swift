@@ -19,7 +19,7 @@ class ImageInfoView: UIView {
     private let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "mappin.circle.fill")
-        imageView.tintColor = .black
+        imageView.tintColor = .font
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -30,17 +30,10 @@ class ImageInfoView: UIView {
         return label
     }()
 
-//    private let addressLabel: UILabel = {
-//        let label = UILabel()
-//        label.font = UIFont.systemFont(ofSize: 14)
-//        label.numberOfLines = 2
-//        return label
-//    }()
-
     private let websiteButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "globe"), for: .normal)
-        button.tintColor = .black
+        button.tintColor = .darkgray
         button.contentMode = .scaleAspectFit
         button.isEnabled = false
         return button
@@ -49,7 +42,7 @@ class ImageInfoView: UIView {
     private let callButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "phone.fill"), for: .normal)
-        button.tintColor = .black
+        button.tintColor = .darkgray
         button.contentMode = .scaleAspectFit
         button.isEnabled = false
         return button
@@ -58,8 +51,7 @@ class ImageInfoView: UIView {
     let sharePinButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "square.and.arrow.up.circle.fill"), for: .normal)
-        button.tintColor = .black
-//        button.backgroundColor = .black
+        button.tintColor = .font
         button.contentMode = .scaleAspectFit
         button.isEnabled = true
 
@@ -81,7 +73,7 @@ class ImageInfoView: UIView {
     }
 
     private func setupView() {
-        backgroundColor = UIColor.white.withAlphaComponent(0.8)
+        backgroundColor = UIColor(named: "textColor")!.withAlphaComponent(0.7)
         layer.cornerRadius = 10
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.2
@@ -95,14 +87,14 @@ class ImageInfoView: UIView {
         addSubview(sharePinButton)
 
         iconImageView.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview().offset(16)
+            make.centerY.equalToSuperview()
+            make.leading.equalToSuperview().offset(16)
             make.width.height.equalTo(24)
         }
 
         nameLabel.snp.makeConstraints { make in
             make.centerY.equalTo(iconImageView.snp.centerY)
             make.leading.equalTo(iconImageView.snp.trailing).offset(10)
-//            make.trailing.equalTo(sharePinButton.snp.leading).offset(-10)
         }
 
         callButton.snp.makeConstraints { make in
@@ -119,7 +111,6 @@ class ImageInfoView: UIView {
 
         sharePinButton.snp.makeConstraints { make in
             make.centerY.equalTo(iconImageView.snp.centerY)
-//            make.leading.equalTo(websiteButton.snp.trailing).offset(10)
             make.trailing.equalToSuperview().inset(8)
             make.width.height.equalTo(44)
         }

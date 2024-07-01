@@ -42,7 +42,7 @@ class TextCollectionViewCell: UICollectionViewCell {
     }
     
     let emptyView = UIView().then() {
-        $0.backgroundColor = UIColor(white: 1, alpha: 0.9)
+        $0.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.9)
         $0.isHidden = true
     }
     
@@ -54,7 +54,7 @@ class TextCollectionViewCell: UICollectionViewCell {
     
     let emptyTitleLabel = UILabel().then() {
         $0.text = "기록된 여행 일지가 없습니다."
-        $0.textColor = .black
+        $0.textColor = .font
         $0.font = UIFont.boldSystemFont(ofSize: 17)
         $0.textAlignment = .center
     }

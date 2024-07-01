@@ -22,70 +22,12 @@ class StorageManager {
     
     private init() {}
     
-//    func extractLocationFromImage(image: UIImage) -> CLLocationCoordinate2D? {
-//        guard let imageData = image.jpegData(compressionQuality: 1.0) else {
-//            print("Failed to convert image to data")
-//            return nil
-//        }
-//        
-//        guard let source = CGImageSourceCreateWithData(imageData as CFData, nil) else {
-//            print("Failed to create image source")
-//            return nil
-//        }
-//        
-//        // 이미지 전체 속성 가져오는
-////        guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] else {
-////            print("No properties found in image data")
-////            return nil
-////        }
-//        
-////        print("Properties: \(properties)")
-//        
-////        guard let gpsData = properties[kCGImagePropertyGPSDictionary] as? [CFString: Any] else {
-////            print("No GPS data found in properties")
-////            return nil
-////        }
-//        
-////        print("GPS Data: \(gpsData)")
-//        
-//        guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
-//              let gpsData = properties[kCGImagePropertyGPSDictionary] as? [CFString: Any] else {
-//            return nil
-//        }
-//        
-//        guard let latitude = gpsData[kCGImagePropertyGPSLatitude] as? Double,
-//              let longitude = gpsData[kCGImagePropertyGPSLongitude] as? Double,
-//              let latitudeRef = gpsData[kCGImagePropertyGPSLatitudeRef] as? String,
-//              let longitudeRef = gpsData[kCGImagePropertyGPSLongitudeRef] as? String else {
-//            print("Incomplete GPS data")
-//            return nil
-//        }
-//        
-//        let lat = latitudeRef == "S" ? -latitude : latitude
-//        let lon = longitudeRef == "W" ? -longitude : longitude
-//        
-//        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
-//    }
     
     func extractLocation(from data: Data) -> CLLocationCoordinate2D? {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
             print("Failed to create image source")
             return nil
         }
-        
-//        guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] else {
-//            print("No properties found in image data")
-//            return nil
-//        }
-        
-//        print("Properties: \(properties)")
-        
-//        guard let gpsData = properties[kCGImagePropertyGPSDictionary] as? [CFString: Any] else {
-//            print("No GPS data found in properties")
-//            return nil
-//        }
-//        
-//        print("GPS Data: \(gpsData)")
         
         guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
               let gpsData = properties[kCGImagePropertyGPSDictionary] as? [CFString: Any] else {

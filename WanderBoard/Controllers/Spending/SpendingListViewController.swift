@@ -11,6 +11,7 @@ import FirebaseFirestore
 import FirebaseAuth
 
 protocol SpendingListViewControllerDelegate: AnyObject {
+    func didSaveExpense(_ expense: Expense)
     func didUpdateExpenses(_ expenses: [DailyExpenses])
 
 }
@@ -79,6 +80,10 @@ class SpendingListViewController: UIViewController {
         } else {
             print("No PinLog found.")
         }
+    }
+    
+    func saveExpense(_ expense: Expense) {
+        delegate?.didSaveExpense(expense)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -196,7 +201,6 @@ class SpendingListViewController: UIViewController {
     func totalExpensesAmount() -> Int {
         return dailyExpenses.flatMap { $0.expenses }.reduce(0) { $0 + $1.expenseAmount }
     }
-    
 }
 
 // MARK: TableViewDataSource

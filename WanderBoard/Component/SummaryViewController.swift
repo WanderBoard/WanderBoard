@@ -22,6 +22,8 @@ class SummaryViewController: UIViewController, UITextFieldDelegate, UITextViewDe
     var amount: Double?
     var pinLogId: String?
     var selectedImageName: String?
+//    var buttonFeedBackViewController: ButtonFeedBackViewController?
+
 
     private let categoryLabel: UILabel = {
         let label = UILabel()
@@ -188,6 +190,7 @@ class SummaryViewController: UIViewController, UITextFieldDelegate, UITextViewDe
         )
 
         delegate?.didSaveExpense(expense)
+        showButtonFeedBackView()
         dismiss(animated: true, completion: nil)
         saveButton.isEnabled = true
     }
@@ -203,6 +206,22 @@ class SummaryViewController: UIViewController, UITextFieldDelegate, UITextViewDe
             memoTextView.becomeFirstResponder()
         }
         return true
+    }
+    
+    private func showButtonFeedBackView() {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            let buttonFeedBackVC = ButtonFeedBackViewController()
+            let feedbackWindow = UIWindow(windowScene: windowScene)
+            feedbackWindow.rootViewController = buttonFeedBackVC
+            feedbackWindow.backgroundColor = .clear
+            feedbackWindow.windowLevel = .alert + 1
+            feedbackWindow.isHidden = false
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                feedbackWindow.isHidden = true
+            }
+        }
     }
 
     @objc func textViewDidChange(_ textView: UITextView) {

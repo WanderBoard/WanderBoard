@@ -411,7 +411,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         publicStackView.snp.makeConstraints {
-            $0.top.equalTo(detailInputViewButton.view.snp.bottom)
+            $0.top.equalTo(detailInputViewButton.view.snp.bottom).offset(5)
             $0.leading.equalToSuperview().inset(32)
         }
         
@@ -448,7 +448,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         mateCollectionView.snp.makeConstraints {
-            $0.top.equalTo(mateLabel.snp.bottom).offset(12)
+            $0.top.equalTo(mateLabel.snp.bottom).offset(5)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(70)
         }

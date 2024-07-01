@@ -2,7 +2,7 @@
 ```
 📸 여행을 기록하고 공유하는, 여행 매니아를 위한 필수 앱
 🏞 WanderBoard에서 나만의 여행기록을 작성하고, 다른 사람들과 공유해보세요.
-🌟다른 사람들의 여행 기록을 보며 당신의 다음 여행을 계획할수 있습니다.
+🌟 다른 사람들의 여행 기록을 보며 당신의 다음 여행을 계획할수 있습니다.
 
 
 🍎 App Store : https://apps.apple.com/kr/app/wanderboard/id6504566967
@@ -121,7 +121,10 @@
     - Mate 목록, 수정, 삭제, 차단 기능 구현
       
 *  **장진영** ([mgynsz](https://github.com/mgynsz))
-    
+    - Firebase 서버 구현 담당
+    - 데이터 모델링
+    - 로그인 / 회원가입 기능 구현
+    - SwiftUI를 활용한 애니메이션 효과 등
     
 *  **김한빛** ([gksqlc7386](https://github.com/gksqlc7386))
     

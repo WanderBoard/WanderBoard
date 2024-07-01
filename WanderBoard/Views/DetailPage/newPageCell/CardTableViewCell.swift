@@ -16,20 +16,7 @@ enum Category: String, CaseIterable {
     case other = "기타"
     
     var price: Int {
-        switch self {
-        case .food:
-            return 10000
-        case .transportation:
-            return 8000
-        case .entertainment:
-            return 15000
-        case .gift:
-            return 12000
-        case .accommodation:
-            return 50000
-        case .other:
-            return 7000
-        }
+        return 0
     }
 }
 
@@ -68,6 +55,19 @@ class CardTableViewCell: UITableViewCell {
     func setupUI() {
         guard let category = category else { return }
         categoryTitle.text = category.rawValue
+    }
+    
+    func setExpenseAmount(_ amount: Int, category: String) {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        let formattedAmount = formatter.string(from: NSNumber(value: amount)) ?? "0"
+        expendLabel.text = "\(formattedAmount) 원"
+        
+        if let expenseCategory = Category(rawValue: category) {
+            categoryTitle.text = expenseCategory.rawValue
+        } else {
+            categoryTitle.text = "기타"
+        }
     }
     
     func constraintLayout() {

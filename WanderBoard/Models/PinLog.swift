@@ -58,6 +58,7 @@ struct Expense: Codable, Equatable {
     var memo: String
     var imageName: String
     
+    
     func toDictionary() -> [String: Any] {
         return [
             "id": self.id ?? UUID().uuidString,

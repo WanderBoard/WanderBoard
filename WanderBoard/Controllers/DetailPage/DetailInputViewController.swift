@@ -43,7 +43,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
     weak var delegate: DetailInputViewControllerDelegate?
     var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = []
     var selectedFriends: [UserSummary] = []
-    var isInitialLoad = true // 메이트 값을 딱 한번만 가져오도록 설정하기 위해
+    var isInitialLoad = true
     var representativeImageIndex: Int? = 0
     var totalSpendingAmountText: String? {
         didSet {

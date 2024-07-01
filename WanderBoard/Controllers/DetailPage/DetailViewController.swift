@@ -75,7 +75,7 @@ class DetailViewController: UIViewController {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.register(GalleryCollectionViewCell.self, forCellWithReuseIdentifier: GalleryCollectionViewCell.identifier)
         $0.register(TextCollectionViewCell.self, forCellWithReuseIdentifier: TextCollectionViewCell.identifier)
-        $0.register(CardCollectionViewCell.self, forCellWithReuseIdentifier: CardCollectionViewCell.identifier)
+        $0.register(CardInputCollectionViewCell.self, forCellWithReuseIdentifier: CardInputCollectionViewCell.identifier)
     }
     
     let layout = UICollectionViewFlowLayout().then {
@@ -590,6 +590,10 @@ class DetailViewController: UIViewController {
         } else {
             self.detailViewCollectionView.reloadItems(at: [IndexPath(item: 1, section: 0)])
         }
+        DispatchQueue.main.async {
+            self.detailViewCollectionView.reloadData()
+        }
+        
         self.expandableButtonAction()
     }
     
@@ -976,7 +980,10 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
                 cell.configure(with: representativeImage, title: pinLogTitle ?? "", content: pinLogContent ?? "")
                 return cell
             case 2:
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CardCollectionViewCell.identifier, for: indexPath) as! CardCollectionViewCell
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CardInputCollectionViewCell.identifier, for: indexPath) as! CardInputCollectionViewCell
+                if let expenses = pinLog?.expenses {
+                    cell.configure(with: expenses)
+                }
                 return cell
             default:
                 fatalError("Unexpected index path")
@@ -1047,6 +1054,9 @@ extension DetailViewController: DetailInputViewControllerDelegate {
         self.pinLog = pinLog
         Task {
             await configureView(with: pinLog)
+            DispatchQueue.main.async {
+                self.detailViewCollectionView.reloadData()
+            }
         }
     }
 }

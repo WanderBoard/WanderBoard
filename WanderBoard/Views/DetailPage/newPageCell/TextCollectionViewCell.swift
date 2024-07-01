@@ -99,19 +99,19 @@ class TextCollectionViewCell: UICollectionViewCell {
         }
         
         emptyView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.edges.equalTo(contentView)
         }
         
         emptyImageView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview().offset(-20)
+            $0.centerX.equalTo(contentView)
+            $0.centerY.equalTo(contentView).offset(-20)
             $0.height.equalTo(35)
             $0.width.equalTo(55)
         }
         
         emptyTitleLabel.snp.makeConstraints {
             $0.top.equalTo(emptyImageView.snp.bottom).offset(10)
-            $0.centerX.equalToSuperview()
+            $0.centerX.equalTo(contentView)
         }
     }
     
@@ -131,16 +131,18 @@ class TextCollectionViewCell: UICollectionViewCell {
         imageView.image = image
         titleLabel.text = title
         
-        if let title = title, !title.isEmpty, let content = content, !content.isEmpty {
+        let isTitleEmpty = title?.isEmpty ?? true
+        let isContentEmpty = content?.isEmpty ?? true
+        
+        if !isTitleEmpty || !isContentEmpty {
             emptyView.isHidden = true
             backView.isHidden = false
-            
             
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineSpacing = 8
             paragraphStyle.alignment = .center
             
-            let attributedString = NSAttributedString(string: content, attributes: [
+            let attributedString = NSAttributedString(string: content ?? "", attributes: [
                 .font: textLabel.font ?? UIFont.systemFont(ofSize: 15),
                 .paragraphStyle: paragraphStyle
             ])

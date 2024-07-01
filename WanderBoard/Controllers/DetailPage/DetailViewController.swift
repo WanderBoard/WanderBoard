@@ -229,7 +229,14 @@ class DetailViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.tintColor = .white
+        
+        if let pinLogId = pinLogId {
+            Task {
+                await fetchExpenses(for: pinLogId)
+            }
+        }
     }
+
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let detailInputVC = segue.destination as? DetailInputViewController {
@@ -473,6 +480,28 @@ class DetailViewController: UIViewController {
                     self.delegate?.didUpdatePinButton(updatedPinLog)
                 }
             }
+        }
+    }
+    
+    private func fetchExpenses(for pinLogId: String) async {
+        do {
+            let expenses = try await FirestoreManager.shared.fetchExpenses(for: pinLogId)
+            self.pinLog?.expenses = expenses
+            DispatchQueue.main.async {
+                self.updateCardInputCell()
+            }
+        } catch {
+            print("Failed to fetch expenses: \(error)")
+        }
+    }
+    
+    private func updateCardInputCell() {
+        guard let expenses = pinLog?.expenses else {
+            return
+        }
+        detailViewCollectionView.reloadData()
+        if let cell = detailViewCollectionView.cellForItem(at: IndexPath(item: 2, section: 0)) as? CardInputCollectionViewCell {
+            cell.configure(with: expenses)
         }
     }
     
@@ -1070,9 +1099,9 @@ extension DetailViewController: DetailInputViewControllerDelegate {
 
 extension DetailViewController: SpendingListViewControllerDelegate {
     func didSaveExpense(_ expense: Expense) {}
+    
     func didUpdateExpenses(_ expenses: [DailyExpenses]) {
         pinLog?.expenses = expenses
-        // 데이터 소스를 새로 고침
         detailViewCollectionView.reloadData()
     }
 }

@@ -13,6 +13,7 @@ struct UserSummary: Codable, Hashable {
     let displayName: String
     let photoURL: String?
     var isMate: Bool
+    
 
     
     func hash(into hasher: inout Hasher) {

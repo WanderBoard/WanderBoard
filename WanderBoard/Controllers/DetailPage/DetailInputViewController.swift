@@ -411,7 +411,7 @@ class DetailInputViewController: UIViewController, CalendarHostingControllerDele
         }
         
         publicStackView.snp.makeConstraints {
-            $0.top.equalTo(detailInputViewButton.view.snp.bottom).offset(5)
+            $0.top.equalTo(detailInputViewButton.view.snp.bottom)
             $0.leading.equalToSuperview().inset(32)
         }
         

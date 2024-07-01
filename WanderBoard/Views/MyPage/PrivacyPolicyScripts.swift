@@ -128,7 +128,7 @@ class PrivacyPolicyScripts {
     회원님은 언제든지 마케팅 활용 동의 및 광고 수신 동의를 철회할 수 있습니다.
 
     [앱 내 설정] > [마케팅 동의 철회]
-    고객센터: pond1225@naver.com
+    고객센터: wanderboard2024@gmail.com
     """
     
     static let thirdPartySharing = """
@@ -161,7 +161,7 @@ class PrivacyPolicyScripts {
     회원님은 언제든지 개인정보 제3자 제공 동의를 철회할 수 있습니다.
 
     [앱 내 설정] > [제3자 제공 동의 철회]
-    고객센터: pond1225@naver.com
+    고객센터: wanderboard2024@gmail.com
     """
     
 }

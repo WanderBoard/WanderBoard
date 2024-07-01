@@ -67,6 +67,11 @@ class SpendingListViewController: UIViewController {
         if #available(iOS 15.0, *) {
             self.tableView.sectionHeaderTopPadding = 0.0
         }
+        
+        if let navigationController = self.navigationController,
+           let detailViewController = navigationController.viewControllers.first(where: { $0 is DetailViewController }) as? DetailViewController {
+            self.delegate = detailViewController
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -88,10 +93,9 @@ class SpendingListViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
+        
         if self.isMovingFromParent {
             delegate?.didUpdateExpenses(dailyExpenses)
-            tableView.reloadData()
         }
     }
     

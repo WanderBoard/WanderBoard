@@ -293,7 +293,7 @@ class DetailViewController: UIViewController {
         let collectionViewHeightMultiplier: CGFloat = screenHeight < 750 ? 0.58 : 0.52
         
         let detailViewButtonTB: CGFloat = screenHeight < 750 ? 0 : 30
-        let expendableViewH: CGFloat = screenHeight < 750 ? 96 : 110
+        let expendableViewH: CGFloat = screenHeight < 750 ? 86 : 100
         
         detailViewCollectionView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(6)
@@ -339,7 +339,7 @@ class DetailViewController: UIViewController {
         }
         
         expandableView.snp.makeConstraints {
-            $0.top.equalTo(optionsButton.snp.bottom).offset(12)
+            $0.top.equalTo(optionsButton.snp.bottom).offset(15)
             $0.trailing.equalToSuperview().offset(15)
             $0.width.equalTo(50)
             $0.height.equalTo(expendableViewH)

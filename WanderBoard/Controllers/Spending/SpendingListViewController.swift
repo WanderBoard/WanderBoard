@@ -38,7 +38,6 @@ class SpendingListViewController: UIViewController {
     }()
     
     let categoryImageMapping: [String: String] = CategoryData.categoryImageMapping
-
     
     override func viewDidLoad() {
         super.viewDidLoad()

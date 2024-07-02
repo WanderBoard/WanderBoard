@@ -781,6 +781,7 @@ class DetailViewController: UIViewController {
             guard let self = self, let pinLog = self.pinLog else { return }
             Task {
                 do {
+                    try await self.pinLogManager.deleteImages(from: pinLog)
                     try await self.pinLogManager.deletePinLog(pinLogId: pinLog.id!)
                     self.delegate?.didUpdatePinLog()
                     self.pinLog = nil

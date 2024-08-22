@@ -474,7 +474,7 @@ class DetailViewController: UIViewController {
     //프로필 이미지 눌렀을때 이미지 확대 뷰 나오도록
     @objc func imageTapped(_ sender: UITapGestureRecognizer) {
         let profileDetailVC = profileDetail()
-        profileDetailVC.modalPresentationStyle = .overFullScreen // 오버 풀스크린을 하면 기존 뷰에 모달이 입혀지는 구조
+        profileDetailVC.modalPresentationStyle = .overFullScreen
         profileDetailVC.modalTransitionStyle = .crossDissolve
         
         profileDetailVC.profileImage.image = profileImageView.image
@@ -570,11 +570,15 @@ class DetailViewController: UIViewController {
         }
         
         if isCurrentUser(pinLog: pinLog) {
-            let instaAction = UIAction(title: "이미지 공유하기", image: UIImage(systemName: "photo.on.rectangle.angled")) { [weak self] _ in
+            let instaAction = UIAction(
+                title: "이미지 공유하기",
+                image: UIImage(systemName: "photo.on.rectangle.angled")) { [weak self] _ in
                 self?.instaConnect()
             }
             
-            let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { [weak self] _ in
+            let editAction = UIAction(
+                title: "수정하기",
+                image: UIImage(systemName: "pencil")) { [weak self] _ in
                 self?.editPinLog()
             }
             
@@ -583,7 +587,7 @@ class DetailViewController: UIViewController {
                 image: UIImage(systemName: "trash"),
                 attributes: .destructive) { [weak self] _ in
                     self?.deletePinLog()
-                }
+            }
             optionsButton.menu = UIMenu(title: "", children: [instaAction, editAction, deleteAction])
         } else if Auth.auth().currentUser != nil {
             let blockAction = UIAction(title: "작성자 차단하기", image: UIImage(systemName: "person.slash.fill")) { [weak self] _ in

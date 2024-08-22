@@ -16,3 +16,5 @@ struct PinLogSummary {
     var createdAt: Date
     var isPublic: Bool
 }
+
+

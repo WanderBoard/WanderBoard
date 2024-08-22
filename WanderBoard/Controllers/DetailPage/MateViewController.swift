@@ -14,7 +14,6 @@ class MateViewController: UIViewController {
     
     var users: [UserSummary] = []
     var filteredUsers: [UserSummary] = []
-    
     var addedMates: [UserSummary] = []
     
     let searchBar = UISearchBar().then {

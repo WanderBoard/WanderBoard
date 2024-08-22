@@ -12,6 +12,7 @@ import FirebaseAuth
 import FirebaseFirestore
 import KakaoSDKCommon
 import KakaoSDKAuth
+import Security
 
 
 @UIApplicationMain
@@ -33,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return false
         }
         
-        KakaoSDK.initSDK(appKey: "bc1969cc0cd1ae85004329699d424b47")
+        KakaoSDK.initSDK(appKey: Secret.kakaoApiKey)
         
         window = UIWindow(frame: UIScreen.main.bounds)
         
@@ -165,4 +166,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
+    
 }

@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import Then
+import Kingfisher
 
 class PhotoCollectionViewCell: UICollectionViewCell, UIScrollViewDelegate {
     static let identifier = String(describing: PhotoCollectionViewCell.self)
@@ -73,5 +74,17 @@ class PhotoCollectionViewCell: UICollectionViewCell, UIScrollViewDelegate {
     
     func configure(with image: UIImage?, isRepresentative: Bool) {
         photoImage.image = image
+    }
+    
+    func configureWithURL(url: URL, isRepresentative: Bool) {
+        photoImage.kf.setImage(
+            with: url,
+            placeholder: UIImage(named: "emptyImg"),
+            options: [
+                .cacheOriginalImage,
+                .transition(.fade(0.3)),
+                .processor(DownsamplingImageProcessor(size: photoImage.bounds.size))
+            ]
+        )
     }
 }

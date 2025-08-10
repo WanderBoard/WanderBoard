@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import CoreLocation
+import Kingfisher
 
 class GalleryCollectionViewCell: UICollectionViewCell {
     static let identifier = String(describing: GalleryCollectionViewCell.self)
@@ -15,7 +16,7 @@ class GalleryCollectionViewCell: UICollectionViewCell {
     let minimumLineSpacing: CGFloat = 24
     let aspectRatio: CGFloat = 330 / 465
     
-    var selectedImages: [(UIImage, Bool, CLLocationCoordinate2D?)] = [] {
+    var selectedImages: [ImageData] = [] {
         didSet {
             photoCollectionView.reloadData()
         }
@@ -73,8 +74,12 @@ extension GalleryCollectionViewCell: UICollectionViewDataSource, UICollectionVie
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.identifier, for: indexPath) as! PhotoCollectionViewCell
-        let (image, isRepresentative, _) = selectedImages[indexPath.row]
-        cell.configure(with: image, isRepresentative: isRepresentative)
+        let imageData = selectedImages[indexPath.row]
+        
+        if let url = URL(string: imageData.url) {
+            cell.configureWithURL(url: url, isRepresentative: imageData.isRepresentative)
+        }
+        
         return cell
     }
     
